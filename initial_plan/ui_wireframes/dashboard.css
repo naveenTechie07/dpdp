@@ -30,3 +30,5 @@
 .badge-warning { font-weight: 700; }
 
 body, .sidebar, .topbar, .card { transition: background 0.2s ease, color 0.2s ease; }
+
+@media (max-width: 900px) { .sidebar { display: none; } }
