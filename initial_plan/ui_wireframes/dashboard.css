@@ -40,3 +40,5 @@ body, .sidebar, .topbar, .card { transition: background 0.2s ease, color 0.2s ea
 .cmd-box { background: var(--bg-surface); padding: 1rem; border-radius: 8px; }
 
 .metric-card h3 { font-size: 1rem; color: var(--text-muted); }
+
+.dot { width:8px; height:8px; border-radius:50%; background:green; display:inline-block; }
