@@ -5,3 +5,5 @@
 .content-body { padding: 2rem; display: flex; flex-direction: column; gap: 1.5rem; }
 
 .score-val { font-size: 2rem; font-weight: 700; color: var(--color-primary); display: block; }
+
+.metric-card { background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
