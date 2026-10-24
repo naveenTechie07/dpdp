@@ -2,3 +2,5 @@
 .wizard { background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 2rem; }
 
 .steps { display: flex; gap: 1rem; margin-bottom: 1.5rem; font-weight: 600; }
+
+.otp-box input { text-align: center; letter-spacing: 0.5rem; font-size: 1.25rem; font-weight: 700; }
