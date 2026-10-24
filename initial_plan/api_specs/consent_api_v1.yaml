@@ -10,3 +10,10 @@ paths:
   /api/v1/consent/records:
     post:
       summary: Record consent
+
+components:
+  schemas:
+    ConsentArtifact:
+      type: object
+      properties:
+        id: { type: string }
