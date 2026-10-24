@@ -37,3 +37,5 @@ body.modal-open { overflow: hidden; }
 .table-container { width: 100%; overflow-x: auto; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-surface); }
 .data-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.875rem; }
 .data-table th, .data-table td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border-color); }
+
+.data-table th { position: sticky; top: 0; background: var(--bg-surface-hover); z-index: 10; }
