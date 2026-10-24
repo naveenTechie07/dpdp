@@ -39,3 +39,5 @@ body.modal-open { overflow: hidden; }
 .data-table th, .data-table td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border-color); }
 
 .data-table th { position: sticky; top: 0; background: var(--bg-surface-hover); z-index: 10; }
+
+.data-table tbody tr:nth-child(even) { background-color: rgba(241,245,249,0.4); }
