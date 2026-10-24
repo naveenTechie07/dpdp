@@ -13,3 +13,8 @@
 - All SQLite rows are cryptographically bound via SHA-256 forward-chaining.
 - Direct row edits invalidate all subsequent `prev_block_hash` checks.
 - Two-Factor OTP challenge for any modification or erasure of personal records.
+
+
+## Information Disclosure Safeguards
+- Ephemeral in-memory decryption buffers are zero-filled immediately post-serialization.
+- AES-256-GCM authenticated ciphertext used for all persistent PII fields.
