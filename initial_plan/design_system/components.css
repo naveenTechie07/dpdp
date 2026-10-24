@@ -61,3 +61,5 @@ body.modal-open { overflow: hidden; }
 @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
 .skeleton-text { height: 1rem; margin-bottom: 0.5rem; }
+
+.accordion-item { border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-bottom: 0.5rem; overflow: hidden; }
