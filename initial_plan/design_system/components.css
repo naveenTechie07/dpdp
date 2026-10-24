@@ -54,3 +54,5 @@ body.modal-open { overflow: hidden; }
 
 [data-tooltip] { position: relative; cursor: help; }
 [data-tooltip]:hover::after { content: attr(data-tooltip); position: absolute; bottom: 125%; left: 50%; transform: translateX(-50%); background: #0f172a; color: #fff; padding: 0.25rem 0.5rem; border-radius: var(--radius-sm); font-size: 0.75rem; white-space: nowrap; z-index: 50; }
+
+[data-tooltip]:hover::before { content: ''; position: absolute; bottom: 110%; left: 50%; transform: translateX(-50%); border: 4px solid transparent; border-top-color: #0f172a; }
