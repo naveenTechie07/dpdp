@@ -77,3 +77,5 @@ body.modal-open { overflow: hidden; }
 .legal-text { font-size: 0.75rem; color: var(--text-muted); }
 
 .diff-add { color: green; } .diff-del { color: red; }
+
+input[type=radio]:checked + label { border-color: var(--color-primary); }
