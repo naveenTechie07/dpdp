@@ -12,3 +12,7 @@ Deliver an offline-first, zero-setup privacy compliance platform tailored for In
 - Citizen Data Principal Rights (DSR) self-service portal.
 - 72-hour CERT-In / Data Protection Board breach incident logger.
 - Offline-first local database (SQLite/DuckDB) with zero mandatory cloud dependencies.
+
+
+## 4. Regulatory Alignment
+100% offline autonomy and verifiable hash chains.
