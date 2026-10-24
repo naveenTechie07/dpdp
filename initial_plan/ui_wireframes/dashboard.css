@@ -16,3 +16,5 @@
 .alert-warning { border-left: 4px solid var(--color-warning); }
 
 .alert-warning::before { content: '⚠️ '; }
+
+@media (max-width: 768px) { .grid { grid-template-columns: 1fr !important; } }
