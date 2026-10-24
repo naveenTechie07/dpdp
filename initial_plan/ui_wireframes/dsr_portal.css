@@ -10,3 +10,5 @@
 .edit-btn { background: none; border: none; color: var(--color-primary); cursor: pointer; }
 
 .erasure-warn { border: 1px solid var(--color-danger); }
+
+.nominee-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
