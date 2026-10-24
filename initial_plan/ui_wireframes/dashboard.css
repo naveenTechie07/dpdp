@@ -12,3 +12,5 @@
 
 .card li { padding: 0.5rem; border-bottom: 1px solid var(--border-color); }
 .card li:hover { background: var(--bg-surface-hover); }
+
+.alert-warning { border-left: 4px solid var(--color-warning); }
