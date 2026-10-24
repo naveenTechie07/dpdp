@@ -11,3 +11,6 @@ CREATE TABLE IF NOT EXISTS audit_trail (sequence_num INTEGER PRIMARY KEY AUTOINC
 CREATE TABLE IF NOT EXISTS breach_incidents (id TEXT PRIMARY KEY, discovered_at TIMESTAMP NOT NULL, reported_to_dpb_at TIMESTAMP, reported_to_certin_at TIMESTAMP, severity TEXT CHECK(severity IN ('LOW', 'MEDIUM', 'HIGH', 'CRITICAL')), affected_principals_count INTEGER, summary TEXT NOT NULL, containment_status TEXT NOT NULL);
 
 CREATE INDEX IF NOT EXISTS idx_consent_principal_status ON consent_records(principal_id, status);
+
+CREATE INDEX IF NOT EXISTS idx_audit_block_hash ON audit_trail(block_hash);
+CREATE INDEX IF NOT EXISTS idx_audit_timestamp ON audit_trail(event_timestamp);
