@@ -6,3 +6,5 @@
 .otp-box input { text-align: center; letter-spacing: 0.5rem; font-size: 1.25rem; font-weight: 700; }
 
 .chip { display: inline-block; padding: 2px 8px; border-radius: 4px; background: var(--bg-surface-hover); font-size: 0.75rem; }
+
+.edit-btn { background: none; border: none; color: var(--color-primary); cursor: pointer; }
