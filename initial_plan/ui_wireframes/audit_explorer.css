@@ -3,3 +3,5 @@
 td { font-family: monospace; }
 
 .badge { cursor: help; }
+
+@media(max-width:600px){ input { width: 100%; } }
