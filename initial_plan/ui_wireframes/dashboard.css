@@ -24,3 +24,5 @@
 .bar { height: 8px; border-radius: 4px; background: var(--color-primary); }
 
 .dpo-tag { color: var(--color-primary); }
+
+.storage-warn { color: var(--color-warning); }
