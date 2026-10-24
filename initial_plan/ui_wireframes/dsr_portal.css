@@ -8,3 +8,5 @@
 .chip { display: inline-block; padding: 2px 8px; border-radius: 4px; background: var(--bg-surface-hover); font-size: 0.75rem; }
 
 .edit-btn { background: none; border: none; color: var(--color-primary); cursor: pointer; }
+
+.erasure-warn { border: 1px solid var(--color-danger); }
