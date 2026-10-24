@@ -1,0 +1,8 @@
+openapi: 3.0.3
+info:
+  title: DPDP_Secure DSR API
+  version: 1.0.0
+paths:
+  /api/v1/dsr/requests:
+    post:
+      summary: Submit DSR
