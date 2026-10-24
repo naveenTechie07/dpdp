@@ -1,3 +1,5 @@
 .banner-card { max-width: 680px; margin: 3rem auto; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 1.5rem; }
 
 .purpose-item { display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid var(--border-color); }
+
+.purpose-item:first-child { opacity: 0.8; }
