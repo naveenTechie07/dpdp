@@ -1,0 +1,27 @@
+<%- include('partials/header') %>
+
+<section class="page-header">
+    <h1>About Our Architecture</h1>
+    <p>Understanding the power of Server-Side Rendering (SSR).</p>
+</section>
+
+<section class="content-section">
+    <div class="text-content">
+        <h2>Why Node.js & EJS?</h2>
+        <p>In the modern web, Single Page Applications (SPAs) built with React or Vue are incredibly popular. However, they ship empty HTML files to the browser, relying on JavaScript to render content. This can cause poor SEO and slow initial load times (First Contentful Paint).</p>
+        
+        <p>By returning to Server-Side Rendering with Express and EJS, we achieve the best of both worlds:</p>
+        <ul class="styled-list">
+            <li><strong>Speed:</strong> The browser renders the HTML immediately upon receiving it.</li>
+            <li><strong>SEO:</strong> Googlebot indexes the fully populated HTML document instantly.</li>
+            <li><strong>Simplicity:</strong> No complex build steps, hydration issues, or massive JavaScript bundles.</li>
+        </ul>
+
+        <div class="info-box">
+            <h3>Did you know?</h3>
+            <p>You can still add client-side interactivity using lightweight Vanilla JS or tools like HTMX, keeping the page incredibly fast!</p>
+        </div>
+    </div>
+</section>
+
+<%- include('partials/footer') %>

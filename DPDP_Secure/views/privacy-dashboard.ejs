@@ -1,0 +1,149 @@
+<%- include('partials/header') %>
+
+<div class="dashboard-header mb-4" style="display: flex; justify-content: space-between; align-items: flex-start;">
+    <div>
+        <h1 class="page-title"><%= title.split(' - ')[0] %></h1>
+        <p class="page-description"><%= description %></p>
+    </div>
+    <button class="btn-secondary" style="padding: 10px 16px; font-size: 14px; display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--border-color);">
+        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+        Dashboard
+        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </button>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 24px;">
+    <!-- TOTAL DATA RIGHTS REQUESTS -->
+    <div class="card" style="padding: 24px; position: relative;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
+            <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">TOTAL DATA RIGHTS REQUESTS</div>
+            <div style="background: rgba(255,255,255,0.9); color: #000; border-radius: 4px; padding: 4px; display: flex; align-items: center; justify-content: center;">
+                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            </div>
+        </div>
+        <div style="font-size: 32px; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">8</div>
+        <div style="color: var(--text-muted); font-size: 13px;">All time</div>
+    </div>
+
+    <!-- OPEN / PENDING -->
+    <div class="card" style="padding: 24px; position: relative;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
+            <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">OPEN / PENDING</div>
+            <div style="background: rgba(245, 158, 11, 0.1); color: #f59e0b; border-radius: 4px; padding: 4px; display: flex; align-items: center; justify-content: center;">
+                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            </div>
+        </div>
+        <div style="font-size: 32px; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">4</div>
+        <div style="color: var(--text-muted); font-size: 13px;">Needs attention</div>
+    </div>
+
+    <!-- COMPLETED -->
+    <div class="card" style="padding: 24px; position: relative;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
+            <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">COMPLETED</div>
+            <div style="background: rgba(16, 185, 129, 0.1); color: #10b981; border-radius: 4px; padding: 4px; display: flex; align-items: center; justify-content: center;">
+                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            </div>
+        </div>
+        <div style="font-size: 32px; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">2</div>
+        <div style="color: var(--text-muted); font-size: 13px;">Resolved requests</div>
+    </div>
+
+    <!-- PUBLISHED FORMS -->
+    <div class="card" style="padding: 24px; position: relative;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
+            <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">PUBLISHED FORMS</div>
+            <div style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6; border-radius: 4px; padding: 4px; display: flex; align-items: center; justify-content: center;">
+                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            </div>
+        </div>
+        <div style="font-size: 32px; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">2</div>
+        <div style="color: var(--text-muted); font-size: 13px;">3 total</div>
+    </div>
+</div>
+
+<div style="display: flex; gap: 24px; margin-bottom: 24px;">
+    <!-- Donut Chart -->
+    <div class="card" style="flex: 1; padding: 24px; display: flex; flex-direction: column;">
+        <div style="font-weight: 600; color: var(--text-main); font-size: 14px; margin-bottom: 4px;">Data Rights Requests Status</div>
+        <div style="color: var(--text-muted); font-size: 12px; margin-bottom: auto;">Open &middot; In Progress &middot; Completed</div>
+
+        <div style="display: flex; justify-content: center; align-items: center; height: 240px; position: relative;">
+            <div style="width: 140px; height: 140px; border-radius: 50%; background: conic-gradient(#f59e0b 0% 50%, #3b82f6 50% 75%, #10b981 75% 100%); position: relative;">
+                <div style="position: absolute; top: 20px; left: 20px; right: 20px; bottom: 20px; background: var(--card-bg); border-radius: 50%;"></div>
+            </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 12px; margin-top: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--text-main);">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b;"></div>
+                    Open
+                </div>
+                <div style="font-weight: 600;">4</div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--text-main);">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div style="width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></div>
+                    Completed
+                </div>
+                <div style="font-weight: 600;">2</div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--text-main);">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div style="width: 8px; height: 8px; border-radius: 50%; background: #3b82f6;"></div>
+                    In Progress
+                </div>
+                <div style="font-weight: 600;">2</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bar Chart -->
+    <div class="card" style="flex: 2; padding: 24px; display: flex; flex-direction: column;">
+        <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--text-main); font-size: 14px; margin-bottom: 4px;">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" style="opacity: 0.7;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+            Data Rights Requests by Type
+        </div>
+        <div style="color: var(--text-muted); font-size: 12px; margin-bottom: 32px;">Volume per request category</div>
+
+        <div style="flex-grow: 1; display: flex; flex-direction: column; position: relative;">
+            
+            <!-- Y-axis Guidelines -->
+            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; justify-content: space-between; z-index: 0;">
+                <div style="border-top: 1px dashed rgba(255,255,255,0.1); position: relative;"><span style="position: absolute; left: -20px; top: -8px; font-size: 11px; color: var(--text-muted);">4</span></div>
+                <div style="border-top: 1px dashed rgba(255,255,255,0.1); position: relative;"><span style="position: absolute; left: -20px; top: -8px; font-size: 11px; color: var(--text-muted);">3</span></div>
+                <div style="border-top: 1px dashed rgba(255,255,255,0.1); position: relative;"><span style="position: absolute; left: -20px; top: -8px; font-size: 11px; color: var(--text-muted);">2</span></div>
+                <div style="border-top: 1px dashed rgba(255,255,255,0.1); position: relative;"><span style="position: absolute; left: -20px; top: -8px; font-size: 11px; color: var(--text-muted);">1</span></div>
+                <div style="border-top: 1px dashed rgba(255,255,255,0.1); position: relative;"><span style="position: absolute; left: -20px; top: -8px; font-size: 11px; color: var(--text-muted);">0</span></div>
+            </div>
+
+            <!-- Bars -->
+            <div style="display: flex; justify-content: space-around; align-items: flex-end; height: 100%; z-index: 1; margin-left: 20px; padding-bottom: 1px;">
+                
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                    <div style="width: 32px; background-color: #ef4444; height: 75%; border-radius: 2px 2px 0 0;"></div>
+                    <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">DELETE</div>
+                </div>
+
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                    <div style="width: 32px; background-color: #3b82f6; height: 50%; border-radius: 2px 2px 0 0;"></div>
+                    <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">ACCESS</div>
+                </div>
+
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                    <div style="width: 32px; background-color: #f59e0b; height: 50%; border-radius: 2px 2px 0 0;"></div>
+                    <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">CORRECT</div>
+                </div>
+                
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                    <div style="width: 32px; background-color: rgba(255,255,255,0.2); height: 25%; border-radius: 2px 2px 0 0;"></div>
+                    <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">GRIEVANCE</div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

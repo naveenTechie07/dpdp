@@ -1,0 +1,195 @@
+<%- include('partials/header') %>
+
+<div class="dashboard-header mb-4" style="align-items: flex-end;">
+    <div style="display: flex; gap: 12px; background: rgba(255, 255, 255, 0.05); padding: 4px; border-radius: 8px;">
+        <button style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 13px; cursor: pointer;">Purpose transactions</button>
+        <button style="background: transparent; border: 1px solid transparent; color: var(--text-muted); padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 13px; cursor: pointer;">Preference transactions</button>
+        <button style="background: transparent; border: 1px solid transparent; color: var(--text-muted); padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 13px; cursor: pointer;">Data element transactions</button>
+    </div>
+</div>
+
+<div class="card p-0" style="overflow: hidden; display: flex; flex-direction: column;">
+    <!-- Table Toolbar -->
+    <div class="table-toolbar" style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+        <div class="search-bar" style="width: 350px; background: transparent; padding: 0; border: none;">
+            <input type="text" placeholder="Search subject, purpose, status..." style="border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 6px; background: transparent; color: var(--text-main); width: 100%;">
+        </div>
+        
+        <div class="pagination" style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-muted);">
+            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Previous</button>
+            <button class="btn-secondary" style="background: rgba(255,255,255,0.1); border: none; color: var(--text-main); padding: 4px 12px; border-radius: 4px; cursor: pointer;">Next</button>
+        </div>
+    </div>
+
+    <!-- Data Table -->
+    <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left; flex-grow: 1;">
+        <thead>
+            <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 11px; text-transform: uppercase;">
+                <th style="padding: 12px 24px; font-weight: 600;">LEDGER ID</th>
+                <th style="padding: 12px 16px; font-weight: 600;">SUBJECT</th>
+                <th style="padding: 12px 16px; font-weight: 600;">PURPOSE</th>
+                <th style="padding: 12px 16px; font-weight: 600;">STATUS</th>
+                <th style="padding: 12px 16px; font-weight: 600;">SOURCE</th>
+                <th style="padding: 12px 24px; font-weight: 600;">TIMESTAMP</th>
+            </tr>
+        </thead>
+        <tbody style="font-size: 13px;">
+            <!-- Row 1 -->
+            <tr style="border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+                <td style="padding: 16px 24px;">
+                    <span style="color: var(--text-muted); font-family: monospace;">714cacd9..</span>
+                </td>
+                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">
+                    ritu.malhotra@gmail.com
+                </td>
+                <td style="padding: 16px 16px;">
+                    <div style="font-weight: 600; color: var(--text-main); margin-bottom: 4px;">Marketing & Offers</div>
+                    <div style="color: var(--text-muted); font-size: 10px; text-transform: uppercase;">MARKETING</div>
+                </td>
+                <td style="padding: 16px 16px;">
+                    <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 700; border: 1px solid rgba(16,185,129,0.3);">Granted</span>
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted);">
+                    demo_seed
+                </td>
+                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">
+                    28 Aug 2026, 03:03 pm
+                </td>
+            </tr>
+            
+            <!-- Row 2 -->
+            <tr style="border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+                <td style="padding: 16px 24px;">
+                    <span style="color: var(--text-muted); font-family: monospace;">ded638c3..</span>
+                </td>
+                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">
+                    farhan.siddiqui@gmail.com
+                </td>
+                <td style="padding: 16px 16px;">
+                    <div style="font-weight: 600; color: var(--text-main); margin-bottom: 4px;">Marketing & Offers</div>
+                    <div style="color: var(--text-muted); font-size: 10px; text-transform: uppercase;">MARKETING</div>
+                </td>
+                <td style="padding: 16px 16px;">
+                    <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 700; border: 1px solid rgba(16,185,129,0.3);">Granted</span>
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted);">
+                    demo_seed
+                </td>
+                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">
+                    25 Aug 2026, 03:03 pm
+                </td>
+            </tr>
+
+            <!-- Row 3 -->
+            <tr style="border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+                <td style="padding: 16px 24px;">
+                    <span style="color: var(--text-muted); font-family: monospace;">82d9343d..</span>
+                </td>
+                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">
+                    pooja.desai@gmail.com
+                </td>
+                <td style="padding: 16px 16px;">
+                    <div style="font-weight: 600; color: var(--text-main); margin-bottom: 4px;">Marketing & Offers</div>
+                    <div style="color: var(--text-muted); font-size: 10px; text-transform: uppercase;">MARKETING</div>
+                </td>
+                <td style="padding: 16px 16px;">
+                    <span class="badge" style="background: rgba(239, 68, 68, 0.1); color: #f87171; padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 700; border: 1px solid rgba(239, 68, 68, 0.3);">Withdrawn</span>
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted);">
+                    demo_seed
+                </td>
+                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">
+                    21 Aug 2026, 03:03 pm
+                </td>
+            </tr>
+
+            <!-- Row 4 (Selected Row) -->
+            <tr style="border-bottom: 1px solid transparent; background: rgba(59, 130, 246, 0.1);">
+                <td style="padding: 16px 24px;">
+                    <span style="color: var(--text-muted); font-family: monospace;">ce987370..</span>
+                </td>
+                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">
+                    priya.reddy@gmail.com
+                </td>
+                <td style="padding: 16px 16px;">
+                    <div style="font-weight: 600; color: var(--text-main); margin-bottom: 4px;">Marketing & Offers</div>
+                    <div style="color: var(--text-muted); font-size: 10px; text-transform: uppercase;">MARKETING</div>
+                </td>
+                <td style="padding: 16px 16px;">
+                    <span class="badge" style="background: rgba(239, 68, 68, 0.1); color: #f87171; padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 700; border: 1px solid rgba(239, 68, 68, 0.3);">Withdrawn</span>
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted);">
+                    demo_seed
+                </td>
+                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">
+                    17 Mar 2026, 03:03 pm
+                </td>
+            </tr>
+            <!-- Overlay Info for Selected Row -->
+            <tr style="background: transparent;">
+                <td colspan="6" style="padding: 0;">
+                    <div style="border-top: 1px solid rgba(255,255,255,0.05); padding: 24px; margin: 0 12px 12px 12px; background: rgba(0,0,0,0.1); border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
+                        <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 24px; color: var(--text-main);">Selected row details</h3>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                            <div>
+                                <div style="margin-bottom: 16px;">
+                                    <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 4px;">TRANSACTION ID</div>
+                                    <div style="color: var(--text-main);">22</div>
+                                </div>
+                                <div style="margin-bottom: 16px;">
+                                    <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 4px;">DATA PRINCIPAL IDENTIFIER</div>
+                                    <div style="color: var(--text-main);">priya.reddy@gmail.com</div>
+                                </div>
+                                <div style="margin-bottom: 16px;">
+                                    <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 4px;">PURPOSE NAME</div>
+                                    <div style="color: var(--text-main);">Marketing & Offers</div>
+                                </div>
+                                <div style="margin-bottom: 16px;">
+                                    <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 4px;">PURPOSE STATUS</div>
+                                    <div style="color: var(--text-main);">withdrawn</div>
+                                </div>
+                                <div style="margin-bottom: 16px;">
+                                    <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 4px;">COLLECTION POINT ID</div>
+                                    <div style="color: var(--text-main); font-family: monospace;">01a04e0b-c2a6-7009-a0dc-1fac53f7c748</div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div style="margin-bottom: 16px;">
+                                    <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 4px;">LEDGER ID</div>
+                                    <div style="color: var(--text-main); font-family: monospace;">ce987370-5ba7-4734-ac14-1735145f6144</div>
+                                </div>
+                                <div style="margin-bottom: 16px;">
+                                    <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 4px;">PURPOSE ID</div>
+                                    <div style="color: var(--text-main); font-family: monospace;">01a04e0b-c247-7442-a68a-08a5310888b3</div>
+                                </div>
+                                <div style="margin-bottom: 16px;">
+                                    <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 4px;">PURPOSE CODE</div>
+                                    <div style="color: var(--text-main);">MARKETING</div>
+                                </div>
+                                <div style="margin-bottom: 16px;">
+                                    <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 4px;">SOURCE</div>
+                                    <div style="color: var(--text-main);">demo_seed</div>
+                                </div>
+                                <div style="margin-bottom: 16px;">
+                                    <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 4px;">CREATED AT</div>
+                                    <div style="color: var(--text-main); font-family: monospace;">2026-03-17T15:03:08.517872Z</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div class="table-toolbar" style="padding: 16px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; align-items: center; margin-top: auto;">
+        <div class="pagination" style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-muted);">
+            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Previous</button>
+            <button class="btn-secondary" style="background: rgba(255,255,255,0.1); border: none; color: var(--text-main); padding: 4px 12px; border-radius: 4px; cursor: pointer;">Next</button>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

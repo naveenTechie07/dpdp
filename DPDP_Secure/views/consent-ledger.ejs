@@ -1,0 +1,271 @@
+<%- include('partials/header') %>
+
+<div class="dashboard-header mb-4" style="align-items: center;">
+    <div class="title-group">
+        <h1>Consent ledger</h1>
+        <p>Summary records — one row per consent capture event. Click a row to inspect purposes, preferences, and data elements.</p>
+    </div>
+</div>
+
+<div class="card p-0" style="overflow: hidden;">
+    <!-- Table Toolbar -->
+    <div class="table-toolbar" style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+        <div class="search-bar" style="width: 350px; background: transparent; padding: 0; border: none;">
+            <input type="text" placeholder="Search subject, source, jurisdiction..." style="border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 6px; background: transparent; color: var(--text-main); width: 100%;">
+        </div>
+        
+        <div class="pagination" style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-muted);">
+            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Previous</button>
+            <button class="btn-secondary" style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: pointer;">Next</button>
+        </div>
+    </div>
+
+    <!-- Data Table -->
+    <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+        <thead>
+            <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 11px; text-transform: uppercase;">
+                <th style="padding: 12px 24px; font-weight: 600;">LEDGER ID</th>
+                <th style="padding: 12px 16px; font-weight: 600;">SUBJECT</th>
+                <th style="padding: 12px 16px; font-weight: 600;">SOURCE</th>
+                <th style="padding: 12px 16px; font-weight: 600;">JURISDICTION</th>
+                <th style="padding: 12px 16px; font-weight: 600;">PURPOSES</th>
+                <th style="padding: 12px 16px; font-weight: 600;">CP VER.</th>
+                <th style="padding: 12px 24px; font-weight: 600;">CREATED</th>
+            </tr>
+        </thead>
+        <tbody style="font-size: 13px;">
+            <!-- Row 1 -->
+            <tr style="border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+                <td style="padding: 16px 24px;">
+                    <a href="#" style="color: #3b82f6; text-decoration: none; font-family: monospace;">fc9d87cd..</a>
+                </td>
+                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">
+                    suresh.nair@gmail.com
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted);">
+                    DPDP_Secure Web Banking Portal
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted);">
+                    IN
+                </td>
+                <td style="padding: 16px 16px;">
+                    <div style="display: flex; gap: 6px;">
+                        <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(16,185,129,0.3);">Granted</span>
+                        <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(16,185,129,0.3);">Granted</span>
+                    </div>
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted);">
+                    v2
+                </td>
+                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">
+                    11 Jun 2026, 03:03 pm
+                </td>
+            </tr>
+            
+            <!-- Row 2 -->
+            <tr style="border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+                <td style="padding: 16px 24px;">
+                    <a href="#" style="color: #3b82f6; text-decoration: none; font-family: monospace;">edd91a70..</a>
+                </td>
+                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">
+                    amit.tiwari@gmail.com
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted);">
+                    DPDP_Secure Mobile App
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted);">
+                    IN
+                </td>
+                <td style="padding: 16px 16px;">
+                    <div style="display: flex; gap: 6px;">
+                        <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(16,185,129,0.3);">Granted</span>
+                        <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(16,185,129,0.3);">Granted</span>
+                    </div>
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted);">
+                    v1
+                </td>
+                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">
+                    15 Aug 2026, 03:03 pm
+                </td>
+            </tr>
+
+            <!-- Row 3 -->
+            <tr style="border-bottom: 1px solid var(--border-color); background: rgba(59, 130, 246, 0.05); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(59, 130, 246, 0.1)'" onmouseout="this.style.background='rgba(59, 130, 246, 0.05)'">
+                <td style="padding: 16px 24px;">
+                    <a href="#" style="color: #3b82f6; text-decoration: none; font-family: monospace;">e3dbaa35..</a>
+                </td>
+                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">
+                    karthik.rajan@gmail.com
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted);">
+                    DPDP_Secure Web Banking Portal
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted);">
+                    IN
+                </td>
+                <td style="padding: 16px 16px;">
+                    <div style="display: flex; gap: 6px;">
+                        <span class="badge" style="background: rgba(239, 68, 68, 0.1); color: #f87171; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(239, 68, 68, 0.3);">Withdrawn</span>
+                        <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(16,185,129,0.3);">Granted</span>
+                    </div>
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted);">
+                    v2
+                </td>
+                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">
+                    24 Jul 2026, 03:03 pm
+                </td>
+            </tr>
+
+            <!-- Row 4 -->
+            <tr style="border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+                <td style="padding: 16px 24px;">
+                    <a href="#" style="color: #3b82f6; text-decoration: none; font-family: monospace;">ded638c3..</a>
+                </td>
+                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">
+                    farhan.siddiqui@gmail.com
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted);">
+                    DPDP_Secure Mobile App
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted);">
+                    IN
+                </td>
+                <td style="padding: 16px 16px;">
+                    <div style="display: flex; gap: 6px;">
+                        <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(16,185,129,0.3);">Granted</span>
+                        <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(16,185,129,0.3);">Granted</span>
+                    </div>
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted);">
+                    v1
+                </td>
+                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">
+                    25 Aug 2026, 03:03 pm
+                </td>
+            </tr>
+
+            <!-- Row 5 -->
+            <tr style="border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+                <td style="padding: 16px 24px;">
+                    <a href="#" style="color: #3b82f6; text-decoration: none; font-family: monospace;">d96a015e..</a>
+                </td>
+                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">
+                    neha.verma@gmail.com
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted);">
+                    DPDP_Secure Mobile App
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted);">
+                    IN
+                </td>
+                <td style="padding: 16px 16px;">
+                    <div style="display: flex; gap: 6px;">
+                        <span class="badge" style="background: rgba(239, 68, 68, 0.1); color: #f87171; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(239, 68, 68, 0.3);">Withdrawn</span>
+                        <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(16,185,129,0.3);">Granted</span>
+                    </div>
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted);">
+                    v1
+                </td>
+                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">
+                    01 Jun 2026, 03:03 pm
+                </td>
+            </tr>
+
+            <!-- Row 6 -->
+            <tr style="border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+                <td style="padding: 16px 24px;">
+                    <a href="#" style="color: #3b82f6; text-decoration: none; font-family: monospace;">ce987370..</a>
+                </td>
+                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">
+                    priya.reddy@gmail.com
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted);">
+                    DPDP_Secure Web Banking Portal
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted);">
+                    IN
+                </td>
+                <td style="padding: 16px 16px;">
+                    <div style="display: flex; gap: 6px;">
+                        <span class="badge" style="background: rgba(239, 68, 68, 0.1); color: #f87171; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(239, 68, 68, 0.3);">Withdrawn</span>
+                        <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(16,185,129,0.3);">Granted</span>
+                    </div>
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted);">
+                    v2
+                </td>
+                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">
+                    17 Mar 2026, 03:03 pm
+                </td>
+            </tr>
+            
+            <!-- Row 7 -->
+            <tr style="border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+                <td style="padding: 16px 24px;">
+                    <a href="#" style="color: #3b82f6; text-decoration: none; font-family: monospace;">bd6279b8..</a>
+                </td>
+                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">
+                    kavitha.menon@gmail.com
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted);">
+                    DPDP_Secure Web Banking Portal
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted);">
+                    IN
+                </td>
+                <td style="padding: 16px 16px;">
+                    <div style="display: flex; gap: 6px;">
+                        <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(16,185,129,0.3);">Granted</span>
+                        <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(16,185,129,0.3);">Granted</span>
+                    </div>
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted);">
+                    v2
+                </td>
+                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">
+                    09 May 2026, 03:03 pm
+                </td>
+            </tr>
+
+            <!-- Row 8 -->
+            <tr style="border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+                <td style="padding: 16px 24px;">
+                    <a href="#" style="color: #3b82f6; text-decoration: none; font-family: monospace;">b7a5e85a..</a>
+                </td>
+                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">
+                    rahul.gupta@gmail.com
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted);">
+                    DPDP_Secure Mobile App
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted);">
+                    IN
+                </td>
+                <td style="padding: 16px 16px;">
+                    <div style="display: flex; gap: 6px;">
+                        <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(16,185,129,0.3);">Granted</span>
+                        <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(16,185,129,0.3);">Granted</span>
+                    </div>
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted);">
+                    v1
+                </td>
+                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">
+                    24 Mar 2026, 03:03 pm
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div class="table-toolbar" style="padding: 16px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; align-items: center;">
+        <div class="pagination" style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-muted);">
+            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Previous</button>
+            <button class="btn-secondary" style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: pointer;">Next</button>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

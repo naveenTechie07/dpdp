@@ -1,0 +1,120 @@
+<%- include('partials/header') %>
+
+<div class="dashboard-header mb-4">
+    <div>
+        <h1 class="page-title">Policies</h1>
+        <p class="page-description">Legal documents stored in the policy service. Create, update, or delete rows from this screen.</p>
+    </div>
+</div>
+
+<div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+    <div style="display: flex; gap: 24px; align-items: flex-end;">
+        <div style="flex: 1;">
+            <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">Name <span style="color: #f87171;">*</span></label>
+            <input type="text" value="Privacy Policy" style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+        </div>
+        <div style="flex: 1;">
+            <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">Version <span style="color: #f87171;">*</span></label>
+            <input type="text" value="v1.0.0" style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+        </div>
+        <div style="flex: 2;">
+            <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">Content <span style="color: #f87171;">*</span></label>
+            <textarea style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px; resize: none; height: 42px;">DPDPA-aligned privacy notice.</textarea>
+        </div>
+        <div>
+            <button class="btn-primary" style="padding: 10px 24px; font-size: 14px;">Publish</button>
+        </div>
+    </div>
+</div>
+
+<div class="card p-0" style="overflow: hidden; display: flex; flex-direction: column;">
+    <!-- Table Toolbar -->
+    <div class="table-toolbar" style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+        <div class="search-bar" style="width: 350px; background: transparent; padding: 0; border: none;">
+            <input type="text" placeholder="Search policies..." style="border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 6px; background: transparent; color: var(--text-main); width: 100%;">
+        </div>
+        
+        <div class="pagination" style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-muted);">
+            <span>3 rows</span>
+            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Previous</button>
+            <span>Page 1 of 1</span>
+            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Next</button>
+        </div>
+    </div>
+
+    <!-- Data Table -->
+    <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left; flex-grow: 1;">
+        <thead>
+            <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-main); font-size: 13px; font-weight: 700;">
+                <th style="padding: 16px 24px;">ID <svg style="display:inline; vertical-align:middle; width:12px; height:12px; opacity: 0.5;" viewBox="0 0 24 24" fill="currentColor"><path d="M7 14l5-5 5 5z"/></svg></th>
+                <th style="padding: 16px 16px;">Name <svg style="display:inline; vertical-align:middle; width:12px; height:12px; opacity: 0.5;" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/><path d="M7 14l5-5 5 5z"/></svg></th>
+                <th style="padding: 16px 16px;">Version <svg style="display:inline; vertical-align:middle; width:12px; height:12px; opacity: 0.5;" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/><path d="M7 14l5-5 5 5z"/></svg></th>
+                <th style="padding: 16px 16px;">Created <svg style="display:inline; vertical-align:middle; width:12px; height:12px; opacity: 0.5;" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/><path d="M7 14l5-5 5 5z"/></svg></th>
+                <th style="padding: 16px 16px;">Status <svg style="display:inline; vertical-align:middle; width:12px; height:12px; opacity: 0.5;" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/><path d="M7 14l5-5 5 5z"/></svg></th>
+                <th style="padding: 16px 24px; text-align: right;"></th>
+            </tr>
+        </thead>
+        <tbody style="font-size: 13px;">
+            <!-- Row 1 -->
+            <tr style="border-bottom: 1px solid var(--border-color);">
+                <td style="padding: 16px 24px; color: var(--text-muted);">#1</td>
+                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">Privacy Policy</td>
+                <td style="padding: 16px 16px;">
+                    <span style="background: rgba(139, 92, 246, 0.15); color: #a78bfa; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">v1.0</span>
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted);">29 Aug 2026, 03:03 pm</td>
+                <td style="padding: 16px 16px;">
+                    <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">Published</span>
+                </td>
+                <td style="padding: 16px 24px; text-align: right; color: var(--text-muted);">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" style="cursor: pointer; margin-right: 12px;"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" style="cursor: pointer;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </td>
+            </tr>
+            
+            <!-- Row 2 -->
+            <tr style="border-bottom: 1px solid var(--border-color);">
+                <td style="padding: 16px 24px; color: var(--text-muted);">#2</td>
+                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">Privacy Policy</td>
+                <td style="padding: 16px 16px;">
+                    <span style="background: rgba(139, 92, 246, 0.15); color: #a78bfa; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">v1.1</span>
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted);">29 Aug 2026, 03:03 pm</td>
+                <td style="padding: 16px 16px;">
+                    <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">Published</span>
+                </td>
+                <td style="padding: 16px 24px; text-align: right; color: var(--text-muted);">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" style="cursor: pointer; margin-right: 12px;"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" style="cursor: pointer;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </td>
+            </tr>
+
+            <!-- Row 3 -->
+            <tr style="border-bottom: 1px solid var(--border-color);">
+                <td style="padding: 16px 24px; color: var(--text-muted);">#3</td>
+                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">Cookie & Tracking Notice</td>
+                <td style="padding: 16px 16px;">
+                    <span style="background: rgba(139, 92, 246, 0.15); color: #a78bfa; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">v1.0</span>
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted);">29 Aug 2026, 03:03 pm</td>
+                <td style="padding: 16px 16px;">
+                    <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">Published</span>
+                </td>
+                <td style="padding: 16px 24px; text-align: right; color: var(--text-muted);">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" style="cursor: pointer; margin-right: 12px;"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" style="cursor: pointer;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div class="table-toolbar" style="padding: 16px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; align-items: center; margin-top: auto;">
+        <div class="pagination" style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-muted);">
+            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Previous</button>
+            <span>Page 1 of 1</span>
+            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Next</button>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

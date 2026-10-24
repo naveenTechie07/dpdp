@@ -1,0 +1,225 @@
+<%- include('partials/header') %>
+
+<style>
+.org-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+}
+.org-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.org-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border-color);
+}
+.org-item:last-child {
+    border-bottom: none;
+}
+.pill-active {
+    display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 700; background: rgba(16, 185, 129, 0.1); color: #34d399; margin-left: 16px;
+}
+.icon-btn {
+    color: var(--text-muted);
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 4px;
+    display: inline-flex;
+    margin-left: 8px;
+}
+.icon-btn:hover {
+    color: white;
+}
+
+/* Side Panel Styles */
+.side-panel-overlay {
+    position: fixed;
+    top: 0; right: 0; bottom: 0; left: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(2px);
+    z-index: 100;
+    display: none;
+}
+.side-panel-overlay.active {
+    display: block;
+}
+.side-panel {
+    position: fixed;
+    top: 16px; right: -500px; bottom: 16px;
+    width: 450px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    z-index: 101;
+    transition: right 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.side-panel.active {
+    right: 16px;
+}
+.side-panel-header {
+    background: #e2e8f0; /* Light gray from screenshot */
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.side-panel-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+}
+.side-panel-close {
+    width: 24px; height: 24px;
+    background: #475569;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: white; cursor: pointer; border: none;
+}
+.side-panel-body {
+    padding: 24px;
+    flex: 1;
+    overflow-y: auto;
+}
+.form-label {
+    display: block; font-size: 13px; font-weight: 600; color: white; margin-bottom: 8px;
+}
+.form-input {
+    width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: white; padding: 10px 12px; border-radius: 6px; font-size: 13px; margin-bottom: 20px;
+}
+</style>
+
+<div style="padding: 24px; max-width: 1400px; margin: 0 auto;">
+    
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px;">
+        <div>
+            <h1 style="font-size: 20px; font-weight: 700; color: white; margin: 0 0 8px 0;">Organization Hierarchy</h1>
+            <p style="color: var(--text-muted); font-size: 13px; margin: 0;">Define tenant org trees, child-org locale overrides, and inherited settings.</p>
+        </div>
+        <button onclick="openPanel('add')" class="btn-primary" style="background: #be185d; border: 1px solid #9d174d; color: white; padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer;">
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Add Org Unit
+        </button>
+    </div>
+
+    <div class="org-card">
+        <div class="org-header">
+            <input type="checkbox" style="margin: 0; cursor: pointer;">
+            <span style="font-size: 13px; font-weight: 600; color: white;">Include inactive</span>
+        </div>
+        
+        <div class="org-item" style="padding-left: 24px;">
+            <div style="display: flex; gap: 16px; align-items: flex-start;">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" style="margin-top: 2px; color: var(--text-muted);"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                <div>
+                    <div style="font-size: 14px; font-weight: 700; color: white; margin-bottom: 4px;">DPDP_Secure Mumbai HQ</div>
+                    <div style="font-size: 12px; color: var(--text-muted); font-family: monospace;">global &bull; global</div>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; font-size: 13px; color: var(--text-muted);">
+                en-IN
+                <span class="pill-active">ACTIVE</span>
+                <button onclick="openPanel('edit')" class="icon-btn" style="margin-left: 24px;">
+                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                </button>
+                <button class="icon-btn">
+                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M1 1l22 22"></path><path d="M16 16v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2m5.66 0H14a2 2 0 0 1 2 2v3.34"></path></svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="org-item" style="padding-left: 72px;">
+            <div style="display: flex; gap: 16px; align-items: flex-start;">
+                <div>
+                    <div style="font-size: 14px; font-weight: 700; color: white; margin-bottom: 4px;">Mumbai Operations</div>
+                    <div style="font-size: 12px; color: var(--text-muted); font-family: monospace;">mumbai &bull; global/mumbai</div>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; font-size: 13px; color: var(--text-muted);">
+                en-IN
+                <span class="pill-active">ACTIVE</span>
+                <button onclick="openPanel('edit')" class="icon-btn" style="margin-left: 24px;">
+                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                </button>
+                <button class="icon-btn">
+                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M1 1l22 22"></path><path d="M16 16v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2m5.66 0H14a2 2 0 0 1 2 2v3.34"></path></svg>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Side Panel Overlay -->
+    <div class="side-panel-overlay" id="panelOverlay" onclick="closePanel()"></div>
+    
+    <!-- Edit/Add Panel -->
+    <div class="side-panel" id="orgPanel">
+        <div class="side-panel-header">
+            <h2 class="side-panel-title" id="panelTitle">Add Org Unit</h2>
+            <button class="side-panel-close" onclick="closePanel()">
+                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+        <div class="side-panel-body">
+            <label class="form-label">Organization Code</label>
+            <input type="text" class="form-input" id="orgCode" placeholder="e.g. india-ops">
+            
+            <label class="form-label">Organization Name</label>
+            <input type="text" class="form-input" id="orgName" placeholder="e.g. India Operations">
+            
+            <label class="form-label">Parent Organization</label>
+            <select class="form-input" style="appearance: none;">
+                <option>No parent (root)</option>
+                <option>DPDP_Secure Mumbai HQ</option>
+            </select>
+            
+            <label class="form-label">Default Locale</label>
+            <select class="form-input" style="appearance: none;">
+                <option>en-IN - English</option>
+            </select>
+            
+            <div style="display: flex; gap: 12px; margin-top: 8px;">
+                <button class="btn-primary" id="saveBtn" style="background: #be185d; border: 1px solid #9d174d; color: white; padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 600; flex: 1; cursor: pointer;">Save Org Unit</button>
+                <button onclick="closePanel()" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 600; flex: 1; cursor: pointer;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+function openPanel(type) {
+    document.getElementById('panelOverlay').classList.add('active');
+    document.getElementById('orgPanel').classList.add('active');
+    
+    if (type === 'edit') {
+        document.getElementById('panelTitle').innerText = 'Edit Org Unit';
+        document.getElementById('orgCode').value = 'global';
+        document.getElementById('orgName').value = 'DPDP_Secure Mumbai HQ';
+        document.getElementById('saveBtn').innerText = 'Update Org Unit';
+    } else {
+        document.getElementById('panelTitle').innerText = 'Add Org Unit';
+        document.getElementById('orgCode').value = '';
+        document.getElementById('orgName').value = '';
+        document.getElementById('saveBtn').innerText = 'Save Org Unit';
+    }
+}
+
+function closePanel() {
+    document.getElementById('panelOverlay').classList.remove('active');
+    document.getElementById('orgPanel').classList.remove('active');
+}
+</script>
+
+<%- include('partials/footer') %>

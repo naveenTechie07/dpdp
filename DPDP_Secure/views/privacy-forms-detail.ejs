@@ -1,0 +1,563 @@
+<%- include('partials/header') %>
+
+<div class="dashboard-header mb-4" style="border-bottom: 1px solid var(--border-color); padding-bottom: 16px; margin-bottom: 24px;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                <a href="/privacy/forms" style="color: var(--text-muted); display: flex; align-items: center; text-decoration: none; gap: 4px;">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                    Back
+                </a>
+                <h1 class="page-title" style="margin-bottom: 0;"><%= title.split(' - ')[0] %></h1>
+                <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 700;">ACTIVE</span>
+                <span style="background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--border-color); padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 600; display: flex; align-items: center; gap: 4px;">
+                    <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                    Hosted Web Form
+                </span>
+            </div>
+            <p class="page-description" style="margin-bottom: 0;">Draft v1 &middot; Published v1 &middot; Updated 29 Aug 2026, 03:03 pm</p>
+        </div>
+        <button class="btn-secondary" style="padding: 8px 16px; font-size: 13px; color: #fef08a; background: rgba(254, 240, 138, 0.1); border: 1px solid rgba(254, 240, 138, 0.2); display: flex; align-items: center; gap: 8px;">
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            Create new draft to edit
+        </button>
+    </div>
+
+    <!-- Tabs -->
+    <div style="display: flex; gap: 2px; margin-top: 24px; justify-content: center;">
+        <div style="display: flex; background: rgba(255,255,255,0.05); padding: 4px; border-radius: 8px; border: 1px solid var(--border-color);">
+            <a href="?tab=designer" style="padding: 6px 16px; font-size: 13px; font-weight: 500; text-decoration: none; border-radius: 6px; color: <%= tab === 'designer' ? 'white' : 'var(--text-muted)' %>; background: <%= tab === 'designer' ? 'rgba(255,255,255,0.1)' : 'transparent' %>;">Form Designer</a>
+            <a href="?tab=branding" style="padding: 6px 16px; font-size: 13px; font-weight: 500; text-decoration: none; border-radius: 6px; color: <%= tab === 'branding' ? 'white' : 'var(--text-muted)' %>; background: <%= tab === 'branding' ? 'rgba(255,255,255,0.1)' : 'transparent' %>;">Branding</a>
+            <a href="?tab=settings" style="padding: 6px 16px; font-size: 13px; font-weight: 500; text-decoration: none; border-radius: 6px; color: <%= tab === 'settings' ? 'white' : 'var(--text-muted)' %>; background: <%= tab === 'settings' ? 'rgba(255,255,255,0.1)' : 'transparent' %>;">Settings</a>
+            <a href="?tab=analytics" style="padding: 6px 16px; font-size: 13px; font-weight: 500; text-decoration: none; border-radius: 6px; color: <%= tab === 'analytics' ? 'white' : 'var(--text-muted)' %>; background: <%= tab === 'analytics' ? 'rgba(255,255,255,0.1)' : 'transparent' %>;">Analytics</a>
+            <a href="?tab=translations" style="padding: 6px 16px; font-size: 13px; font-weight: 500; text-decoration: none; border-radius: 6px; color: <%= tab === 'translations' ? 'white' : 'var(--text-muted)' %>; background: <%= tab === 'translations' ? 'rgba(255,255,255,0.1)' : 'transparent' %>;">Translations</a>
+            <a href="?tab=integrations" style="padding: 6px 16px; font-size: 13px; font-weight: 500; text-decoration: none; border-radius: 6px; color: <%= tab === 'integrations' ? 'white' : 'var(--text-muted)' %>; background: <%= tab === 'integrations' ? 'rgba(255,255,255,0.1)' : 'transparent' %>;">Integrations</a>
+            <a href="?tab=workflow" style="padding: 6px 16px; font-size: 13px; font-weight: 500; text-decoration: none; border-radius: 6px; color: <%= tab === 'workflow' ? 'white' : 'var(--text-muted)' %>; background: <%= tab === 'workflow' ? 'rgba(255,255,255,0.1)' : 'transparent' %>;">Workflow</a>
+        </div>
+    </div>
+</div>
+
+<% if (tab === 'designer') { %>
+    <div style="display: flex; gap: 24px;">
+        <div style="flex: 3; display: flex; flex-direction: column; gap: 16px;">
+            <!-- Form Details Card -->
+            <div class="card">
+                <h2 style="font-size: 16px; font-weight: 600; color: var(--text-main); margin-top: 0; margin-bottom: 16px;">Form Details</h2>
+                <div style="display: flex; gap: 16px;">
+                    <div style="flex: 1;">
+                        <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">Form Name</label>
+                        <input type="text" value="DPDP_Secure Data Rights Intake" style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">Description</label>
+                        <input type="text" value="DPDPA 2023 data rights form" style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sections Card -->
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h2 style="font-size: 16px; font-weight: 600; color: var(--text-main); margin: 0;">Sections</h2>
+                    <button class="btn-secondary" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: var(--text-muted); padding: 6px 12px; border-radius: 6px; font-size: 12px; display: flex; align-items: center; gap: 6px;">
+                        <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                        Add Section
+                    </button>
+                </div>
+                <div style="color: var(--text-muted); font-size: 13px;">
+                    No sections &mdash; fields are ungrouped.
+                </div>
+            </div>
+
+            <!-- Form Fields Card -->
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <div>
+                        <h2 style="font-size: 16px; font-weight: 600; color: var(--text-main); margin: 0;">Form Fields</h2>
+                        <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">0 fields &middot; drag to reorder</div>
+                    </div>
+                    <button class="btn-primary" style="background: rgba(219, 39, 119, 0.2); border: 1px solid rgba(219, 39, 119, 0.4); color: #ec4899; padding: 6px 12px; border-radius: 6px; font-size: 13px; display: flex; align-items: center; gap: 6px;">
+                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                        Add Field
+                    </button>
+                </div>
+                <div style="border: 1px dashed var(--border-color); border-radius: 8px; padding: 48px; text-align: center; color: var(--text-muted);">
+                    <svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" stroke-width="2" fill="none" style="margin-bottom: 12px; opacity: 0.5;"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" y1="20" x2="15" y2="20"></line><line x1="12" y1="4" x2="12" y2="20"></line></svg>
+                    <div style="font-size: 14px;">No fields yet &mdash; click <strong>Add Field</strong> to start.</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="flex: 2;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; color: var(--text-muted); font-weight: 600; font-size: 13px;">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                Live Preview
+            </div>
+            <!-- Preview Box -->
+            <div style="background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); overflow: hidden; height: 500px;">
+                <div style="padding: 24px; border-bottom: 1px solid #e5e7eb; display: flex; gap: 16px; align-items: center;">
+                    <div style="width: 48px; height: 48px; border-radius: 8px; background: #6366f1;"></div>
+                    <div>
+                        <div style="font-size: 16px; font-weight: 600; color: #111827;">Your Brand</div>
+                        <div style="font-size: 12px; color: #6b7280;">Data Principal Rights Request</div>
+                    </div>
+                </div>
+                <div style="padding: 24px; background: #f8fafc; height: 100%;">
+                    <div style="border: 1px dashed #cbd5e1; border-radius: 8px; padding: 48px 24px; text-align: center; color: #94a3b8; background: white; font-size: 14px;">
+                        Add fields using the designer on the left
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<% } else if (tab === 'branding') { %>
+    <div style="display: flex; gap: 24px;">
+        <div style="flex: 3;">
+            <div class="card">
+                <h2 style="font-size: 16px; font-weight: 600; color: var(--text-main); margin-top: 0; margin-bottom: 24px;">Form Branding</h2>
+                
+                <div style="margin-bottom: 24px;">
+                    <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">Brand Name</label>
+                    <input type="text" value="Your Organisation" style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+                </div>
+
+                <div style="margin-bottom: 24px;">
+                    <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">Logo</label>
+                    <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 12px;">
+                        <button class="btn-secondary" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: var(--text-muted); padding: 8px 16px; border-radius: 6px; font-size: 13px; display: flex; align-items: center; gap: 8px;">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                            Upload image
+                        </button>
+                        <span style="font-size: 11px; color: var(--text-muted);">JPEG, PNG, WebP, SVG or GIF - max 2 MB. Or enter a URL below.</span>
+                    </div>
+                    <input type="text" value="https://example.com/logo.png" style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+                </div>
+
+                <div style="display: flex; gap: 24px; margin-bottom: 24px;">
+                    <div style="flex: 1;">
+                        <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">Primary Color</label>
+                        <div style="display: flex; gap: 8px;">
+                            <div style="width: 38px; height: 38px; background: #6366f1; border-radius: 6px; border: 1px solid var(--border-color);"></div>
+                            <input type="text" value="#6366f1" style="flex: 1; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+                        </div>
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">Accent Soft Color</label>
+                        <div style="display: flex; gap: 8px;">
+                            <div style="width: 38px; height: 38px; background: #4f46e5; border-radius: 6px; border: 1px solid var(--border-color);"></div>
+                            <input type="text" value="#4f46e5" style="flex: 1; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 24px; margin-bottom: 24px;">
+                    <div style="flex: 1;">
+                        <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">Background Top</label>
+                        <div style="display: flex; gap: 8px;">
+                            <div style="width: 38px; height: 38px; background: #f8fafc; border-radius: 6px; border: 1px solid var(--border-color);"></div>
+                            <input type="text" value="#f8fafc" style="flex: 1; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+                        </div>
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">Background Middle</label>
+                        <div style="display: flex; gap: 8px;">
+                            <div style="width: 38px; height: 38px; background: #eff6ff; border-radius: 6px; border: 1px solid var(--border-color);"></div>
+                            <input type="text" value="#eff6ff" style="flex: 1; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 24px;">
+                    <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">Background Bottom</label>
+                    <div style="display: flex; gap: 8px; width: 48%;">
+                        <div style="width: 38px; height: 38px; background: #ffffff; border-radius: 6px; border: 1px solid var(--border-color);"></div>
+                        <input type="text" value="#ffffff" style="flex: 1; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="flex: 2;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; color: var(--text-muted); font-weight: 600; font-size: 13px;">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                Live Preview
+            </div>
+            <!-- Preview Box -->
+            <div style="background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); overflow: hidden; height: 500px;">
+                <div style="padding: 24px; border-bottom: 1px solid #e5e7eb; display: flex; gap: 16px; align-items: center;">
+                    <div style="width: 48px; height: 48px; border-radius: 8px; background: #6366f1; color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700;">B</div>
+                    <div>
+                        <div style="font-size: 16px; font-weight: 600; color: #111827;">Your Brand</div>
+                        <div style="font-size: 12px; color: #6b7280;">Rights Request Portal</div>
+                    </div>
+                </div>
+                <div style="padding: 24px; background: linear-gradient(to bottom, #f8fafc, #eff6ff, #ffffff); height: 100%;">
+                    <div style="font-size: 14px; font-weight: 600; color: #111827; margin-bottom: 16px; opacity: 0.2;">Submit a Data Principal Rights Request</div>
+                    <div style="background: rgba(99, 102, 241, 0.3); border: 1px solid rgba(99, 102, 241, 0.4); padding: 16px; border-radius: 8px; color: #4f46e5; margin-bottom: 16px; font-size: 13px;">
+                        This is how accent / card backgrounds will appear.
+                    </div>
+                    <button style="width: 100%; background: #6366f1; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 600; font-size: 14px;">
+                        Submit Request
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+<% } else if (tab === 'settings') { %>
+    <div style="max-width: 800px; margin: 0 auto;">
+        <div class="card" style="margin-bottom: 24px;">
+            <h2 style="font-size: 16px; font-weight: 600; color: var(--text-main); margin-top: 0; margin-bottom: 24px;">Form Settings</h2>
+            
+            <div style="margin-bottom: 24px;">
+                <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">Submit Button Label</label>
+                <input type="text" value="Submit Request" style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+            </div>
+
+            <div style="margin-bottom: 24px;">
+                <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">Success Message</label>
+                <input type="text" value="Your request has been submitted successfully." style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+            </div>
+
+            <div style="display: flex; gap: 24px; margin-bottom: 24px;">
+                <div style="flex: 1;">
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">Success Redirect URL</label>
+                    <input type="text" value="https://example.com/thank-you" style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+                </div>
+                <div style="flex: 1;">
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">Error Redirect URL</label>
+                    <input type="text" value="https://example.com/error" style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+                </div>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); padding: 20px; border-radius: 8px; margin-bottom: 24px;">
+                <h3 style="font-size: 14px; font-weight: 600; color: var(--text-main); margin-top: 0; margin-bottom: 4px;">Form Layout</h3>
+                <p style="color: var(--text-muted); font-size: 12px; margin-bottom: 16px;">Choose how fields are arranged on the page. Set each field's width on the Fields tab once two-column is selected.</p>
+                <div style="display: inline-flex; background: rgba(0,0,0,0.3); padding: 4px; border-radius: 8px;">
+                    <button style="background: rgba(219, 39, 119, 0.4); color: white; border: none; padding: 6px 16px; border-radius: 6px; font-size: 13px; font-weight: 500;">Single column</button>
+                    <button style="background: transparent; color: var(--text-muted); border: none; padding: 6px 16px; border-radius: 6px; font-size: 13px; font-weight: 500;">Two column</button>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-top: 1px solid var(--border-color);">
+                <div>
+                    <h3 style="font-size: 14px; font-weight: 600; color: var(--text-main); margin: 0 0 4px 0;">Bot Protection (Turnstile)</h3>
+                    <p style="color: var(--text-muted); font-size: 12px; margin: 0;">Protect the form from automated submissions</p>
+                </div>
+                <!-- Toggle Switch -->
+                <div style="width: 44px; height: 24px; background: white; border-radius: 12px; position: relative; cursor: pointer;">
+                    <div style="width: 20px; height: 20px; background: #d1d5db; border-radius: 50%; position: absolute; top: 2px; right: 2px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="margin-bottom: 24px; border: 1px solid rgba(16, 185, 129, 0.3);">
+            <div style="display: flex; gap: 16px; align-items: flex-start; margin-bottom: 24px;">
+                <div style="width: 40px; height: 40px; border-radius: 8px; background: rgba(59, 130, 246, 0.1); color: #3b82f6; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                </div>
+                <div>
+                    <h3 style="font-size: 16px; font-weight: 600; color: var(--text-main); margin-top: 0; margin-bottom: 4px;">Feature settings</h3>
+                    <p style="color: var(--text-muted); font-size: 13px; margin: 0;">Choose which designer capabilities are active for this form.</p>
+                </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column;">
+                <div style="padding: 16px 0; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-weight: 600; color: var(--text-main); font-size: 14px; margin-bottom: 4px;">Honeypot protection</div>
+                        <div style="color: var(--text-muted); font-size: 12px;">Add a hidden trap field to deter simple bots.</div>
+                    </div>
+                    <input type="checkbox" style="width: 18px; height: 18px; opacity: 0.5;">
+                </div>
+                <div style="padding: 16px 0; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-weight: 600; color: var(--text-main); font-size: 14px; margin-bottom: 4px;">Form analytics</div>
+                        <div style="color: var(--text-muted); font-size: 12px;">Track views, starts, completions, and drop-off.</div>
+                    </div>
+                    <input type="checkbox" checked style="width: 18px; height: 18px; accent-color: var(--primary-color);">
+                </div>
+                <div style="padding: 16px 0; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-weight: 600; color: var(--text-main); font-size: 14px; margin-bottom: 4px;">Custom embed</div>
+                        <div style="color: var(--text-muted); font-size: 12px;">Allow this form to be embedded on another site.</div>
+                    </div>
+                    <input type="checkbox" checked style="width: 18px; height: 18px; accent-color: var(--primary-color);">
+                </div>
+                <div style="padding: 16px 0; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-weight: 600; color: var(--text-main); font-size: 14px; margin-bottom: 4px;">Advanced theming</div>
+                        <div style="color: var(--text-muted); font-size: 12px;">Apply a custom font and sanitized CSS theme.</div>
+                    </div>
+                    <input type="checkbox" style="width: 18px; height: 18px; opacity: 0.5;">
+                </div>
+            </div>
+        </div>
+    </div>
+<% } else if (tab === 'analytics') { %>
+    <div style="max-width: 1000px; margin: 0 auto;">
+        <div class="card p-0" style="overflow: hidden;">
+            <div style="padding: 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: flex-start;">
+                <div style="display: flex; gap: 16px; align-items: flex-start;">
+                    <div style="width: 40px; height: 40px; border-radius: 8px; background: rgba(59, 130, 246, 0.1); color: #3b82f6; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                    </div>
+                    <div>
+                        <h2 style="font-size: 16px; font-weight: 600; color: var(--text-main); margin-top: 0; margin-bottom: 4px;">Form analytics</h2>
+                        <p style="color: var(--text-muted); font-size: 13px; margin: 0;">A daily funnel view of how visitors move through this form.</p>
+                    </div>
+                </div>
+                <button class="btn-secondary" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 16px; border-radius: 6px; font-size: 13px; display: flex; align-items: center; gap: 8px;">
+                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+                    Refresh
+                </button>
+            </div>
+
+            <div style="padding: 24px; display: flex; gap: 24px; border-bottom: 1px solid var(--border-color);">
+                <div style="flex: 1; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px;">
+                    <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px;">Views</div>
+                    <div style="font-size: 32px; font-weight: 600; color: var(--text-main);">1</div>
+                </div>
+                <div style="flex: 1; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px;">
+                    <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px;">Starts</div>
+                    <div style="font-size: 32px; font-weight: 600; color: var(--text-main);">0</div>
+                </div>
+                <div style="flex: 1; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px;">
+                    <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px;">Completions</div>
+                    <div style="font-size: 32px; font-weight: 600; color: var(--text-main);">0</div>
+                </div>
+            </div>
+
+            <!-- Analytics Table -->
+            <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+                <thead>
+                    <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-main); font-size: 11px; font-weight: 700; text-transform: uppercase;">
+                        <th style="padding: 16px 24px;">Date</th>
+                        <th style="padding: 16px 16px;">Views</th>
+                        <th style="padding: 16px 16px;">Starts</th>
+                        <th style="padding: 16px 16px;">Completions</th>
+                        <th style="padding: 16px 24px;">Drop-off</th>
+                    </tr>
+                </thead>
+                <tbody style="font-size: 13px;">
+                    <tr style="border-bottom: 1px solid transparent;">
+                        <td style="padding: 16px 24px; font-weight: 600; color: var(--text-main);">2026-09-08</td>
+                        <td style="padding: 16px 16px; color: var(--text-muted);">1</td>
+                        <td style="padding: 16px 16px; color: var(--text-muted);">0</td>
+                        <td style="padding: 16px 16px; color: var(--text-muted);">0</td>
+                        <td style="padding: 16px 24px; color: var(--text-muted);">&mdash;</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+<% } else if (tab === 'translations') { %>
+    <div style="display: flex; gap: 24px;">
+        <div style="flex: 1; max-width: 350px;">
+            <div class="card p-0" style="height: 100%;">
+                <div style="padding: 16px 24px; border-bottom: 1px solid var(--border-color);">
+                    <h2 style="font-size: 14px; font-weight: 600; color: var(--text-main); margin: 0 0 12px 0;">Search languages</h2>
+                    <input type="text" placeholder="Search locale..." style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 12px; border-radius: 6px; font-size: 13px;">
+                </div>
+                
+                <div style="display: flex; flex-direction: column; padding: 8px;">
+                    <div style="background: white; border-radius: 8px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; margin-bottom: 4px;">
+                        <div>
+                            <div style="font-weight: 600; color: #111827; font-size: 14px; margin-bottom: 4px;">हिन्दी</div>
+                            <div style="color: #6b7280; font-size: 11px;">4/4 translated</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 12px; font-weight: 500; color: #374151; margin-bottom: 4px;">hi-IN</div>
+                            <div style="color: #10b981; font-size: 11px; font-weight: 600;">saved</div>
+                        </div>
+                    </div>
+                    
+                    <div style="padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-radius: 8px; margin-bottom: 4px;">
+                        <div>
+                            <div style="font-weight: 600; color: var(--text-main); font-size: 14px; margin-bottom: 4px;">मराठी</div>
+                            <div style="color: var(--text-muted); font-size: 11px;">0/4 translated</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 12px; font-weight: 500; color: var(--text-muted); margin-bottom: 4px;">mr-IN</div>
+                            <div style="color: var(--text-muted); font-size: 11px; font-weight: 600;">empty</div>
+                        </div>
+                    </div>
+                    
+                    <div style="padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-radius: 8px;">
+                        <div>
+                            <div style="font-weight: 600; color: var(--text-main); font-size: 14px; margin-bottom: 4px;">ગુજરાતી</div>
+                            <div style="color: var(--text-muted); font-size: 11px;">0/4 translated</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 12px; font-weight: 500; color: var(--text-muted); margin-bottom: 4px;">gu-IN</div>
+                            <div style="color: var(--text-muted); font-size: 11px; font-weight: 600;">empty</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="flex: 2;">
+            <div class="card p-0">
+                <div style="padding: 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div>
+                        <h2 style="font-size: 20px; font-weight: 600; color: var(--text-main); margin-top: 0; margin-bottom: 4px;">हिन्दी</h2>
+                        <div style="color: var(--text-muted); font-size: 12px; display: flex; gap: 8px; align-items: center;">
+                            <span>hi-IN</span> &middot; <span>LTR</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 12px;">
+                        <button class="btn-secondary" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600;">Save language</button>
+                        <button class="btn-primary" style="background: #be185d; border: 1px solid #9d174d; color: white; padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600;">Save all drafts (0)</button>
+                    </div>
+                </div>
+                
+                <div style="padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color);">
+                    <div style="font-size: 12px; color: var(--text-muted);">Saved translation</div>
+                    <div style="font-size: 12px; color: var(--text-muted);">4 of 4 fields translated</div>
+                </div>
+                
+                <div style="padding: 24px;">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                        <div style="height: 1px; background: var(--border-color); flex: 1;"></div>
+                        <span style="font-weight: 600; color: var(--text-main); font-size: 14px;">Form</span>
+                        <div style="height: 1px; background: var(--border-color); flex: 1;"></div>
+                    </div>
+                    
+                    <div style="margin-bottom: 24px;">
+                        <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">Form Name</label>
+                        <div style="border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden; margin-bottom: 8px;">
+                            <div style="background: rgba(255,255,255,0.02); padding: 12px; border-bottom: 1px solid var(--border-color); font-size: 13px; display: flex; gap: 8px;">
+                                <span style="color: var(--text-muted); font-size: 11px; font-weight: 600;">SAVED SOURCE (EN-IN)</span>
+                                <span style="color: var(--text-main);">DPDP_Secure Data Rights Intake</span>
+                            </div>
+                            <input type="text" value="DPDP_Secure डेटा अधिकार अनुरोध" style="width: 100%; background: transparent; border: none; color: var(--text-main); padding: 12px; font-size: 13px;">
+                        </div>
+                        <div style="text-align: right; color: var(--text-muted); font-size: 11px;">26/180 characters</div>
+                    </div>
+                    
+                    <div style="margin-bottom: 24px;">
+                        <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">Description</label>
+                        <div style="border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden;">
+                            <div style="background: rgba(255,255,255,0.02); padding: 12px; border-bottom: 1px solid var(--border-color); font-size: 13px; display: flex; gap: 8px; flex-direction: column;">
+                                <span style="color: var(--text-muted); font-size: 11px; font-weight: 600;">SAVED SOURCE (EN-IN)</span>
+                                <span style="color: var(--text-main);">DPDPA 2023 data rights form for DPDP_Secure banking and BNPL customers.</span>
+                            </div>
+                            <textarea style="width: 100%; background: transparent; border: none; color: var(--text-main); padding: 12px; font-size: 13px; resize: vertical; min-height: 80px;">DPDPA 2023 के अनुसार आपके बैंकिंग डेटा के अधिकार।</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<% } else if (tab === 'integrations') { %>
+    <div style="max-width: 900px; margin: 0 auto;">
+        
+        <div class="card p-0" style="margin-bottom: 24px; padding: 24px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #3b82f6;">
+            <div style="display: flex; gap: 16px; align-items: center;">
+                <div style="color: #ec4899;">
+                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                </div>
+                <div>
+                    <h3 style="font-size: 14px; font-weight: 600; color: var(--text-main); margin-top: 0; margin-bottom: 2px;">Hosted Web Form</h3>
+                    <p style="color: var(--text-muted); font-size: 12px; margin: 0;">This form is configured as a hosted web form.</p>
+                </div>
+            </div>
+            <span style="background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--border-color); padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">ACTIVE</span>
+        </div>
+        
+        <div class="card" style="margin-bottom: 24px;">
+            <h2 style="font-size: 16px; font-weight: 600; color: var(--text-main); margin-top: 0; margin-bottom: 8px;">Hosted Form URL</h2>
+            <p style="color: var(--text-muted); font-size: 13px; margin-top: 0; margin-bottom: 24px;">Share this URL with data principals &mdash; no code needed.</p>
+            
+            <div style="margin-bottom: 16px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Public URL</span>
+                    <button style="background: none; border: none; color: var(--text-muted); font-size: 11px; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                        <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        Copy URL
+                    </button>
+                </div>
+                <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); padding: 12px 16px; border-radius: 6px; display: flex; gap: 8px; align-items: center; font-family: monospace; font-size: 13px; color: var(--text-muted); overflow-x: auto; white-space: nowrap;">
+                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                    https://dpdp-secure-static.in/dsrwebforms/10000001-0000-0000-0000-000000000001/01a04e0b-c1c...
+                </div>
+            </div>
+            
+            <a href="#" style="color: #ec4899; text-decoration: none; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px;">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                Preview hosted form
+            </a>
+        </div>
+        
+        <div class="card p-0" style="overflow: hidden;">
+            <div style="padding: 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h2 style="font-size: 16px; font-weight: 600; color: var(--text-main); margin-top: 0; margin-bottom: 4px;">Recent Submissions</h2>
+                    <p style="color: var(--text-muted); font-size: 13px; margin: 0;">DPRR requests submitted through this form.</p>
+                </div>
+                <button class="btn-secondary" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 16px; border-radius: 6px; font-size: 13px; display: flex; align-items: center; gap: 8px;">
+                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+                    Refresh
+                </button>
+            </div>
+            
+            <div style="padding: 48px; text-align: center; color: var(--text-muted);">
+                <svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" stroke-width="2" fill="none" style="margin-bottom: 12px; opacity: 0.5;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                <div style="font-size: 14px;">No submissions yet for this form.</div>
+            </div>
+        </div>
+    </div>
+<% } else if (tab === 'workflow') { %>
+    <div style="max-width: 800px; margin: 0 auto;">
+        
+        <div class="card" style="margin-bottom: 24px;">
+            <h2 style="font-size: 16px; font-weight: 600; color: var(--text-main); margin-top: 0; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="#8b5cf6" stroke-width="2" fill="none"><circle cx="6" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><line x1="20" y1="4" x2="8.12" y2="15.88"></line><line x1="14.47" y1="14.48" x2="20" y2="20"></line><line x1="8.12" y1="8.12" x2="12" y2="12"></line></svg>
+                Attached Workflow
+            </h2>
+            <p style="color: var(--text-muted); font-size: 13px; margin-top: 0; margin-bottom: 24px;">
+                When a request is submitted through this form, the selected workflow will be automatically assigned and the request will enter the first stage.
+            </p>
+            
+            <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">Workflow</label>
+            <div style="position: relative;">
+                <select style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 12px 16px; border-radius: 6px; font-size: 14px; appearance: none; cursor: pointer;">
+                    <option>No workflow &mdash; requests handled manually</option>
+                    <option>Standard Deletion Request (4 stages)</option>
+                    <option>Standard Correction Request (4 stages)</option>
+                    <option>Standard Access Request (5 stages)</option>
+                    <option>DPDP_Secure DPDPA Rights Workflow (3 stages)</option>
+                </select>
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" style="position: absolute; right: 16px; top: 14px; pointer-events: none; color: var(--text-muted);"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+        </div>
+
+        <div class="card" style="background: rgba(255,255,255,0.02);">
+            <h3 style="font-size: 14px; font-weight: 600; color: var(--text-main); margin-top: 0; margin-bottom: 20px;">How Workflow Auto-Assignment Works</h3>
+            
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+                <div style="display: flex; gap: 12px; align-items: flex-start;">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="#10b981" stroke-width="2" fill="none" style="flex-shrink: 0; margin-top: 2px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    <p style="margin: 0; font-size: 13px; color: var(--text-muted);">When a data principal submits this form, the attached workflow is automatically assigned to the new request.</p>
+                </div>
+                
+                <div style="display: flex; gap: 12px; align-items: flex-start;">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="#10b981" stroke-width="2" fill="none" style="flex-shrink: 0; margin-top: 2px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    <p style="margin: 0; font-size: 13px; color: var(--text-muted);">The request enters the first stage of the workflow immediately.</p>
+                </div>
+                
+                <div style="display: flex; gap: 12px; align-items: flex-start;">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="#10b981" stroke-width="2" fill="none" style="flex-shrink: 0; margin-top: 2px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    <p style="margin: 0; font-size: 13px; color: var(--text-muted);">Task templates configured for that first stage are auto-created as tasks on the request.</p>
+                </div>
+                
+                <div style="display: flex; gap: 12px; align-items: flex-start;">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="#10b981" stroke-width="2" fill="none" style="flex-shrink: 0; margin-top: 2px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    <p style="margin: 0; font-size: 13px; color: var(--text-muted);">Team members can then move the request through stages from the Rights Request detail page.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+<% } %>
+
+<%- include('partials/footer') %>

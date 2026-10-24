@@ -56,16 +56,9 @@ Desktop.ini
 # Logs
 *.log
 
-# Local Prototype Codebases & Hackathon Work (kept local until explicit push instruction)
-/backend/
-/frontend/
-/data/
+# Hackathon Research & Binary Decks
 *.pptx
 *.pdf
-generate_presentation.py
-verify_dpdp_core.py
-start.ps1
-start.sh
 IMPLEMENTATION_PLAN.md
 IMPLEMENTATION_PLAN_PROMPT.md
 LS-04_InDepth_Analysis_Implementation_Blueprint.md

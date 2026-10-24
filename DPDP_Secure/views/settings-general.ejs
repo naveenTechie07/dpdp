@@ -1,0 +1,164 @@
+<%- include('partials/header') %>
+
+<style>
+.settings-section {
+    margin-bottom: 24px;
+}
+.settings-section-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 4px 0;
+}
+.settings-section-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 0 0 16px 0;
+}
+.settings-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+}
+.form-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+.form-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 8px;
+}
+.form-input {
+    width: 100%;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--border-color);
+    color: white;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+}
+.toggle-switch {
+    width: 44px;
+    height: 24px;
+    background: #6366f1;
+    border-radius: 12px;
+    position: relative;
+    cursor: pointer;
+}
+.toggle-switch::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 22px;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    transition: 0.2s;
+}
+.alert-banner {
+    background: rgba(234, 179, 8, 0.1);
+    border: 1px solid rgba(234, 179, 8, 0.2);
+    color: #fde047;
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    margin-top: 16px;
+}
+</style>
+
+<div style="padding: 24px; max-width: 1400px; margin: 0 auto;">
+    
+    <div style="margin-bottom: 32px;">
+        <h1 style="font-size: 20px; font-weight: 700; color: white; margin: 0 0 8px 0;">General Settings</h1>
+        <p style="color: var(--text-muted); font-size: 13px; margin: 0;">Platform-level settings for this tenant.</p>
+    </div>
+
+    <div class="settings-card">
+        <h2 class="settings-section-title">Regulatory Guidance</h2>
+        <p class="settings-section-desc">Show contextual DPDPA (Digital Personal Data Protection Act, 2023) guidance on each page of the admin portal, indicating which section of the Act applies to the current module.</p>
+        
+        <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 8px; padding: 16px; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; gap: 16px; align-items: flex-start;">
+                <div style="background: rgba(255,255,255,0.1); padding: 8px; border-radius: 6px; color: white;">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                </div>
+                <div>
+                    <div style="font-size: 14px; font-weight: 600; color: white; margin-bottom: 4px;">DPDPA Guidance Text</div>
+                    <div style="font-size: 12px; color: var(--text-muted);">When enabled, a contextual banner appears at the top of each page showing the relevant section of the DPDPA — for example, Section 10 on the PIA/DPIA page.</div>
+                </div>
+            </div>
+            <div class="toggle-switch"></div>
+        </div>
+    </div>
+
+    <div class="settings-card">
+        <h2 class="settings-section-title">Controller & DPO Details</h2>
+        <p class="settings-section-desc">Keep the controller identity and Data Protection Officer contact details used in RoPA exports.</p>
+        
+        <div class="form-grid-2">
+            <div>
+                <label class="form-label">Legal Entity Name</label>
+                <input type="text" class="form-input" value="DPDP_Secure Payments Pvt Ltd">
+            </div>
+            <div>
+                <label class="form-label">DPO Name</label>
+                <input type="text" class="form-input" value="Priya Sharma">
+            </div>
+        </div>
+        
+        <div style="margin-bottom: 24px;">
+            <label class="form-label">Registered Address</label>
+            <textarea class="form-input" style="height: 60px; resize: none;">14th Floor, Bandra Kurla Complex, Mumbai, Maharashtra 400051, India</textarea>
+        </div>
+        
+        <div class="form-grid-2" style="margin-bottom: 0;">
+            <div>
+                <label class="form-label">DPO Email</label>
+                <input type="text" class="form-input" value="dpo@dpdpsecure.in">
+            </div>
+            <div>
+                <label class="form-label">DPO Phone</label>
+                <input type="text" class="form-input" value="+91-9820012345">
+            </div>
+        </div>
+    </div>
+
+    <div class="settings-card">
+        <h2 class="settings-section-title">Bot Protection (Turnstile)</h2>
+        <p class="settings-section-desc">Configure Cloudflare Turnstile for public forms served by this tenant.</p>
+        
+        <div class="form-grid-2" style="margin-bottom: 8px;">
+            <div>
+                <label class="form-label">Site Key</label>
+                <input type="text" class="form-input" placeholder="Turnstile site key">
+            </div>
+            <div>
+                <label class="form-label">Secret Key</label>
+                <input type="password" class="form-input">
+            </div>
+        </div>
+        
+        <div style="font-size: 12px; color: var(--text-muted);">
+            The site key loads in the browser. The secret key never leaves the server. Register your domain at <a href="#" style="color: white; text-decoration: underline;">Cloudflare Turnstile</a>.
+        </div>
+        
+        <div class="alert-banner">
+            <span style="font-weight: 700;">Platform fallback note:</span> If no keys are configured here, the platform-level fallback keys (set via environment variables) will be used — but only for forms served on the platform's own domain. Embedded forms on your own domain require tenant-level keys configured above.
+        </div>
+    </div>
+
+    <div style="display: flex; justify-content: flex-end;">
+        <button class="btn-primary" style="background: #be185d; border: 1px solid #9d174d; color: white; padding: 10px 24px; border-radius: 6px; font-size: 14px; font-weight: 600;">Save Settings</button>
+    </div>
+
+</div>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,192 @@
+<%- include('partials/header') %>
+
+<style>
+.settings-section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 4px 0;
+}
+.settings-section-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 0 0 20px 0;
+}
+.settings-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+}
+.sso-status-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.sso-status-box {
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 16px;
+}
+.sso-status-box.highlight {
+    background: #fffbeb;
+    border-color: #fef08a;
+}
+.sso-status-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+.sso-status-box.highlight .sso-status-label {
+    color: #b45309;
+}
+.sso-status-val {
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+}
+.sso-status-box.highlight .sso-status-val {
+    color: #b45309;
+}
+
+.form-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 8px;
+}
+.form-input {
+    width: 100%;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--border-color);
+    color: white;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+}
+.btn-pink {
+    background: #be185d;
+    border: 1px solid #9d174d;
+    color: white;
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+</style>
+
+<div style="padding: 24px; max-width: 1400px; margin: 0 auto;">
+    
+    <div style="margin-bottom: 32px;">
+        <h1 style="font-size: 20px; font-weight: 700; color: white; margin: 0 0 8px 0;">Single Sign-On</h1>
+        <p style="color: var(--text-muted); font-size: 13px; margin: 0;">Connect your organization's identity provider and activate SSO after a successful real login test.</p>
+    </div>
+
+    <div class="settings-card">
+        <h2 class="settings-section-title">SSO status</h2>
+        <p class="settings-section-desc">Saving configuration does not activate SSO. Activation requires a successful login through your identity provider.</p>
+        
+        <div class="sso-status-grid">
+            <div class="sso-status-box">
+                <div class="sso-status-label">CONFIGURATION</div>
+                <div class="sso-status-val">Unconfigured</div>
+            </div>
+            <div class="sso-status-box highlight">
+                <div class="sso-status-label">LOGIN AVAILABILITY</div>
+                <div class="sso-status-val">Inactive</div>
+            </div>
+            <div class="sso-status-box">
+                <div class="sso-status-label">PROTOCOL</div>
+                <div class="sso-status-val">OIDC</div>
+            </div>
+            <div class="sso-status-box">
+                <div class="sso-status-label">LAST REAL LOGIN TEST</div>
+                <div class="sso-status-val">Not run</div>
+            </div>
+        </div>
+        
+        <button class="btn-pink">Provision & Test</button>
+    </div>
+
+    <div class="settings-card">
+        <h2 class="settings-section-title">Verified domains</h2>
+        <p class="settings-section-desc">Only DNS-verified domains can be used to discover this tenant's SSO configuration at login.</p>
+        
+        <div style="display: flex; gap: 16px; align-items: flex-end; margin-bottom: 16px;">
+            <div style="flex: 1;">
+                <label class="form-label">Domain</label>
+                <input type="text" class="form-input" placeholder="example.com">
+            </div>
+            <button class="btn-pink" style="opacity: 0.5; cursor: not-allowed;">Add domain</button>
+        </div>
+        <p style="color: var(--text-muted); font-size: 13px; margin: 0;">No SSO domains have been added.</p>
+    </div>
+
+    <div class="settings-card">
+        <h2 class="settings-section-title">OIDC configuration</h2>
+        <p class="settings-section-desc">Enter the client issued by your identity provider. The secret is write-only and is never returned to the browser.</p>
+        
+        <div style="margin-bottom: 24px;">
+            <label class="form-label">Discovery URL</label>
+            <input type="text" class="form-input" placeholder="https://idp.example.com/.well-known/openid-configuration">
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+            <div>
+                <label class="form-label">Client ID</label>
+                <input type="text" class="form-input" placeholder="OIDC client ID">
+            </div>
+            <div>
+                <label class="form-label">Client secret</label>
+                <input type="password" class="form-input">
+            </div>
+        </div>
+        
+        <div style="margin-bottom: 24px; max-width: 50%;">
+            <label class="form-label">Default DPDP_Secure role</label>
+            <select class="form-input" style="appearance: none;">
+                <option>Select a role</option>
+            </select>
+        </div>
+        
+        <div style="display: flex; justify-content: flex-end;">
+            <button class="btn-pink">Save OIDC configuration</button>
+        </div>
+    </div>
+
+    <div class="settings-card">
+        <h2 class="settings-section-title">Group-to-role mappings</h2>
+        <p class="settings-section-desc">Every matching identity-provider group adds its mapped DPDP_Secure role. Existing manually granted roles are not removed.</p>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 16px; align-items: flex-end; margin-bottom: 16px;">
+            <div>
+                <label class="form-label">Group claim name</label>
+                <input type="text" class="form-input" value="groups">
+            </div>
+            <div>
+                <label class="form-label">Group claim value</label>
+                <input type="text" class="form-input" placeholder="Privacy Admins">
+            </div>
+            <div>
+                <label class="form-label">DPDP_Secure role</label>
+                <select class="form-input" style="appearance: none;">
+                    <option>Select a role</option>
+                </select>
+            </div>
+            <button class="btn-pink">Add mapping</button>
+        </div>
+        
+        <p style="color: var(--text-muted); font-size: 13px; margin: 0;">No group-to-role mappings have been added.</p>
+    </div>
+
+</div>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,107 @@
+<%- include('partials/header') %>
+
+<div style="padding: 24px; max-width: 1400px; margin: 0 auto;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px;">
+        <div>
+            <h1 style="font-size: 20px; font-weight: 700; color: var(--text-main); margin: 0 0 8px 0;">Integrations Hub</h1>
+            <p style="color: var(--text-muted); font-size: 13px; margin: 0;">Connect DPDP_Secure to your MarTech tools &mdash; consent withdrawals, erasure completions, and cookie<br>updates are delivered automatically.</p>
+        </div>
+        <button class="btn-primary" style="background: #be185d; border: 1px solid #9d174d; color: white; padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+            Add Integration
+        </button>
+    </div>
+
+    <div class="card p-0">
+        <!-- Filters -->
+        <div style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <input type="text" placeholder="Search..." style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 12px; border-radius: 6px; font-size: 13px; width: 300px;">
+            
+            <div style="display: flex; gap: 16px; align-items: center; color: var(--text-muted); font-size: 13px;">
+                <span>3 rows</span>
+                <span>Previous</span>
+                <span style="font-weight: 600; color: var(--text-main);">Page 1 of 1</span>
+                <span>Next</span>
+            </div>
+        </div>
+        
+        <!-- Table -->
+        <div style="overflow-x: auto;">
+            <table class="table" style="min-width: 1000px;">
+                <thead>
+                    <tr>
+                        <th style="padding-left: 24px; width: 35%;">Tool <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2" fill="none" style="display: inline-block; vertical-align: middle; margin-bottom: 2px;"><path d="M18 15l-6-6-6 6"/></svg></th>
+                        <th>Category <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2" fill="none" style="display: inline-block; vertical-align: middle; margin-left: 4px; opacity: 0.5;"><path d="M7 15l5 5 5-5M7 9l5-5 5 5"/></svg></th>
+                        <th>Status <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2" fill="none" style="display: inline-block; vertical-align: middle; margin-left: 4px; opacity: 0.5;"><path d="M7 15l5 5 5-5M7 9l5-5 5 5"/></svg></th>
+                        <th>Last Updated <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2" fill="none" style="display: inline-block; vertical-align: middle; margin-left: 4px; opacity: 0.5;"><path d="M7 15l5 5 5-5M7 9l5-5 5 5"/></svg></th>
+                        <th style="padding-right: 24px; text-align: right;"><svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2" fill="none" style="display: inline-block; vertical-align: middle; opacity: 0.5;"><path d="M7 15l5 5 5-5M7 9l5-5 5 5"/></svg></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding-left: 24px;">
+                            <div style="font-weight: 600; color: white; margin-bottom: 2px;">CleverTap</div>
+                            <div style="font-size: 11px; color: var(--text-muted);">DPDP_Secure CleverTap Banking App</div>
+                        </td>
+                        <td><span style="display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; border: 1px solid var(--border-color); color: var(--text-muted);">push</span></td>
+                        <td><span style="display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; background: rgba(16, 185, 129, 0.2); color: #10b981;">Active</span></td>
+                        <td style="color: var(--text-muted); font-size: 12px;">29 Aug 2026, 03:03 pm</td>
+                        <td style="padding-right: 24px; text-align: right; color: var(--text-muted);">
+                            <div style="display: flex; align-items: center; justify-content: flex-end; gap: 12px;">
+                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M9 3H15M10 9H14M3 21H21M7 21L12 11L17 21"></path></svg>
+                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding-left: 24px;">
+                            <div style="font-weight: 600; color: white; margin-bottom: 2px;">MSG91</div>
+                            <div style="font-size: 11px; color: var(--text-muted);">DPDP_Secure MSG91 SMS Gateway</div>
+                        </td>
+                        <td><span style="display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; border: 1px solid var(--border-color); color: var(--text-muted);">sms</span></td>
+                        <td><span style="display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; background: rgba(16, 185, 129, 0.2); color: #10b981;">Active</span></td>
+                        <td style="color: var(--text-muted); font-size: 12px;">29 Aug 2026, 03:03 pm</td>
+                        <td style="padding-right: 24px; text-align: right; color: var(--text-muted);">
+                            <div style="display: flex; align-items: center; justify-content: flex-end; gap: 12px;">
+                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M9 3H15M10 9H14M3 21H21M7 21L12 11L17 21"></path></svg>
+                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding-left: 24px;">
+                            <div style="font-weight: 600; color: white; margin-bottom: 2px;">Webhook</div>
+                            <div style="font-size: 11px; color: var(--text-muted);">DPDP_Secure Compliance Audit Webhook</div>
+                        </td>
+                        <td><span style="display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; border: 1px solid var(--border-color); color: var(--text-muted);">generic</span></td>
+                        <td><span style="display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; background: #fef2f2; border: 1px solid #fecaca; color: #ef4444;">Error</span></td>
+                        <td style="color: var(--text-muted); font-size: 12px;">08 Sept 2026, 07:20 am</td>
+                        <td style="padding-right: 24px; text-align: right; color: var(--text-muted);">
+                            <div style="display: flex; align-items: center; justify-content: flex-end; gap: 12px;">
+                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M9 3H15M10 9H14M3 21H21M7 21L12 11L17 21"></path></svg>
+                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div style="padding: 16px 24px; display: flex; justify-content: flex-end; align-items: center; gap: 16px; border-top: 1px solid var(--border-color); color: var(--text-muted); font-size: 13px;">
+            <span>Previous</span>
+            <span style="font-weight: 600; color: var(--text-main);">Page 1 of 1</span>
+            <span>Next</span>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>
