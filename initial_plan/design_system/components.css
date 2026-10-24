@@ -31,3 +31,5 @@
 .modal-dialog { background: var(--bg-surface); border-radius: var(--radius-lg); width: 100%; max-width: 540px; border: 1px solid var(--border-color); overflow: hidden; }
 
 .modal-overlay { backdrop-filter: blur(6px); animation: fadeIn 0.15s ease-out; }
+
+body.modal-open { overflow: hidden; }
