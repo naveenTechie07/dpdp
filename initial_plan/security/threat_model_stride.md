@@ -18,3 +18,8 @@
 ## Information Disclosure Safeguards
 - Ephemeral in-memory decryption buffers are zero-filled immediately post-serialization.
 - AES-256-GCM authenticated ciphertext used for all persistent PII fields.
+
+
+## Denial of Service Mitigations
+- Local SQLite database capped at 250MB with circular WAL checkpoints.
+- Rate-limiting in-process: max 10 consent events per second per POS terminal.
