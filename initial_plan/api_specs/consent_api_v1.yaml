@@ -17,3 +17,7 @@ components:
       type: object
       properties:
         id: { type: string }
+
+  /api/v1/consent/{id}/revoke:
+    post:
+      summary: Revoke consent
