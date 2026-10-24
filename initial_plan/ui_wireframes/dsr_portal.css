@@ -4,3 +4,5 @@
 .steps { display: flex; gap: 1rem; margin-bottom: 1.5rem; font-weight: 600; }
 
 .otp-box input { text-align: center; letter-spacing: 0.5rem; font-size: 1.25rem; font-weight: 700; }
+
+.chip { display: inline-block; padding: 2px 8px; border-radius: 4px; background: var(--bg-surface-hover); font-size: 0.75rem; }
