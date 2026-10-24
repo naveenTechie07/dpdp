@@ -22,3 +22,5 @@
 .badge-warning { background: var(--color-warning-bg); color: var(--color-warning); }
 .badge-danger { background: var(--color-danger-bg); color: var(--color-danger); }
 .badge-info { background: #e0f2fe; color: #0284c7; }
+
+.badge { letter-spacing: 0.035em; text-transform: uppercase; }
