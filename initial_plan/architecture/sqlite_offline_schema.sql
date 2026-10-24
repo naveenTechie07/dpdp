@@ -1,0 +1,1 @@
+CREATE TABLE IF NOT EXISTS data_fiduciaries (id TEXT PRIMARY KEY, entity_name TEXT NOT NULL, cin_or_gstin TEXT, dpo_name TEXT, dpo_email TEXT, dpo_phone TEXT, is_sdf BOOLEAN DEFAULT 0, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
