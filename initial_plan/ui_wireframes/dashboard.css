@@ -20,3 +20,5 @@
 @media (max-width: 768px) { .grid { grid-template-columns: 1fr !important; } }
 
 .card:hover { border-color: var(--color-primary); transition: border-color 0.15s ease; }
+
+.bar { height: 8px; border-radius: 4px; background: var(--color-primary); }
