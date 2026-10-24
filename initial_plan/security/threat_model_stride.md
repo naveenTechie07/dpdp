@@ -23,3 +23,8 @@
 ## Denial of Service Mitigations
 - Local SQLite database capped at 250MB with circular WAL checkpoints.
 - Rate-limiting in-process: max 10 consent events per second per POS terminal.
+
+
+## Privilege Separation
+- Strict separation of Cashier (Write-Only Consent) and DPO (Read/Write Incident & Audit).
+- Administrative functions locked behind local passkey challenge.
