@@ -36,3 +36,5 @@ body, .sidebar, .topbar, .card { transition: background 0.2s ease, color 0.2s ea
 .drawer { backdrop-filter: blur(4px); }
 
 .hamburger { min-width: 48px; min-height: 48px; }
+
+.cmd-box { background: var(--bg-surface); padding: 1rem; border-radius: 8px; }
