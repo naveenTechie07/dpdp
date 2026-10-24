@@ -46,3 +46,5 @@ body.modal-open { overflow: hidden; }
 .alert-warning { background: var(--color-warning-bg); border-color: #fde68a; color: #92400e; }
 .alert-danger { background: var(--color-danger-bg); border-color: #fecaca; color: #991b1b; }
 .alert-success { background: var(--color-success-bg); border-color: #a7f3d0; color: #065f46; }
+
+.alert-dismiss { min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; margin-left: auto; background: none; border: none; cursor: pointer; }
