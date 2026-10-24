@@ -6,3 +6,10 @@ paths:
   /api/v1/dsr/requests:
     post:
       summary: Submit DSR
+
+components:
+  schemas:
+    DsrRequest:
+      type: object
+      properties:
+        type: { type: string }
