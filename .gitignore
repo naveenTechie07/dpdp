@@ -57,10 +57,9 @@ Desktop.ini
 *.log
 
 # Local Prototype Codebases & Hackathon Work (kept local until explicit push instruction)
-google_gemini/
-backend/
-frontend/
-data/
+/backend/
+/frontend/
+/data/
 *.pptx
 *.pdf
 generate_presentation.py
