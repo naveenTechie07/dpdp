@@ -26,3 +26,5 @@
 .dpo-tag { color: var(--color-primary); }
 
 .storage-warn { color: var(--color-warning); }
+
+.badge-warning { font-weight: 700; }
