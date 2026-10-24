@@ -24,3 +24,5 @@
 .badge-info { background: #e0f2fe; color: #0284c7; }
 
 .badge { letter-spacing: 0.035em; text-transform: uppercase; }
+
+.badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; display: inline-block; }
