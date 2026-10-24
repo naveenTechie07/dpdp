@@ -1,0 +1,2 @@
+.console-box { max-width: 900px; margin: 2rem auto; padding: 1.5rem; }
+.timer { background: var(--color-danger-bg); color: var(--color-danger); font-family: monospace; font-weight: 700; padding: 0.5rem 1rem; display: inline-block; border-radius: 4px; }
