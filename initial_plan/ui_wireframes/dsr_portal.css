@@ -20,3 +20,5 @@
 .dl-card { font-size: 0.8125rem; color: var(--text-muted); }
 
 @media (max-width: 600px) { .portal-wrapper { padding: 1rem; } }
+
+.form-input, .btn { min-height: 44px; }
