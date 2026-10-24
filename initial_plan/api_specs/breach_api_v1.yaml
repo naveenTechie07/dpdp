@@ -6,3 +6,8 @@ paths:
   /api/v1/incidents:
     post:
       summary: Declare incident
+
+components:
+  schemas:
+    IncidentReport:
+      type: object
