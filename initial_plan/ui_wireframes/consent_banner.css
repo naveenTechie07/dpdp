@@ -13,3 +13,5 @@ select { max-width: 180px; }
 .warn-box { border-left: 3px solid var(--color-warning); padding: 0.5rem; }
 
 @media (max-width: 480px) { .banner-card { margin: 1rem; } }
+
+@media (max-width: 600px) { .banner-card button { width: 100%; } }
