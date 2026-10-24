@@ -1,0 +1,6 @@
+# Data Principal Rights Framework (Sections 11 - 14)
+- Right to Access (Sec 11)
+- Right to Correction & Updating (Sec 12(1))
+- Right to Erasure (Sec 12(2))
+- Right to Grievance Redressal (Sec 13)
+- Right to Nominate (Sec 14)
