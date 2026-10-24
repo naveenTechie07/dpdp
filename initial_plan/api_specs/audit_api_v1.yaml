@@ -1,0 +1,8 @@
+openapi: 3.0.3
+info:
+  title: DPDP_Secure Audit API
+  version: 1.0.0
+paths:
+  /api/v1/audit/verify:
+    get:
+      summary: Verify chain
