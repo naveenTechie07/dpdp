@@ -16,3 +16,9 @@
 .form-input { -webkit-appearance: none; appearance: none; box-sizing: border-box; }
 
 .form-input.is-invalid { border-color: var(--color-danger); }
+
+.badge { display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.5rem; border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 600; }
+.badge-success { background: var(--color-success-bg); color: var(--color-success); }
+.badge-warning { background: var(--color-warning-bg); color: var(--color-warning); }
+.badge-danger { background: var(--color-danger-bg); color: var(--color-danger); }
+.badge-info { background: #e0f2fe; color: #0284c7; }
