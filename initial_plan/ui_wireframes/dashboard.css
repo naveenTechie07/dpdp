@@ -28,3 +28,5 @@
 .storage-warn { color: var(--color-warning); }
 
 .badge-warning { font-weight: 700; }
+
+body, .sidebar, .topbar, .card { transition: background 0.2s ease, color 0.2s ease; }
