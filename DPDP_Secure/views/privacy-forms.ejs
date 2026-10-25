@@ -1,0 +1,135 @@
+<%- include('partials/header') %>
+
+<div class="dashboard-header mb-4" style="display: flex; justify-content: space-between; align-items: flex-start;">
+    <div>
+        <h1 class="page-title"><%= title.split(' - ')[0] %></h1>
+        <p class="page-description"><%= description %></p>
+    </div>
+    <button class="btn-primary" style="padding: 10px 24px; font-size: 14px; display: flex; align-items: center; gap: 8px;">
+        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        New Data Rights Requests Form
+    </button>
+</div>
+
+<div class="card p-0" style="overflow: hidden; display: flex; flex-direction: column;">
+    <!-- Table Toolbar -->
+    <div class="table-toolbar" style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+        <div class="search-bar" style="width: 350px; background: transparent; padding: 0; border: none;">
+            <input type="text" placeholder="Search forms..." style="border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 6px; background: transparent; color: var(--text-main); width: 100%;">
+        </div>
+        
+        <div class="pagination" style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-muted);">
+            <span>3 rows</span>
+            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Previous</button>
+            <span>Page 1 of 1</span>
+            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Next</button>
+        </div>
+    </div>
+
+    <!-- Data Table -->
+    <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+        <thead>
+            <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-main); font-size: 11px; font-weight: 700; text-transform: uppercase;">
+                <th style="padding: 16px 24px;">Name &uarr;</th>
+                <th style="padding: 16px 16px;">Integration Type &uarr;</th>
+                <th style="padding: 16px 16px;">Lifecycle &uarr;</th>
+                <th style="padding: 16px 16px;">Organization &uarr;</th>
+                <th style="padding: 16px 16px;">Version &uarr;</th>
+                <th style="padding: 16px 16px;">Updated &uarr;</th>
+                <th style="padding: 16px 24px; text-align: right;">ACTIONS</th>
+            </tr>
+        </thead>
+        <tbody style="font-size: 13px;">
+            <!-- Row 1 -->
+            <tr style="border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'" onclick="window.location.href='/privacy/forms/1'">
+                <td style="padding: 16px 24px; font-weight: 600; color: var(--text-main);">
+                    DPDP_Secure Data Rights Intake
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted);">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                        Hosted Web Form
+                    </div>
+                </td>
+                <td style="padding: 16px 16px;">
+                    <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">ACTIVE</span>
+                </td>
+                <td style="padding: 16px 16px;">
+                    <span style="background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--border-color); padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">Tenant-wide</span>
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted);">
+                    Draft v1 &middot; Published v1
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted); font-size: 12px;">
+                    29 Aug 2026, 03:03 pm
+                </td>
+                <td style="padding: 16px 24px; text-align: right;">
+                    <button style="background: none; border: none; color: var(--text-muted); cursor: pointer;"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg></button>
+                </td>
+            </tr>
+
+            <!-- Row 2 -->
+            <tr style="border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'" onclick="window.location.href='/privacy/forms/2'">
+                <td style="padding: 16px 24px; font-weight: 600; color: var(--text-main);">
+                    DPDP_Secure DPDPA Rights Intake Form
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted);">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                        Hosted Web Form
+                    </div>
+                </td>
+                <td style="padding: 16px 16px;">
+                    <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">ACTIVE</span>
+                </td>
+                <td style="padding: 16px 16px;">
+                    <span style="color: var(--text-muted); display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">
+                        DPDP_Secure Mumbai HQ
+                        <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </span>
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted);">
+                    Draft v4 &middot; Published v1
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted); font-size: 12px;">
+                    10 Sept 2026, 06:43 am
+                </td>
+                <td style="padding: 16px 24px; text-align: right;">
+                    <button style="background: none; border: none; color: var(--text-muted); cursor: pointer;"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg></button>
+                </td>
+            </tr>
+
+            <!-- Row 3 -->
+            <tr style="border-bottom: 1px solid transparent; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'" onclick="window.location.href='/privacy/forms/3'">
+                <td style="padding: 16px 24px; font-weight: 600; color: var(--text-main);">
+                    DPDP_Secure Multilingual Editor Draft
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted);">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                        Hosted Web Form
+                    </div>
+                </td>
+                <td style="padding: 16px 16px;">
+                    <span style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">DRAFT</span>
+                </td>
+                <td style="padding: 16px 16px;">
+                    <span style="background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--border-color); padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">Tenant-wide</span>
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted);">
+                    Draft v1
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted); font-size: 12px;">
+                    29 Aug 2026, 03:03 pm
+                </td>
+                <td style="padding: 16px 24px; text-align: right; display: flex; gap: 12px; justify-content: flex-end;">
+                    <button style="background: none; border: none; color: var(--text-muted); cursor: pointer;"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg></button>
+                    <button style="background: none; border: none; color: var(--text-muted); cursor: pointer;"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+</div>
+
+<%- include('partials/footer') %>

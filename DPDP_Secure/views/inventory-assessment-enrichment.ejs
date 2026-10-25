@@ -1,0 +1,88 @@
+<%- include('partials/header') %>
+
+<div class="dashboard-header mb-4" style="align-items: center; border-bottom: none; padding-bottom: 0;">
+    <div class="title-group">
+        <h1>Assessment &rarr; Asset Field Mappings</h1>
+        <p>When an assessment is approved, these rules automatically populate data asset fields from the assessment's answers.</p>
+    </div>
+</div>
+
+<div class="card p-0" style="overflow: hidden; background: var(--bg-card);">
+    <!-- Mapping Rule Form -->
+    <div style="padding: 24px; border-bottom: 1px solid var(--border-color);">
+        <h3 style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 0; margin-bottom: 16px;">Add Mapping Rule</h3>
+        
+        <div style="display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap;">
+            <!-- Template -->
+            <div style="flex: 1; min-width: 250px;">
+                <label style="display: block; font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px;">Template</label>
+                <div style="position: relative;">
+                    <select style="width: 100%; appearance: none; background: transparent; border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 12px; border-radius: 6px; font-size: 13px;">
+                        <option>DPDPA Organisational Readiness Assessment</option>
+                        <option>DPDPA Data Protection Impact Assessment</option>
+                        <option>Standard Privacy Impact Assessment</option>
+                        <option>GDPR Data Protection Impact Assessment</option>
+                        <option>AI/ML Model DPIA Template &mdash; Banking</option>
+                        <option>India Banking Regulatory Privacy Template</option>
+                    </select>
+                    <svg style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none;" viewBox="0 0 24 24" width="14" height="14" stroke="var(--text-muted)" stroke-width="2" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+            </div>
+            
+            <!-- Question -->
+            <div style="flex: 2; min-width: 350px;">
+                <label style="display: block; font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px;">Question</label>
+                <div style="position: relative;">
+                    <select style="width: 100%; appearance: none; background: transparent; border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 12px; border-radius: 6px; font-size: 13px;">
+                        <option>DPDPA_LAWFUL_BASIS &mdash; Does every personal data processing activity have an identif...</option>
+                        <option>SYS_PERSONAL_DATA &mdash; Does this system process personal data?</option>
+                        <option>SYS_SENSITIVE_DATA &mdash; Does this system process special-category (sensitive) person...</option>
+                        <option>SYS_LARGE_SCALE &mdash; Is the processing carried out at large scale (&gt;100k data su...</option>
+                        <option>SYS_THIRD_PARTY &mdash; Is personal data shared with third-party processors or sub-p...</option>
+                        <option>SYS_CROSS_BORDER &mdash; Is personal data transferred across national or jurisdiction...</option>
+                    </select>
+                    <svg style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none;" viewBox="0 0 24 24" width="14" height="14" stroke="var(--text-muted)" stroke-width="2" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+            </div>
+            
+            <!-- Target -->
+            <div style="width: 150px;">
+                <label style="display: block; font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px;">Target</label>
+                <div style="position: relative;">
+                    <select style="width: 100%; appearance: none; background: transparent; border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 12px; border-radius: 6px; font-size: 13px;">
+                        <option>Data Asset</option>
+                        <option>Processing Activity</option>
+                        <option>Data Processor</option>
+                    </select>
+                    <svg style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none;" viewBox="0 0 24 24" width="14" height="14" stroke="var(--text-muted)" stroke-width="2" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+            </div>
+            
+            <!-- Field -->
+            <div style="width: 150px;">
+                <label style="display: block; font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px;">Field</label>
+                <div style="position: relative;">
+                    <select style="width: 100%; appearance: none; background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); padding: 8px 12px; border-radius: 6px; font-size: 13px;">
+                        <option value="" disabled selected hidden>Select field...</option>
+                        <option value="legal_basis">Legal Basis</option>
+                        <option value="sensitivity">Sensitivity</option>
+                        <option value="retention">Retention Period</option>
+                    </select>
+                    <svg style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none;" viewBox="0 0 24 24" width="14" height="14" stroke="var(--text-muted)" stroke-width="2" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+            </div>
+            
+            <button class="btn-primary" style="background-color: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; height: 36px; display: flex; align-items: center; justify-content: center; min-width: 90px; opacity: 0.5;">
+                Add Rule
+            </button>
+        </div>
+    </div>
+    
+    <!-- Empty State -->
+    <div style="padding: 60px 24px; text-align: center; color: var(--text-muted);">
+        <p style="margin: 0 0 4px 0; font-size: 14px;">No field mappings configured yet.</p>
+        <p style="margin: 0; font-size: 12px;">Add rules above to automatically enrich data asset records when an assessment is approved.</p>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

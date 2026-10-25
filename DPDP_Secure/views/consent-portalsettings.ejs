@@ -1,0 +1,61 @@
+<%- include('partials/header') %>
+
+<div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #f87171; padding: 12px 24px; border-radius: 8px; margin: -12px 0 24px 0; max-width: 600px; margin-left: auto; margin-right: auto; text-align: center; font-weight: 500; font-size: 14px;">
+    Something went wrong. Please try again.
+</div>
+
+<div style="max-width: 700px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px;">
+
+    <!-- Access -->
+    <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px;">
+        <h3 style="font-size: 16px; font-weight: 600; color: var(--text-main); margin-bottom: 16px;">Access</h3>
+        
+        <div style="display: flex; gap: 16px; align-items: flex-start;">
+            <div style="margin-top: 4px;">
+                <div style="width: 40px; height: 24px; background: #8b5cf6; border-radius: 12px; position: relative; cursor: pointer;">
+                    <div style="width: 18px; height: 18px; background: white; border-radius: 50%; position: absolute; right: 3px; top: 3px;"></div>
+                </div>
+            </div>
+            <div>
+                <div style="font-weight: 600; color: var(--text-main); margin-bottom: 4px;">Enable Privacy Portal</div>
+                <div style="color: var(--text-muted); font-size: 13px;">Allow data principals to access the self-service privacy portal via magic link.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Magic Link Expiry -->
+    <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px;">
+        <h3 style="font-size: 16px; font-weight: 600; color: var(--text-main); margin-bottom: 16px;">Magic Link Expiry</h3>
+        <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 24px;">Controls how long a portal access link remains valid after it is issued to a data principal.</p>
+        
+        <div style="margin-bottom: 24px;">
+            <div style="font-weight: 600; color: var(--text-main); margin-bottom: 4px; font-size: 13px;">Link validity (days)</div>
+            <div style="color: var(--text-muted); font-size: 11px; margin-bottom: 8px;">Number of days a magic link stays active. After expiry the principal must request a new link.</div>
+            <input type="text" value="30" style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px; width: 100px;">
+        </div>
+
+        <div>
+            <div style="font-weight: 600; color: var(--text-main); margin-bottom: 4px; font-size: 13px;">Re-access cooldown (minutes)</div>
+            <div style="color: var(--text-muted); font-size: 11px; margin-bottom: 8px;">Minimum time that must pass before a principal can request a new magic link after one was already sent.</div>
+            <input type="text" value="15" style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px; width: 100px;">
+        </div>
+    </div>
+
+    <!-- Portal URL -->
+    <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px;">
+        <h3 style="font-size: 16px; font-weight: 600; color: var(--text-main); margin-bottom: 16px;">Portal URL</h3>
+        <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 24px;">The base URL where the privacy portal is hosted. Used to construct magic links sent to data principals. Leave blank to use the default (<code>http://localhost:4002</code>).</p>
+        
+        <div>
+            <div style="font-weight: 600; color: var(--text-main); margin-bottom: 4px; font-size: 13px;">Base URL</div>
+            <input type="text" value="https://privacy.yourcompany.com" style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px; width: 100%;">
+        </div>
+    </div>
+
+    <div>
+        <button class="btn-primary" style="padding: 10px 24px; font-size: 14px;">Save Settings</button>
+    </div>
+
+</div>
+
+<%- include('partials/footer') %>

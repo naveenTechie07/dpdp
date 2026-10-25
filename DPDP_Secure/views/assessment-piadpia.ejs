@@ -1,0 +1,161 @@
+<%- include('partials/header') %>
+
+<!-- Top Metrics -->
+<div class="metrics-grid mb-4" style="grid-template-columns: repeat(4, 1fr);">
+    <div class="card metric-card">
+        <div class="metric-info w-100">
+            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">Assessments</span>
+            <h2 class="metric-value" style="margin-top: 8px;">3</h2>
+        </div>
+    </div>
+    <div class="card metric-card">
+        <div class="metric-info w-100">
+            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">In Progress</span>
+            <h2 class="metric-value" style="margin-top: 8px;">3</h2>
+        </div>
+    </div>
+    <div class="card metric-card">
+        <div class="metric-info w-100">
+            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">Overdue</span>
+            <h2 class="metric-value" style="margin-top: 8px;">2</h2>
+        </div>
+    </div>
+    <div class="card metric-card">
+        <div class="metric-info w-100">
+            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">Reassessments Due</span>
+            <h2 class="metric-value" style="margin-top: 8px;">0</h2>
+        </div>
+    </div>
+</div>
+
+<div class="dashboard-header mb-4" style="align-items: center;">
+    <div class="title-group">
+        <h1>Assessment Automation</h1>
+        <p>PIA and DPIA intake, conditional workflows, inventory linkage, reporting, and continued monitoring.</p>
+    </div>
+    <button class="btn-primary" style="background-color: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        New Assessment
+    </button>
+</div>
+
+<div class="card p-0" style="overflow: hidden;">
+    <!-- Table Toolbar -->
+    <div class="table-toolbar" style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+        <div class="search-bar" style="width: 300px; background: transparent; padding: 0; border: none;">
+            <input type="text" placeholder="Search assessments..." style="border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 6px; background: transparent; color: var(--text-main); width: 100%;">
+        </div>
+        
+        <div class="pagination" style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-muted);">
+            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Previous</button>
+            <span>Page 1 of 1</span>
+            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Next</button>
+        </div>
+    </div>
+
+    <!-- Data Table -->
+    <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+        <thead>
+            <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 11px; text-transform: uppercase;">
+                <th style="padding: 12px 24px; font-weight: 600;">ID &#9652;</th>
+                <th style="padding: 12px 16px; font-weight: 600;">Assessment &#8597;</th>
+                <th style="padding: 12px 16px; font-weight: 600;">Type &#8597;</th>
+                <th style="padding: 12px 16px; font-weight: 600;">Status &#8597;</th>
+                <th style="padding: 12px 16px; font-weight: 600;">Organization &#8597;</th>
+                <th style="padding: 12px 16px; font-weight: 600;">Risk &#8597;</th>
+                <th style="padding: 12px 24px; font-weight: 600;">Due &#8597;</th>
+            </tr>
+        </thead>
+        <tbody style="font-size: 13px;">
+            <!-- Row 1 -->
+            <tr style="border-bottom: 1px solid var(--border-color);">
+                <td style="padding: 16px 24px; color: var(--text-muted);">#15</td>
+                <td style="padding: 16px 16px; width: 350px;">
+                    <div style="font-weight: 600; color: var(--text-main); margin-bottom: 4px;">Swish's Discovery</div>
+                    <div style="color: var(--text-muted); font-size: 11px;">tenant_admin@dpdpsecure.in</div>
+                </td>
+                <td style="padding: 16px 16px;">
+                    <span class="badge" style="background: rgba(255,255,255,0.1); color: var(--text-muted); padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">Readiness</span>
+                </td>
+                <td style="padding: 16px 16px;">
+                    <span class="badge" style="background: rgba(255,255,255,0.1); color: var(--text-muted); padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase;">Screening</span>
+                </td>
+                <td style="padding: 16px 16px;">
+                    <button style="background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); padding: 4px 10px; border-radius: 4px; font-size: 11px; display: flex; align-items: center; gap: 8px;">
+                        DPDP_Secure Mumbai HQ
+                        <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </button>
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted); font-size: 11px;">
+                    57.6% <span class="badge" style="background: rgba(255,255,255,0.1); color: var(--text-muted); padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; margin-left: 6px;">MEDIUM</span>
+                </td>
+                <td style="padding: 16px 24px; color: var(--text-muted);">
+                    &mdash;
+                </td>
+            </tr>
+
+            <!-- Row 2 -->
+            <tr style="border-bottom: 1px solid var(--border-color); background: rgba(255,255,255,0.02);">
+                <td style="padding: 16px 24px; color: var(--text-muted);">#12</td>
+                <td style="padding: 16px 16px; width: 350px;">
+                    <div style="font-weight: 600; color: var(--text-main); margin-bottom: 4px;">DPDP_Secure DPDPA Compliance Readiness Assessment</div>
+                    <div style="color: var(--text-muted); font-size: 11px;">&mdash;</div>
+                </td>
+                <td style="padding: 16px 16px;">
+                    <span class="badge" style="background: rgba(255,255,255,0.1); color: var(--text-muted); padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">Readiness</span>
+                </td>
+                <td style="padding: 16px 16px;">
+                    <span class="badge" style="background: rgba(255,255,255,0.1); color: var(--text-muted); padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase;">Review</span>
+                </td>
+                <td style="padding: 16px 16px;">
+                    <button style="background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); padding: 4px 10px; border-radius: 4px; font-size: 11px; display: flex; align-items: center; gap: 8px;">
+                        Tenant-wide
+                    </button>
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted); font-size: 11px;">
+                    0% <span class="badge" style="background: rgba(255,255,255,0.1); color: var(--text-muted); padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; margin-left: 6px;">MEDIUM</span>
+                </td>
+                <td style="padding: 16px 24px; color: #ef4444;">
+                    2026-08-31
+                </td>
+            </tr>
+
+            <!-- Row 3 -->
+            <tr style="border-bottom: 1px solid var(--border-color);">
+                <td style="padding: 16px 24px; color: var(--text-muted);">#11</td>
+                <td style="padding: 16px 16px; width: 350px;">
+                    <div style="font-weight: 600; color: var(--text-main); margin-bottom: 4px;">BNPL Credit Scoring AI DPIA</div>
+                    <div style="color: var(--text-muted); font-size: 11px;">&mdash;</div>
+                </td>
+                <td style="padding: 16px 16px;">
+                    <span class="badge" style="background: rgba(255,255,255,0.1); color: var(--text-muted); padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">DPIA</span>
+                </td>
+                <td style="padding: 16px 16px;">
+                    <span class="badge" style="background: rgba(255,255,255,0.1); color: var(--text-muted); padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase;">Review</span>
+                </td>
+                <td style="padding: 16px 16px;">
+                    <button style="background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); padding: 4px 10px; border-radius: 4px; font-size: 11px; display: flex; align-items: center; gap: 8px;">
+                        Tenant-wide
+                    </button>
+                </td>
+                <td style="padding: 16px 16px; color: var(--text-muted); font-size: 11px;">
+                    0% <span class="badge" style="background: rgba(255,255,255,0.1); color: var(--text-muted); padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; margin-left: 6px;">HIGH</span>
+                </td>
+                <td style="padding: 16px 24px; color: #ef4444;">
+                    2026-04-30
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <!-- Table Footer -->
+    <div class="table-toolbar" style="padding: 16px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; align-items: center;">
+        <div class="pagination" style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-muted);">
+            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Previous</button>
+            <span>Page 1 of 1</span>
+            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Next</button>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

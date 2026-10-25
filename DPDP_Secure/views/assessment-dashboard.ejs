@@ -1,0 +1,341 @@
+<%- include('partials/header') %>
+
+<style>
+    .donut-chart {
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        background: conic-gradient(
+            #60a5fa 0% 33%,
+            #8b5cf6 33% 100%
+        );
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+    }
+    .donut-inner {
+        width: 130px;
+        height: 130px;
+        background: var(--bg-card);
+        border-radius: 50%;
+    }
+    .progress-ring {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: conic-gradient(
+            #f97316 0% 58%,
+            rgba(255,255,255,0.1) 58% 100%
+        );
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+    }
+    .progress-ring-inner {
+        width: 96px;
+        height: 96px;
+        background: var(--bg-main); /* to match the inner card background */
+        border-radius: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .bar-chart-container {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-around;
+        height: 200px;
+        padding-bottom: 20px;
+        position: relative;
+        border-bottom: 1px dashed rgba(255,255,255,0.2);
+    }
+    .bar-chart-container::before {
+        content: '';
+        position: absolute;
+        top: 25%;
+        left: 0;
+        right: 0;
+        border-top: 1px dashed rgba(255,255,255,0.2);
+    }
+    .bar-chart-container::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        border-top: 1px dashed rgba(255,255,255,0.2);
+    }
+    .bar-chart-container .y-axis-labels {
+        position: absolute;
+        left: -15px;
+        top: -10px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        font-size: 10px;
+        color: var(--text-muted);
+    }
+    .bar-col {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        z-index: 1;
+        width: 32px;
+    }
+    .bar-fill {
+        width: 24px;
+        border-radius: 2px 2px 0 0;
+    }
+    .bar-label {
+        position: absolute;
+        bottom: -20px;
+        font-size: 10px;
+        color: var(--text-muted);
+        white-space: nowrap;
+    }
+
+    .horizontal-bar-wrap {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+    .horizontal-bar-label {
+        width: 140px;
+        font-size: 12px;
+        color: var(--text-muted);
+    }
+    .horizontal-bar-track {
+        flex: 1;
+        height: 6px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 3px;
+        overflow: hidden;
+    }
+    .horizontal-bar-fill {
+        height: 100%;
+        border-radius: 3px;
+    }
+    .horizontal-bar-value {
+        width: 40px;
+        text-align: right;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-main);
+    }
+</style>
+
+<div class="dashboard-header mb-4" style="align-items: center;">
+    <div class="title-group">
+        <h1>Assessment Automation</h1>
+        <p>Overview of PIA & DPIA assessments, risk posture, and open mitigations across your organisation.</p>
+    </div>
+    <button class="btn-secondary" style="background-color: transparent; color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        Dashboard
+        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" style="margin-left: 4px;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </button>
+</div>
+
+<!-- Top Metrics -->
+<div class="metrics-grid mb-4" style="grid-template-columns: repeat(4, 1fr);">
+    <div class="card metric-card">
+        <div class="metric-info w-100">
+            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">Total Assessments</span>
+            <h2 class="metric-value" style="margin-top: 8px; color: #3b82f6;">3</h2>
+        </div>
+    </div>
+    <div class="card metric-card">
+        <div class="metric-info w-100">
+            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">High Risk</span>
+            <h2 class="metric-value" style="margin-top: 8px; color: #ef4444;">1</h2>
+        </div>
+    </div>
+    <div class="card metric-card">
+        <div class="metric-info w-100">
+            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">Open Mitigations</span>
+            <h2 class="metric-value" style="margin-top: 8px; color: #f59e0b;">2</h2>
+        </div>
+    </div>
+    <div class="card metric-card">
+        <div class="metric-info w-100">
+            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">Overdue</span>
+            <h2 class="metric-value" style="margin-top: 8px; color: #ef4444;">2</h2>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Grid -->
+<div class="metrics-grid mb-4" style="grid-template-columns: 1fr 1fr;">
+    <!-- Assessment Status -->
+    <div class="card p-4">
+        <h3 style="font-size: 14px; margin: 0 0 4px 0;">Assessment Status</h3>
+        <p style="font-size: 11px; color: var(--text-muted); margin: 0 0 24px 0;">Breakdown by current lifecycle stage</p>
+        
+        <div class="donut-chart mb-4">
+            <div class="donut-inner"></div>
+        </div>
+        
+        <div style="display: flex; flex-direction: column; gap: 8px; max-width: 200px; margin: 0 auto; margin-top: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #60a5fa;"></span>
+                    <span style="color: var(--text-muted);">Screening</span>
+                </div>
+                <span style="font-weight: 700;">1</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #8b5cf6;"></span>
+                    <span style="color: var(--text-muted);">Review</span>
+                </div>
+                <span style="font-weight: 700;">2</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Type & Risk Distribution -->
+    <div class="card p-4">
+        <h3 style="font-size: 14px; margin: 0 0 4px 0;">Type & Risk Distribution</h3>
+        <p style="font-size: 11px; color: var(--text-muted); margin: 0 0 32px 0;">Assessment type split and risk level breakdown</p>
+        
+        <div style="padding-left: 20px; margin-top: 20px; padding-right: 20px;">
+            <div class="bar-chart-container">
+                <div class="y-axis-labels">
+                    <span>4</span>
+                    <span>3</span>
+                    <span>2</span>
+                    <span>1</span>
+                    <span>0</span>
+                </div>
+                
+                <div class="bar-col" style="position: relative;">
+                    <div class="bar-fill" style="height: 25%; background: #8b5cf6;"></div>
+                    <span class="bar-label">DPIA</span>
+                </div>
+                <div class="bar-col" style="position: relative;">
+                    <div class="bar-fill" style="height: 50%; background: #10b981;"></div>
+                    <span class="bar-label">Readiness</span>
+                </div>
+                <div class="bar-col" style="position: relative;">
+                    <div class="bar-fill" style="height: 50%; background: #f59e0b;"></div>
+                    <span class="bar-label">Med risk</span>
+                </div>
+                <div class="bar-col" style="position: relative;">
+                    <div class="bar-fill" style="height: 25%; background: #ef4444;"></div>
+                    <span class="bar-label">High risk</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- DPDPA Compliance Readiness -->
+<div class="section-title" style="display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; margin-bottom: 16px;">
+    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>
+    DPDPA Compliance Readiness
+    <span style="font-weight: 400; color: var(--text-muted);">— derived from your latest Readiness assessment answers</span>
+</div>
+
+<div class="card p-0" style="background: var(--bg-main); border: 1px solid var(--border-color); overflow: hidden;">
+    <!-- Top Header -->
+    <div style="background: white; padding: 16px 24px; display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 4px;">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="#f97316" stroke-width="2" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                <h3 style="margin: 0; font-size: 14px; color: #111827; font-weight: 600;">DPDPA Readiness Score</h3>
+                <span class="badge" style="background: #ffedd5; color: #c2410c; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 700;">HIGH RISK</span>
+            </div>
+            <p style="margin: 0; font-size: 11px; color: #6b7280;">Swish DPDPA GapAssessement &middot; Last updated 9 Sept 2026</p>
+        </div>
+        <a href="#" style="color: #ec4899; font-size: 12px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 4px;">
+            View assessment <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </a>
+    </div>
+    
+    <!-- Body -->
+    <div style="display: flex; padding: 24px;">
+        <!-- Circular Score -->
+        <div style="width: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-right: 1px solid var(--border-color); padding-right: 24px;">
+            <div class="progress-ring mb-3">
+                <div class="progress-ring-inner">
+                    <span style="font-size: 24px; font-weight: 700; color: var(--text-main); line-height: 1;">58</span>
+                    <span style="font-size: 10px; color: var(--text-muted);">out of 100</span>
+                </div>
+            </div>
+            <p style="margin: 0; font-size: 11px; color: var(--text-muted); text-align: center; line-height: 1.5;">
+                7 sections &middot; 26 questions<br>answered
+            </p>
+        </div>
+        
+        <!-- Progress Bars Grid -->
+        <div style="flex: 1; padding-left: 32px; display: grid; grid-template-columns: 1fr 1fr; gap: 0 48px;">
+            <div>
+                <div class="horizontal-bar-wrap">
+                    <div class="horizontal-bar-label">Consent Management</div>
+                    <div class="horizontal-bar-track"><div class="horizontal-bar-fill" style="width: 50%; background: #f97316;"></div></div>
+                    <div class="horizontal-bar-value" style="color: #f97316;">50%</div>
+                </div>
+                <div class="horizontal-bar-wrap">
+                    <div class="horizontal-bar-label">Rights Fulfilment</div>
+                    <div class="horizontal-bar-track"><div class="horizontal-bar-fill" style="width: 53%; background: #f97316;"></div></div>
+                    <div class="horizontal-bar-value" style="color: #f97316;">53%</div>
+                </div>
+                <div class="horizontal-bar-wrap">
+                    <div class="horizontal-bar-label">Fiduciary Duties</div>
+                    <div class="horizontal-bar-track"><div class="horizontal-bar-fill" style="width: 63%; background: #eab308;"></div></div>
+                    <div class="horizontal-bar-value" style="color: #eab308;">63%</div>
+                </div>
+                <div class="horizontal-bar-wrap">
+                    <div class="horizontal-bar-label">SDF Compliance</div>
+                    <div class="horizontal-bar-track"><div class="horizontal-bar-fill" style="width: 60%; background: #eab308;"></div></div>
+                    <div class="horizontal-bar-value" style="color: #eab308;">60%</div>
+                </div>
+            </div>
+            <div>
+                <div class="horizontal-bar-wrap">
+                    <div class="horizontal-bar-label">Cross-border</div>
+                    <div class="horizontal-bar-track"><div class="horizontal-bar-fill" style="width: 60%; background: #eab308;"></div></div>
+                    <div class="horizontal-bar-value" style="color: #eab308;">60%</div>
+                </div>
+                <div class="horizontal-bar-wrap">
+                    <div class="horizontal-bar-label">Children's Data</div>
+                    <div class="horizontal-bar-track"><div class="horizontal-bar-fill" style="width: 60%; background: #eab308;"></div></div>
+                    <div class="horizontal-bar-value" style="color: #eab308;">60%</div>
+                </div>
+                <div class="horizontal-bar-wrap">
+                    <div class="horizontal-bar-label">Data Governance</div>
+                    <div class="horizontal-bar-track"><div class="horizontal-bar-fill" style="width: 60%; background: #eab308;"></div></div>
+                    <div class="horizontal-bar-value" style="color: #eab308;">60%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <div style="padding: 16px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; font-size: 11px; background: rgba(0,0,0,0.1);">
+        <div style="display: flex; gap: 24px;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+                <span style="width: 6px; height: 6px; border-radius: 50%; background: #ef4444;"></span>
+                <span style="color: var(--text-muted);">Lowest: <span style="color: var(--text-main); font-weight: 600;">Consent Management</span> at <span style="color: #f97316; font-weight: 600;">50%</span></span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+                <span style="width: 6px; height: 6px; border-radius: 50%; background: #10b981;"></span>
+                <span style="color: var(--text-muted);">Strongest: <span style="color: var(--text-main); font-weight: 600;">Fiduciary Duties</span> at <span style="color: #f97316; font-weight: 600;">63%</span></span>
+            </div>
+        </div>
+        <div style="color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
+            <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+            Score is based on weighted question answers (1&ndash;5 scale)
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

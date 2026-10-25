@@ -1,0 +1,102 @@
+<%- include('partials/header') %>
+
+<div style="padding: 24px; max-width: 1400px; margin: 0 auto;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px;">
+        <div>
+            <h1 style="font-size: 20px; font-weight: 700; color: var(--text-main); margin: 0 0 8px 0;">Incident & Breach Management</h1>
+            <p style="color: var(--text-muted); font-size: 13px; margin: 0;">Track, assess, and respond to data incidents and security breaches. Manage DPBI notifications and<br>remediation actions.</p>
+        </div>
+        <button class="btn-primary" style="background: #be185d; border: 1px solid #9d174d; color: white; padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            New Incident
+        </button>
+    </div>
+
+    <!-- Top Metrics -->
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
+        <div class="card" style="padding: 20px;">
+            <div style="font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">TOTAL OPEN</div>
+            <div style="font-size: 28px; font-weight: 700; color: white;">1</div>
+        </div>
+        <div style="padding: 20px; border-radius: 8px; background: #fff1f2; border: 1px solid #ffe4e6;">
+            <div style="font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">CRITICAL / HIGH OPEN</div>
+            <div style="font-size: 28px; font-weight: 700; color: #e11d48;">1</div>
+        </div>
+        <div style="padding: 20px; border-radius: 8px; background: #fefce8; border: 1px solid #fef08a;">
+            <div style="font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">PENDING DPBI</div>
+            <div style="font-size: 28px; font-weight: 700; color: #ca8a04;">0</div>
+        </div>
+        <div style="padding: 20px; border-radius: 8px; background: #fff1f2; border: 1px solid #ffe4e6;">
+            <div style="font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">OVERDUE DPBI</div>
+            <div style="font-size: 28px; font-weight: 700; color: #e11d48;">0</div>
+        </div>
+    </div>
+
+    <div class="card p-0">
+        <!-- Filters -->
+        <div style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 16px;">
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <select style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px; appearance: none;">
+                    <option>All Statuses</option>
+                </select>
+                <select style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px; appearance: none;">
+                    <option>All Severities</option>
+                </select>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <input type="text" placeholder="Search..." style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 12px; border-radius: 6px; font-size: 13px; width: 250px;">
+                
+                <div style="display: flex; gap: 16px; align-items: center; color: var(--text-muted); font-size: 13px;">
+                    <span>Previous</span>
+                    <span>Page 1 of 1</span>
+                    <span>Next</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Table -->
+        <div style="overflow-x: auto;">
+            <table class="table" style="min-width: 1000px;">
+                <thead>
+                    <tr>
+                        <th style="padding-left: 24px;">Title <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" style="display: inline-block; vertical-align: middle; margin-bottom: 2px;"><path d="M18 15l-6-6-6 6"/></svg></th>
+                        <th>Type <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2" fill="none" style="display: inline-block; vertical-align: middle; margin-left: 4px; opacity: 0.5;"><path d="M7 15l5 5 5-5M7 9l5-5 5 5"/></svg></th>
+                        <th>Severity <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2" fill="none" style="display: inline-block; vertical-align: middle; margin-left: 4px; opacity: 0.5;"><path d="M7 15l5 5 5-5M7 9l5-5 5 5"/></svg></th>
+                        <th>Status <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2" fill="none" style="display: inline-block; vertical-align: middle; margin-left: 4px; opacity: 0.5;"><path d="M7 15l5 5 5-5M7 9l5-5 5 5"/></svg></th>
+                        <th>DPBI Deadline <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2" fill="none" style="display: inline-block; vertical-align: middle; margin-left: 4px; opacity: 0.5;"><path d="M7 15l5 5 5-5M7 9l5-5 5 5"/></svg></th>
+                        <th>Discovered <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2" fill="none" style="display: inline-block; vertical-align: middle; margin-left: 4px; opacity: 0.5;"><path d="M7 15l5 5 5-5M7 9l5-5 5 5"/></svg></th>
+                        <th style="padding-right: 24px;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding-left: 24px; font-weight: 600;">Keylogger on Loan Processor Workstation — Aadhaar & PAN Data Breach</td>
+                        <td>Data Breach</td>
+                        <td><span style="display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(249, 115, 22, 0.5); color: #f97316;">High</span></td>
+                        <td><span style="display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(168, 85, 247, 0.5); background: #a855f7; color: white;">Notifying</span></td>
+                        <td style="color: #ef4444;">Overdue</td>
+                        <td style="color: var(--text-muted);">28 Apr 2026, 03:03 pm</td>
+                        <td style="padding-right: 24px; text-align: right; color: var(--text-muted);"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><polyline points="9 18 15 12 9 6"></polyline></svg></td>
+                    </tr>
+                    <tr>
+                        <td style="padding-left: 24px; font-weight: 600;">Phishing Campaign Targeting Wealth Management Team</td>
+                        <td>Near Miss</td>
+                        <td><span style="display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(156, 163, 175, 0.5); color: #9ca3af;">Low</span></td>
+                        <td><span style="display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(156, 163, 175, 0.5); color: #9ca3af;">Closed</span></td>
+                        <td style="color: var(--text-muted);">&mdash;</td>
+                        <td style="color: var(--text-muted);">26 Feb 2026, 03:03 pm</td>
+                        <td style="padding-right: 24px; text-align: right; color: var(--text-muted);"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><polyline points="9 18 15 12 9 6"></polyline></svg></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div style="padding: 16px 24px; display: flex; justify-content: flex-end; align-items: center; gap: 16px; border-top: 1px solid var(--border-color); color: var(--text-muted); font-size: 13px;">
+            <span>Previous</span>
+            <span>Page 1 of 1</span>
+            <span>Next</span>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

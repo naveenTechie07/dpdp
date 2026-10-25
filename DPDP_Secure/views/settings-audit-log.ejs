@@ -1,0 +1,239 @@
+<%- include('partials/header') %>
+
+<style>
+.audit-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+}
+.filters-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 4px 0;
+}
+.filters-subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 0 0 24px 0;
+}
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.form-group {
+    margin-bottom: 0;
+}
+.form-label {
+    display: block; font-size: 12px; font-weight: 600; color: white; margin-bottom: 8px;
+}
+.form-input, .form-select {
+    width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: white; padding: 10px 12px; border-radius: 6px; font-size: 13px;
+}
+.form-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' width='14' height='14' stroke='white' stroke-width='2' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+}
+.filters-actions {
+    display: flex;
+    gap: 12px;
+}
+.btn-primary {
+    background: #be185d; border: 1px solid #9d174d; color: white; padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;
+}
+.btn-secondary {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;
+}
+.btn-outline {
+    background: transparent; border: 1px solid var(--border-color); color: white; padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer;
+}
+.pagination-container {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+.pagination-btn {
+    background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: var(--text-muted); padding: 6px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;
+}
+.pagination-btn.active {
+    background: rgba(255,255,255,0.1); color: white;
+}
+.audit-table-wrapper {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+}
+.audit-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.audit-table th {
+    text-align: left; padding: 12px 16px; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border-color); background: rgba(0,0,0,0.1);
+}
+.audit-table td {
+    padding: 16px; font-size: 13px; color: white; border-bottom: 1px solid var(--border-color); vertical-align: top;
+}
+.audit-table tr:last-child td {
+    border-bottom: none;
+}
+.audit-table tr:hover {
+    background: rgba(255,255,255,0.02); cursor: pointer;
+}
+.pill-info {
+    border: 1px solid rgba(255,255,255,0.5); border-radius: 12px; padding: 2px 10px; font-size: 11px; font-weight: 600; color: white;
+}
+.entity-details {
+    font-size: 11px; color: var(--text-muted); margin-top: 4px; font-family: monospace;
+}
+</style>
+
+<div style="padding: 24px; max-width: 1400px; margin: 0 auto;">
+    
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px;">
+        <div>
+            <h1 style="font-size: 20px; font-weight: 700; color: white; margin: 0 0 8px 0;">Audit Log</h1>
+            <p style="color: var(--text-muted); font-size: 13px; margin: 0;">Review security and configuration changes for this tenant. Select a row to inspect its event details.</p>
+        </div>
+        <button class="btn-outline">
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l-.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            Audit Log Settings
+        </button>
+    </div>
+
+    <div class="audit-card">
+        <h2 class="filters-title">Filters</h2>
+        <p class="filters-subtitle">Filter the tenant-scoped audit trail, then apply the query.</p>
+        
+        <div class="form-grid">
+            <div class="form-group">
+                <label class="form-label">Module</label>
+                <select class="form-select">
+                    <option>All modules</option>
+                    <option>platform</option>
+                    <option>auth</option>
+                    <option>consent</option>
+                    <option>privacy_rights</option>
+                    <option>policy</option>
+                    <option>assessment</option>
+                    <option>cookie</option>
+                    <option>governance</option>
+                    <option>integration</option>
+                    <option>notification</option>
+                    <option>incident</option>
+                    <option>discovery</option>
+                    <option>mapping</option>
+                    <option>localization</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Severity</label>
+                <select class="form-select">
+                    <option>All severities</option>
+                    <option>INFO</option>
+                    <option>WARNING</option>
+                    <option>CRITICAL</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Actor</label>
+                <input type="text" class="form-input" placeholder="Search actor...">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Action</label>
+                <input type="text" class="form-input" placeholder="Search action...">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Entity type</label>
+                <input type="text" class="form-input" placeholder="Search entity type...">
+            </div>
+            <div class="form-group">
+                <label class="form-label">From</label>
+                <input type="date" class="form-input" placeholder="dd-mm-yyyy" style="background-image: url('data:image/svg+xml,%3Csvg viewBox=\'0 0 24 24\' width=\'14\' height=\'14\' stroke=\'white\' stroke-width=\'2\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Crect x=\'3\' y=\'4\' width=\'18\' height=\'18\' rx=\'2\' ry=\'2\'%3E%3C/rect%3E%3Cline x1=\'16\' y1=\'2\' x2=\'16\' y2=\'6\'%3E%3C/line%3E%3Cline x1=\'8\' y1=\'2\' x2=\'8\' y2=\'6\'%3E%3C/line%3E%3Cline x1=\'3\' y1=\'10\' x2=\'21\' y2=\'10\'%3E%3C/line%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 12px center; text-transform: uppercase;">
+            </div>
+            <div class="form-group">
+                <label class="form-label">To</label>
+                <input type="date" class="form-input" placeholder="dd-mm-yyyy" style="background-image: url('data:image/svg+xml,%3Csvg viewBox=\'0 0 24 24\' width=\'14\' height=\'14\' stroke=\'white\' stroke-width=\'2\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Crect x=\'3\' y=\'4\' width=\'18\' height=\'18\' rx=\'2\' ry=\'2\'%3E%3C/rect%3E%3Cline x1=\'16\' y1=\'2\' x2=\'16\' y2=\'6\'%3E%3C/line%3E%3Cline x1=\'8\' y1=\'2\' x2=\'8\' y2=\'6\'%3E%3C/line%3E%3Cline x1=\'3\' y1=\'10\' x2=\'21\' y2=\'10\'%3E%3C/line%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 12px center; text-transform: uppercase;">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Rows per page</label>
+                <select class="form-select">
+                    <option>50</option>
+                    <option>100</option>
+                    <option>200</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="filters-actions">
+            <button class="btn-primary">Apply filters</button>
+            <button class="btn-secondary">Reset</button>
+        </div>
+    </div>
+    
+    <div class="pagination-container">
+        <button class="pagination-btn">Previous</button>
+        <button class="pagination-btn active">Next</button>
+    </div>
+
+    <div class="audit-table-wrapper">
+        <table class="audit-table">
+            <thead>
+                <tr>
+                    <th style="width: 40px;"></th>
+                    <th>TIME</th>
+                    <th>MODULE</th>
+                    <th>ACTION</th>
+                    <th>SEVERITY</th>
+                    <th>ACTOR</th>
+                    <th>ENTITY</th>
+                    <th style="text-align: right;">DETAILS</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% const logs = [
+                    { time: '16 Sept 2026, 05:09 am', module: 'auth', action: 'API_KEY_SCOPES_UPDATED', sev: 'INFO', actor: 'tenant_admin@dpdpsecure.in', entity: 'api_key', entityId: '2', details: '3 field(s)' },
+                    { time: '16 Sept 2026, 05:09 am', module: 'auth', action: 'API_KEY_SCOPES_UPDATED', sev: 'INFO', actor: 'tenant_admin@dpdpsecure.in', entity: 'api_key', entityId: '2', details: '3 field(s)' },
+                    { time: '16 Sept 2026, 05:05 am', module: 'privacy_rights', action: 'DPRR_FORM_DRAFT_CREATED', sev: 'INFO', actor: 'tenant_admin@dpdpsecure.in', entity: 'request_form', entityId: '01a04e0b-c1b4-7fbb-ba5a-1067bd956c5b', details: '1 field(s)' },
+                    { time: '16 Sept 2026, 03:27 am', module: 'platform', action: 'BRANDING_UPDATED', sev: 'INFO', actor: 'tenant_admin@dpdpsecure.in', entity: 'tenant_branding', entityId: '10000001-0000-0000-0000-000000000001', details: '1 field(s)' },
+                    { time: '16 Sept 2026, 03:26 am', module: 'platform', action: 'BRANDING_UPDATED', sev: 'INFO', actor: 'tenant_admin@dpdpsecure.in', entity: 'tenant_branding', entityId: '10000001-0000-0000-0000-000000000001', details: '1 field(s)' },
+                    { time: '16 Sept 2026, 03:21 am', module: 'auth', action: 'LOGIN_SUCCESS', sev: 'INFO', actor: 'tenant_admin@dpdpsecure.in', entity: 'auth.login', entityId: '01a04e0b-c1b4-7e04-bf01-2add5c848877', details: '0 field(s)' },
+                    { time: '10 Sept 2026, 10:40 am', module: 'auth', action: 'LOGIN_SUCCESS', sev: 'INFO', actor: 'tenant_admin@dpdpsecure.in', entity: 'auth.login', entityId: '01a04e0b-c1b4-7e04-bf01-2add5c848877', details: '0 field(s)' },
+                    { time: '10 Sept 2026, 08:18 am', module: 'auth', action: 'LOGOUT', sev: 'INFO', actor: 'tenant_admin@dpdpsecure.in', entity: 'auth.session', entityId: '01a04e0b-c1b4-7e04-bf01-2add5c848877', details: '0 field(s)' },
+                    { time: '10 Sept 2026, 07:12 am', module: 'auth', action: 'LOGOUT', sev: 'INFO', actor: 'tenant_admin@dpdpsecure.in', entity: 'auth.session', entityId: '01a04e0b-c1b4-7e04-bf01-2add5c848877', details: '0 field(s)' },
+                    { time: '10 Sept 2026, 06:43 am', module: 'privacy_rights', action: 'DPRR_FORM_PUBLISHED', sev: 'INFO', actor: 'tenant_admin@dpdpsecure.in', entity: 'request_form', entityId: '01a089c4-5d69-7cb9-a186-363f01320ffc', details: '1 field(s)' },
+                    { time: '10 Sept 2026, 06:43 am', module: 'privacy_rights', action: 'DPRR_FORM_INTEGRATION_UPDATED', sev: 'INFO', actor: 'tenant_admin@dpdpsecure.in', entity: 'request_form', entityId: '01a089c4-5d69-7cb9-a186-363f01320ffc', details: '1 field(s)' },
+                    { time: '10 Sept 2026, 06:43 am', module: 'privacy_rights', action: 'DPRR_FORM_SETTINGS_UPDATED', sev: 'INFO', actor: 'tenant_admin@dpdpsecure.in', entity: 'request_form', entityId: '01a089c4-5d69-7cb9-a186-363f01320ffc', details: '1 field(s)' },
+                    { time: '10 Sept 2026, 06:43 am', module: 'privacy_rights', action: 'DPRR_FORM_UPDATED', sev: 'INFO', actor: 'tenant_admin@dpdpsecure.in', entity: 'request_form', entityId: '01a089c4-5d69-7cb9-a186-363f01320ffc', details: '1 field(s)' },
+                    { time: '10 Sept 2026, 06:43 am', module: 'privacy_rights', action: 'DPRR_FORM_BRANDING_UPDATED', sev: 'INFO', actor: 'tenant_admin@dpdpsecure.in', entity: 'request_form', entityId: '01a089c4-5d69-7cb9-a186-363f01320ffc', details: '1 field(s)' },
+                    { time: '10 Sept 2026, 06:40 am', module: 'consent', action: 'CONSENT_COLLECTION_POINT_PUBLISHED', sev: 'INFO', actor: 'tenant_admin@dpdpsecure.in', entity: 'collection_point', entityId: '01a04e0b-c29f-7edb-ad7a-27d6df39170f', details: '1 field(s)' },
+                    { time: '10 Sept 2026, 06:40 am', module: 'consent', action: 'CONSENT_COLLECTION_POINT_DATA_ELEMENT_ADDED', sev: 'INFO', actor: 'tenant_admin@dpdpsecure.in', entity: 'collection_point', entityId: '01a04e0b-c29f-7edb-ad7a-27d6df39170f', details: '1 field(s)' }
+                ]; %>
+                <% logs.forEach(log => { %>
+                <tr>
+                    <td style="color: var(--text-muted);"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polyline points="9 18 15 12 9 6"></polyline></svg></td>
+                    <td style="color: var(--text-muted); font-size: 11px;"><%= log.time %></td>
+                    <td style="font-weight: 700;"><%= log.module %></td>
+                    <td style="font-family: monospace; font-size: 11px; color: var(--text-muted);"><%= log.action %></td>
+                    <td><span class="pill-info"><%= log.sev %></span></td>
+                    <td style="color: var(--text-muted);"><%= log.actor %></td>
+                    <td>
+                        <div style="font-weight: 600;"><%= log.entity %></div>
+                        <div class="entity-details"><%= log.entityId %></div>
+                    </td>
+                    <td style="text-align: right; color: var(--text-muted); font-size: 11px;"><%= log.details %></td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

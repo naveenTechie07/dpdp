@@ -1,0 +1,103 @@
+<%- include('partials/header') %>
+
+<div class="dashboard-header mb-4">
+    <div class="title-group">
+        <h1>Branding & Theme</h1>
+        <p>Customize logo and tenant theme colors for all portal pages.</p>
+    </div>
+</div>
+
+<div class="branding-layout">
+    <!-- Brand Configuration Form -->
+    <div class="card p-4 flex-2">
+        <h2 class="section-title mb-4">Brand Configuration</h2>
+        
+        <form action="#" method="POST">
+            <div class="form-group">
+                <label for="brandName">Brand Name</label>
+                <input type="text" id="brandName" class="form-control" value="DPDP_Secure">
+            </div>
+
+            <div class="form-group">
+                <label for="logoUrl">Logo URL</label>
+                <input type="text" id="logoUrl" class="form-control" value="https://.../logo.png">
+            </div>
+
+            <div class="form-group mb-4">
+                <label>Or Upload Logo</label>
+                <div class="file-upload-wrapper">
+                    <input type="file" id="logoUpload" class="file-input">
+                    <label for="logoUpload" class="file-label">Choose File</label>
+                    <span class="file-name">No file chosen</span>
+                </div>
+            </div>
+
+            <div class="color-grid">
+                <!-- Colors Row 1 -->
+                <div class="form-group">
+                    <label>Primary Color</label>
+                    <div class="color-picker-wrapper">
+                        <div class="color-box" style="background-color: #d00b6a;"></div>
+                        <input type="text" class="color-input" value="#d00b6a">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Accent Soft Color</label>
+                    <div class="color-picker-wrapper">
+                        <div class="color-box" style="background-color: #ffe5f8;"></div>
+                        <input type="text" class="color-input" value="#ffe5f8">
+                    </div>
+                </div>
+                
+                <!-- Colors Row 2 -->
+                <div class="form-group">
+                    <label>Background Top</label>
+                    <div class="color-picker-wrapper">
+                        <div class="color-box" style="background-color: #fbf5ff;"></div>
+                        <input type="text" class="color-input" value="#fbf5ff">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Background Middle</label>
+                    <div class="color-picker-wrapper">
+                        <div class="color-box" style="background-color: #f6effb;"></div>
+                        <input type="text" class="color-input" value="#f6effb">
+                    </div>
+                </div>
+
+                <!-- Colors Row 3 -->
+                <div class="form-group">
+                    <label>Background Bottom</label>
+                    <div class="color-picker-wrapper">
+                        <div class="color-box" style="background-color: #f8fafc;"></div>
+                        <input type="text" class="color-input" value="#f8fafc">
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Preview Card -->
+    <div class="flex-1">
+        <h2 class="section-title mb-4">Preview</h2>
+        <div class="preview-card p-4">
+            <div class="preview-header">
+                <div class="preview-logo-placeholder"></div>
+                <div class="preview-text">
+                    <h3>DPDP_Secure</h3>
+                    <p>Customer Administration Portal</p>
+                </div>
+            </div>
+            
+            <div class="preview-accent-box mb-4">
+                Accent Preview
+            </div>
+
+            <button class="preview-primary-btn">
+                Primary Action Preview
+            </button>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

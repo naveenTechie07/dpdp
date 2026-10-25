@@ -1,0 +1,145 @@
+<%- include('partials/header') %>
+
+<style>
+.settings-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px;
+}
+.form-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 8px;
+}
+.form-input {
+    width: 100%;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--border-color);
+    color: white;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    margin-bottom: 16px;
+}
+.color-input-container {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--border-color);
+    padding: 6px 12px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+}
+.color-box {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+}
+.color-text {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 13px;
+    width: 100%;
+    outline: none;
+}
+</style>
+
+<div style="padding: 24px; max-width: 1400px; margin: 0 auto;">
+    
+    <div style="margin-bottom: 32px;">
+        <h1 style="font-size: 20px; font-weight: 700; color: white; margin: 0 0 8px 0;">Branding & Theme</h1>
+        <p style="color: var(--text-muted); font-size: 13px; margin: 0;">Customize logo and tenant theme colors for all portal pages.</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 32px;">
+        <!-- Left: Configuration -->
+        <div class="settings-card">
+            <h2 style="font-size: 16px; font-weight: 700; color: white; margin: 0 0 24px 0;">Brand Configuration</h2>
+            
+            <label class="form-label">Brand Name</label>
+            <input type="text" class="form-input" value="DPDP_Secure">
+            
+            <label class="form-label">Logo URL</label>
+            <input type="text" class="form-input" placeholder="https://.../logo.png">
+            
+            <label class="form-label">Or Upload Logo</label>
+            <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 24px;">
+                <button style="background: rgba(255,255,255,0.1); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 12px; border-radius: 6px; font-size: 13px;">Choose File</button>
+                <span style="font-size: 13px; color: var(--text-muted);">No file chosen</span>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div>
+                    <label class="form-label">Primary Color</label>
+                    <div class="color-input-container">
+                        <div class="color-box" style="background: #0b57d0;"></div>
+                        <input type="text" class="color-text" value="#0b57d0">
+                    </div>
+                </div>
+                <div>
+                    <label class="form-label">Accent Soft Color</label>
+                    <div class="color-input-container">
+                        <div class="color-box" style="background: #e8f0ff;"></div>
+                        <input type="text" class="color-text" value="#e8f0ff">
+                    </div>
+                </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div>
+                    <label class="form-label">Background Top</label>
+                    <div class="color-input-container">
+                        <div class="color-box" style="background: #f4f9ff;"></div>
+                        <input type="text" class="color-text" value="#f4f9ff">
+                    </div>
+                </div>
+                <div>
+                    <label class="form-label">Background Middle</label>
+                    <div class="color-input-container">
+                        <div class="color-box" style="background: #eff5fb;"></div>
+                        <input type="text" class="color-text" value="#eff5fb">
+                    </div>
+                </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div>
+                    <label class="form-label">Background Bottom</label>
+                    <div class="color-input-container">
+                        <div class="color-box" style="background: #f8fafc;"></div>
+                        <input type="text" class="color-text" value="#f8fafc">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right: Preview -->
+        <div>
+            <h2 style="font-size: 16px; font-weight: 700; color: white; margin: 0 0 16px 0;">Preview</h2>
+            
+            <div style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+                    <div style="width: 32px; height: 32px; background: #e2e8f0; border-radius: 6px;"></div>
+                    <div>
+                        <div style="font-size: 14px; font-weight: 600; color: #0f172a; font-family: sans-serif;">DPDP_Secure</div>
+                        <div style="font-size: 12px; color: #64748b; font-family: sans-serif;">Customer Administration Portal</div>
+                    </div>
+                </div>
+                
+                <div style="border: 1px solid #e8f0ff; border-radius: 6px; padding: 12px; margin-bottom: 16px;">
+                    <span style="color: #cbd5e1; font-size: 12px;">Accent Preview</span>
+                </div>
+                
+                <button style="width: 100%; background: #0b57d0; color: white; border: none; padding: 12px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer;">Primary Action Preview</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<%- include('partials/footer') %>

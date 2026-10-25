@@ -1,0 +1,100 @@
+<%- include('partials/header') %>
+
+<div class="dashboard-header mb-4">
+    <div class="title-group">
+        <h1>User Profile</h1>
+        <p>Manage your account information</p>
+    </div>
+</div>
+
+<div class="profile-layout">
+    <!-- Appearance Section -->
+    <div class="card p-4 mb-4">
+        <h2 class="section-title mb-2">Appearance</h2>
+        <p class="section-subtitle mb-4">Choose how DPDP_Secure looks on this device. Saved in this browser.</p>
+        
+        <div class="segmented-control">
+            <label class="segment">
+                <input type="radio" name="theme" value="light">
+                <span>Light</span>
+            </label>
+            <label class="segment">
+                <input type="radio" name="theme" value="dark">
+                <span>Dark</span>
+            </label>
+            <label class="segment active">
+                <input type="radio" name="theme" value="auto" checked>
+                <span>Auto</span>
+            </label>
+        </div>
+    </div>
+
+    <!-- Personal Information Form -->
+    <div class="card p-4">
+        <form action="#" method="POST">
+            <div class="form-group">
+                <label for="firstName">First Name</label>
+                <input type="text" id="firstName" class="form-control" placeholder="Enter your first name">
+            </div>
+
+            <div class="form-group">
+                <label for="lastName">Last Name</label>
+                <input type="text" id="lastName" class="form-control" placeholder="Enter your last name">
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone</label>
+                <input type="tel" id="phone" class="form-control" placeholder="Enter your phone number">
+            </div>
+
+            <div class="form-group">
+                <label for="jobTitle">Job Title</label>
+                <input type="text" id="jobTitle" class="form-control" placeholder="Enter your job title">
+            </div>
+
+            <div class="form-group mb-4">
+                <label for="department">Department</label>
+                <input type="text" id="department" class="form-control" placeholder="Enter your department">
+            </div>
+
+            <button type="submit" class="btn-primary-large w-100">Save Changes</button>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const themeRadios = document.querySelectorAll('input[name="theme"]');
+    const segments = document.querySelectorAll('.segment');
+    
+    // Set initial state from localStorage
+    const savedTheme = localStorage.getItem('theme') || 'auto';
+    const initialRadio = document.querySelector(`input[name="theme"][value="${savedTheme}"]`);
+    if (initialRadio) {
+        initialRadio.checked = true;
+        segments.forEach(seg => seg.classList.remove('active'));
+        initialRadio.closest('.segment').classList.add('active');
+    }
+
+    themeRadios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            const theme = e.target.value;
+            
+            // Update UI
+            segments.forEach(seg => seg.classList.remove('active'));
+            e.target.closest('.segment').classList.add('active');
+            
+            // Apply theme
+            if (theme === 'auto') {
+                localStorage.removeItem('theme');
+                document.documentElement.removeAttribute('data-theme');
+            } else {
+                localStorage.setItem('theme', theme);
+                document.documentElement.setAttribute('data-theme', theme);
+            }
+        });
+    });
+});
+</script>
+
+<%- include('partials/footer') %>

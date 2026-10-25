@@ -1,0 +1,88 @@
+<%- include('partials/header') %>
+
+<div class="dashboard-header mb-4" style="display: flex; justify-content: space-between; align-items: flex-start;">
+    <div>
+        <h1 class="page-title"><%= title.split(' - ')[0] %></h1>
+        <div style="display: flex; align-items: center; gap: 12px; color: var(--text-muted); font-size: 13px;">
+            <div style="display: flex; align-items: center; gap: 4px; color: #10b981; font-weight: 500;">
+                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                Completed
+            </div>
+            <span>Scan #<%= scanId %></span>
+            <span>Started 09 Sept 2026, 11:52 am</span>
+            <span>&middot;</span>
+            <span>Completed 09 Sept 2026, 11:52 am</span>
+        </div>
+    </div>
+    <button class="btn-primary" style="padding: 10px 24px; font-size: 14px;">Generate banner</button>
+</div>
+
+<div style="display: flex; gap: 24px; margin-bottom: 24px;">
+    <!-- By Category -->
+    <div class="card p-0" style="flex: 1; display: flex; flex-direction: column; padding: 24px;">
+        <h3 style="font-size: 14px; font-weight: 600; color: var(--text-main); margin-bottom: auto;">By Category</h3>
+        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 160px;">
+            <div style="font-size: 32px; font-weight: 700; color: var(--text-muted); margin-bottom: 8px;">0</div>
+            <div style="color: var(--text-muted); font-size: 11px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">FINDINGS</div>
+        </div>
+    </div>
+
+    <!-- By Type -->
+    <div class="card p-0" style="flex: 1; display: flex; flex-direction: column; padding: 24px;">
+        <h3 style="font-size: 14px; font-weight: 600; color: var(--text-main); margin-bottom: auto;">By Type</h3>
+        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 160px;">
+            <div style="font-size: 32px; font-weight: 700; color: var(--text-muted); margin-bottom: 8px;">0</div>
+            <div style="color: var(--text-muted); font-size: 11px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">FINDINGS</div>
+        </div>
+    </div>
+
+    <!-- Pages Crawled -->
+    <div class="card p-0" style="flex: 1; display: flex; flex-direction: column; padding: 24px; position: relative;">
+        <h3 style="font-size: 14px; font-weight: 600; color: var(--text-main); margin-bottom: auto;">Pages Crawled</h3>
+        <div style="display: flex; justify-content: center; align-items: center; height: 120px;">
+            <!-- CSS Donut Chart for Pages Crawled -->
+            <div style="width: 80px; height: 80px; border-radius: 50%; background: conic-gradient(#ef4444 100%, transparent 0); position: relative;">
+                <div style="position: absolute; top: 12px; left: 12px; right: 12px; bottom: 12px; background: var(--card-bg); border-radius: 50%;"></div>
+            </div>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted);">
+                <div style="width: 8px; height: 8px; border-radius: 50%; background: #ef4444;"></div>
+                4xx Client err
+            </div>
+            <div style="font-weight: 600; color: var(--text-main); font-size: 13px;">1</div>
+        </div>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 24px;">
+    <!-- Total findings -->
+    <div class="card" style="padding: 24px; display: flex; flex-direction: column; justify-content: flex-end; height: 120px;">
+        <div style="font-size: 28px; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">0</div>
+        <div style="font-weight: 600; color: var(--text-main); font-size: 13px; margin-bottom: 2px;">Total findings</div>
+        <div style="color: var(--text-muted); font-size: 11px;">All categories & types</div>
+    </div>
+
+    <!-- Cookies -->
+    <div class="card" style="padding: 24px; display: flex; flex-direction: column; justify-content: flex-end; height: 120px;">
+        <div style="font-size: 28px; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">0</div>
+        <div style="font-weight: 600; color: var(--text-main); font-size: 13px; margin-bottom: 2px;">Cookies</div>
+        <div style="color: var(--text-muted); font-size: 11px;">Cookie-type findings</div>
+    </div>
+
+    <!-- Trackers -->
+    <div class="card" style="padding: 24px; display: flex; flex-direction: column; justify-content: flex-end; height: 120px;">
+        <div style="font-size: 28px; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">0</div>
+        <div style="font-weight: 600; color: var(--text-main); font-size: 13px; margin-bottom: 2px;">Trackers</div>
+        <div style="color: var(--text-muted); font-size: 11px;">Pixels, SDKs & network calls</div>
+    </div>
+
+    <!-- Pages crawled stats -->
+    <div class="card" style="padding: 24px; display: flex; flex-direction: column; justify-content: flex-end; height: 120px;">
+        <div style="font-size: 28px; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">1</div>
+        <div style="font-weight: 600; color: var(--text-main); font-size: 13px; margin-bottom: 2px;">Pages crawled</div>
+        <div style="color: var(--text-muted); font-size: 11px;">of 20 max</div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

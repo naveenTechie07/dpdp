@@ -1,0 +1,130 @@
+<%- include('partials/header') %>
+
+<!-- Top Metrics -->
+<div class="metrics-grid mb-4" style="grid-template-columns: repeat(3, 1fr);">
+    <div class="card metric-card">
+        <div class="metric-info w-100">
+            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px;">TOTAL LINEAGE EDGES</span>
+            <h2 class="metric-value" style="margin-top: 8px;">1</h2>
+        </div>
+    </div>
+    <div class="card metric-card">
+        <div class="metric-info w-100">
+            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px;">STALE EDGES</span>
+            <h2 class="metric-value" style="margin-top: 8px;">0</h2>
+        </div>
+    </div>
+    <div class="card metric-card">
+        <div class="metric-info w-100">
+            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px;">CONNECTED ASSETS</span>
+            <h2 class="metric-value" style="margin-top: 8px;">5</h2>
+        </div>
+    </div>
+</div>
+
+<!-- Explorer Tool -->
+<div class="card mb-4" style="background: var(--bg-card); display: flex; flex-direction: column; gap: 16px;">
+    <h3 style="font-size: 13px; font-weight: 600; margin: 0; color: var(--text-main);">Lineage Graph Explorer</h3>
+    
+    <div style="display: flex; gap: 16px; align-items: flex-end;">
+        <div style="flex: 1;">
+            <label style="display: block; font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px;">Root Asset</label>
+            <div style="position: relative;">
+                <select style="width: 100%; appearance: none; background: transparent; border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 12px; border-radius: 6px; font-size: 13px;">
+                    <option value="" disabled selected hidden>Select an asset...</option>
+                    <option value="1">Core Banking Database</option>
+                    <option value="2">Customer Feedback & Survey Store</option>
+                    <option value="3">Loan Origination System</option>
+                    <option value="4">customer_kyc</option>
+                    <option value="5">loan_applications</option>
+                </select>
+                <svg style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none;" viewBox="0 0 24 24" width="14" height="14" stroke="var(--text-muted)" stroke-width="2" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+        </div>
+        
+        <div style="width: 150px;">
+            <label style="display: block; font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px;">Direction</label>
+            <div style="position: relative;">
+                <select style="width: 100%; appearance: none; background: transparent; border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 12px; border-radius: 6px; font-size: 13px;">
+                    <option>Both</option>
+                    <option>Upstream</option>
+                    <option>Downstream</option>
+                </select>
+                <svg style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none;" viewBox="0 0 24 24" width="14" height="14" stroke="var(--text-muted)" stroke-width="2" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+        </div>
+        
+        <button class="btn-secondary" style="background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; height: 36px;">
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            Explore
+        </button>
+    </div>
+</div>
+
+<div class="dashboard-header mb-4" style="align-items: center;">
+    <div class="title-group">
+        <h1>Data Lineage</h1>
+        <p>Track how data flows between systems, containers, and external processors.</p>
+    </div>
+    <button class="btn-primary" style="background-color: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        Add Edge
+    </button>
+</div>
+
+<div class="card p-0" style="overflow: hidden;">
+    <!-- Table Toolbar -->
+    <div class="table-toolbar" style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+        <div class="search-bar" style="width: 300px; background: transparent; padding: 0; border: none;">
+            <input type="text" placeholder="Search lineage edges..." style="border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 6px; background: transparent; color: var(--text-main); width: 100%;">
+        </div>
+        
+        <div class="pagination" style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-muted);">
+            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Previous</button>
+            <span>Page 1 of 1</span>
+            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Next</button>
+        </div>
+    </div>
+
+    <!-- Data Table -->
+    <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+        <thead>
+            <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 11px; text-transform: uppercase;">
+                <th style="padding: 12px 24px; font-weight: 600;">Source &#9652;</th>
+                <th style="padding: 12px 12px; font-weight: 600; width: 40px; text-align: center;"></th>
+                <th style="padding: 12px 24px; font-weight: 600;">Target &#8597;</th>
+                <th style="padding: 12px 24px; font-weight: 600;">Flow Type &#8597;</th>
+                <th style="padding: 12px 24px; font-weight: 600;">Notes &#8597;</th>
+                <th style="padding: 12px 24px; font-weight: 600;">STALE</th>
+                <th style="padding: 12px 24px; font-weight: 600;">Last Confirmed &#8597;</th>
+                <th style="padding: 12px 24px; font-weight: 600;"></th>
+            </tr>
+        </thead>
+        <tbody style="font-size: 13px;">
+            <!-- Row 1 -->
+            <tr>
+                <td style="padding: 16px 24px; font-weight: 600; color: var(--text-main); white-space: nowrap;">Loan Origination System</td>
+                <td style="padding: 16px 12px; color: var(--text-muted); text-align: center;">&rarr;</td>
+                <td style="padding: 16px 24px; font-weight: 600; color: var(--text-main); white-space: nowrap;">Core Banking Database</td>
+                <td style="padding: 16px 24px;"><span class="badge" style="background: #e9d5ff; color: #6b21a8; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">etl</span></td>
+                <td style="padding: 16px 24px; color: var(--text-muted); max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Loan application data synced nightly from LOS to Core Banking DB for...</td>
+                <td style="padding: 16px 24px; color: var(--text-muted);">&mdash;</td>
+                <td style="padding: 16px 24px; color: var(--text-muted);">8/29/2026</td>
+                <td style="padding: 16px 24px; display: flex; gap: 12px; align-items: center; justify-content: flex-end;">
+                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="var(--text-muted)" stroke-width="2" fill="none" style="cursor: pointer;"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <!-- Table Footer -->
+    <div class="table-toolbar" style="padding: 16px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; align-items: center;">
+        <div class="pagination" style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-muted);">
+            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Previous</button>
+            <span>Page 1 of 1</span>
+            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Next</button>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>
