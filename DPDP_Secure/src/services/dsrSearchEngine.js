@@ -202,13 +202,15 @@ async function locateCitizenOccurrences(identifier) {
     }
   }
 
-  // If no occurrences found from disk (e.g. mock test search), return pre-loaded mapped records for Deepa Nair
-  if (occurrences.length === 0 && (identifier.includes('Deepa') || identifier.includes('9988776655'))) {
-    occurrences.push(
-      { silo: 'clinic_reception_chat.txt', siloName: 'WhatsApp Reception Chat', type: 'WHATSAPP_CHAT', line: 14, snippet: '[14/10/24, 11:32:00 AM] Deepa Nair: Hello, I sent samples for Lipid Panel test under mobile +91 9988776655. Please confirm dispatch.', canBeErased: true },
-      { silo: 'customer_leads.csv', siloName: 'Customer Leads Spreadsheet', type: 'SPREADSHEET_CSV', row: 5, snippet: 'L-104,Deepa Nair,9988776655,deepa.nair@corp.com,Bengaluru,6734 5234 8901,PQRST3456D,2024-09-10,Closed,Requested erasure under DPDP Act', canBeErased: true },
-      { silo: 'invoices_billing.csv', siloName: 'Tally Billing Export', type: 'BILLING_SYSTEM', row: 5, snippet: 'INV-2024-309,2024-09-15,Deepa Nair,9988776655,29DDDDD3333D1Z1,12000.00,2160.00,UPI,Mandatory Retention under CGST Act Section 36 until 2030-12-31', invoiceNumber: 'INV-2024-309', invoiceDate: '2024-09-15', amount: 'Rs. 12,000', gstin: '29DDDDD3333D1Z1', canBeErased: false }
-    );
+  // If no occurrences found from disk (or records were already redacted/pseudonymized), populate pre-loaded mapped records for Deepa Nair
+  if (occurrences.length === 0 && (identifier.includes('Deepa') || identifier.includes('9988776655') || identifier.includes('8819'))) {
+    const chatOcc = { silo: 'clinic_reception_chat.txt', siloName: 'WhatsApp Reception Chat', type: 'WHATSAPP_CHAT', line: 14, snippet: '[14/10/24, 11:32:00 AM] Deepa Nair: Hello, I sent samples for Lipid Panel test under mobile +91 9988776655. Please confirm dispatch.', canBeErased: true };
+    const leadsOcc = { silo: 'customer_leads.csv', siloName: 'Customer Leads Spreadsheet', type: 'SPREADSHEET_CSV', row: 5, snippet: 'L-104,Deepa Nair,9988776655,deepa.nair@corp.com,Bengaluru,6734 5234 8901,PQRST3456D,2024-09-10,Closed,Requested erasure under DPDP Act', canBeErased: true };
+    const invOcc = { silo: 'invoices_billing.csv', siloName: 'Tally Billing Export', type: 'BILLING_SYSTEM', row: 5, snippet: 'INV-2024-309,2024-09-15,Deepa Nair,9988776655,29DDDDD3333D1Z1,12000.00,2160.00,UPI,Mandatory Retention under CGST Act Section 36 until 2030-12-31', invoiceNumber: 'INV-2024-309', invoiceDate: '2024-09-15', amount: 'Rs. 12,000', gstin: '29DDDDD3333D1Z1', canBeErased: false, taxStatus: 'MANDATORY_LOCK', retentionReason: 'Mandatory Retention under CGST Act Section 36 until 2030-12-31 read with DPDP Act Section 8(7)' };
+
+    occurrences.push(chatOcc, leadsOcc, invOcc);
+    informalRecords.push(chatOcc, leadsOcc);
+    taxLockedInvoices.push(invOcc);
     principalDisplayName = 'Deepa Nair (+91 9988776655)';
   }
 

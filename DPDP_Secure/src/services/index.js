@@ -10,6 +10,8 @@ const fileParsers = require('./fileParsers');
 const ropaService = require('./ropaService');
 const aiService = require('./aiService');
 const dsrSearchEngine = require('./dsrSearchEngine');
+const statutoryCollisionResolver = require('./statutoryCollisionResolver');
+const certificateGenerator = require('./certificateGenerator');
 
 module.exports = {
   ...verhoeffAlgorithm,
@@ -18,11 +20,15 @@ module.exports = {
   ...ropaService,
   ...aiService,
   ...dsrSearchEngine,
+  ...statutoryCollisionResolver,
+  ...certificateGenerator,
   verhoeffAlgorithm,
   indianPiiEngine,
   fileParsers,
   ropaService,
   aiService,
-  dsrSearchEngine
+  dsrSearchEngine,
+  statutoryCollisionResolver,
+  certificateGenerator
 };
 

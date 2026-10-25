@@ -17,6 +17,7 @@ const {
   scanPreloadedSamples
 } = require('../src/services/fileParsers');
 const models = require('../src/models');
+const { resetSampleData } = require('../src/services/statutoryCollisionResolver');
 
 console.log('================================================================');
 console.log('  DPDP_Secure - Pillar 1: File Parsers & Discovery Test Suite');
@@ -38,6 +39,7 @@ async function runTest(name, fn) {
 }
 
 async function main() {
+  resetSampleData();
   // 1. Cybersecurity: Formula Injection Neutralization
   await runTest('Formula Injection Defense: Neutralize Dangerous Spreadsheet Cells', () => {
     assert.strictEqual(sanitizeCsvCell('=cmd|\' /C calc\'!A0'), '\'=cmd|\' /C calc\'!A0');

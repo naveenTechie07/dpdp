@@ -11,4 +11,4 @@
 [12/10/24, 4:17:10 PM] Priya Patel: Mobile: 9876543210, Patient ID: PAT-9921, PAN: ABCDE1234F. Email: priya.patel@workmail.in
 [12/10/24, 4:18:00 PM] Aarogya Clinic Reception: Attached report for TSH and Thyroid Panel.
 [14/10/24, 11:30:15 AM] Aarogya Clinic Reception: Good morning Ms. Nair, welcome to Aarogya Diagnostics.
-[14/10/24, 11:32:00 AM] Deepa Nair: Hello, I sent samples for Lipid Panel test under mobile +91 9988776655. Please confirm dispatch.
+[14/10/24, 11:32:00 AM] [REDACTED-DPDP-SEC-12]: Hello, I sent samples for Lipid Panel test under mobile +91 [REDACTED-DPDP-SEC-12]. Please confirm dispatch.
