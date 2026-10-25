@@ -74,12 +74,19 @@ In your Vercel Project Dashboard (`Settings -> Environment Variables`), configur
 
 ---
 
-### 6. Post-Deployment Verification Checklist
-Once your Vercel deployment URL (e.g. `https://dpdp-secure.vercel.app`) is active, verify the following:
+### 6. Official Production Deployment & CI/CD Pipeline
+- **Primary Live Production URL**: [https://srujana-hackathon2026-codeplays.vercel.app](https://srujana-hackathon2026-codeplays.vercel.app)
+- **GitHub Repository**: [naveenTechie07/Srujana_hackathon2026_codeplays](https://github.com/naveenTechie07/Srujana_hackathon2026_codeplays)
+- **Supabase Cloud Project**: `bxiuiopomqpwxmslllhl` (Region: `ap-south-1` Mumbai)
+- **Alternative Mirror**: [https://dpdp-secure.vercel.app](https://dpdp-secure.vercel.app)
+
+### 7. Post-Deployment Verification Checklist
+Once your Vercel deployment URL (`https://srujana-hackathon2026-codeplays.vercel.app`) is active, verify the following:
 1. `GET /`: Homepage loads with glassmorphic cards and compliance metrics (`HTTP 200`).
-2. `GET /discovery/connectors`: Discovery scanner interface and pre-loaded informal silos (`HTTP 200`).
-3. `GET /consent/collection-points`: Multilingual Section 5 notices in English, Kannada, and Hindi (`HTTP 200`).
-4. `GET /privacy/requests`: Live DSR ticket `DSR-2026-8819` for Deepa Nair with CGST Section 36 retention lock (`HTTP 200`).
-5. `GET /incidents/management`: 72-Hour countdown and Form DPBI-IR1 regulatory intimation dossier (`HTTP 200`).
-6. `GET /settings/audit-log`: Cryptographic SHA-256 hash chain verification banner (`✓ VERIFIED UNTAMPERED`) (`HTTP 200`).
-7. Click `⚡ Instant Hackathon Demo Mode`: Confirms live AJAX reset to Aarogya Diagnostic Center.
+2. Topbar Live Badge: `⚡ Supabase: ap-south-1` lights up green with live ping latency.
+3. `GET /discovery/connectors`: Discovery scanner interface and pre-loaded informal silos (`HTTP 200`).
+4. `GET /consent/collection-points`: Multilingual Section 5 notices in English, Kannada, and Hindi (`HTTP 200`).
+5. `GET /privacy/requests`: Live DSR ticket `DSR-2026-8819` for Deepa Nair with CGST Section 36 retention lock (`HTTP 200`).
+6. `GET /incidents/management`: 72-Hour countdown and Form DPBI-IR1 regulatory intimation dossier (`HTTP 200`).
+7. `GET /settings/audit-log`: Cryptographic SHA-256 hash chain verification banner (`✓ VERIFIED UNTAMPERED`) (`HTTP 200`).
+8. Click `⚡ Instant Hackathon Demo Mode`: Confirms live AJAX reset to Aarogya Diagnostic Center.
