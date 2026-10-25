@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RecordOfProcessingActivities",
+  "type": "object",
+  "required": ["activityId", "fiduciaryId", "purpose", "legalBasis", "retentionPeriodDays"],
+  "properties": {
+    "activityId": { "type": "string" },
+    "fiduciaryId": { "type": "string" },
+    "purpose": { "type": "string" },
+    "legalBasis": { "type": "string", "enum": ["CONSENT", "LEGAL_OBLIGATION", "EMPLOYMENT", "EMERGENCY"] },
+    "personalDataCategories": { "type": "array", "items": { "type": "string" } },
+    "retentionPeriodDays": { "type": "integer" }
+  }
+}
