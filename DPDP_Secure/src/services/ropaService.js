@@ -22,62 +22,109 @@ async function synthesizeRoPA(tenantId = 'TENANT-AAROGYA-01') {
   const silos = await models.getSilos(tenantId);
   const findings = await models.getAllFindings(tenantId);
 
-  // 2. Synthesize lawful statutory activities across informal workflows
+  // 2. Synthesize lawful statutory activities across informal & enterprise connectors
   const standardActivities = [
     {
       id: 'ROPA-ACT-001',
       tenantId,
-      activityName: 'Patient Booking & WhatsApp Report Dispatch',
-      dataCategories: 'Identity (Aadhaar), Contact (Mobile, Indiranagar Address), Clinical Health Data (Blood Sugar, Lipid Profile, Thyroid Panel)',
-      purpose: 'Delivery of requested medical lab reports to patient',
-      legalBasis: 'Section 6 - Consent / Section 4 - Lawful Purpose',
+      activityName: 'Patient Diagnostic Dispatch & WhatsApp Notifications',
+      dataCategories: 'Identity (Aadhaar), Contact (Mobile, Bengaluru Address), Clinical Health Data (Blood Panels, Lipid Profile, Thyroid)',
+      purpose: 'Fulfilling diagnostic testing, tele-consultation alerts, and electronic medical report delivery to patients',
+      legalBasis: 'Explicit Consent (DPDP Section 6) & Section 4 Lawful Purpose',
       retentionPeriod: '3 Years for clinical reports / 6 Years for Billing Invoices',
-      storageLocation: 'Local Reception Android Device & Desktop Billing PC',
-      securitySafeguards: 'Local Storage, Screen Lock, Zero Cloud Egress'
+      storageLocation: 'Reception WhatsApp Business PC (SILO-WHATSAPP-01) & PDF Lab Vault (SILO-PDFS)',
+      securitySafeguards: 'Verhoeff tokenization, AES-256 local encryption, Zero Cloud Egress',
+      defaultSilos: ['SILO-WHATSAPP-01', 'SILO-PDFS']
     },
     {
       id: 'ROPA-ACT-002',
       tenantId,
       activityName: 'Customer Lead Management & Home Sample Collection',
-      dataCategories: 'Identity (Aadhaar, PAN), Contact (Mobile, Email)',
-      purpose: 'Coordinating home diagnostic sample collection',
-      legalBasis: 'Section 6 - Consent',
+      dataCategories: 'Identity (Full Name, Aadhaar, PAN), Contact (Mobile, Email, Home Address)',
+      purpose: 'Coordinating phlebotomist home visits, diagnostic appointment scheduling, and patient intake',
+      legalBasis: 'Consent (DPDP Section 5 & 6)',
       retentionPeriod: '1 Year or until consent withdrawal',
-      storageLocation: 'Local Lead Spreadsheet',
-      securitySafeguards: 'Password-protected Excel sheet'
+      storageLocation: 'Customer Leads Tracker (SILO-LEADS-02) & Patient Requisition Docs (SILO-DOCUMENTS)',
+      securitySafeguards: 'Role-based access control, hashed customer IDs, revocable consent ledger',
+      defaultSilos: ['SILO-LEADS-02', 'SILO-DOCUMENTS']
     },
     {
       id: 'ROPA-ACT-003',
       tenantId,
-      activityName: 'Billing, GST & Statutory Tax Invoicing',
-      dataCategories: 'Financial (GSTIN, Invoice Amount, Payment Mode), Contact (Phone)',
-      purpose: 'Compliance with tax invoicing regulations',
-      legalBasis: 'CGST Act 2017 Section 36 read with DPDP Act Section 8(7)',
-      retentionPeriod: '72 Months (6 Years) mandatory tax lock',
-      storageLocation: 'Desktop Billing Software (Tally)',
-      securitySafeguards: 'Air-gapped desktop PC, daily local backup'
+      activityName: 'Statutory Invoicing, GST & Commercial Tax Compliance',
+      dataCategories: 'Financial (GSTIN, PAN, Invoice Amount, Payment Mode, UPI ID), Contact (Phone)',
+      purpose: 'Statutory commercial tax recording, GSTR-1 filings, and mandatory audit retention compliance',
+      legalBasis: 'Legal Obligation (CGST Act 2017 Section 36 read with DPDP Section 8(7))',
+      retentionPeriod: '72 Months (6 Years mandatory CGST tax retention lock)',
+      storageLocation: 'Tally Invoicing & Billing (SILO-BILLING-03) & Financial Spreadsheets (SILO-EXCEL-FILES)',
+      securitySafeguards: 'Dual-track collision lock, tamper-evident SHA-256 audit ledger, air-gapped PC',
+      defaultSilos: ['SILO-BILLING-03', 'SILO-EXCEL-FILES']
+    },
+    {
+      id: 'ROPA-ACT-004',
+      tenantId,
+      activityName: 'Health Insurance Cashless TPA Claims Processing',
+      dataCategories: 'Aadhaar UID, Policy Number, Claim Amount, ICD-10 Diagnosis, Lab Billing Invoices, Doctor Prescriptions',
+      purpose: 'Adjudication, pre-authorization, and cashless settlement of health insurance diagnostic claims with TPAs',
+      legalBasis: 'Contractual Obligation & Consent (DPDP Section 4 & 6)',
+      retentionPeriod: '5 Years post claim settlement (IRDAI Health Regulations)',
+      storageLocation: 'Enterprise Claims Database (SILO-CLAIMS-DB)',
+      securitySafeguards: 'Verhoeff token masking, strict column encryption, zero external sync',
+      defaultSilos: ['SILO-CLAIMS-DB']
+    },
+    {
+      id: 'ROPA-ACT-005',
+      tenantId,
+      activityName: 'Policyholder Administration & Beneficiary Nominee KYC',
+      dataCategories: 'Customer Full Name, Date of Birth, PAN, Nominee Relationship, Bank Account Number, IFSC',
+      purpose: 'Maintaining corporate policyholder rosters, underwriting verifications, and nominee benefit disbursements',
+      legalBasis: 'Legal Obligation (Insurance Act 1938 & DPDP Section 8)',
+      retentionPeriod: 'Duration of policy + 7 Years statutory limitation',
+      storageLocation: 'Core Policy Administration DB (SILO-POLICY-ADMIN-DB)',
+      securitySafeguards: 'Restricted administrative roles, salted hash tokens, SHA-256 provenance chain',
+      defaultSilos: ['SILO-POLICY-ADMIN-DB']
+    },
+    {
+      id: 'ROPA-ACT-006',
+      tenantId,
+      activityName: 'Digital Diagnostic Imaging & Encrypted Offsite Archival',
+      dataCategories: 'Patient UID, Radiological X-Ray/CT DICOM Studies, Modality Reports, Clinical Doctor Observations',
+      purpose: 'Radiological image preservation, secondary radiologist consultation, and longitudinal medical history records',
+      legalBasis: 'Explicit Medical Consent (DPDP Section 6 & NMC Ethics Code)',
+      retentionPeriod: '3 Years (Adults) / Until Age of Majority + 3 Years (Pediatric)',
+      storageLocation: 'Cloud Object Storage Vault (SILO-CLOUD-STORAGE)',
+      securitySafeguards: 'Client-side AES-GCM-256 envelope encryption prior to transit, zero-knowledge keys',
+      defaultSilos: ['SILO-CLOUD-STORAGE']
     }
   ];
 
   // 3. Persist to SQLite ropa_records table
   await models.saveRoPARecords(standardActivities);
 
-  // 4. Record tamper-evident audit event
+  // 4. Automatically establish RoPA-Silo mappings
+  for (const act of standardActivities) {
+    if (act.defaultSilos && act.defaultSilos.length > 0) {
+      await models.setRopaSiloMappings(act.id, act.defaultSilos, tenantId);
+    }
+  }
+
+  // 5. Record tamper-evident audit event
   await models.logAuditEvent(
     tenantId,
     'Compliance Officer',
     'ROPA_SYNTHESIS',
     'Section 8(4) Register',
     JSON.stringify({
-      details: 'Automated synthesis of 3 lawful processing activities from informal data findings under Section 8(4)',
+      details: 'Automated synthesis of 6 lawful processing activities across informal & enterprise connectors under Section 8(4)',
       activitiesCount: standardActivities.length,
+      connectorsCovered: ['Claims DB', 'Policy Admin DB', 'Excel', 'PDFs', 'Documents', 'Cloud Storage', 'WhatsApp'],
       statutoryReference: 'DPDP Act 2023 Section 8(4) read with Rule 6'
     })
   );
 
   return {
     success: true,
-    message: 'RoPA synthesized under Section 8(4) from current informal data findings.',
+    message: 'RoPA synthesized under Section 8(4) covering all 7 informal & enterprise connectors.',
     count: standardActivities.length,
     records: standardActivities
   };

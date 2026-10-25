@@ -393,12 +393,20 @@ const discoveryController = {
         ropaRecords = syn.records;
       }
 
+      // Populate mapped silos for each processing activity
+      const currentRoPASiloMap = {};
+      for (const r of ropaRecords) {
+        r.mappedSilos = await models.getSilosForRopa(r.id, tenantId);
+        currentRoPASiloMap[r.id] = (r.mappedSilos || []).map(s => s.id);
+      }
+
       res.render('inventory-ropa', {
         title: 'Processing Activities (RoPA) - DPDP_Secure',
         description: 'Statutory Record of Processing Activities under DPDP Act Section 8(4).',
         breadcrumbs: ['Workspace', 'Data Mapping', 'RoPA'],
         path: '/inventory/ropa',
         ropaRecords,
+        currentRoPASiloMap,
         silos: silos || []
       });
     } catch (err) {
@@ -773,6 +781,13 @@ const discoveryController = {
         const { synthesizeRoPA } = require('../services/ropaService');
         const syn = await synthesizeRoPA(tenantId);
         records = syn.records;
+      }
+
+      for (const rec of records) {
+        rec.mappedSilos = await models.getSilosForRopa(rec.id, tenantId);
+        if (rec.mappedSilos && rec.mappedSilos.length > 0) {
+          rec.siloName = rec.mappedSilos.map(s => s.siloName).join(', ');
+        }
       }
 
       res.render('inventory-ropa-print', {

@@ -288,6 +288,27 @@ createDataAsset: async (assetData) => {
     return await run('DELETE FROM ropa_silo_mapping WHERE ropaRecordId = ? AND siloId = ? AND tenantId = ?', [ropaRecordId, siloId, tenantId]);
   },
 
+  deleteAllRopaSiloMappings: async (ropaRecordId, tenantId = 'TENANT-AAROGYA-01') => {
+    return await run('DELETE FROM ropa_silo_mapping WHERE ropaRecordId = ? AND tenantId = ?', [ropaRecordId, tenantId]);
+  },
+
+  setRopaSiloMappings: async (ropaRecordId, siloIds = [], tenantId = 'TENANT-AAROGYA-01') => {
+    return await runTransaction(async ({ run }) => {
+      await run('DELETE FROM ropa_silo_mapping WHERE ropaRecordId = ? AND tenantId = ?', [ropaRecordId, tenantId]);
+      let count = 0;
+      for (const siloId of siloIds) {
+        if (!siloId) continue;
+        const id = `RSM-${uuidv4().slice(0, 8).toUpperCase()}`;
+        await run(`
+          INSERT INTO ropa_silo_mapping (id, tenantId, ropaRecordId, siloId, mappingType)
+          VALUES (?, ?, ?, ?, ?)
+        `, [id, tenantId, ropaRecordId, siloId, 'primary']);
+        count++;
+      }
+      return count;
+    });
+  },
+
   // ==========================================
   // 4. CONSENT & MULTILINGUAL NOTICES (SEC 5)
   // ==========================================

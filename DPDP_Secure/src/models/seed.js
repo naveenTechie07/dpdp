@@ -279,7 +279,8 @@ async function seedDatabase() {
       legalBasis: 'Explicit Consent (DPDP Section 6)',
       retentionPeriod: '3 years medical record retention (NMC Guidelines)',
       storageLocation: 'Local WhatsApp Business backup & Local laboratory server',
-      securitySafeguards: 'Verhoeff tokenization, AES-256 local encryption, 100% offline'
+      securitySafeguards: 'Verhoeff tokenization, AES-256 local encryption, 100% offline',
+      silos: ['SILO-WHATSAPP-01', 'SILO-PDFS']
     },
     {
       id: 'ROPA-02',
@@ -290,7 +291,8 @@ async function seedDatabase() {
       legalBasis: 'Consent (DPDP Section 5 & 6)',
       retentionPeriod: '1 year or until consent withdrawal',
       storageLocation: 'Local Spreadsheet (customer_leads.csv)',
-      securitySafeguards: 'Role-based access control, revocable consent ledger'
+      securitySafeguards: 'Role-based access control, revocable consent ledger',
+      silos: ['SILO-LEADS-02', 'SILO-DOCUMENTS']
     },
     {
       id: 'ROPA-03',
@@ -301,7 +303,44 @@ async function seedDatabase() {
       legalBasis: 'Legal Obligation (CGST Act 2017 Section 36 & DPDP Section 8)',
       retentionPeriod: '6 years from due date of annual return (Mandatory CGST Tax Lock)',
       storageLocation: 'Local Billing Server (invoices_billing.csv)',
-      securitySafeguards: 'Dual-track collision lock, tamper-evident SHA-256 certificates'
+      securitySafeguards: 'Dual-track collision lock, tamper-evident SHA-256 certificates',
+      silos: ['SILO-BILLING-03', 'SILO-EXCEL-FILES']
+    },
+    {
+      id: 'ROPA-04',
+      tenantId,
+      activityName: 'Insurance Cashless TPA Claims Processing',
+      dataCategories: 'Aadhaar UID, Policy Number, Hospital Bill, Diagnostic ICD Codes, Claim Amount',
+      purpose: 'Adjudication, pre-authorization, and cashless settlement of health insurance diagnostic claims',
+      legalBasis: 'Contractual Obligation & Consent (DPDP Section 4 & 6)',
+      retentionPeriod: '5 years post claim settlement (IRDAI Health Regulations)',
+      storageLocation: 'Enterprise Claims Database (SILO-CLAIMS-DB)',
+      securitySafeguards: 'Role-based access, Verhoeff Aadhaar tokenization, TLS 1.3 local transport',
+      silos: ['SILO-CLAIMS-DB']
+    },
+    {
+      id: 'ROPA-05',
+      tenantId,
+      activityName: 'Policy Administration & Nominee KYC',
+      dataCategories: 'Customer Name, Date of Birth, PAN, Nominee Relationship, Bank Account',
+      purpose: 'Maintaining corporate policyholder rosters, underwriting verifications, and nominee entitlements',
+      legalBasis: 'Legal Obligation (Insurance Act 1938 & DPDP Section 8)',
+      retentionPeriod: 'Duration of policy + 7 years statutory limit',
+      storageLocation: 'Core Policy Administration DB (SILO-POLICY-ADMIN-DB)',
+      securitySafeguards: 'Restricted administrative access, encrypted columns, SHA-256 audit provenance',
+      silos: ['SILO-POLICY-ADMIN-DB']
+    },
+    {
+      id: 'ROPA-06',
+      tenantId,
+      activityName: 'Radiology Imaging & Offsite Encrypted Archive',
+      dataCategories: 'Patient UID, Radiological X-Ray/CT DICOM Studies, Clinical Modality',
+      purpose: 'Archival and secondary radiologist consultation for complex diagnostics',
+      legalBasis: 'Explicit Medical Consent (DPDP Section 6 & NMC Ethics Code)',
+      retentionPeriod: '3 years (Adults) / Until Age of Majority + 3 years (Minors)',
+      storageLocation: 'Cloud Object Storage Vault (SILO-CLOUD-STORAGE)',
+      securitySafeguards: 'Client-side AES-GCM-256 envelope encryption before transit, zero-knowledge keys',
+      silos: ['SILO-CLOUD-STORAGE']
     }
   ];
 
@@ -310,8 +349,18 @@ async function seedDatabase() {
       INSERT OR REPLACE INTO ropa_records (id, tenantId, activityName, dataCategories, purpose, legalBasis, retentionPeriod, storageLocation, securitySafeguards)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `, [r.id, r.tenantId, r.activityName, r.dataCategories, r.purpose, r.legalBasis, r.retentionPeriod, r.storageLocation, r.securitySafeguards]);
+
+    if (r.silos && r.silos.length > 0) {
+      for (const sId of r.silos) {
+        const mappingId = `RSM-${r.id}-${sId}`;
+        await run(`
+          INSERT OR REPLACE INTO ropa_silo_mapping (id, tenantId, ropaRecordId, siloId, mappingType)
+          VALUES (?, ?, ?, ?, ?)
+        `, [mappingId, tenantId, r.id, sId, 'primary']);
+      }
+    }
   }
-  console.log('  [+] Seeded RoPA (Record of Processing Activities under Section 8)');
+  console.log('  [+] Seeded RoPA (Record of Processing Activities under Section 8) with Silo Mappings');
 
   // 5. Seed Multilingual Section 5 Notices
   const notices = [

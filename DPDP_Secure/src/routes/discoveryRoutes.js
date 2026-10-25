@@ -272,11 +272,80 @@ router.post('/api/ropa/:id/silos', async (req, res) => {
   }
 });
 
+router.put('/api/ropa/:id/silos', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    const { siloIds } = req.body;
+    const ids = Array.isArray(siloIds) ? siloIds : [];
+    await models.setRopaSiloMappings(req.params.id, ids, tenantId);
+    const updatedSilos = await models.getSilosForRopa(req.params.id, tenantId);
+    await models.logAuditEvent(
+      tenantId,
+      req.session?.user?.name || 'Admin',
+      'MAP_ROPA_SILOS_BATCH',
+      req.params.id,
+      JSON.stringify({ details: `Updated mapped silos for RoPA activity ${req.params.id}`, siloCount: ids.length, siloIds: ids })
+    );
+    res.json({ success: true, message: 'Silo mappings updated successfully', silos: updatedSilos });
+  } catch (err) {
+    console.error('[ROPA] update mappings error:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.delete('/api/ropa/:id/silos', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    await models.deleteAllRopaSiloMappings(req.params.id, tenantId);
+    await models.logAuditEvent(
+      tenantId,
+      req.session?.user?.name || 'Admin',
+      'CLEAR_ROPA_SILOS',
+      req.params.id,
+      JSON.stringify({ details: `Cleared all mapped silos for RoPA activity ${req.params.id}` })
+    );
+    res.json({ success: true, message: 'All silo mappings cleared successfully' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 router.delete('/api/ropa/:id/silos/:siloId', async (req, res) => {
   try {
     const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
     await models.deleteRopaSiloMapping(req.params.id, req.params.siloId, tenantId);
     res.json({ success: true, message: 'Mapping deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.post('/api/connectors/create', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    const { name, siloName, siloType, uri, filePath, riskLevel } = req.body;
+    const finalName = name || siloName;
+    if (!finalName) {
+      return res.status(400).json({ success: false, error: 'Connector name is required' });
+    }
+    const id = `SILO-${Date.now().toString(36).toUpperCase()}`;
+    await models.saveSilo({
+      id,
+      tenantId,
+      siloName: finalName,
+      siloType: siloType || 'ENTERPRISE_RDBMS',
+      filePath: filePath || uri || 'local://connection',
+      itemCount: 0,
+      riskLevel: riskLevel || 'MEDIUM'
+    });
+    await models.logAuditEvent(
+      tenantId,
+      req.session?.user?.name || 'Admin',
+      'CREATE_CONNECTOR',
+      id,
+      JSON.stringify({ details: `Added new connector: ${finalName} (${siloType || 'ENTERPRISE_RDBMS'})` })
+    );
+    res.status(201).json({ success: true, id, message: `Connector '${finalName}' registered successfully` });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
@@ -288,6 +357,18 @@ router.get('/api/silos/:id/ropa', async (req, res) => {
     const records = await models.getRopaForSilo(req.params.id, tenantId);
     res.json({ success: true, records: records || [] });
   } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Silo list endpoint for mapping UI
+router.get('/api/silos', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    const silos = await models.getSilos(tenantId);
+    res.json({ success: true, data: silos || [] });
+  } catch (err) {
+    console.error('[DISCOVERY] getSilos error:', err);
     res.status(500).json({ success: false, error: err.message });
   }
 });

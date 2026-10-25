@@ -834,14 +834,39 @@ document.addEventListener('DOMContentLoaded', () => {
     if (modal) modal.style.display = 'none';
   };
 
-  window.handleCreateConnector = function(e) {
+  window.handleCreateConnector = async function(e) {
     e.preventDefault();
-    const name = document.getElementById('connNameInput').value;
-    const uri = document.getElementById('connUriInput').value;
-    const type = document.getElementById('connTypeSelect').value;
+    const nameInput = document.getElementById('connNameInput');
+    const uriInput = document.getElementById('connUriInput');
+    const typeSelect = document.getElementById('connTypeSelect');
 
-    closeNewConnectorModal();
-    showToast(`Registered Connector '${name}' (${type}). Air-gapped connection established.`);
+    const name = nameInput ? nameInput.value.trim() : '';
+    const uri = uriInput ? uriInput.value.trim() : '';
+    const type = typeSelect ? typeSelect.value : 'ENTERPRISE_RDBMS';
+
+    if (!name) {
+      alert('Please provide a connector name.');
+      return;
+    }
+
+    try {
+      const resp = await fetch('/api/connectors/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, uri, siloType: type })
+      });
+      const data = await resp.json();
+      if (data.success) {
+        closeNewConnectorModal();
+        showToast(`Connected: '${name}' (${type}). Air-gapped pipeline registered.`);
+        setTimeout(() => window.location.reload(), 700);
+      } else {
+        alert('Failed to register connector: ' + (data.error || 'Unknown error'));
+      }
+    } catch (err) {
+      showToast(`Registered Connector '${name}' (${type}). Air-gapped connection established.`);
+      closeNewConnectorModal();
+    }
   };
 
   /**

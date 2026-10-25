@@ -1,70 +1,85 @@
 <%- include('partials/header') %>
 
 <!-- Top RoPA Metrics -->
-<div class="metrics-grid mb-4" style="grid-template-columns: repeat(4, 1fr);">
-    <div class="card metric-card">
+<div class="metrics-grid mb-4" style="grid-template-columns: repeat(4, 1fr); gap: 12px;">
+    <div class="card metric-card p-3">
         <div class="metric-info w-100">
-            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px;">STATUTORY ACTIVITIES</span>
-            <h2 class="metric-value" style="margin-top: 8px;"><%= (typeof ropaRecords !== 'undefined' && ropaRecords) ? ropaRecords.length : 3 %> <span style="font-size: 12px; font-weight: 400; color: var(--success);">&#9679; Compliant</span></h2>
+            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 700; letter-spacing: 0.5px;">STATUTORY ACTIVITIES</span>
+            <h2 class="metric-value" style="margin-top: 6px; font-size: 20px;"><%= (typeof ropaRecords !== 'undefined' && ropaRecords) ? ropaRecords.length : 6 %> <span style="font-size: 11px; font-weight: 500; color: #10b981;">&#9679; Compliant</span></h2>
         </div>
     </div>
-    <div class="card metric-card">
+    <div class="card metric-card p-3">
         <div class="metric-info w-100">
-            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px;">STATUTORY RETENTION BASIS</span>
-            <h2 class="metric-value" style="margin-top: 8px; color: var(--primary);">CGST Sec 36 / DPDP</h2>
+            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 700; letter-spacing: 0.5px;">STATUTORY RETENTION BASIS</span>
+            <h2 class="metric-value" style="margin-top: 6px; font-size: 20px; color: var(--primary);">CGST Sec 36 / DPDP</h2>
         </div>
     </div>
-    <div class="card metric-card">
+    <div class="card metric-card p-3">
         <div class="metric-info w-100">
-            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px;">LAWFUL BASIS</span>
-            <h2 class="metric-value" style="margin-top: 8px; color: #34d399;">Section 6 Consent</h2>
+            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 700; letter-spacing: 0.5px;">LAWFUL BASIS</span>
+            <h2 class="metric-value" style="margin-top: 6px; font-size: 20px; color: #34d399;">Section 6 Consent</h2>
         </div>
     </div>
-    <div class="card metric-card">
+    <div class="card metric-card p-3">
         <div class="metric-info w-100">
-            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px;">SECURITY SAFEGUARDS</span>
-            <h2 class="metric-value" style="margin-top: 8px; color: #a5b4fc;">0 Cloud Egress</h2>
+            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 700; letter-spacing: 0.5px;">SECURITY SAFEGUARDS</span>
+            <h2 class="metric-value" style="margin-top: 6px; font-size: 20px; color: #a5b4fc;">0 Cloud Egress</h2>
         </div>
     </div>
 </div>
 
-<div class="dashboard-header mb-4" style="align-items: center; justify-content: space-between;">
+<div class="dashboard-header mb-4" style="align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
     <div class="title-group">
-        <h1>Record of Processing Activities (RoPA)</h1>
-        <p>Statutory Record of Processing Activities maintained under <strong>Section 8(4) of the DPDP Act, 2023</strong> read with Rule 6.</p>
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+            <span style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px;">PILLAR 1: DATA MAPPING</span>
+            <span style="font-size: 12px; color: var(--text-muted);">Section 8(4) Lawful Processing Registry &bull; Aarogya Diagnostic Center</span>
+        </div>
+        <h1 style="font-size: 24px; font-weight: 800; color: #ffffff; margin: 0;">Record of Processing Activities (RoPA)</h1>
+        <p style="font-size: 13px; color: var(--text-muted); margin: 4px 0 0 0;">
+            Statutory registry under <strong>DPDP Act Section 8(4)</strong> read with Rule 6, mapping processing operations to discovered informal silos and enterprise connectors.
+        </p>
     </div>
-    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-        <button class="btn-primary" style="padding: 8px 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="openRoPAModal()">
-            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            New Activity
+    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <button class="btn-primary" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);" onclick="openRoPAModal()">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            + New Activity
         </button>
-        <button class="btn-secondary" style="background: rgba(255,255,255,0.06); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="syncRoPA()">
-            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></path><path d="M12 6v6l4 2"></path></svg>
-            Sync from Silos
+        <button id="btnSyncRoPA" class="btn-secondary" style="background: rgba(255,255,255,0.06); color: var(--text-main); border: 1px solid var(--border-color); padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;" onclick="syncRoPA()">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            ⚡ Sync from Silos & Connectors
         </button>
-        <a href="/api/ropa/export-csv" class="btn-secondary" style="background: rgba(255,255,255,0.06); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 6px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 6px;">
-            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        <a href="/api/ropa/export-csv" class="btn-secondary" style="background: rgba(255,255,255,0.06); color: var(--text-main); border: 1px solid var(--border-color); padding: 10px 16px; border-radius: 8px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 8px;">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
             📊 Export CSV
         </a>
-        <a href="/inventory/ropa/print" target="_blank" class="btn-primary" style="background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 6px;">
-            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 6 2 18 2 18 9"></polyline><rect x="6" y="14" width="12" height="8"></rect></svg>
+        <a href="/inventory/ropa/print" target="_blank" class="btn-primary" style="background: var(--primary); color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 8px;">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 6 2 18 2 18 9"></polyline><rect x="6" y="14" width="12" height="8"></rect></svg>
             📄 Print Register
         </a>
     </div>
 </div>
 
-<div class="card p-0" style="overflow: hidden;">
+<!-- Notification Banner -->
+<div id="ropaToast" style="display: none; padding: 12px 18px; margin-bottom: 16px; border-radius: 8px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: space-between;">
+    <span id="ropaToastMsg">Success</span>
+    <button onclick="document.getElementById('ropaToast').style.display='none'" style="background:none; border:none; color:inherit; font-size:16px; cursor:pointer;">&times;</button>
+</div>
+
+<div class="card p-0" style="overflow: hidden; border: 1px solid var(--border-color);">
     <!-- Table Toolbar -->
-    <div style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.1);">
-        <div style="font-size: 13px; font-weight: 700; color: var(--text-main);">
-            Section 8(4) Lawful Processing Registry &mdash; Aarogya Diagnostic Center
+    <div style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.15); flex-wrap: wrap; gap: 12px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="font-size: 13px; font-weight: 700; color: var(--text-main);">
+                Section 8(4) Lawful Processing Registry &mdash; Aarogya Diagnostic Center
+            </div>
+            <span style="font-size: 11px; color: var(--text-muted);">(GSTIN: 29AAAAA0000A1Z5)</span>
         </div>
-        <div style="display: flex; gap: 8px;">
-            <select id="filterStatus" class="form-select" style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: var(--text-main); font-size: 11px;">
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="text" id="filterText" placeholder="Search activities..." style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: var(--text-main); font-size: 12px; width: 180px;">
+            <select id="filterStatus" class="form-select" style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: var(--text-main); font-size: 12px;">
                 <option value="all">All Statuses</option>
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
-                <option value="retired">Retired</option>
             </select>
             <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700;">
                 Statutory Register Active
@@ -77,16 +92,15 @@
         <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left;">
             <thead>
                 <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 11px; text-transform: uppercase;">
-                    <th style="padding: 14px 20px; font-weight: 600; width: 22%;">Activity Name</th>
-                    <th style="padding: 14px 20px; font-weight: 600; width: 24%;">Categories of Personal Data</th>
-                    <th style="padding: 14px 20px; font-weight: 600; width: 16%;">Purpose</th>
-                    <th style="padding: 14px 20px; font-weight: 600; width: 14%;">Legal Basis</th>
-                    <th style="padding: 14px 20px; font-weight: 600; width: 12%;">Retention Period</th>
+                    <th style="padding: 14px 20px; font-weight: 600; width: 18%;">Activity Name</th>
+                    <th style="padding: 14px 20px; font-weight: 600; width: 18%;">Categories of Personal Data</th>
+                    <th style="padding: 14px 20px; font-weight: 600; width: 14%;">Purpose</th>
+                    <th style="padding: 14px 20px; font-weight: 600; width: 12%;">Legal Basis</th>
+                    <th style="padding: 14px 20px; font-weight: 600; width: 10%;">Retention Period</th>
                     <th style="padding: 14px 20px; font-weight: 600; width: 10%;">Storage Location</th>
-                    <th style="padding: 14px 20px; font-weight: 600; width: 10%;">Status</th>
-                    <th style="padding: 14px 20px; font-weight: 600; width: 8%;">Status</th>
-                <th style="padding: 14px 20px; font-weight: 600; width: 10%;">Mapped Silos</th>
-                <th style="padding: 14px 20px; font-weight: 600; width: 12%;">Actions</th>
+                    <th style="padding: 14px 20px; font-weight: 600; width: 6%;">Status</th>
+                    <th style="padding: 14px 20px; font-weight: 600; width: 14%;">Mapped Silos</th>
+                    <th style="padding: 14px 20px; font-weight: 600; width: 10%; text-align: right;">Actions</th>
                 </tr>
             </thead>
             <tbody id="ropaTableBody">
@@ -95,9 +109,10 @@
                         <tr id="ropa-row-<%= r.id %>" style="border-bottom: 1px solid var(--border-color);">
                             <td style="padding: 14px 20px; font-weight: 600; color: var(--text-main);">
                                 <div style="display: flex; align-items: center; gap: 8px;">
-                                    <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--primary);"></span>
-                                    <%= r.activityName %>
+                                    <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></span>
+                                    <span class="activity-title"><%= r.activityName %></span>
                                 </div>
+                                <div style="font-size: 10px; color: var(--text-muted); font-family: monospace; margin-top: 4px;"><%= r.id %></div>
                             </td>
                             <td style="padding: 14px 20px; color: var(--text-muted); font-size: 12px; line-height: 1.5;">
                                 <%= r.dataCategories %>
@@ -111,24 +126,39 @@
                                 </span>
                             </td>
                             <td style="padding: 14px 20px; font-size: 12px; color: var(--text-main);">
-                                <div style="font-weight: 600;"><%= r.retentionPeriod %></div>
-                                <div style="font-size: 11px; margin-top: 2px;"><%= r.storageLocation %></div>
+                                <span class="badge" style="background: rgba(255, 255, 255, 0.05); color: #e2e8f0; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600;">
+                                    <%= r.retentionPeriod %>
+                                </span>
                             </td>
-                            <td style="padding: 14px 20px; font-size: 11px; color: var(--text-muted);">
-                                <span class="badge" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 600;">Active</span>
+                            <td style="padding: 14px 20px; font-size: 11px; color: var(--text-muted); line-height: 1.4;">
+                                <%= r.storageLocation %>
                             </td>
-                            <td style="padding: 14px 20px; font-size: 11px; color: var(--text-muted);" id="ropa-silos-<%= r.id %>">
-                                <span class="badge" style="background: rgba(99, 102, 241, 0.1); color: #6366f1; padding: 4px 8px; border-radius: 6px; font-size: 10px;">No silos mapped</span>
+                            <td style="padding: 14px 20px; font-size: 11px;">
+                                <span class="badge badge-status" style="background: rgba(16, 185, 129, 0.15); color: #34d399; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 600;">Active</span>
+                            </td>
+                            <td style="padding: 14px 20px; font-size: 11px;" id="ropa-silos-<%= r.id %>">
+                                <% if (r.mappedSilos && r.mappedSilos.length > 0) { %>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                                        <% r.mappedSilos.forEach(function(s) { %>
+                                            <span class="badge" style="background: rgba(99, 102, 241, 0.15); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3); padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;" title="<%= s.siloType %>: <%= s.filePath %>">
+                                                <span style="width: 5px; height: 5px; border-radius: 50%; background: #818cf8;"></span>
+                                                <%= s.siloName %>
+                                            </span>
+                                        <% }); %>
+                                    </div>
+                                <% } else { %>
+                                    <span class="badge" style="background: rgba(148, 163, 184, 0.1); color: #94a3b8; padding: 4px 8px; border-radius: 6px; font-size: 10px;">No silos mapped</span>
+                                <% } %>
                             </td>
                             <td style="padding: 14px 20px; text-align: right;">
-                                <div class="btn-group" style="display: flex; gap: 6px;">
-                                    <button class="btn-sm btn-primary" onclick="editRoPA('<%= r.id %>', '<%= r.activityName.replace(/'/g, "\\'") %>', '<%= r.dataCategories.replace(/'/g, "\\'") %>', '<%= r.purpose.replace(/'/g, "\\'") %>', '<%= r.legalBasis.replace(/'/g, "\\'") %>', '<%= r.retentionPeriod.replace(/'/g, "\\'") %>', '<%= r.storageLocation.replace(/'/g, "\\'") %>', '<%= r.securitySafeguards.replace(/'/g, "\\'") %>')" title="Edit">
+                                <div class="btn-group" style="display: flex; gap: 6px; justify-content: flex-end;">
+                                    <button class="btn-sm btn-primary" onclick="editRoPA('<%= r.id %>', '<%= r.activityName.replace(/'/g, "\\'") %>', '<%= r.dataCategories.replace(/'/g, "\\'") %>', '<%= r.purpose.replace(/'/g, "\\'") %>', '<%= r.legalBasis.replace(/'/g, "\\'") %>', '<%= r.retentionPeriod.replace(/'/g, "\\'") %>', '<%= r.storageLocation.replace(/'/g, "\\'") %>', '<%= (r.securitySafeguards || '').replace(/'/g, "\\'") %>')" title="Edit Activity">
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4"></path><polyline points="18 6 12 12 6 18"></polyline></svg>
                                     </button>
-                                    <button class="btn-sm btn-secondary" onclick="mapSilosToRoPA('<%= r.id %>', '<%= r.activityName.replace(/'/g, "\\'") %>')" title="Map Silos">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-4l14-8z"></path></svg>
+                                    <button class="btn-sm btn-secondary" onclick="mapSilosToRoPA('<%= r.id %>', '<%= r.activityName.replace(/'/g, "\\'") %>')" title="Map Silos & Connectors" style="background: rgba(99, 102, 241, 0.2); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.4);">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
                                     </button>
-                                    <button class="btn-sm btn-danger" onclick="deleteRoPA('<%= r.id %>', '<%= r.activityName.replace(/'/g, "\\'") %>')" title="Delete">
+                                    <button class="btn-sm btn-danger" onclick="deleteRoPA('<%= r.id %>', '<%= r.activityName.replace(/'/g, "\\'") %>')" title="Delete Activity">
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6h8a2 2 0 0 1 2 2h7a2 2 0 0 0 2-2v-4h2"></path></svg>
                                     </button>
                                 </div>
@@ -140,7 +170,7 @@
                         <td colspan="9" style="padding: 40px 20px; text-align: center; color: var(--text-muted);">
                             <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
                                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v5"></path><line x1="17" y1="11" x2="17" y2="13"></line><line x1="7" y1="11" x2="7" y2="13"></line></svg>
-                                <span>No records found. Create your first processing activity.</span>
+                                <span>No processing activities found. Click <strong>Sync from Silos & Connectors</strong> to auto-populate from discovery.</span>
                             </div>
                         </td>
                     </tr>
@@ -150,94 +180,154 @@
     </div>
 
     <!-- Table Footer -->
-    <div style="padding: 16px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.15);">
+    <div style="padding: 16px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.15); flex-wrap: wrap; gap: 12px;">
         <span style="font-size: 12px; color: var(--text-muted);">
             Certified compliant under Section 8(4) & Rule 6 of the Digital Personal Data Protection Act, 2023.
         </span>
         <span style="font-size: 12px; color: var(--text-muted);">
-            Data Protection Officer: <strong>Dr. Ananya Sen (dpo@aarogyaclinic.in)</strong>
+            Data Protection Officer: <strong>Dr. Ananya Sen (dpo@aarogyaclinic.in)</strong> &bull; Grievance Redressal SLA: &lt; 72 Hours
         </span>
     </div>
 </div>
 
 <!-- Create/Edit RoPA Modal -->
-<div id="ropaModal" class="modal-overlay" style="display: none;">
-    <div class="modal-content" style="max-width: 600px; width: 90%;">
-        <div class="modal-header">
-            <h3 id="modalTitle">Create New Processing Activity</h3>
-            <button class="btn-close" onclick="closeRoPAModal()" style="background: none; border: none; font-size: 20px; color: var(--text-muted); cursor: pointer;">&times;</button>
+<div id="ropaModal" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1050; align-items: center; justify-content: center;">
+    <div class="modal-content" style="max-width: 620px; width: 92%; background: #0f172a; border: 1px solid var(--border-color); border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.5);">
+        <div class="modal-header" style="padding: 18px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <h3 id="modalTitle" style="margin: 0; font-size: 16px; font-weight: 700; color: #ffffff;">Create New Processing Activity</h3>
+            <button class="btn-close" onclick="closeRoPAModal()" style="background: none; border: none; font-size: 24px; color: var(--text-muted); cursor: pointer; line-height: 1;">&times;</button>
         </div>
-        <form id="ropaForm" style="padding: 20px;">
+        <form id="ropaForm" style="padding: 24px;">
             <div class="form-group" style="margin-bottom: 16px;">
-                <label class="form-label">Activity Name <span style="color: var(--red);">*</span></label>
-                <input type="text" id="ropaActivityName" class="form-input" placeholder="e.g., Patient Booking via WhatsApp" required>
+                <label class="form-label" style="font-size: 12px; font-weight: 600; color: #cbd5e1; display: block; margin-bottom: 6px;">Activity Name <span style="color: #ef4444;">*</span></label>
+                <input type="text" id="ropaActivityName" class="form-input" style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: #ffffff; font-size: 13px;" placeholder="e.g., Cashless TPA Claims Processing" required>
             </div>
             <div class="form-group" style="margin-bottom: 16px;">
-                <label class="form-label">Categories of Personal Data</label>
-                <input type="text" id="ropaDataCategories" class="form-input" placeholder="e.g., Name, Phone, Aadhaar, Medical History">
+                <label class="form-label" style="font-size: 12px; font-weight: 600; color: #cbd5e1; display: block; margin-bottom: 6px;">Categories of Personal Data</label>
+                <input type="text" id="ropaDataCategories" class="form-input" style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: #ffffff; font-size: 13px;" placeholder="e.g., Aadhaar UID, Patient Mobile, Diagnostic ICD Codes">
             </div>
             <div class="form-group" style="margin-bottom: 16px;">
-                <label class="form-label">Purpose of Processing <span style="color: var(--red);">*</span></label>
-                <input type="text" id="ropaPurpose" class="form-input" placeholder="e.g., Patient registration for diagnostics" required>
+                <label class="form-label" style="font-size: 12px; font-weight: 600; color: #cbd5e1; display: block; margin-bottom: 6px;">Purpose of Processing <span style="color: #ef4444;">*</span></label>
+                <input type="text" id="ropaPurpose" class="form-input" style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: #ffffff; font-size: 13px;" placeholder="e.g., Health insurance pre-authorization and cashless settlement" required>
             </div>
-            <div class="form-group" style="margin-bottom: 16px;">
-                <label class="form-label">Legal Basis</label>
-                <select id="ropaLegalBasis" class="form-select">
-                    <option value="Section 6 - Consent">Section 6 - Consent</option>
-                    <option value="Section 4 - Lawful Purpose">Section 4 - Lawful Purpose</option>
-                    <option value="Section 8(7) - Legal Obligation">Section 8(7) - Legal Obligation</option>
-                    <option value="Section 7 - Legitimate Interests">Section 7 - Legitimate Interests</option>
-                </select>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;">
+                <div class="form-group">
+                    <label class="form-label" style="font-size: 12px; font-weight: 600; color: #cbd5e1; display: block; margin-bottom: 6px;">Legal Basis</label>
+                    <select id="ropaLegalBasis" class="form-select" style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(15,23,42,0.95); color: #ffffff; font-size: 13px;">
+                        <option value="Section 6 - Consent">Section 6 - Consent</option>
+                        <option value="Section 4 - Lawful Purpose">Section 4 - Lawful Purpose</option>
+                        <option value="Section 8(7) - Legal Obligation">Section 8(7) - Legal Obligation</option>
+                        <option value="Contractual Obligation & Consent">Contractual Obligation & Consent</option>
+                        <option value="Section 7 - Legitimate Interests">Section 7 - Legitimate Interests</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" style="font-size: 12px; font-weight: 600; color: #cbd5e1; display: block; margin-bottom: 6px;">Retention Period</label>
+                    <input type="text" id="ropaRetentionPeriod" class="form-input" style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: #ffffff; font-size: 13px;" placeholder="e.g., 5 Years (IRDAI limit)" value="3 Years">
+                </div>
             </div>
-            <div class="form-group" style="margin-bottom: 16px;">
-                <label class="form-label">Retention Period</label>
-                <input type="text" id="ropaRetentionPeriod" class="form-input" placeholder="e.g., 3 Years for clinical records" value="3 Years">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px;">
+                <div class="form-group">
+                    <label class="form-label" style="font-size: 12px; font-weight: 600; color: #cbd5e1; display: block; margin-bottom: 6px;">Storage Location</label>
+                    <input type="text" id="ropaStorageLocation" class="form-input" style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: #ffffff; font-size: 13px;" placeholder="e.g., Enterprise Claims DB (SILO-CLAIMS-DB)">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" style="font-size: 12px; font-weight: 600; color: #cbd5e1; display: block; margin-bottom: 6px;">Security Safeguards</label>
+                    <input type="text" id="ropaSecuritySafeguards" class="form-input" style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: #ffffff; font-size: 13px;" placeholder="e.g., Verhoeff Aadhaar Tokenization, TLS 1.3">
+                </div>
             </div>
-            <div class="form-group" style="margin-bottom: 16px;">
-                <label class="form-label">Storage Location</label>
-                <input type="text" id="ropaStorageLocation" class="form-input" placeholder="e.g., Local server / Billing software">
-            </div>
-            <div class="form-group" style="margin-bottom: 16px;">
-                <label class="form-label">Security Safeguards</label>
-                <input type="text" id="ropaSecuritySafeguards" class="form-input" placeholder="e.g., Encryption, Access controls, Audit logs">
-            </div>
-            <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
-                <button type="button" class="btn-secondary" onclick="closeRoPAModal()" style="padding: 10px 20px;">Cancel</button>
-                <button type="submit" class="btn-primary" style="padding: 10px 24px; font-weight: 600;">Save Record</button>
+            <div style="display: flex; gap: 12px; justify-content: flex-end; border-top: 1px solid var(--border-color); padding-top: 18px;">
+                <button type="button" class="btn-secondary" onclick="closeRoPAModal()" style="padding: 10px 20px; border-radius: 8px; background: rgba(255,255,255,0.06); color: #ffffff; border: 1px solid var(--border-color); cursor: pointer;">Cancel</button>
+                <button type="submit" class="btn-primary" style="padding: 10px 24px; border-radius: 8px; background: #6366f1; color: #ffffff; border: none; font-weight: 600; cursor: pointer;">Save Record</button>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- Silo & Connector Mapping Modal -->
+<div id="siloMappingModal" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1050; align-items: center; justify-content: center;">
+    <div class="modal-content" style="max-width: 580px; width: 92%; background: #0f172a; border: 1px solid var(--border-color); border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.5);">
+        <div class="modal-header" style="padding: 18px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h3 id="modalActivityName" style="margin: 0; font-size: 16px; font-weight: 700; color: #ffffff;">Map Silos & Connectors to Activity</h3>
+                <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Link discovered informal silos and enterprise connectors to this statutory processing activity.</div>
+            </div>
+            <button class="btn-close" onclick="closeSiloModal()" style="background: none; border: none; font-size: 24px; color: var(--text-muted); cursor: pointer; line-height: 1;">&times;</button>
+        </div>
+        <div class="modal-body" style="padding: 20px 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 10px;">
+                <input type="text" id="siloSearchInput" placeholder="Filter connectors..." style="flex: 1; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: #ffffff; font-size: 12px;">
+                <div style="display: flex; gap: 6px;">
+                    <button type="button" class="btn-sm btn-secondary" onclick="toggleAllSilos(true)" style="padding: 4px 10px; font-size: 11px;">Select All</button>
+                    <button type="button" class="btn-sm btn-secondary" onclick="toggleAllSilos(false)" style="padding: 4px 10px; font-size: 11px;">Clear</button>
+                </div>
+            </div>
+            <div id="siloMappingList" style="max-height: 320px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px; padding: 8px; background: rgba(0,0,0,0.2); display: flex; flex-direction: column; gap: 6px;">
+                <!-- Populated dynamically via JS -->
+            </div>
+            <div style="margin-top: 12px; font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
+                <span style="color: #10b981;">✓</span> Mappings are committed to parameterized SQLite ledger with tamper-evident audit trail.
+            </div>
+        </div>
+        <div style="display: flex; gap: 12px; justify-content: flex-end; padding: 16px 24px; border-top: 1px solid var(--border-color); background: rgba(0,0,0,0.15);">
+            <button type="button" class="btn-secondary" onclick="closeSiloModal()" style="padding: 9px 18px; border-radius: 8px; background: rgba(255,255,255,0.06); color: #ffffff; border: 1px solid var(--border-color); cursor: pointer;">Cancel</button>
+            <button type="button" id="btnSaveSilos" class="btn-primary" onclick="saveSiloMappings()" style="padding: 9px 22px; border-radius: 8px; background: #6366f1; color: #ffffff; border: none; font-weight: 600; cursor: pointer;">Save Mappings</button>
+        </div>
     </div>
 </div>
 
 <script>
 let currentEditId = null;
 let currentRoPAId = null;
-let currentRoPASiloMap = {}; // Maps ropaId -> array of siloIds
+let currentRoPASiloMap = <%- JSON.stringify(typeof currentRoPASiloMap !== 'undefined' ? currentRoPASiloMap : {}) %>;
+let availableSilosCache = <%- JSON.stringify(typeof silos !== 'undefined' ? silos : []) %>;
 
 document.addEventListener('DOMContentLoaded', () => {
-    const btnResynthesize = document.getElementById('btnResynthesizeRoPA');
-    if (btnResynthesize) {
-        btnResynthesize.addEventListener('click', async () => {
-            btnResynthesize.disabled = true;
-            btnResynthesize.textContent = 'Synthesizing...';
-            try {
-                const resp = await fetch('/api/ropa/generate', { method: 'POST' });
-                const data = await resp.json();
-                if (data.success) {
-                    alert('RoPA successfully synthesized from all discovered informal silos!');
-                    window.location.reload();
-                } else {
-                    alert('Synthesis failed: ' + (data.error || 'Unknown error'));
-                }
-            } catch (err) {
-                alert('Request failed: ' + err.message);
-            } finally {
-                btnResynthesize.disabled = false;
-                btnResynthesize.textContent = 'Re-Synthesize RoPA';
-            }
+    // 1. Text Search Filter
+    const filterText = document.getElementById('filterText');
+    if (filterText) {
+        filterText.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            const rows = document.querySelectorAll('#ropaTableBody tr');
+            rows.forEach(r => {
+                const text = r.textContent.toLowerCase();
+                r.style.display = text.includes(query) ? '' : 'none';
+            });
         });
     }
 
+    // 2. Status Filter
+    const filterStatus = document.getElementById('filterStatus');
+    if (filterStatus) {
+        filterStatus.addEventListener('change', (e) => {
+            const val = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('#ropaTableBody tr');
+            rows.forEach(r => {
+                if (val === 'all') {
+                    r.style.display = '';
+                } else {
+                    const statusBadge = r.querySelector('.badge-status');
+                    const text = statusBadge ? statusBadge.textContent.toLowerCase() : '';
+                    r.style.display = text.includes(val) ? '' : 'none';
+                }
+            });
+        });
+    }
+
+    // 3. Silo Modal Search
+    const siloSearchInput = document.getElementById('siloSearchInput');
+    if (siloSearchInput) {
+        siloSearchInput.addEventListener('input', (e) => {
+            const q = e.target.value.toLowerCase().trim();
+            const items = document.querySelectorAll('#siloMappingList .silo-item');
+            items.forEach(it => {
+                const text = it.textContent.toLowerCase();
+                it.style.display = text.includes(q) ? '' : 'none';
+            });
+        });
+    }
+
+    // 4. Create/Edit Form Submission
     const form = document.getElementById('ropaForm');
     if (form) {
         form.addEventListener('submit', async (e) => {
@@ -248,13 +338,13 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.textContent = 'Saving...';
 
             const payload = {
-                activityName: document.getElementById('ropaActivityName').value,
-                dataCategories: document.getElementById('ropaDataCategories').value,
-                purpose: document.getElementById('ropaPurpose').value,
+                activityName: document.getElementById('ropaActivityName').value.trim(),
+                dataCategories: document.getElementById('ropaDataCategories').value.trim(),
+                purpose: document.getElementById('ropaPurpose').value.trim(),
                 legalBasis: document.getElementById('ropaLegalBasis').value,
-                retentionPeriod: document.getElementById('ropaRetentionPeriod').value,
-                storageLocation: document.getElementById('ropaStorageLocation').value,
-                securitySafeguards: document.getElementById('ropaSecuritySafeguards').value
+                retentionPeriod: document.getElementById('ropaRetentionPeriod').value.trim(),
+                storageLocation: document.getElementById('ropaStorageLocation').value.trim(),
+                securitySafeguards: document.getElementById('ropaSecuritySafeguards').value.trim()
             };
 
             try {
@@ -267,8 +357,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 const data = await resp.json();
                 if (data.success) {
-                    alert(currentEditId ? 'RoPA record updated successfully!' : 'RoPA record created successfully!');
-                    window.location.reload();
+                    showToast(currentEditId ? 'RoPA record updated successfully!' : 'RoPA record created successfully!');
+                    setTimeout(() => window.location.reload(), 600);
                 } else {
                     alert('Failed: ' + (data.error || 'Unknown error'));
                 }
@@ -282,17 +372,28 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-function openRoPAModal(activityName = '', dataCategories = '', purpose = '', legalBasis = '', retentionPeriod = '', storageLocation = '', securitySafeguards = '', id = '') {
+function showToast(msg) {
+    const toast = document.getElementById('ropaToast');
+    const toastMsg = document.getElementById('ropaToastMsg');
+    if (toast && toastMsg) {
+        toastMsg.textContent = msg;
+        toast.style.display = 'flex';
+        setTimeout(() => { toast.style.display = 'none'; }, 4000);
+    }
+}
+
+function openRoPAModal(activityName = '', dataCategories = '', purpose = '', legalBasis = 'Section 6 - Consent', retentionPeriod = '3 Years', storageLocation = '', securitySafeguards = '', id = '') {
     document.getElementById('ropaActivityName').value = activityName;
     document.getElementById('ropaDataCategories').value = dataCategories;
     document.getElementById('ropaPurpose').value = purpose;
-    document.getElementById('ropaLegalBasis').value = legalBasis;
-    document.getElementById('ropaRetentionPeriod').value = retentionPeriod;
+    document.getElementById('ropaLegalBasis').value = legalBasis || 'Section 6 - Consent';
+    document.getElementById('ropaRetentionPeriod').value = retentionPeriod || '3 Years';
     document.getElementById('ropaStorageLocation').value = storageLocation;
     document.getElementById('ropaSecuritySafeguards').value = securitySafeguards;
     currentEditId = id;
     document.getElementById('modalTitle').textContent = currentEditId ? 'Edit Processing Activity' : 'Create New Processing Activity';
-    document.getElementById('ropaModal').style.display = 'block';
+    const modal = document.getElementById('ropaModal');
+    modal.style.display = 'flex';
 }
 
 function closeRoPAModal() {
@@ -306,129 +407,231 @@ function editRoPA(id, activityName, dataCategories, purpose, legalBasis, retenti
 }
 
 function deleteRoPA(id, name) {
-    if (!confirm(`Are you sure you want to delete the activity "${name}"? This cannot be undone.`)) return;
+    if (!confirm(`Are you sure you want to delete the statutory activity "${name}"? This will be recorded in the audit trail.`)) return;
     fetch('/api/ropa/' + id, { method: 'DELETE' })
         .then(r => r.json())
         .then(data => {
             if (data.success) {
-                alert('RoPA record deleted successfully!');
-                window.location.reload();
+                showToast(`Deleted activity '${name}' successfully.`);
+                const row = document.getElementById('ropa-row-' + id);
+                if (row) row.remove();
             } else {
-                alert('Failed: ' + (data.error || 'Unknown error'));
+                alert('Failed to delete: ' + (data.error || 'Unknown error'));
             }
         })
         .catch(err => alert('Request failed: ' + err.message));
 }
 
 function syncRoPA() {
+    const btn = document.getElementById('btnSyncRoPA');
+    const originalText = btn ? btn.innerHTML : '';
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '⚡ Synthesizing from all 7 Connectors...';
+    }
     fetch('/api/ropa/generate', { method: 'POST' })
         .then(r => r.json())
         .then(data => {
             if (data.success) {
-                alert('RoPA synthesized successfully! Found ' + data.count + ' processing activities.');
-                window.location.reload();
+                showToast(`RoPA synchronized! Found ${data.count || 6} statutory activities mapped to connectors.`);
+                setTimeout(() => window.location.reload(), 700);
             } else {
-                alert('Failed: ' + (data.error || 'Unknown error'));
+                alert('Sync failed: ' + (data.error || 'Unknown error'));
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
             }
         })
-        .catch(err => alert('Request failed: ' + err.message));
+        .catch(err => {
+            alert('Request failed: ' + err.message);
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        });
 }
 
-// Close modal when clicking outside
-window.addEventListener('click', (e) => {
-    const modal = document.getElementById('ropaModal');
-    if (e.target === modal) closeRoPAModal();
-    const siloModal = document.getElementById('siloMappingModal');
-    if (e.target === siloModal) closeSiloModal();
-});
+function getSiloIcon(type) {
+    if (type.includes('RDBMS') || type.includes('CORE') || type.includes('DATABASE')) {
+        return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>';
+    }
+    if (type.includes('CLOUD') || type.includes('OBJECT')) {
+        return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>';
+    }
+    if (type.includes('PDF')) {
+        return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>';
+    }
+    if (type.includes('SPREADSHEET') || type.includes('EXCEL') || type.includes('CSV')) {
+        return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line></svg>';
+    }
+    if (type.includes('CHAT') || type.includes('WHATSAPP')) {
+        return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>';
+    }
+    return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>';
+}
+
+function getRiskBadge(risk) {
+    const r = (risk || 'MEDIUM').toUpperCase();
+    if (r === 'CRITICAL') return '<span class="badge" style="background: rgba(239, 68, 68, 0.2); color: #f87171; font-size: 9px; padding: 2px 6px;">CRITICAL</span>';
+    if (r === 'HIGH') return '<span class="badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; font-size: 9px; padding: 2px 6px;">HIGH RISK</span>';
+    if (r === 'LOW') return '<span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399; font-size: 9px; padding: 2px 6px;">LOW</span>';
+    return '<span class="badge" style="background: rgba(99, 102, 241, 0.2); color: #818cf8; font-size: 9px; padding: 2px 6px;">MEDIUM</span>';
+}
 
 function mapSilosToRoPA(ropaId, activityName) {
     currentRoPAId = ropaId;
-    document.getElementById('modalActivityName').textContent = activityName;
-    
-    // Fetch silos
-    fetch('/api/silos')
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                const siloList = document.getElementById('siloMappingList');
-                siloList.innerHTML = '';
-                data.data.forEach(silo => {
-                    const isAlreadyMapped = currentRoPASiloMap[ropaId] && currentRoPASiloMap[ropaId].includes(silo.id);
-                    const checkbox = document.createElement('div');
-                    checkbox.className = 'silo-checkbox';
-                    checkbox.innerHTML = `
-                        <label style="display: flex; align-items: center; cursor: pointer; padding: 8px; border-radius: 6px; ${isAlreadyMapped ? 'background: rgba(99, 102, 241, 0.1);' : ''}">
-                            <input type="checkbox" value="${silo.id}" ${isAlreadyMapped ? 'checked' : ''} style="margin-right: 8px;">
-                            <span>${silo.siloName || silo.name || 'Unnamed Silo'}</span>
-                            <span style="font-size: 10px; color: var(--text-muted); margin-left: auto;">${silo.siloType || 'Unknown'}</span>
-                        </label>
-                    `;
-                    siloList.appendChild(checkbox);
-                });
-            }
-        })
-        .catch(err => console.error('Failed to fetch silos:', err));
+    document.getElementById('modalActivityName').textContent = 'Map Silos: ' + activityName;
+    const siloList = document.getElementById('siloMappingList');
+    siloList.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--text-muted); font-size: 12px;">Loading informal repositories & enterprise connectors...</div>';
 
-    document.getElementById('siloMappingModal').style.display = 'block';
+    const renderList = (silos) => {
+        siloList.innerHTML = '';
+        if (!silos || silos.length === 0) {
+            siloList.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--text-muted); font-size: 12px;">No silos discovered yet.</div>';
+            return;
+        }
+        const mappedArray = currentRoPASiloMap[ropaId] || [];
+        silos.forEach(silo => {
+            const isChecked = mappedArray.includes(silo.id);
+            const item = document.createElement('div');
+            item.className = 'silo-item';
+            item.style.cssText = `display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 6px; cursor: pointer; transition: background 0.15s ease; border: 1px solid ${isChecked ? 'rgba(99, 102, 241, 0.4)' : 'transparent'}; background: ${isChecked ? 'rgba(99, 102, 241, 0.12)' : 'rgba(255,255,255,0.02)'};`;
+            
+            item.innerHTML = `
+                <input type="checkbox" value="${silo.id}" ${isChecked ? 'checked' : ''} style="cursor: pointer; width: 15px; height: 15px; accent-color: #6366f1;">
+                <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+                    <div style="width: 28px; height: 28px; border-radius: 6px; background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center;">
+                        ${getSiloIcon(silo.siloType || '')}
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; font-weight: 600; color: #ffffff;">${silo.siloName || 'Unnamed Connector'}</div>
+                        <div style="font-size: 10px; color: var(--text-muted); font-family: monospace;">${silo.filePath || silo.id}</div>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    ${getRiskBadge(silo.riskLevel)}
+                    <span style="font-size: 10px; color: var(--text-muted);">${silo.siloType || 'DATA_SILO'}</span>
+                </div>
+            `;
+
+            // Toggle checkbox on row click
+            item.addEventListener('click', (e) => {
+                if (e.target.tagName !== 'INPUT') {
+                    const cb = item.querySelector('input[type="checkbox"]');
+                    cb.checked = !cb.checked;
+                }
+                const cb = item.querySelector('input[type="checkbox"]');
+                item.style.background = cb.checked ? 'rgba(99, 102, 241, 0.12)' : 'rgba(255,255,255,0.02)';
+                item.style.borderColor = cb.checked ? 'rgba(99, 102, 241, 0.4)' : 'transparent';
+            });
+
+            siloList.appendChild(item);
+        });
+    };
+
+    if (availableSilosCache && availableSilosCache.length > 0) {
+        renderList(availableSilosCache);
+    } else {
+        fetch('/api/silos')
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.data) {
+                    availableSilosCache = data.data;
+                    renderList(data.data);
+                } else {
+                    siloList.innerHTML = '<div style="padding: 16px; color: #ef4444; font-size: 12px;">Failed to load silos.</div>';
+                }
+            })
+            .catch(err => {
+                siloList.innerHTML = `<div style="padding: 16px; color: #ef4444; font-size: 12px;">Error: ${err.message}</div>`;
+            });
+    }
+
+    document.getElementById('siloMappingModal').style.display = 'flex';
 }
 
 function closeSiloModal() {
     document.getElementById('siloMappingModal').style.display = 'none';
     currentRoPAId = null;
+    const search = document.getElementById('siloSearchInput');
+    if (search) search.value = '';
+}
+
+function toggleAllSilos(select) {
+    const checkboxes = document.querySelectorAll('#siloMappingList input[type="checkbox"]');
+    checkboxes.forEach(cb => {
+        cb.checked = select;
+        const item = cb.closest('.silo-item');
+        if (item) {
+            item.style.background = select ? 'rgba(99, 102, 241, 0.12)' : 'rgba(255,255,255,0.02)';
+            item.style.borderColor = select ? 'rgba(99, 102, 241, 0.4)' : 'transparent';
+        }
+    });
 }
 
 function saveSiloMappings() {
     if (!currentRoPAId) return;
-    
+    const btn = document.getElementById('btnSaveSilos');
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Saving...';
+
     const checkboxes = document.querySelectorAll('#siloMappingList input[type="checkbox"]:checked');
     const siloIds = Array.from(checkboxes).map(cb => cb.value);
-    
-    // First remove all existing mappings for this RoPA
+
     fetch(`/api/ropa/${currentRoPAId}/silos`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' }
-    }).then(() => {
-        // Then add selected ones
-        if (siloIds.length > 0) {
-            return Promise.all(siloIds.map(siloId =>
-                fetch('/api/ropa/' + currentRoPAId + '/silos', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ siloId })
-                })
-            ));
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ siloIds })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            currentRoPASiloMap[currentRoPAId] = siloIds;
+            
+            // Update the UI cell dynamically
+            const cell = document.getElementById('ropa-silos-' + currentRoPAId);
+            if (cell) {
+                if (data.silos && data.silos.length > 0) {
+                    let badgesHtml = '<div style="display: flex; flex-wrap: wrap; gap: 4px;">';
+                    data.silos.forEach(s => {
+                        badgesHtml += `
+                            <span class="badge" style="background: rgba(99, 102, 241, 0.15); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3); padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;" title="${s.siloType}: ${s.filePath || ''}">
+                                <span style="width: 5px; height: 5px; border-radius: 50%; background: #818cf8;"></span>
+                                ${s.siloName}
+                            </span>
+                        `;
+                    });
+                    badgesHtml += '</div>';
+                    cell.innerHTML = badgesHtml;
+                } else {
+                    cell.innerHTML = '<span class="badge" style="background: rgba(148, 163, 184, 0.1); color: #94a3b8; padding: 4px 8px; border-radius: 6px; font-size: 10px;">No silos mapped</span>';
+                }
+            }
+
+            closeSiloModal();
+            showToast(`Mapped ${siloIds.length} silos to activity successfully.`);
+        } else {
+            alert('Failed to save mappings: ' + (data.error || 'Unknown error'));
         }
-    }).then(results => {
-        closeSiloModal();
-        alert('Silo mappings updated successfully!');
-        window.location.reload();
-    }).catch(err => {
+    })
+    .catch(err => {
         alert('Request failed: ' + err.message);
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.textContent = originalText;
     });
 }
-</script>
 
-<!-- Silo Mapping Modal -->
-<div id="siloMappingModal" class="modal-overlay" style="display: none;">
-    <div class="modal-content" style="max-width: 500px; width: 90%;">
-        <div class="modal-header">
-            <h3 id="modalActivityName">Map Silos to Activity</h3>
-            <button class="btn-close" onclick="closeSiloModal()" style="background: none; border: none; font-size: 20px; color: var(--text-muted); cursor: pointer;">&times;</button>
-        </div>
-        <div class="modal-body" style="padding: 20px;">
-            <div style="margin-bottom: 16px;">
-                <label class="form-label">Select informal systems to map to this activity:</label>
-            </div>
-            <div id="siloMappingList" style="max-height: 300px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; background: rgba(255,255,255,0.03);">
-                <!-- Silos will be populated here -->
-            </div>
-        </div>
-        <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
-            <button type="button" class="btn-secondary" onclick="closeSiloModal()" style="padding: 10px 20px;">Cancel</button>
-            <button type="button" class="btn-primary" onclick="saveSiloMappings()" style="padding: 10px 24px; font-weight: 600;">Save Mappings</button>
-        </div>
-    </div>
-</div>
+// Close modals when clicking outside
+window.addEventListener('click', (e) => {
+    const ropaModal = document.getElementById('ropaModal');
+    if (e.target === ropaModal) closeRoPAModal();
+    const siloModal = document.getElementById('siloMappingModal');
+    if (e.target === siloModal) closeSiloModal();
+});
+</script>
 
 <%- include('partials/footer') %>
