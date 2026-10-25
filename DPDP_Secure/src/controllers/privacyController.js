@@ -284,14 +284,29 @@ async function getSummaryReport(req, res) {
 async function executeErasure(req, res) {
   try {
     const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
-    const actor = req.session?.user?.name || 'Ramesh Kumar (DPO)';
-    const { ticketId = 'DSR-2026-8819', principalPhone = '+91 9988776655' } = req.body || {};
+    const actor = req.session?.user?.username || 'Ramesh Kumar (DPO)';
+    const { ticketId = 'DSR-2026-8819', principalPhone, principalName, principalEmail } = req.body || {};
+
+    let ticket = null;
+    try {
+      ticket = await models.getDsrByTicket(ticketId);
+    } catch {
+      // ignore
+    }
+
+    const resolvedPhone = principalPhone || ticket?.principalPhone || '+91 9988776655';
+    const resolvedName = principalName || ticket?.principalName || 'Deepa Nair';
+    const resolvedEmail = principalEmail || ticket?.principalEmail || 'deepa.nair@corp.com';
 
     // Execute real Dual-Track statutory collision resolution with atomic file writes & formula defense
-    const result = await statutoryCollisionResolver.executeSmartErasure(ticketId, principalPhone, {
+    const result = await statutoryCollisionResolver.executeSmartErasure(ticketId, resolvedPhone, {
       tenantId,
-      actor
+      actor,
+      principalName: resolvedName,
+      principalPhone: resolvedPhone,
+      principalEmail: resolvedEmail
     });
+
 
     return res.json({
       success: true,

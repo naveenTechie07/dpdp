@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<%
+  var generatedAt = typeof generatedAt !== 'undefined' && generatedAt ? generatedAt : new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+  var tenantId = typeof tenantId !== 'undefined' && tenantId ? tenantId : 'TENANT-AAROGYA-01';
+  var ropa = typeof ropa !== 'undefined' && ropa ? ropa : [];
+  var assets = typeof assets !== 'undefined' && assets ? assets : [];
+  var records = typeof records !== 'undefined' && records ? records : [];
+%>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title || 'Record of Processing Activities (RoPA) - DPDP Act 2023 Sec 8(4)' %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #cbd5e1;
+      --primary: #047857;
+      --accent: #0284c7;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #f1f5f9;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text);
+      line-height: 1.5;
+      padding: 32px 16px;
+    }
+
+    .container {
+      max-width: 1050px;
+      margin: 0 auto;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+    /* Print Watermark */
+    .container::before {
+      content: "STATUTORY RECORD — DPDP ACT SEC 8(4)";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-30deg);
+      font-size: 48px;
+      font-weight: 800;
+      color: rgba(0, 0, 0, 0.03);
+      pointer-events: none;
+      white-space: nowrap;
+      letter-spacing: 4px;
+    }
+
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 2px solid #0f172a;
+      padding-bottom: 20px;
+      margin-bottom: 24px;
+    }
+
+    .gov-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .seal-box {
+      text-align: right;
+    }
+
+    .seal-stamp {
+      display: inline-block;
+      border: 2px solid var(--primary);
+      padding: 6px 14px;
+      border-radius: 8px;
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Metadata Grid */
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 28px;
+      font-size: 12px;
+    }
+
+    .meta-item .label {
+      font-weight: 600;
+      color: var(--text-muted);
+      font-size: 11px;
+      text-transform: uppercase;
+    }
+
+    .meta-item .val {
+      font-weight: 700;
+      color: #0f172a;
+      margin-top: 2px;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin-bottom: 24px;
+    }
+
+    th {
+      background: #0f172a;
+      color: #ffffff;
+      text-align: left;
+      padding: 10px 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 10px;
+      letter-spacing: 0.5px;
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #e2e8f0;
+      vertical-align: top;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f8fafc;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      background: #e2e8f0;
+      color: #334155;
+    }
+
+    .tag-consent {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .tag-law {
+      background: #e0f2fe;
+      color: #0369a1;
+    }
+
+    .footer-bar {
+      margin-top: 32px;
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .btn-print {
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+
+    @media print {
+      body {
+        background: #ffffff;
+        padding: 0;
+      }
+      .container {
+        border: none;
+        box-shadow: none;
+        padding: 0;
+        max-width: 100%;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Top Action Bar -->
+    <div class="no-print" style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;">
+      <a href="/inventory/ropa" style="color: var(--accent); text-decoration: none; font-size: 13px; font-weight: 600;">
+        &larr; Back to RoPA Dashboard
+      </a>
+      <button class="btn-print" onclick="window.print()">
+        🖨️ Print Statutory RoPA Register
+      </button>
+    </div>
+
+    <!-- Official Header -->
+    <div class="header-bar">
+      <div>
+        <span class="gov-badge">Digital Personal Data Protection Act, 2023 · Rule 6</span>
+        <h1>Record of Processing Activities (RoPA)</h1>
+        <div class="subtitle">
+          Statutory Register maintained pursuant to Section 8(4) for Personal Data in Informal Systems
+        </div>
+      </div>
+      <div class="seal-box">
+        <div class="seal-stamp">
+          OFFICIAL REGISTER · SEC 8(4)
+        </div>
+        <div style="font-size: 10px; color: var(--text-muted); margin-top: 4px; font-family: 'JetBrains Mono', monospace;">
+          REF: ROPA-<%= typeof tenantId !== 'undefined' ? tenantId : 'TENANT-AAROGYA-01' %>-2026
+        </div>
+      </div>
+    </div>
+
+    <!-- Data Fiduciary Profile -->
+    <div class="meta-grid">
+      <div class="meta-item">
+        <div class="label">Data Fiduciary</div>
+        <div class="val">Aarogya Diagnostic Center</div>
+      </div>
+      <div class="meta-item">
+        <div class="label">GSTIN / Registration</div>
+        <div class="val">29AAAAA0000A1Z5</div>
+      </div>
+      <div class="meta-item">
+        <div class="label">Operating Jurisdiction</div>
+        <div class="val">Indiranagar, Bengaluru, KA</div>
+      </div>
+      <div class="meta-item">
+        <div class="label">Certified Date (IST)</div>
+        <div class="val"><%= generatedAt %></div>
+      </div>
+    </div>
+
+    <!-- Processing Activities Registry -->
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 20%;">Activity / Purpose</th>
+          <th style="width: 18%;">Informal Data Silo</th>
+          <th style="width: 22%;">Categories of Personal Data</th>
+          <th style="width: 16%;">Lawful Basis</th>
+          <th style="width: 14%;">Statutory Retention</th>
+          <th style="width: 10%;">Safeguard</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (records && records.length > 0) { %>
+          <% records.forEach(function(rec) { %>
+            <tr>
+              <td>
+                <strong style="color: #0f172a;"><%= rec.activityName || rec.purpose || 'Diagnostic Services' %></strong>
+                <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">
+                  <%= rec.description || 'Routine patient processing' %>
+                </div>
+              </td>
+              <td>
+                <span class="tag"><%= rec.siloName || rec.dataContainer || 'WhatsApp / Chat Silo' %></span>
+              </td>
+              <td>
+                <div style="line-height: 1.4;">
+                  <%= rec.piiCategories || 'Patient Name, Phone Number, Aadhaar, Diagnostic Lab Test' %>
+                </div>
+              </td>
+              <td>
+                <% if ((rec.legalBasis || '').includes('Consent') || (rec.legalBasis || '').includes('Section 6')) { %>
+                  <span class="tag tag-consent"><%= rec.legalBasis || 'Section 6 Consent' %></span>
+                <% } else { %>
+                  <span class="tag tag-law"><%= rec.legalBasis || 'Section 8(7) Statutory' %></span>
+                <% } %>
+              </td>
+              <td>
+                <strong><%= rec.retentionPeriod || 'CGST 6 Years' %></strong>
+                <div style="font-size: 10px; color: var(--text-muted);">
+                  <%= rec.retentionBasis || 'CGST Act Sec 36' %>
+                </div>
+              </td>
+              <td>
+                <span class="tag" style="background: #f1f5f9; font-family: monospace;">Zero Cloud</span>
+              </td>
+            </tr>
+          <% }); %>
+        <% } else { %>
+          <tr>
+            <td>
+              <strong>Medical Lab Report Dispatch</strong>
+              <div style="font-size: 10px; color: var(--text-muted);">WhatsApp test report delivery to patients</div>
+            </td>
+            <td><span class="tag">clinic_reception_chat.txt</span></td>
+            <td>Patient Name, Mobile Number, Test Type, HbA1c, Lipid Profile</td>
+            <td><span class="tag tag-consent">Section 6(1) Consent</span></td>
+            <td><strong>30 Days</strong><div style="font-size: 10px; color: var(--text-muted);">Informal Purge</div></td>
+            <td><span class="tag">AES-256</span></td>
+          </tr>
+          <tr>
+            <td>
+              <strong>Customer Leads & Appointments</strong>
+              <div style="font-size: 10px; color: var(--text-muted);">Appointment scheduling and lead tracking</div>
+            </td>
+            <td><span class="tag">customer_leads.csv</span></td>
+            <td>Name, Mobile Number, Aadhaar Card, Email Address</td>
+            <td><span class="tag tag-consent">Section 6(1) Consent</span></td>
+            <td><strong>90 Days</strong><div style="font-size: 10px; color: var(--text-muted);">Lead Expiry</div></td>
+            <td><span class="tag">Verhoeff</span></td>
+          </tr>
+          <tr>
+            <td>
+              <strong>Statutory Tax Billing & Invoicing</strong>
+              <div style="font-size: 10px; color: var(--text-muted);">GST compliance and diagnostic billing</div>
+            </td>
+            <td><span class="tag">billing_invoices_export.csv</span></td>
+            <td>Customer Name, PAN Card, Phone, Billed Amount, GSTIN</td>
+            <td><span class="tag tag-law">Section 8(7) Legal Obligation</span></td>
+            <td><strong>6 Years (72 Mo)</strong><div style="font-size: 10px; color: var(--text-muted);">CGST Sec 36 Lock</div></td>
+            <td><span class="tag">Immutable</span></td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+
+    <!-- Statutory Attestation Block -->
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-top: 36px; padding-top: 20px; border-top: 1px dashed var(--border);">
+      <div>
+        <h4 style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px;">
+          Statutory Verification & Technical Safeguards (Section 8(5))
+        </h4>
+        <p style="font-size: 11px; color: #475569; line-height: 1.6;">
+          All personal data logged in this Record of Processing Activities is processed strictly on-premise with zero cloud egress. Formula injection defenses are enforced across CSV outputs. Citizen consent revocations under Section 6(4) take immediate effect, halting informal data flows.
+        </p>
+      </div>
+      <div style="text-align: right;">
+        <div style="height: 48px; border-bottom: 1px solid #0f172a; margin-bottom: 6px;"></div>
+        <div style="font-weight: 700; font-size: 12px; color: #0f172a;">Data Protection Officer (DPO)</div>
+        <div style="font-size: 11px; color: var(--text-muted);">Aarogya Diagnostic Center, Bengaluru</div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer-bar">
+      <div>DPDP_Secure Automated Compliance Engine · Problem Statement LS-04</div>
+      <div style="font-family: 'JetBrains Mono', monospace;">SHA-256 Chain Verified · Page 1 of 1</div>
+    </div>
+  </div>
+</body>
+</html>

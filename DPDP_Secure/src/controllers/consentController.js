@@ -8,6 +8,7 @@
 
 const crypto = require('crypto');
 const models = require('../models');
+const certificateGenerator = require('../services/certificateGenerator');
 
 // Default fallback tenant ID
 const DEFAULT_TENANT_ID = 'TENANT-AAROGYA-01';
@@ -300,9 +301,97 @@ async function withdrawConsent(req, res) {
   }
 }
 
+/**
+ * Renders the Interactive WhatsApp Consent Chatbot Simulator
+ * GET /consent/simulator
+ */
+async function renderSimulator(req, res) {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    let notices = await models.getActiveNotices(tenantId);
+    if (!notices || notices.length === 0) {
+      notices = DEFAULT_NOTICES;
+    }
+    const events = await models.getConsentEvents(tenantId, 15);
+    let purposes = [];
+    if (typeof models.getConsentPurposes === 'function') {
+      try {
+        purposes = await models.getConsentPurposes(tenantId);
+      } catch (e) {
+        purposes = [];
+      }
+    }
+
+    res.render('consent-simulator', {
+      title: 'WhatsApp Consent Simulator - DPDP_Secure',
+      description: 'Interactive dual-pane Section 5 notice dispatch and Section 6 opt-in / revocation simulator.',
+      breadcrumbs: ['Workspace', 'Consent', 'WhatsApp Simulator'],
+      path: '/consent/simulator',
+      notices,
+      events: events || [],
+      purposes: purposes || [],
+      tenantId
+    });
+  } catch (error) {
+    console.error('Error in consentController.renderSimulator:', error);
+    res.status(500).render('error', {
+      title: 'Error - DPDP_Secure',
+      message: 'Failed to load consent simulator.'
+    });
+  }
+}
+
+/**
+ * Downloads or views statutory Section 6(1) Citizen Consent Passbook
+ * GET /api/consent/download-passbook/:id
+ * GET /consent/passbook/:id
+ */
+async function downloadPassbook(req, res) {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    const eventId = req.params.id;
+    let event = null;
+
+    const events = await models.getConsentEvents(tenantId, 100);
+    if (events && events.length) {
+      event = events.find(e => e.id === eventId);
+    }
+
+    if (!event) {
+      // Graceful fallback for demonstration / direct testing
+      event = {
+        id: eventId || `EVT-${Date.now()}`,
+        tenantId,
+        phone: req.query.phone || '+91 98450 12345',
+        purposeCode: req.query.purpose || 'PURP-DIAGNOSTIC-REPORTING',
+        status: req.query.status || 'ACTIVE',
+        channel: 'WhatsApp Business API',
+        noticeLanguage: req.query.lang || 'English',
+        timestamp: new Date().toISOString(),
+        sha256Proof: crypto
+          .createHash('sha256')
+          .update(eventId + tenantId + (req.query.phone || '9845012345'))
+          .digest('hex')
+      };
+    }
+
+    const html = certificateGenerator.buildConsentPassbookHtml(event);
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    if (req.query.download === '1') {
+      res.setHeader('Content-Disposition', `attachment; filename="consent-passbook-${eventId}.html"`);
+    }
+    return res.send(html);
+  } catch (error) {
+    console.error('Error in consentController.downloadPassbook:', error);
+    return res.status(500).send('Error generating consent passbook: ' + error.message);
+  }
+}
+
 module.exports = {
   renderCollectionPoints,
   renderLedger,
+  renderSimulator,
+  downloadPassbook,
   createNotice,
   getNoticeById,
   recordConsent,

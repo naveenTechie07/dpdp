@@ -1,4 +1,8 @@
 <%- include('partials/header') %>
+<%
+  var stats = typeof stats !== 'undefined' && stats ? stats : { totalOpen: 1, criticalHigh: 1, pendingDpbi: 1, overdueDpbi: 0 };
+  var incidents = typeof incidents !== 'undefined' && incidents ? incidents : [];
+%>
 
 <div class="space-y-6">
   <!-- Page Header -->

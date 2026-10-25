@@ -1,31 +1,61 @@
 const express = require('express');
 const router = express.Router();
+const models = require('../models');
+const auditLogger = require('../models/auditLogger');
+const demoController = require('../controllers/demoController');
 
-router.get('/settings/general', (req, res) => {
-  res.render('settings-general', {
-    title: 'General Settings - DPDP_Secure',
-    description: 'Platform-level settings for this tenant.',
-    breadcrumbs: ['Workspace', 'Settings', 'General'],
-    path: '/settings/general'
-  });
+const DEFAULT_TENANT_ID = 'TENANT-AAROGYA-01';
+
+// ==========================================
+// SETTINGS VIEW ROUTES (WITH LIVE SQLITE DATA)
+// ==========================================
+
+router.get('/settings/general', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    const settings = await models.getTenantSettings(tenantId);
+    res.render('settings-general', {
+      title: 'General Settings - DPDP_Secure',
+      description: 'Platform-level settings for this tenant.',
+      breadcrumbs: ['Workspace', 'Settings', 'General'],
+      path: '/settings/general',
+      settings: settings || []
+    });
+  } catch (err) {
+    res.status(500).render('500', { title: 'Error', description: err.message, breadcrumbs: ['Error'] });
+  }
 });
 
-router.get('/settings/sso', (req, res) => {
-  res.render('settings-sso', {
-    title: 'Single Sign-On - DPDP_Secure',
-    description: "Connect your organization's identity provider and activate SSO after a successful real login test.",
-    breadcrumbs: ['Workspace', 'Settings', 'Sso'],
-    path: '/settings/sso'
-  });
+router.get('/settings/sso', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    const sso = await models.getSsoSettings(tenantId);
+    res.render('settings-sso', {
+      title: 'Single Sign-On - DPDP_Secure',
+      description: "Connect your organization's identity provider and activate SSO after a successful real login test.",
+      breadcrumbs: ['Workspace', 'Settings', 'Sso'],
+      path: '/settings/sso',
+      sso: sso || {}
+    });
+  } catch (err) {
+    res.status(500).render('500', { title: 'Error', description: err.message, breadcrumbs: ['Error'] });
+  }
 });
 
-router.get('/settings/branding', (req, res) => {
-  res.render('settings-branding', {
-    title: 'Branding & Theme - DPDP_Secure',
-    description: 'Customize logo and tenant theme colors for all portal pages.',
-    breadcrumbs: ['Workspace', 'Settings', 'Branding'],
-    path: '/settings/branding'
-  });
+router.get('/settings/branding', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    const branding = await models.getBrandingSettings(tenantId);
+    res.render('settings-branding', {
+      title: 'Branding & Theme - DPDP_Secure',
+      description: 'Customize logo and tenant theme colors for all portal pages.',
+      breadcrumbs: ['Workspace', 'Settings', 'Branding'],
+      path: '/settings/branding',
+      branding: branding || {}
+    });
+  } catch (err) {
+    res.status(500).render('500', { title: 'Error', description: err.message, breadcrumbs: ['Error'] });
+  }
 });
 
 // Alias redirect for /branding -> /settings/branding
@@ -33,30 +63,41 @@ router.get('/branding', (req, res) => {
   res.redirect('/settings/branding');
 });
 
-router.get('/settings/organization', (req, res) => {
-  res.render('settings-organization', {
-    title: 'Organization Hierarchy - DPDP_Secure',
-    description: 'Define tenant org trees, child-org locale overrides, and inherited settings.',
-    breadcrumbs: ['Workspace', 'Settings', 'Organization'],
-    path: '/settings/organization'
-  });
+router.get('/settings/organization', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    const org = await models.getOrganizationSettings(tenantId);
+    res.render('settings-organization', {
+      title: 'Organization Hierarchy - DPDP_Secure',
+      description: 'Define tenant org trees, child-org locale overrides, and inherited settings.',
+      breadcrumbs: ['Workspace', 'Settings', 'Organization'],
+      path: '/settings/organization',
+      org: org || {}
+    });
+  } catch (err) {
+    res.status(500).render('500', { title: 'Error', description: err.message, breadcrumbs: ['Error'] });
+  }
 });
 
-router.get('/settings/roles', (req, res) => {
-  res.render('settings-roles', {
-    title: 'Roles & Permissions - DPDP_Secure',
-    description: 'Manage tenant roles, permissions, users, and role assignments.',
-    breadcrumbs: ['Workspace', 'Settings', 'Roles'],
-    path: '/settings/roles'
-  });
+router.get('/settings/roles', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    const roles = await models.getRolePermissions(tenantId);
+    res.render('settings-roles', {
+      title: 'Roles & Permissions - DPDP_Secure',
+      description: 'Manage tenant roles, permissions, users, and role assignments.',
+      breadcrumbs: ['Workspace', 'Settings', 'Roles'],
+      path: '/settings/roles',
+      roles: roles || []
+    });
+  } catch (err) {
+    res.status(500).render('500', { title: 'Error', description: err.message, breadcrumbs: ['Error'] });
+  }
 });
-
-const auditLogger = require('../models/auditLogger');
-const demoController = require('../controllers/demoController');
 
 router.get('/settings/audit-log', async (req, res) => {
   try {
-    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
     const chainStatus = await auditLogger.verifyAuditChain(tenantId);
     const logs = await auditLogger.getAuditLogs(tenantId, { limit: 100 });
 
@@ -81,13 +122,147 @@ router.get('/settings/audit-log', async (req, res) => {
   }
 });
 
-router.get('/settings/localization', (req, res) => {
-  res.render('settings-localization', {
-    title: 'Localization & Labels - DPDP_Secure',
-    description: 'Manage tenant language defaults (English, Kannada, Hindi) across the platform.',
-    breadcrumbs: ['Workspace', 'Settings', 'Localization'],
-    path: '/settings/localization'
-  });
+router.get('/settings/localization', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    const locales = await models.getLocalizationSettings(tenantId);
+    res.render('settings-localization', {
+      title: 'Localization & Labels - DPDP_Secure',
+      description: 'Manage tenant language defaults (English, Kannada, Hindi) across the platform.',
+      breadcrumbs: ['Workspace', 'Settings', 'Localization'],
+      path: '/settings/localization',
+      locales: locales || []
+    });
+  } catch (err) {
+    res.status(500).render('500', { title: 'Error', description: err.message, breadcrumbs: ['Error'] });
+  }
+});
+
+// ==========================================
+// SETTINGS CRUD APIS
+// ==========================================
+
+router.get('/api/settings/general', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    const data = await models.getTenantSettings(tenantId);
+    res.json({ success: true, settings: data });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.post('/api/settings/general', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    const key = req.body?.settingKey || req.body?.key || 'general_setting';
+    const val = req.body?.settingValue !== undefined ? req.body.settingValue : (req.body?.value || 'enabled');
+    await models.upsertTenantSetting(tenantId, key, val);
+    await models.logAuditEvent(tenantId, req.session?.user?.name || 'Admin', 'UPDATE_SETTING', key, { settingValue: val });
+    res.json({ success: true, message: 'Setting saved' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.get('/api/settings/sso', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    const data = await models.getSsoSettings(tenantId);
+    res.json({ success: true, sso: data });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.post('/api/settings/sso', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    await models.upsertSsoSettings(tenantId, req.body);
+    res.json({ success: true, message: 'SSO configuration updated' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.get('/api/settings/branding', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    const data = await models.getBrandingSettings(tenantId);
+    res.json({ success: true, branding: data });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.post('/api/settings/branding', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    await models.upsertBrandingSettings(tenantId, req.body);
+    res.json({ success: true, message: 'Branding updated' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.get('/api/settings/organization', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    const data = await models.getOrganizationSettings(tenantId);
+    res.json({ success: true, org: data });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.post('/api/settings/organization', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    await models.upsertOrganizationSettings(tenantId, req.body);
+    res.json({ success: true, message: 'Organization settings updated' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.get('/api/settings/roles', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    const data = await models.getRolePermissions(tenantId);
+    res.json({ success: true, roles: data });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.post('/api/settings/roles', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    const created = await models.createRolePermission({ ...req.body, tenantId });
+    res.status(201).json({ success: true, role: created });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.get('/api/settings/localization', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    const data = await models.getLocalizationSettings(tenantId);
+    res.json({ success: true, locales: data });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.post('/api/settings/localization', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    await models.upsertLocalizationSettings(tenantId, req.body);
+    res.json({ success: true, message: 'Localization settings saved' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
 });
 
 // Demo Seeder Reset API

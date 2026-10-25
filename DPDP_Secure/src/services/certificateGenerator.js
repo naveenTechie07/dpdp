@@ -709,10 +709,207 @@ function getCertificateById(certificateId) {
   return null;
 }
 
+/**
+ * Generates an official printable Citizen Consent Passbook under Section 6(1) of DPDP Act 2023
+ */
+function buildConsentPassbookHtml(consentEvent) {
+  const eventId = consentEvent.id || 'CONSENT-EVENT-DEMO';
+  const phone = consentEvent.dataPrincipalPhone || consentEvent.phone || '+91 9845012345';
+  const maskedPhone = phone.length >= 10 ? phone.slice(0, 5) + 'XXXXX' + phone.slice(-2) : phone;
+  const purposeCode = consentEvent.purposeCode || 'PURP-DIAGNOSTIC-REPORTING';
+  const status = consentEvent.status || 'ACTIVE';
+  const channel = consentEvent.channel || 'WHATSAPP';
+  const timestamp = consentEvent.timestamp || new Date().toISOString();
+  const sha256Proof = consentEvent.sha256Proof || crypto.createHash('sha256').update(phone + purposeCode + status + timestamp).digest('hex');
+
+  const formattedDate = new Date(timestamp).toLocaleString('en-IN', {
+    dateStyle: 'full',
+    timeStyle: 'medium',
+    timeZone: 'Asia/Kolkata'
+  });
+
+  const isWithdrawn = status === 'WITHDRAWN';
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Citizen Consent Passbook - ${eventId} - DPDP_Secure</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: #111827;
+      --border: #1f2937;
+      --emerald: #10b981;
+      --rose: #f43f5e;
+      --sky: #38bdf8;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+      padding: 30px 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .passbook-container {
+      max-width: 760px;
+      width: 100%;
+      background: #111827;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 36px;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    }
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 20px;
+      margin-bottom: 24px;
+    }
+    .title-group h1 { font-size: 20px; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
+    .title-group p { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+    .badge-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      background: ${isWithdrawn ? 'rgba(244, 63, 94, 0.15)' : 'rgba(16, 185, 129, 0.15)'};
+      color: ${isWithdrawn ? 'var(--rose)' : 'var(--emerald)'};
+      border: 1px solid ${isWithdrawn ? 'rgba(244, 63, 94, 0.3)' : 'rgba(16, 185, 129, 0.3)'};
+    }
+    .grid-details {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .field-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+    .field-label { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .field-value { font-size: 13px; font-weight: 600; color: #fff; margin-top: 6px; font-family: 'JetBrains Mono', monospace; }
+    .proof-box {
+      background: rgba(56, 189, 248, 0.05);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+    .proof-box .label { font-size: 11px; font-weight: 700; color: var(--sky); text-transform: uppercase; margin-bottom: 8px; }
+    .proof-hash { font-family: 'JetBrains Mono', monospace; font-size: 11px; word-break: break-all; color: #e2e8f0; background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 6px; }
+    .legal-notice {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+    }
+    .actions-bar {
+      margin-top: 24px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+    .btn-print {
+      background: var(--sky);
+      color: #0b0f19;
+      font-weight: 700;
+      font-size: 12px;
+      padding: 8px 18px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+    }
+    @media print {
+      body { background: #fff; color: #000; padding: 0; }
+      .passbook-container { border: 1px solid #ccc; box-shadow: none; background: #fff; }
+      .actions-bar { display: none; }
+      .field-value, .title-group h1 { color: #000; }
+      .proof-hash { color: #000; background: #eee; }
+    }
+  </style>
+</head>
+<body>
+  <div class="passbook-container">
+    <div class="header-bar">
+      <div class="title-group">
+        <h1>Citizen Consent Passbook</h1>
+        <p>Statutory Record of Consent under Section 6(1) of DPDP Act, 2023</p>
+      </div>
+      <div class="badge-status">
+        ● ${status}
+      </div>
+    </div>
+
+    <div class="grid-details">
+      <div class="field-card">
+        <div class="field-label">Data Principal (Citizen)</div>
+        <div class="field-value">${maskedPhone}</div>
+      </div>
+      <div class="field-card">
+        <div class="field-label">Data Fiduciary</div>
+        <div class="field-value">Aarogya Diagnostic Center</div>
+      </div>
+      <div class="field-card">
+        <div class="field-label">Specified Lawful Purpose</div>
+        <div class="field-value">${purposeCode}</div>
+      </div>
+      <div class="field-card">
+        <div class="field-label">Collection Channel</div>
+        <div class="field-value">${channel}</div>
+      </div>
+      <div class="field-card">
+        <div class="field-label">Timestamp (IST)</div>
+        <div class="field-value">${formattedDate}</div>
+      </div>
+      <div class="field-card">
+        <div class="field-label">Receipt Identifier</div>
+        <div class="field-value">${eventId}</div>
+      </div>
+    </div>
+
+    <div class="proof-box">
+      <div class="label">Cryptographic Non-Repudiation Proof (SHA-256)</div>
+      <div class="proof-hash">${sha256Proof}</div>
+    </div>
+
+    <div class="legal-notice">
+      <strong>Statutory Notice under Section 6(4):</strong> You have the legal right under Section 6(4) of India's Digital Personal Data Protection Act, 2023 to withdraw this consent at any time without negative consequence to services previously rendered. To withdraw, reply <code>STOP</code> to clinic WhatsApp or contact Clinic Grievance Officer: <code>privacy@aarogyaclinic.in</code> (+91 9845012345).
+    </div>
+
+    <div class="actions-bar">
+      <button class="btn-print" onclick="window.print()">🖨️ Print Statutory Passbook</button>
+    </div>
+  </div>
+</body>
+</html>`;
+}
+
 module.exports = {
   computeCertificateFingerprint,
   buildCertificateHtml,
   generateErasureCertificate,
   getCertificateById,
+  buildConsentPassbookHtml,
   CERTIFICATES_DIR
 };
+

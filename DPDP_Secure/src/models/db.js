@@ -277,6 +277,370 @@ const SCHEMA_DDL = `
   );
 
   CREATE INDEX IF NOT EXISTS idx_tags_tenant ON data_tags(tenantId);
+
+  CREATE TABLE IF NOT EXISTS workflows (
+    id TEXT PRIMARY KEY,
+    tenantId TEXT NOT NULL,
+    workflowName TEXT NOT NULL,
+    triggerEvent TEXT,
+    actions TEXT,
+    isActive INTEGER DEFAULT 1,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(tenantId) REFERENCES tenants(id)
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_workflows_tenant ON workflows(tenantId);
+
+  CREATE TABLE IF NOT EXISTS data_processors (
+    id TEXT PRIMARY KEY,
+    tenantId TEXT NOT NULL,
+    processorName TEXT NOT NULL,
+    serviceType TEXT,
+    dataCategories TEXT,
+    jurisdiction TEXT,
+    adequacyDecision TEXT,
+    contractSigned INTEGER DEFAULT 0,
+    dpaSigned INTEGER DEFAULT 0,
+    lastReviewed DATETIME,
+    riskLevel TEXT DEFAULT 'MEDIUM',
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(tenantId) REFERENCES tenants(id)
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_processors_tenant ON data_processors(tenantId);
+
+  CREATE TABLE IF NOT EXISTS retention_policies (
+    id TEXT PRIMARY KEY,
+    tenantId TEXT NOT NULL,
+    policyName TEXT NOT NULL,
+    dataCategory TEXT,
+    retentionPeriod TEXT,
+    legalBasis TEXT,
+    autoDelete INTEGER DEFAULT 0,
+    lastReviewed DATETIME,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(tenantId) REFERENCES tenants(id)
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_retention_tenant ON retention_policies(tenantId);
+
+  CREATE TABLE IF NOT EXISTS cross_border_transfers (
+    id TEXT PRIMARY KEY,
+    tenantId TEXT NOT NULL,
+    destinationCountry TEXT,
+    recipientName TEXT,
+    dataCategories TEXT,
+    transferMechanism TEXT,
+    adequacyDecision TEXT,
+    lastReviewed DATETIME,
+    riskLevel TEXT DEFAULT 'MEDIUM',
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(tenantId) REFERENCES tenants(id)
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_transfers_tenant ON cross_border_transfers(tenantId);
+
+  CREATE TABLE IF NOT EXISTS compliance_evidence (
+    id TEXT PRIMARY KEY,
+    tenantId TEXT NOT NULL,
+    documentName TEXT NOT NULL,
+    documentType TEXT,
+    uploadedBy TEXT,
+    filePath TEXT,
+    fileSize INTEGER,
+    verified INTEGER DEFAULT 0,
+    expiryDate DATETIME,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(tenantId) REFERENCES tenants(id)
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_evidence_tenant ON compliance_evidence(tenantId);
+
+  CREATE TABLE IF NOT EXISTS security_controls (
+    id TEXT PRIMARY KEY,
+    tenantId TEXT NOT NULL,
+    controlName TEXT NOT NULL,
+    controlCategory TEXT,
+    implementationStatus TEXT DEFAULT 'planned',
+    effectiveness TEXT DEFAULT 'medium',
+    lastTested DATETIME,
+    nextReview DATETIME,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(tenantId) REFERENCES tenants(id)
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_sec_controls_tenant ON security_controls(tenantId);
+
+  CREATE TABLE IF NOT EXISTS assessments (
+    id TEXT PRIMARY KEY,
+    tenantId TEXT NOT NULL,
+    assessmentName TEXT NOT NULL,
+    assessmentType TEXT,
+    status TEXT DEFAULT 'draft',
+    score INTEGER DEFAULT 0,
+    totalQuestions INTEGER DEFAULT 0,
+    answeredQuestions INTEGER DEFAULT 0,
+    lastCompleted DATETIME,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(tenantId) REFERENCES tenants(id)
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_assessments_tenant ON assessments(tenantId);
+
+  CREATE TABLE IF NOT EXISTS assessment_templates (
+    id TEXT PRIMARY KEY,
+    tenantId TEXT NOT NULL,
+    templateName TEXT NOT NULL,
+    framework TEXT,
+    questionCount INTEGER DEFAULT 0,
+    isActive INTEGER DEFAULT 1,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(tenantId) REFERENCES tenants(id)
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_ass_templates_tenant ON assessment_templates(tenantId);
+
+  CREATE TABLE IF NOT EXISTS pia_dpia_assessments (
+    id TEXT PRIMARY KEY,
+    tenantId TEXT NOT NULL,
+    assessmentName TEXT NOT NULL,
+    dataCategory TEXT,
+    riskLevel TEXT,
+    status TEXT DEFAULT 'draft',
+    mitigations TEXT,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(tenantId) REFERENCES tenants(id)
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_pia_dpia_tenant ON pia_dpia_assessments(tenantId);
+
+  CREATE TABLE IF NOT EXISTS assessment_settings (
+    id TEXT PRIMARY KEY,
+    tenantId TEXT NOT NULL,
+    settingKey TEXT NOT NULL,
+    settingValue TEXT,
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(tenantId) REFERENCES tenants(id),
+    UNIQUE(tenantId, settingKey)
+  );
+
+  CREATE TABLE IF NOT EXISTS integrations (
+    id TEXT PRIMARY KEY,
+    tenantId TEXT NOT NULL,
+    integrationName TEXT NOT NULL,
+    provider TEXT,
+    status TEXT DEFAULT 'inactive',
+    apiKeyPrefix TEXT,
+    lastSynced DATETIME,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(tenantId) REFERENCES tenants(id)
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_integrations_tenant ON integrations(tenantId);
+
+  CREATE TABLE IF NOT EXISTS integration_hub (
+    id TEXT PRIMARY KEY,
+    tenantId TEXT NOT NULL,
+    connectorName TEXT NOT NULL,
+    connectorType TEXT,
+    config JSON,
+    isActive INTEGER DEFAULT 0,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(tenantId) REFERENCES tenants(id)
+  );
+
+  CREATE TABLE IF NOT EXISTS api_keys (
+    id TEXT PRIMARY KEY,
+    tenantId TEXT NOT NULL,
+    keyName TEXT NOT NULL,
+    keyPrefix TEXT,
+    keyHash TEXT,
+    scopes TEXT,
+    lastUsed DATETIME,
+    expiresAt DATETIME,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(tenantId) REFERENCES tenants(id)
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_apikeys_tenant ON api_keys(tenantId);
+
+  CREATE TABLE IF NOT EXISTS tenant_settings (
+    id TEXT PRIMARY KEY,
+    tenantId TEXT NOT NULL,
+    settingKey TEXT NOT NULL,
+    settingValue TEXT,
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(tenantId) REFERENCES tenants(id),
+    UNIQUE(tenantId, settingKey)
+  );
+
+  CREATE TABLE IF NOT EXISTS sso_settings (
+    id TEXT PRIMARY KEY,
+    tenantId TEXT NOT NULL,
+    provider TEXT NOT NULL,
+    clientId TEXT,
+    clientSecret TEXT,
+    redirectUri TEXT,
+    isEnabled INTEGER DEFAULT 0,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(tenantId) REFERENCES tenants(id)
+  );
+
+  CREATE TABLE IF NOT EXISTS branding_settings (
+    id TEXT PRIMARY KEY,
+    tenantId TEXT NOT NULL,
+    logoUrl TEXT,
+    primaryColor TEXT DEFAULT '#3b82f6',
+    secondaryColor TEXT DEFAULT '#10b981',
+    companyName TEXT,
+    faviconUrl TEXT,
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(tenantId) REFERENCES tenants(id)
+  );
+
+  CREATE TABLE IF NOT EXISTS organization_settings (
+    id TEXT PRIMARY KEY,
+    tenantId TEXT NOT NULL,
+    organizationName TEXT,
+    parentOrganization TEXT,
+    country TEXT,
+    industry TEXT,
+    employeeCount INTEGER,
+    dataProcessingPurpose TEXT,
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(tenantId) REFERENCES tenants(id)
+  );
+
+  CREATE TABLE IF NOT EXISTS role_permissions (
+    id TEXT PRIMARY KEY,
+    tenantId TEXT NOT NULL,
+    roleName TEXT NOT NULL,
+    permissions TEXT,
+    isSystem INTEGER DEFAULT 0,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(tenantId) REFERENCES tenants(id)
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_roles_tenant ON role_permissions(tenantId);
+
+  CREATE TABLE IF NOT EXISTS localization_settings (
+    id TEXT PRIMARY KEY,
+    tenantId TEXT NOT NULL,
+    language TEXT NOT NULL,
+    isDefault INTEGER DEFAULT 0,
+    translations TEXT,
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(tenantId) REFERENCES tenants(id)
+  );
+
+  CREATE TABLE IF NOT EXISTS consent_purposes (
+    id TEXT PRIMARY KEY,
+    tenantId TEXT NOT NULL,
+    purposeName TEXT NOT NULL,
+    purposeCode TEXT UNIQUE NOT NULL,
+    description TEXT,
+    isActive INTEGER DEFAULT 1,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(tenantId) REFERENCES tenants(id)
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_purposes_tenant ON consent_purposes(tenantId);
+
+  CREATE TABLE IF NOT EXISTS consent_preferences (
+    id TEXT PRIMARY KEY,
+    tenantId TEXT NOT NULL,
+    preferenceName TEXT NOT NULL,
+    preferenceValue TEXT,
+    isGlobal INTEGER DEFAULT 0,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(tenantId) REFERENCES tenants(id)
+  );
+
+  CREATE TABLE IF NOT EXISTS consent_preference_centers (
+    id TEXT PRIMARY KEY,
+    tenantId TEXT NOT NULL,
+    centerName TEXT NOT NULL,
+    purposeIds TEXT,
+    isActive INTEGER DEFAULT 1,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(tenantId) REFERENCES tenants(id)
+  );
+
+  CREATE TABLE IF NOT EXISTS consent_data_elements (
+    id TEXT PRIMARY KEY,
+    tenantId TEXT NOT NULL,
+    elementName TEXT NOT NULL,
+    elementType TEXT,
+    isSensitive INTEGER DEFAULT 0,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(tenantId) REFERENCES tenants(id)
+  );
+
+  CREATE TABLE IF NOT EXISTS consent_policies (
+    id TEXT PRIMARY KEY,
+    tenantId TEXT NOT NULL,
+    policyName TEXT NOT NULL,
+    policyText TEXT,
+    version TEXT DEFAULT '1.0',
+    isActive INTEGER DEFAULT 1,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(tenantId) REFERENCES tenants(id)
+  );
+
+  CREATE TABLE IF NOT EXISTS consent_portal_settings (
+    id TEXT PRIMARY KEY,
+    tenantId TEXT NOT NULL,
+    settingKey TEXT NOT NULL,
+    settingValue TEXT,
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(tenantId) REFERENCES tenants(id),
+    UNIQUE(tenantId, settingKey)
+  );
+
+  CREATE TABLE IF NOT EXISTS cookie_scan_results (
+    id TEXT PRIMARY KEY,
+    tenantId TEXT NOT NULL,
+    websiteUrl TEXT NOT NULL,
+    scanDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    cookieCount INTEGER DEFAULT 0,
+    necessaryCount INTEGER DEFAULT 0,
+    nonNecessaryCount INTEGER DEFAULT 0,
+    status TEXT DEFAULT 'completed',
+    FOREIGN KEY(tenantId) REFERENCES tenants(id)
+  );
+
+  CREATE TABLE IF NOT EXISTS cookie_consent_logs (
+    id TEXT PRIMARY KEY,
+    tenantId TEXT NOT NULL,
+    sessionId TEXT,
+    action TEXT,
+    cookieCategories TEXT,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(tenantId) REFERENCES tenants(id)
+  );
+
+  CREATE TABLE IF NOT EXISTS cookie_banners (
+    id TEXT PRIMARY KEY,
+    tenantId TEXT NOT NULL,
+    bannerName TEXT NOT NULL,
+    bannerText TEXT,
+    buttonText TEXT,
+    isActive INTEGER DEFAULT 1,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(tenantId) REFERENCES tenants(id)
+  );
+
+  CREATE TABLE IF NOT EXISTS cookie_geo_rules (
+    id TEXT PRIMARY KEY,
+    tenantId TEXT NOT NULL,
+    countryCode TEXT NOT NULL,
+    ruleType TEXT NOT NULL,
+    ruleValue TEXT,
+    isActive INTEGER DEFAULT 1,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(tenantId) REFERENCES tenants(id)
+  );
+
 `;
 
 // Initialize Tables Synchronously on Module Load

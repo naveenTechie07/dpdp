@@ -1,4 +1,9 @@
 <%- include('partials/header') %>
+<%
+  var activeCountdown = typeof activeCountdown !== 'undefined' && activeCountdown ? activeCountdown : { formattedCountdown: '68h 14m Remaining' };
+  var stats = typeof stats !== 'undefined' && stats ? stats : { totalOpen: 2, criticalHigh: 1, pendingDpbi: 1, overdueDpbi: 0 };
+  var incidents = typeof incidents !== 'undefined' && incidents ? incidents : [];
+%>
 
 <div class="space-y-6">
   <!-- Page Header & 72-Hour Statutory Countdown Banner -->

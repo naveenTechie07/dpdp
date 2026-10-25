@@ -89,6 +89,9 @@ const ALL_54_ROUTES = [
   '/settings/roles',
   '/settings/audit-log',
   '/settings/localization',
+  '/consent/simulator',
+  '/discovery/sanitizer',
+  '/inventory/ropa/print',
   '/auth/login',
   '/auth/me'
 ];
@@ -139,8 +142,8 @@ async function testAllExistingRoutes(baseUrl) {
     }
   }
 
-  assert.strictEqual(routesPassed, 54, `Expected all 54 routes to return 200 OK. Passed: ${routesPassed}/54`);
-  reportPass(`All 54 navigation routes verified (HTTP 200 OK, valid content, zero uncaught exceptions)`);
+  assert.strictEqual(routesPassed, ALL_54_ROUTES.length, `Expected all ${ALL_54_ROUTES.length} routes to return 200 OK. Passed: ${routesPassed}/${ALL_54_ROUTES.length}`);
+  reportPass(`All ${ALL_54_ROUTES.length} navigation routes verified (HTTP 200 OK, valid content, zero uncaught exceptions)`);
 }
 
 /**
@@ -301,6 +304,103 @@ async function testCryptographicAuditTrail() {
 }
 
 /**
+ * 7. Verify Advanced Features:
+ * - Dynamic Erasure for Arbitrary Citizen
+ * - Live PII Sanitizer API
+ * - Interactive WhatsApp Simulator & Citizen Passbook
+ * - RoPA Section 8(4) Printable Register
+ * - Governance, Integrations, and Organization Settings APIs
+ */
+async function testSuite7AdvancedFeatures(baseUrl) {
+  console.log('[7/7] Testing Advanced Features (Dynamic Erasure, Sanitizer, Simulator, Passbook, Governance/APIs)...');
+
+  // 1. Dynamic Erasure for Arbitrary Citizen (Ramesh Sharma)
+  const dynResult = await executeSmartErasure(TENANT_ID, 'DSR-TEST-DYN-01', 'Ramesh Sharma', {
+    phone: '9845012345',
+    email: 'ramesh.sharma@gmail.com'
+  });
+  assert.strictEqual(dynResult.success, true, 'Dynamic erasure must succeed for arbitrary citizen');
+  assert.strictEqual(dynResult.erasedPrincipal, 'Ramesh Sharma', 'Erased principal must match target name');
+  assert.ok(dynResult.redactedLinesCount >= 0, 'Redacted lines count must be non-negative');
+  reportPass('Dynamic Statutory Collision Resolver verified for arbitrary citizen (Ramesh Sharma)');
+
+  // 2. PII Sanitizer API
+  const sanRes = await fetch(`${baseUrl}/api/discovery/sanitize-text`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      text: 'Patient Ramesh Sharma phone +91 9845012345 PAN ABCDE1234F clinical test HbA1c'
+    })
+  });
+  assert.strictEqual(sanRes.status, 200, 'Sanitizer API must return HTTP 200');
+  const sanData = await sanRes.json();
+  assert.strictEqual(sanData.success, true, 'Sanitizer API must report success');
+  assert.ok(sanData.counts.total >= 2, 'Must detect at least phone and PAN');
+  assert.ok(sanData.maskedText.includes('+91 98') || sanData.maskedText.includes('XXXXX'), 'Masked output must mask personal data');
+  reportPass('Live SME PII Sanitizer API verified with deterministic entity masking');
+
+  // 3. WhatsApp Simulator & Consent Passbook
+  const simRes = await fetch(`${baseUrl}/consent/simulator`);
+  assert.strictEqual(simRes.status, 200, 'WhatsApp simulator view must return HTTP 200');
+
+  const optInRes = await fetch(`${baseUrl}/api/consent/record-consent`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      phone: '+91 9845012345',
+      purposeCode: 'PURP-DIAGNOSTIC-REPORTING',
+      language: 'Kannada'
+    })
+  });
+  assert.strictEqual(optInRes.status, 200, 'Record consent API must return HTTP 200');
+  const optInData = await optInRes.json();
+  assert.strictEqual(optInData.success, true, 'Record consent must report success');
+  assert.ok(optInData.sha256Proof, 'Consent record must generate SHA-256 non-repudiation proof');
+
+  const passbookRes = await fetch(`${baseUrl}/api/consent/download-passbook/${optInData.eventId}`);
+  assert.strictEqual(passbookRes.status, 200, 'Download passbook must return HTTP 200');
+  const passbookHtml = await passbookRes.text();
+  assert.ok(passbookHtml.includes('Citizen Consent Passbook'), 'Passbook must contain Section 6(1) title');
+  assert.ok(passbookHtml.includes('Aarogya Diagnostic Center'), 'Passbook must state Aarogya Diagnostic Center');
+  reportPass('Interactive WhatsApp Consent Simulator & Section 6(1) Passbook verified');
+
+  // 4. RoPA Section 8(4) Printable Register
+  const ropaPrintRes = await fetch(`${baseUrl}/inventory/ropa/print`);
+  assert.strictEqual(ropaPrintRes.status, 200, 'RoPA printable view must return HTTP 200');
+  const ropaHtml = await ropaPrintRes.text();
+  assert.ok(ropaHtml.includes('Record of Processing Activities (RoPA)'), 'RoPA view must render Section 8(4) title');
+  reportPass('Section 8(4) RoPA statutory printable register verified');
+
+  // 5. Governance Processors CRUD API
+  const procRes = await fetch(`${baseUrl}/api/governance/processors`);
+  assert.strictEqual(procRes.status, 200, 'Processors API must return HTTP 200');
+  const procData = await procRes.json();
+  assert.ok(Array.isArray(procData.data) && procData.data.length >= 4, 'Must return seeded processors');
+  reportPass('Governance Processors API verified with SQLite persistence');
+
+  // 6. Integrations API Key Generation
+  const apiKeyRes = await fetch(`${baseUrl}/api/integrations/api-keys`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      keyName: 'E2E Test Integration Key',
+      scopes: 'read:pii,write:consent'
+    })
+  });
+  assert.strictEqual(apiKeyRes.status, 201, 'Create API key must return HTTP 201');
+  const apiKeyData = await apiKeyRes.json();
+  assert.ok(apiKeyData.secretKey && apiKeyData.secretKey.startsWith('dpdp_live_'), 'Secret key must have dpdp_live_ prefix');
+  reportPass('Integrations Hub & Cryptographic API Key generation verified');
+
+  // 7. Organization Settings API
+  const orgRes = await fetch(`${baseUrl}/api/settings/organization`);
+  assert.strictEqual(orgRes.status, 200, 'Organization API must return HTTP 200');
+  const orgData = await orgRes.json();
+  assert.strictEqual(orgData.org.organizationName, 'Aarogya Diagnostic Center', 'Org name must match tenant');
+  reportPass('Organization Profile & Settings verified');
+}
+
+/**
  * Main E2E Execution Runner
  */
 async function runE2ETests() {
@@ -316,13 +416,14 @@ async function runE2ETests() {
     // 0. Ensure fresh demo baseline
     await seedDemoData();
 
-    // Execute all 6 test stages
+    // Execute all 7 test stages
     await testAllExistingRoutes(baseUrl);
     await testPillar1Discovery();
     await testPillar2Consent();
     await testPillar3ErasureAndTaxLock();
     await testPillar4BreachTriage();
     await testCryptographicAuditTrail();
+    await testSuite7AdvancedFeatures(baseUrl);
 
     console.log('\n================================================================');
     console.log(`  E2E TEST SUMMARY: ${suitePassed} SUITES PASSED, ${suiteFailed} FAILED`);

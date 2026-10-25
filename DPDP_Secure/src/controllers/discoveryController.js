@@ -13,9 +13,11 @@ const models = require('../models');
 const {
   parseWhatsAppChat,
   parseCsvOrExcel,
+  parseTallyXml,
   scanPreloadedSamples,
   sanitizeFilename
 } = require('../services/fileParsers');
+const { scanTextForPii, maskPii, anonymizeText } = require('../services/indianPiiEngine');
 
 const discoveryController = {
   /**
@@ -98,13 +100,17 @@ const discoveryController = {
         riskLevel = 'CRITICAL';
         parsed = parseWhatsAppChat(content, safeFilename);
       } else if (ext === '.csv' || ext === '.xlsx') {
-        siloType = 'SPREADSHEET_CSV';
+        siloType = ext === '.xlsx' ? 'SPREADSHEET_XLSX' : 'SPREADSHEET_CSV';
         riskLevel = 'HIGH';
         parsed = parseCsvOrExcel(content, safeFilename);
+      } else if (ext === '.xml') {
+        siloType = 'TALLY_ERP_XML';
+        riskLevel = 'HIGH';
+        parsed = parseTallyXml(content, safeFilename);
       } else {
         return res.status(400).json({
           success: false,
-          error: 'Unsupported file format. Only .txt (WhatsApp), .csv, and .xlsx are supported.'
+          error: 'Unsupported file format. Only .txt (WhatsApp), .csv, .xlsx, and .xml (Tally ERP) are supported.'
         });
       }
 
@@ -314,6 +320,105 @@ const discoveryController = {
       res.status(500).json({
         success: false,
         error: 'Failed to synthesize RoPA: ' + err.message
+      });
+    }
+  },
+
+  /**
+   * Renders the SME PII Sanitizer & Masking Playground
+   * Triggered by GET /discovery/sanitizer
+   */
+  renderSanitizer: (req, res) => {
+    res.render('discovery-sanitizer', {
+      title: 'PII Sanitizer & Masking Playground - DPDP_Secure',
+      description: 'Zero-friction live text masking and Indian PII redaction sandbox for clinic staff.',
+      breadcrumbs: ['Workspace', 'Data Discovery', 'PII Sanitizer'],
+      path: '/discovery/sanitizer'
+    });
+  },
+
+  /**
+   * Sanitizes unstructured text, detects Indian PII entities with Verhoeff/PAN validation,
+   * and returns masked output with entity metrics.
+   * Triggered by POST /api/discovery/sanitize-text
+   */
+  sanitizeText: (req, res) => {
+    try {
+      const { text } = req.body || {};
+      const rawText = String(text || '');
+
+      if (!rawText.trim()) {
+        return res.json({
+          success: true,
+          maskedText: '',
+          findings: [],
+          counts: {
+            total: 0,
+            aadhaar: 0,
+            pan: 0,
+            phone: 0,
+            upi: 0,
+            email: 0,
+            health: 0
+          }
+        });
+      }
+
+      const findings = scanTextForPii(rawText);
+      const maskedText = anonymizeText(rawText);
+
+      const counts = {
+        total: findings.length,
+        aadhaar: findings.filter(f => f.type === 'AADHAAR').length,
+        pan: findings.filter(f => f.type === 'INDIVIDUAL_PAN' || f.type === 'CORPORATE_PAN' || f.type === 'PAN').length,
+        phone: findings.filter(f => f.type === 'PHONE').length,
+        upi: findings.filter(f => f.type === 'UPI_ID').length,
+        email: findings.filter(f => f.type === 'EMAIL').length,
+        health: findings.filter(f => f.type === 'CLINICAL_HEALTH').length
+      };
+
+      return res.json({
+        success: true,
+        maskedText,
+        findings,
+        counts,
+        originalLength: rawText.length,
+        maskedLength: maskedText.length
+      });
+    } catch (err) {
+      console.error('[DISCOVERY] sanitizeText error:', err);
+      return res.status(500).json({
+        success: false,
+        error: 'Failed to sanitize text: ' + err.message
+      });
+    }
+  },
+
+  /**
+   * Renders the Section 8(4) Statutory RoPA Printable Register view
+   * Triggered by GET /inventory/ropa/print
+   */
+  renderRoPAPrint: async (req, res) => {
+    try {
+      const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+      let records = await models.getRoPARecords(tenantId);
+      if (!records || records.length === 0) {
+        const { synthesizeRoPA } = require('../services/ropaService');
+        const syn = await synthesizeRoPA(tenantId);
+        records = syn.records;
+      }
+
+      res.render('inventory-ropa-print', {
+        title: 'Statutory RoPA Register - Form 8(4) Print View',
+        records: records || [],
+        tenantId,
+        generatedAt: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
+      });
+    } catch (err) {
+      console.error('[DISCOVERY] renderRoPAPrint error:', err);
+      res.status(500).render('500', {
+        title: 'Error - DPDP_Secure',
+        description: 'Failed to load printable RoPA register: ' + err.message
       });
     }
   }

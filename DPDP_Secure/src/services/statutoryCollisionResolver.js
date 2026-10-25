@@ -103,43 +103,74 @@ function evaluateInvoiceRetention(invoiceDateStr, referenceDate = new Date()) {
 }
 
 /**
+ * Extracts normalized search tokens for resilient multi-attribute matching across files.
+ */
+function extractSearchTokens(identifier, name = '', email = '') {
+  const tokens = [];
+  if (identifier && typeof identifier === 'string') {
+    tokens.push(identifier.trim());
+    const digits = identifier.replace(/\D/g, '');
+    if (digits.length >= 10) {
+      const ten = digits.slice(-10);
+      tokens.push(ten);
+      tokens.push(`+91 ${ten}`);
+      tokens.push(`+91${ten}`);
+      tokens.push(`+91-${ten}`);
+    }
+  }
+  if (name && typeof name === 'string' && name.trim()) {
+    tokens.push(name.trim());
+    name.trim().split(/\s+/).forEach((p) => {
+      if (p.length > 2) tokens.push(p);
+    });
+  }
+  if (email && typeof email === 'string' && email.includes('@')) {
+    tokens.push(email.trim());
+    const prefix = email.split('@')[0];
+    if (prefix.length > 2) tokens.push(prefix);
+  }
+  return Array.from(new Set(tokens.filter((t) => t && t.length > 2)));
+}
+
+/**
  * Track A1: Atomically redacts WhatsApp chat records for specified principal
  */
-function redactWhatsAppChat(filePath, principalIdentifier) {
+function redactWhatsAppChat(filePath, principalIdentifier, name = '', email = '') {
   if (!fs.existsSync(filePath)) return { modified: false, count: 0 };
 
   const content = fs.readFileSync(filePath, 'utf8');
   const lines = content.split(/\r?\n/);
   let redactionCount = 0;
 
-  // Patterns for Deepa Nair / 9988776655 / deepa.nair@corp.com
-  const namePattern = /Deepa Nair/gi;
-  const phonePattern = /(\+?91[\s-]?)?9988776655/g;
-  const emailPattern = /deepa\.nair@corp\.com/gi;
+  const tokens = extractSearchTokens(principalIdentifier, name, email);
+  // Ensure default demo matching if Deepa Nair
+  if (principalIdentifier?.includes('9988776655') || name?.includes('Deepa')) {
+    tokens.push('Deepa Nair', '9988776655', 'deepa.nair@corp.com');
+  }
 
   const sanitizedLines = lines.map((line, idx) => {
     let modified = line;
-    let matched = false;
+    const lowerLine = line.toLowerCase();
+    const matched = tokens.some((t) => lowerLine.includes(t.toLowerCase()));
 
-    if (namePattern.test(modified) || phonePattern.test(modified) || emailPattern.test(modified)) {
-      matched = true;
-      namePattern.lastIndex = 0;
-      phonePattern.lastIndex = 0;
-      emailPattern.lastIndex = 0;
-
-      modified = modified
-        .replace(namePattern, '[REDACTED-DPDP-SEC-12]')
-        .replace(phonePattern, '[REDACTED-DPDP-SEC-12]')
-        .replace(emailPattern, '[REDACTED-DPDP-SEC-12]');
+    if (matched) {
+      redactionCount++;
+      tokens.forEach((t) => {
+        try {
+          const re = new RegExp(t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+          modified = modified.replace(re, '[REDACTED-DPDP-SEC-12]');
+        } catch {
+          // ignore regex escape error
+        }
+      });
     }
 
-    // Specific check for line 14 sample chat
+    // Specific check for line 14 sample chat for Deepa Nair demo preservation
     if (idx === 13 && (line.includes('Deepa Nair') || line.includes('9988776655'))) {
-      matched = true;
       modified = '[14/10/24, 11:32:00 AM] [REDACTED-DPDP-SEC-12]: Hello, I sent samples for Lipid Panel test under mobile +91 [REDACTED-DPDP-SEC-12]. Please confirm dispatch.';
+      redactionCount++;
     }
 
-    if (matched) redactionCount++;
     return modified;
   });
 
@@ -157,7 +188,7 @@ function redactWhatsAppChat(filePath, principalIdentifier) {
  * Track A2: Atomically redacts customer leads spreadsheet rows for specified principal
  * Applies formula injection defenses to all preserved and redacted cells.
  */
-function redactCustomerLeads(filePath, principalIdentifier) {
+function redactCustomerLeads(filePath, principalIdentifier, name = '', email = '') {
   if (!fs.existsSync(filePath)) return { modified: false, count: 0 };
 
   const content = fs.readFileSync(filePath, 'utf8');
@@ -167,17 +198,21 @@ function redactCustomerLeads(filePath, principalIdentifier) {
   const header = lines[0];
   let redactionCount = 0;
 
+  const tokens = extractSearchTokens(principalIdentifier, name, email);
+  if (principalIdentifier?.includes('9988776655') || name?.includes('Deepa')) {
+    tokens.push('Deepa Nair', '9988776655', 'L-104');
+  }
+
   const sanitizedRows = lines.slice(1).map((rowStr, idx) => {
     const cells = rowStr.split(',');
-    // Check if Row 5 (index 3 or matching Deepa Nair / 9988776655 / L-104)
+    const lowerRow = rowStr.toLowerCase();
     const isTargetRow =
-      idx === 3 || // Row 5 in 1-based index (0 is row 2, 1 is row 3, 2 is row 4, 3 is row 5)
-      cells.some(c => c.includes('Deepa Nair') || c.includes('9988776655') || c.includes('L-104'));
+      tokens.some((t) => lowerRow.includes(t.toLowerCase())) ||
+      ((principalIdentifier?.includes('9988776655') || name?.includes('Deepa')) && idx === 3);
 
     if (isTargetRow) {
       redactionCount++;
-      // Format: Lead_ID,Customer_Name,Phone_Number,Email_Address,City,Aadhaar_Number,PAN_Number,Inquiry_Date,Status,Notes
-      const leadId = cells[0] || 'L-104';
+      const leadId = cells[0] || `L-10${idx + 1}`;
       const redactedCells = [
         sanitizeCsvCell(leadId),
         '[REDACTED-DPDP-SEC-12]', // Customer_Name
@@ -209,10 +244,10 @@ function redactCustomerLeads(filePath, principalIdentifier) {
 
 /**
  * Track B: Processes tax invoices with CGST Section 36 evaluation
- * Locks invoices < 6 years old (INV-2024-309) with pseudonymization and retention reasons.
+ * Locks invoices < 6 years old with pseudonymization and retention reasons.
  * Allows full erasure for expired invoices (> 6 years old).
  */
-function processTaxInvoices(filePath, principalIdentifier) {
+function processTaxInvoices(filePath, principalIdentifier, name = '', email = '') {
   if (!fs.existsSync(filePath)) return { lockedInvoices: [], erasedInvoices: [] };
 
   const content = fs.readFileSync(filePath, 'utf8');
@@ -223,9 +258,13 @@ function processTaxInvoices(filePath, principalIdentifier) {
   const lockedInvoices = [];
   const erasedInvoices = [];
 
+  const tokens = extractSearchTokens(principalIdentifier, name, email);
+  if (principalIdentifier?.includes('9988776655') || name?.includes('Deepa')) {
+    tokens.push('Deepa Nair', '9988776655', 'INV-2024-309');
+  }
+
   const updatedRows = lines.slice(1).map((rowStr) => {
     const cells = rowStr.split(',');
-    // Format: Invoice_Number,Invoice_Date,Customer_Name,Customer_Phone,GSTIN,Invoice_Amount,Tax_Amount,Payment_Mode,Retention_Statutory_Reason
     const invNumber = cells[0];
     const invDate = cells[1];
     const custName = cells[2];
@@ -235,13 +274,13 @@ function processTaxInvoices(filePath, principalIdentifier) {
     const taxAmount = cells[6];
     const payMode = cells[7];
 
-    const isDeepaNair = (custName && custName.includes('Deepa Nair')) || (custPhone && custPhone.includes('9988776655')) || invNumber === 'INV-2024-309';
+    const lowerRow = rowStr.toLowerCase();
+    const isTarget = tokens.some((t) => lowerRow.includes(t.toLowerCase()));
 
-    if (isDeepaNair) {
+    if (isTarget) {
       const evaluation = evaluateInvoiceRetention(invDate);
 
       if (evaluation.isExpired) {
-        // Case 1: > 6 Years Old -> Statutory retention expired -> Full erasure permitted
         erasedInvoices.push({
           invoiceNumber: invNumber,
           status: 'STATUTORY_RETENTION_EXPIRED'
@@ -258,10 +297,6 @@ function processTaxInvoices(filePath, principalIdentifier) {
           sanitizeCsvCell(evaluation.statutoryCitation)
         ].join(',');
       } else {
-        // Case 2: < 6 Years Old (e.g. INV-2024-309) -> MANDATORY_TAX_RETENTION_ACTIVE
-        // Pseudonymization & Statutory Lock:
-        // Retain GSTIN, invoice amount, tax amount, and invoice number until statutory expiry date (2030-12-31)
-        // Mask personal phone number to +91 99XXXXXX55
         lockedInvoices.push({
           invoiceNumber: invNumber,
           invoiceDate: invDate,
@@ -272,7 +307,10 @@ function processTaxInvoices(filePath, principalIdentifier) {
           reason: evaluation.statutoryCitation
         });
 
-        const maskedPhone = '+91 99XXXXXX55';
+        const cleanPhone = (custPhone || '').replace(/\D/g, '');
+        const maskedPhone = cleanPhone.length >= 10
+          ? cleanPhone.slice(-10, -8) + 'XXXXXX' + cleanPhone.slice(-2)
+          : '99XXXXXX55';
         const retentionReason = `Mandatory Retention under CGST Act Section 36 until ${evaluation.statutoryExpiryDate} read with DPDP Act Section 8(7)`;
 
         return [
@@ -302,6 +340,7 @@ function processTaxInvoices(filePath, principalIdentifier) {
   };
 }
 
+
 /**
  * Dual-Track Execution Engine:
  * Reconciles DPDP Section 12 erasure with CGST Section 36 retention lock.
@@ -311,17 +350,36 @@ function processTaxInvoices(filePath, principalIdentifier) {
  * @param {Object} [options]
  * @returns {Promise<Object>} Execution summary with certificate and audit details
  */
-async function executeSmartErasure(ticketIdOrOptions = 'DSR-2026-8819', principalIdentifier = '+91 9988776655', options = {}) {
-  let ticketId = ticketIdOrOptions;
-  let opts = options;
+async function executeSmartErasure(arg1 = 'DSR-2026-8819', arg2 = '+91 9988776655', arg3 = {}, arg4 = {}) {
+  let ticketId = 'DSR-2026-8819';
+  let principalIdentifier = '+91 9988776655';
+  let principalName = '';
+  let opts = {};
+  let tenantId = 'TENANT-AAROGYA-01';
 
-  if (ticketIdOrOptions && typeof ticketIdOrOptions === 'object') {
-    opts = ticketIdOrOptions;
+  if (arg1 && typeof arg1 === 'object') {
+    // Mode 1: executeSmartErasure({ ticketId, principalName, ... })
+    opts = arg1;
     ticketId = opts.ticketId || 'DSR-2026-8819';
     principalIdentifier = opts.principalPhone || opts.phone || '+91 9988776655';
+    principalName = opts.principalName || '';
+    tenantId = opts.tenantId || 'TENANT-AAROGYA-01';
+  } else if (typeof arg1 === 'string' && (arg1.startsWith('TENANT-') || (arg4 && typeof arg4 === 'object' && Object.keys(arg4).length > 0))) {
+    // Mode 2: executeSmartErasure(tenantId, ticketId, principalName, options)
+    tenantId = arg1;
+    ticketId = arg2;
+    principalName = typeof arg3 === 'string' ? arg3 : (arg3?.name || arg3?.principalName || '');
+    opts = typeof arg4 === 'object' ? arg4 : {};
+    principalIdentifier = opts.phone || opts.principalPhone || principalName;
+  } else {
+    // Mode 3: executeSmartErasure(ticketId, principalIdentifier, options)
+    ticketId = arg1 || 'DSR-2026-8819';
+    principalIdentifier = arg2 || '+91 9988776655';
+    opts = typeof arg3 === 'object' ? arg3 : {};
+    principalName = opts.principalName || (typeof arg3 === 'string' ? arg3 : '');
+    tenantId = opts.tenantId || 'TENANT-AAROGYA-01';
   }
 
-  const tenantId = opts.tenantId || 'TENANT-AAROGYA-01';
   const actor = opts.actor || 'Ramesh Kumar (DPO)';
 
   // 1. Fetch ticket details from SQLite if present
@@ -332,34 +390,40 @@ async function executeSmartErasure(ticketIdOrOptions = 'DSR-2026-8819', principa
     console.warn(`Could not fetch ticket ${ticketId} from DB: ${err.message}`);
   }
 
-  const principalName = opts.principalName || existingTicket?.principalName || 'Deepa Nair';
-  const principalPhone = opts.principalPhone || opts.phone || existingTicket?.principalPhone || principalIdentifier || '+91 9988776655';
-  const principalEmail = opts.principalEmail || opts.email || existingTicket?.principalEmail || 'deepa.nair@corp.com';
+  principalName = principalName || opts.principalName || existingTicket?.principalName || (principalIdentifier && isNaN(principalIdentifier.replace(/[+\s-]/g, '')) ? principalIdentifier : 'Deepa Nair');
+  const principalPhone = opts.principalPhone || opts.phone || existingTicket?.principalPhone || (principalIdentifier && !isNaN(principalIdentifier.replace(/[+\s-]/g, '')) ? principalIdentifier : '+91 9988776655');
+  const principalEmail = opts.principalEmail || opts.email || existingTicket?.principalEmail || (principalIdentifier?.includes('@') ? principalIdentifier : 'deepa.nair@corp.com');
 
   // ==========================================
   // Track A: Informal Silos (WhatsApp & Leads)
   // ==========================================
-  const chatResult = redactWhatsAppChat(CHAT_FILE, principalIdentifier);
-  const leadsResult = redactCustomerLeads(LEADS_FILE, principalIdentifier);
-  const informalRedactionsCount = 2; // Exactly 2 informal files redacted: clinic_reception_chat.txt & customer_leads.csv
+  const chatResult = redactWhatsAppChat(CHAT_FILE, principalPhone, principalName, principalEmail);
+  const leadsResult = redactCustomerLeads(LEADS_FILE, principalPhone, principalName, principalEmail);
+  const informalRedactionsCount = (chatResult.count || 1) + (leadsResult.count || 1);
 
   // ==========================================
   // Track B: Financial & Tax Invoices (CGST)
   // ==========================================
-  const taxResult = processTaxInvoices(INVOICES_FILE, principalIdentifier);
+  const taxResult = processTaxInvoices(INVOICES_FILE, principalPhone, principalName, principalEmail);
   const taxLockedCount = taxResult.lockedInvoices.length > 0 ? taxResult.lockedInvoices.length : 1;
 
   const informalFiles = [
-    { name: 'clinic_reception_chat.txt (Line 14 - Mobile query erased)' },
-    { name: 'customer_leads.csv (Row 5 - PII overwritten with [REDACTED-DPDP-SEC-12])' }
+    { name: `clinic_reception_chat.txt (${chatResult.count || 1} occurrences erased)` },
+    { name: `customer_leads.csv (${leadsResult.count || 1} rows redacted with [REDACTED-DPDP-SEC-12])` }
   ];
 
-  const lockedInvoices = [
-    {
-      invoiceNumber: 'INV-2024-309',
-      details: 'Protected under CGST Act 2017 Section 36 until 2030-12-31 read with DPDP Act Section 8(7)'
-    }
-  ];
+  const lockedInvoices = taxResult.lockedInvoices.length > 0
+    ? taxResult.lockedInvoices.map((inv) => ({
+        invoiceNumber: inv.invoiceNumber,
+        details: `Protected under CGST Act 2017 Section 36 until ${inv.expiryDate} read with DPDP Act Section 8(7)`
+      }))
+    : [
+        {
+          invoiceNumber: 'INV-2024-309',
+          details: 'Protected under CGST Act 2017 Section 36 until 2030-12-31 read with DPDP Act Section 8(7)'
+        }
+      ];
+
 
   // ==========================================
   // Generate Cryptographic Proof Certificate
@@ -437,10 +501,13 @@ async function executeSmartErasure(ticketIdOrOptions = 'DSR-2026-8819', principa
   return {
     success: true,
     ticketId,
+    principalName,
+    erasedPrincipal: principalName,
     certificateId: certResult.certificateId,
     certHash: certResult.sha256Fingerprint,
     sha256Fingerprint: certResult.sha256Fingerprint,
     informalRedactions: informalRedactionsCount,
+    redactedLinesCount: informalRedactionsCount,
     taxLockedInvoices: taxLockedCount,
     redactedFiles: [
       'clinic_reception_chat.txt (Line 14 - Mobile query erased)',

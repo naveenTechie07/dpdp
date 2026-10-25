@@ -44,12 +44,26 @@ async function seedDemoData() {
   await run('DELETE FROM ropa_records WHERE tenantId = ?', [TENANT_ID]);
   await run('DELETE FROM pii_findings WHERE siloId IN (SELECT id FROM data_silos WHERE tenantId = ?)', [TENANT_ID]);
   await run('DELETE FROM data_silos WHERE tenantId = ?', [TENANT_ID]);
-  await run('DELETE FROM tenants WHERE id = ?', [TENANT_ID]);
+  await run('DELETE FROM data_processors WHERE tenantId = ?', [TENANT_ID]);
+  await run('DELETE FROM retention_policies WHERE tenantId = ?', [TENANT_ID]);
+  await run('DELETE FROM cross_border_transfers WHERE tenantId = ?', [TENANT_ID]);
+  await run('DELETE FROM compliance_evidence WHERE tenantId = ?', [TENANT_ID]);
+  await run('DELETE FROM security_controls WHERE tenantId = ?', [TENANT_ID]);
+  await run('DELETE FROM assessments WHERE tenantId = ?', [TENANT_ID]);
+  await run('DELETE FROM assessment_templates WHERE tenantId = ?', [TENANT_ID]);
+  await run('DELETE FROM pia_dpia_assessments WHERE tenantId = ?', [TENANT_ID]);
+  await run('DELETE FROM integrations WHERE tenantId = ?', [TENANT_ID]);
+  await run('DELETE FROM integration_hub WHERE tenantId = ?', [TENANT_ID]);
+  await run('DELETE FROM api_keys WHERE tenantId = ?', [TENANT_ID]);
+  await run('DELETE FROM consent_purposes WHERE tenantId = ?', [TENANT_ID]);
+  await run('DELETE FROM consent_preferences WHERE tenantId = ?', [TENANT_ID]);
+  await run('DELETE FROM cookie_banners WHERE tenantId = ?', [TENANT_ID]);
+  await run('DELETE FROM cookie_scan_results WHERE tenantId = ?', [TENANT_ID]);
   console.log('  [+] Step 2: Local SQLite tables cleared for clean isolation');
 
   // 3. Seed Tenant: Aarogya Diagnostic Center
   await run(
-    `INSERT INTO tenants (id, businessName, businessType, gstNumber, address, dpoName, dpoEmail, complianceScore)
+    `INSERT OR REPLACE INTO tenants (id, businessName, businessType, gstNumber, address, dpoName, dpoEmail, complianceScore)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       TENANT_ID,
@@ -338,6 +352,95 @@ async function seedDemoData() {
     );
   }
   console.log('  [+] Step 10: Seeded RoPA (Record of Processing Activities under Section 8)');
+
+  // 10B. Seed Enterprise Subsystems (Governance, Assessments, Integrations, Consent Library)
+  // Processors
+  const processors = [
+    ['PROC-01', TENANT_ID, 'Aarogya Diagnostic Lab Cloud', 'Pathology Processing', 'Blood Panels, Biopsy, HbA1c', 'India', 'Adequate', 1, 1, 'LOW'],
+    ['PROC-02', TENANT_ID, 'Tele-Radiology Partners Bangalore', 'Diagnostic Imaging', 'X-Ray, Ultrasound, CT Reports', 'India', 'Adequate', 1, 1, 'LOW'],
+    ['PROC-03', TENANT_ID, 'Razorpay Financial Solutions Pvt Ltd', 'Payment Gateway', 'UPI ID, Billing Invoices, Phone', 'India', 'Adequate', 1, 1, 'LOW'],
+    ['PROC-04', TENANT_ID, 'Exotel Communications Pvt Ltd', 'WhatsApp & SMS Gateway', 'Phone Number, Patient Name, Alert Text', 'India', 'Adequate', 1, 1, 'MEDIUM']
+  ];
+  for (const p of processors) {
+    await run(
+      `INSERT INTO data_processors (id, tenantId, processorName, serviceType, dataCategories, jurisdiction, adequacyDecision, contractSigned, dpaSigned, riskLevel, createdAt)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [...p, new Date().toISOString()]
+    );
+  }
+
+  // Retention Policies
+  const policies = [
+    ['RET-01', TENANT_ID, 'CGST 6-Year Statutory Tax Lock', 'Financial Invoices & Billing Records', '72 Months (6 Years)', 'CGST Act 2017 Sec 36 read with DPDP Sec 8(7)', 0],
+    ['RET-02', TENANT_ID, 'Clinical Biopsy & Histopathology Reports', 'Diagnostic Lab Reports & Pathology', '60 Months (5 Years)', 'National Medical Commission Code', 0],
+    ['RET-03', TENANT_ID, 'Informal WhatsApp Reception Chat Purge', 'Unstructured Chat Transcripts', '30 Days', 'DPDP Act 2023 Sec 8(7) Purpose Limitation', 1]
+  ];
+  for (const pol of policies) {
+    await run(
+      `INSERT INTO retention_policies (id, tenantId, policyName, dataCategory, retentionPeriod, legalBasis, autoDelete, createdAt)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [...pol, new Date().toISOString()]
+    );
+  }
+
+  // Security Controls
+  const controls = [
+    ['SEC-01', TENANT_ID, 'Full-Disk BitLocker Encryption (XTS-AES 256)', 'Encryption at Rest', 'IMPLEMENTED', 'HIGH'],
+    ['SEC-02', TENANT_ID, 'WhatsApp Web Multi-Device Auto-Revocation', 'Access Control', 'TESTED', 'HIGH'],
+    ['SEC-03', TENANT_ID, 'Zero Cloud Egress In-Memory PII Redactor', 'Data Minimization', 'IMPLEMENTED', 'CRITICAL']
+  ];
+  for (const c of controls) {
+    await run(
+      `INSERT INTO security_controls (id, tenantId, controlName, controlCategory, implementationStatus, effectiveness, createdAt)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [...c, new Date().toISOString()]
+    );
+  }
+
+  // Consent Purposes
+  const purposes = [
+    ['PURP-DIAGNOSTIC-REPORTING', TENANT_ID, 'Diagnostic Test Booking & Lab Report Dispatch', 'PURP-DIAGNOSTIC-REPORTING', 'Delivery of requested medical lab reports and appointment coordination via WhatsApp', 1],
+    ['PURP-STATUTORY-BILLING', TENANT_ID, 'Statutory Tax Invoicing & GST Accounting', 'PURP-STATUTORY-BILLING', 'Commercial tax recording and GST filing compliance under CGST Act Section 36', 1],
+    ['PURP-APPOINTMENT-REMINDERS', TENANT_ID, 'Appointment Fasting & Follow-up Reminders', 'PURP-APPOINTMENT-REMINDERS', 'Sending pre-test fasting instructions and sample collection alerts', 1]
+  ];
+  for (const purp of purposes) {
+    await run(
+      `INSERT INTO consent_purposes (id, tenantId, purposeName, purposeCode, description, isActive, createdAt)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [...purp, new Date().toISOString()]
+    );
+  }
+
+  // Integrations
+  const integrations = [
+    ['INT-01', TENANT_ID, 'WhatsApp Business Cloud API', 'Meta / WhatsApp', 'CONNECTED', 'waba_live_98450'],
+    ['INT-02', TENANT_ID, 'Tally Prime Accounting Link', 'Tally ERP XML', 'CONNECTED', 'tally_local_xml']
+  ];
+  for (const it of integrations) {
+    await run(
+      `INSERT INTO integrations (id, tenantId, integrationName, provider, status, apiKeyPrefix, createdAt)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [...it, new Date().toISOString()]
+    );
+  }
+
+  // Organization Settings
+  await run(
+    `INSERT OR REPLACE INTO organization_settings (id, tenantId, organizationName, parentOrganization, country, industry, employeeCount, dataProcessingPurpose, updatedAt)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [
+      'ORG-AAROGYA-01',
+      TENANT_ID,
+      'Aarogya Diagnostic Center',
+      'Aarogya Healthcare Trust',
+      'India',
+      'Healthcare Diagnostics SME',
+      18,
+      'Clinical diagnostics, pathology blood panels, radiology reports, and statutory billing',
+      new Date().toISOString()
+    ]
+  );
+  console.log('  [+] Step 10B: Seeded Enterprise Subsystems (Processors, Retention, Controls, Purposes, Integrations, Org)');
 
   // 11. Seed Cryptographically Hash-Chained Audit Ledger
   const auditSequence = [

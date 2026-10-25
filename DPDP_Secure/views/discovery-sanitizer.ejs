@@ -1,0 +1,363 @@
+<%- include('partials/header') %>
+
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-800 pb-5">
+    <div>
+      <div class="flex items-center gap-2">
+        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+          DPDP Act Section 8(5) Technical Safeguard
+        </span>
+        <span class="text-xs text-slate-400">Zero-Egress SME Privacy Sandbox</span>
+      </div>
+      <h1 class="text-2xl font-bold text-white tracking-tight mt-1">Live SME PII Sanitizer & Text Redactor</h1>
+      <p class="text-sm text-slate-400 mt-1">
+        Instant offline sanitization for clinic receptionists and small business staff before pasting customer details into WhatsApp, email, or third-party tools.
+      </p>
+    </div>
+    <div class="flex items-center gap-3">
+      <a href="/discovery/connectors" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-sm font-semibold transition-colors border border-slate-700">
+        <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+        </svg>
+        <span>Informal Silo Connectors</span>
+      </a>
+      <a href="/inventory/ropa" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold transition-colors shadow-lg shadow-emerald-900/30">
+        <span>Section 8(4) RoPA</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Live PII Detection Metrics Bar -->
+  <div class="grid grid-cols-2 md:grid-cols-6 gap-3">
+    <div class="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800">
+      <span class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Total PII Items</span>
+      <div id="statTotalPii" class="text-2xl font-bold text-white mt-0.5">0</div>
+      <div class="text-[10px] text-slate-400 mt-0.5">Detected entities</div>
+    </div>
+    <div class="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800">
+      <div class="flex items-center justify-between">
+        <span class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Aadhaar (UID)</span>
+        <span class="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-400 font-mono">Verhoeff</span>
+      </div>
+      <div id="statAadhaar" class="text-2xl font-bold text-emerald-400 mt-0.5">0</div>
+      <div class="text-[10px] text-emerald-400 mt-0.5">Checksum Verified</div>
+    </div>
+    <div class="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800">
+      <div class="flex items-center justify-between">
+        <span class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">PAN Numbers</span>
+        <span class="text-[9px] px-1.5 py-0.2 rounded bg-sky-500/10 text-sky-400 font-mono">ITD Rule</span>
+      </div>
+      <div id="statPan" class="text-2xl font-bold text-sky-400 mt-0.5">0</div>
+      <div class="text-[10px] text-sky-400 mt-0.5">Indiv (P) / Corp (C)</div>
+    </div>
+    <div class="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800">
+      <span class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Phone (+91)</span>
+      <div id="statPhone" class="text-2xl font-bold text-amber-400 mt-0.5">0</div>
+      <div class="text-[10px] text-amber-400 mt-0.5">10-Digit Mobile</div>
+    </div>
+    <div class="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800">
+      <span class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">UPI / Banking</span>
+      <div id="statUpi" class="text-2xl font-bold text-purple-400 mt-0.5">0</div>
+      <div class="text-[10px] text-purple-400 mt-0.5">VPA Handles</div>
+    </div>
+    <div class="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800">
+      <span class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Health Data</span>
+      <div id="statHealth" class="text-2xl font-bold text-rose-400 mt-0.5">0</div>
+      <div class="text-[10px] text-rose-400 mt-0.5">Sec 2(t) Clinical</div>
+    </div>
+  </div>
+
+  <!-- Quick Preload Sample Toolbar -->
+  <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-900/40 p-3 rounded-xl border border-slate-800/80">
+    <div class="flex items-center gap-2">
+      <span class="text-xs text-slate-400 font-semibold">Load Realistic Clinic Demo Samples:</span>
+      <button
+        type="button"
+        onclick="loadPresetSample('whatsapp')"
+        class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-emerald-300 border border-slate-700 transition"
+      >
+        💬 WhatsApp Patient Chat
+      </button>
+      <button
+        type="button"
+        onclick="loadPresetSample('prescription')"
+        class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-sky-300 border border-slate-700 transition"
+      >
+        🩺 Lab Test & Prescription
+      </button>
+      <button
+        type="button"
+        onclick="loadPresetSample('billing')"
+        class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-amber-300 border border-slate-700 transition"
+      >
+        🧾 GST Invoice & Tally Note
+      </button>
+    </div>
+    <button
+      type="button"
+      onclick="clearSanitizer()"
+      class="text-xs text-slate-400 hover:text-white px-2.5 py-1 rounded bg-slate-800/60 hover:bg-slate-800 transition"
+    >
+      🗑️ Clear
+    </button>
+  </div>
+
+  <!-- Split Screen Workspace -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+    <!-- Left Pane: Input -->
+    <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-5 flex flex-col shadow-xl">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
+        <div class="flex items-center gap-2">
+          <span class="w-3 h-3 rounded-full bg-amber-400/80"></span>
+          <h2 class="text-sm font-bold text-white uppercase tracking-wider">1. Paste Messy / Informal Text</h2>
+        </div>
+        <span id="charCountInput" class="text-xs text-slate-400 font-mono">0 chars</span>
+      </div>
+
+      <textarea
+        id="rawInputText"
+        rows="12"
+        placeholder="Paste text containing patient phone numbers, Aadhaar numbers, PAN cards, prescription notes, or UPI IDs here..."
+        class="flex-1 w-full p-4 rounded-xl bg-slate-950/80 border border-slate-700/80 text-slate-100 text-sm font-mono leading-relaxed focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none transition resize-none placeholder:text-slate-600"
+      ></textarea>
+
+      <div class="pt-4 flex items-center justify-between gap-3">
+        <span class="text-[11px] text-slate-400 flex items-center gap-1">
+          <span>🔒 100% In-Memory Local Scanning</span>
+        </span>
+        <button
+          type="button"
+          onclick="triggerSanitize()"
+          class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs shadow-lg shadow-emerald-900/30 flex items-center gap-2 transition"
+        >
+          <span>⚡ Sanitize & Redact Now</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Right Pane: Output -->
+    <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-5 flex flex-col shadow-xl">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
+        <div class="flex items-center gap-2">
+          <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
+          <h2 class="text-sm font-bold text-white uppercase tracking-wider">2. Safe Redacted Output</h2>
+        </div>
+        <button
+          type="button"
+          id="btnCopyMasked"
+          onclick="copyMaskedText()"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition shadow shadow-emerald-900/40"
+        >
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+          </svg>
+          <span id="copyBtnText">📋 Copy Masked Text</span>
+        </button>
+      </div>
+
+      <div
+        id="maskedOutputContainer"
+        class="flex-1 w-full p-4 rounded-xl bg-slate-950/80 border border-slate-700/80 text-emerald-300 text-sm font-mono leading-relaxed overflow-y-auto whitespace-pre-wrap select-all"
+        style="min-height: 280px;"
+      >
+        <span class="text-slate-600 italic">Sanitized and masked text will appear here with cryptographic redactions...</span>
+      </div>
+
+      <div class="pt-4 flex items-center justify-between text-xs text-slate-400">
+        <span id="charCountOutput" class="font-mono">0 chars</span>
+        <span class="text-emerald-400 font-semibold">Safe for WhatsApp & Email Dispatch</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detailed Entity Findings Grid -->
+  <div class="bg-slate-900/70 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+    <div class="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/90">
+      <div>
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <span>Detected Sensitive Entities Breakdown</span>
+          <span id="findingsCountBadge" class="px-2 py-0.5 rounded bg-slate-800 text-xs font-mono text-emerald-400 font-bold">
+            0 Found
+          </span>
+        </h3>
+        <p class="text-xs text-slate-400 mt-0.5">
+          Deterministic classification powered by India-specific regexes and Verhoeff dihedral group D5 checksum algorithms.
+        </p>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse text-xs">
+        <thead>
+          <tr class="border-b border-slate-800 bg-slate-950/50 text-slate-400 font-semibold uppercase tracking-wider">
+            <th class="py-3 px-4">Entity Type</th>
+            <th class="py-3 px-4">Sanitized / Masked Token</th>
+            <th class="py-3 px-4">Statutory Classification</th>
+            <th class="py-3 px-4">Validation Proof</th>
+            <th class="py-3 px-4">Confidence</th>
+          </tr>
+        </thead>
+        <tbody id="findingsTableBody" class="divide-y divide-slate-800 text-slate-300">
+          <tr id="emptyFindingsRow">
+            <td colspan="5" class="py-6 text-center text-slate-400">
+              No entities detected yet. Enter text in the box above to run real-time analysis.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  const SAMPLE_PRESETS = {
+    whatsapp: `Patient: Deepa Nair
+Mobile: +91 9845012345
+Aadhaar: 5489 1234 5678
+Doctor prescribed Fasting Blood Sugar, HbA1c and Lipid Profile.
+Please send test reports via WhatsApp as soon as ready.
+UPI for fee payment: deepa.nair@okhdfcbank
+Email: deepa.nair@corp.com`,
+
+    prescription: `AAROGYA DIAGNOSTIC CENTER — RECEPTION NOTE
+Patient Name: Ramesh Sharma, Age: 48, Gender: M
+Contact: 9845012345 | Aadhaar: 3456 7890 1234
+Primary Complaint: Chronic Type-2 Diabetes and Hypertension
+Tests Ordered: Complete Blood Count, Serum Creatinine, Liver Function Test, ECG.
+Biopsy sample forwarded to central lab. Emergency contact: ramesh.sharma@gmail.com`,
+
+    billing: `TAX INVOICE & RECEIPT
+Invoice No: INV-2026-881 | Date: 15-03-2026
+Billed To: Priya Patel
+GSTIN: 29AAAAA0000A1Z5 | PAN: ABCPP1234E
+Phone: +91 9988776655
+Service: Diagnostic Ultrasound Scan + Radiology Consultation
+Total Amount Paid: Rs. 2,450 via UPI paytm-priya@paytm
+Statutory Retention: CGST Act 2017 Section 36`
+  };
+
+  let debounceTimer = null;
+
+  function loadPresetSample(key) {
+    const text = SAMPLE_PRESETS[key] || '';
+    document.getElementById('rawInputText').value = text;
+    triggerSanitize();
+  }
+
+  function clearSanitizer() {
+    document.getElementById('rawInputText').value = '';
+    document.getElementById('maskedOutputContainer').innerHTML = '<span class="text-slate-600 italic">Sanitized and masked text will appear here with cryptographic redactions...</span>';
+    updateMetrics({ total: 0, aadhaar: 0, pan: 0, phone: 0, upi: 0, email: 0, health: 0 }, []);
+    document.getElementById('charCountInput').textContent = '0 chars';
+    document.getElementById('charCountOutput').textContent = '0 chars';
+  }
+
+  async function triggerSanitize() {
+    const input = document.getElementById('rawInputText').value;
+    document.getElementById('charCountInput').textContent = `${input.length} chars`;
+
+    if (!input.trim()) {
+      clearSanitizer();
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/discovery/sanitize-text', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: input })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        document.getElementById('maskedOutputContainer').textContent = data.maskedText;
+        document.getElementById('charCountOutput').textContent = `${data.maskedLength} chars`;
+        updateMetrics(data.counts, data.findings);
+      }
+    } catch (err) {
+      console.error('Error during sanitization:', err);
+    }
+  }
+
+  function updateMetrics(counts, findings) {
+    document.getElementById('statTotalPii').textContent = counts.total || 0;
+    document.getElementById('statAadhaar').textContent = counts.aadhaar || 0;
+    document.getElementById('statPan').textContent = counts.pan || 0;
+    document.getElementById('statPhone').textContent = counts.phone || 0;
+    document.getElementById('statUpi').textContent = counts.upi || 0;
+    document.getElementById('statHealth').textContent = counts.health || 0;
+    document.getElementById('findingsCountBadge').textContent = `${(findings || []).length} Found`;
+
+    const tbody = document.getElementById('findingsTableBody');
+    tbody.innerHTML = '';
+
+    if (!findings || findings.length === 0) {
+      tbody.innerHTML = `
+        <tr id="emptyFindingsRow">
+          <td colspan="5" class="py-6 text-center text-slate-400">
+            No sensitive entities detected in input text.
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    findings.forEach((f) => {
+      const tr = document.createElement('tr');
+      tr.className = 'hover:bg-slate-800/40 transition-colors';
+
+      let typeBadge = '';
+      if (f.type === 'AADHAAR') {
+        typeBadge = '<span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-semibold font-mono text-[10px]">AADHAAR</span>';
+      } else if (f.type.includes('PAN')) {
+        typeBadge = '<span class="px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/30 font-semibold font-mono text-[10px]">' + f.type + '</span>';
+      } else if (f.type === 'PHONE') {
+        typeBadge = '<span class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30 font-semibold font-mono text-[10px]">PHONE</span>';
+      } else if (f.type === 'CLINICAL_HEALTH') {
+        typeBadge = '<span class="px-2 py-0.5 rounded bg-rose-500/10 text-rose-400 border border-rose-500/30 font-semibold font-mono text-[10px]">HEALTH</span>';
+      } else {
+        typeBadge = '<span class="px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/30 font-semibold font-mono text-[10px]">' + f.type + '</span>';
+      }
+
+      tr.innerHTML = `
+        <td class="py-3 px-4">${typeBadge}</td>
+        <td class="py-3 px-4 font-mono font-bold text-white">${f.maskedValue || f.rawValue}</td>
+        <td class="py-3 px-4 text-slate-300">${f.category || 'Personal Identifier'}</td>
+        <td class="py-3 px-4 font-mono text-[11px] text-slate-400">${f.proof || 'Pattern Match Verified'}</td>
+        <td class="py-3 px-4 font-mono text-emerald-400">${Math.round((f.confidenceScore || 1.0) * 100)}%</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function copyMaskedText() {
+    const text = document.getElementById('maskedOutputContainer').textContent;
+    if (!text || text.includes('Sanitized and masked text will appear')) return;
+
+    navigator.clipboard.writeText(text).then(() => {
+      const btnText = document.getElementById('copyBtnText');
+      btnText.textContent = '✅ Copied to Clipboard!';
+      setTimeout(() => {
+        btnText.textContent = '📋 Copy Masked Text';
+      }, 2000);
+    }).catch(err => {
+      console.error('Failed to copy text:', err);
+    });
+  }
+
+  // Real-time debounce on typing
+  document.addEventListener('DOMContentLoaded', () => {
+    const inputArea = document.getElementById('rawInputText');
+    if (inputArea) {
+      inputArea.addEventListener('input', () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(triggerSanitize, 350);
+      });
+    }
+    // Auto-load WhatsApp sample on initial view
+    loadPresetSample('whatsapp');
+  });
+</script>
+
+<%- include('partials/footer') %>

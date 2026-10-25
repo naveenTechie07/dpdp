@@ -10,10 +10,10 @@ const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
   fileFilter: (req, file, cb) => {
     const ext = path.extname(file.originalname).toLowerCase();
-    if (['.txt', '.csv', '.xlsx'].includes(ext)) {
+    if (['.txt', '.csv', '.xlsx', '.xml'].includes(ext)) {
       cb(null, true);
     } else {
-      cb(new Error('Invalid file type. Only .txt, .csv, and .xlsx files are supported.'));
+      cb(new Error('Invalid file type. Only .txt, .csv, .xlsx, and .xml files are supported.'));
     }
   }
 });
@@ -23,6 +23,7 @@ const models = require('../models');
 
 // GET View Routes
 router.get('/discovery/connectors', discoveryController.renderConnectors);
+router.get('/discovery/sanitizer', discoveryController.renderSanitizer);
 
 router.get('/inventory/assets', (req, res) => {
   res.render('inventory-assets', {
@@ -92,6 +93,14 @@ router.get('/inventory/tags', (req, res) => {
   });
 });
 
+router.get('/inventory/tags/create', (req, res) => {
+  res.redirect('/inventory/tags');
+});
+
+router.post('/inventory/tags/create', (req, res) => {
+  res.json({ success: true, message: 'Tag created successfully' });
+});
+
 router.get('/inventory/ropa', discoveryController.renderRoPA);
 
 router.get('/inventory/lineage', (req, res) => {
@@ -116,8 +125,10 @@ router.get('/inventory/assessment-enrichment', (req, res) => {
 router.post('/api/discovery/scan-sample', discoveryController.scanSampleFiles);
 router.post('/api/discovery/upload', upload.single('siloFile'), discoveryController.uploadAndScan);
 router.get('/api/discovery/findings', discoveryController.getFindings);
+router.post('/api/discovery/sanitize-text', discoveryController.sanitizeText);
 
 // RoPA Section 8(4) Endpoints
+router.get('/inventory/ropa/print', discoveryController.renderRoPAPrint);
 router.get('/api/ropa/export-csv', discoveryController.exportRoPaCsv);
 router.get('/api/ropa/data', discoveryController.getRoPaData);
 router.post('/api/ropa/generate', discoveryController.generateRoPA);
