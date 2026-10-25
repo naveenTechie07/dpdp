@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DpiaAssessmentModel",
+  "type": "object",
+  "required": ["assessmentId", "targetService", "inherentRiskScore", "residualRiskScore", "dpoApproval"],
+  "properties": {
+    "assessmentId": { "type": "string" },
+    "inherentRiskScore": { "type": "integer", "minimum": 0, "maximum": 100 },
+    "residualRiskScore": { "type": "integer", "minimum": 0, "maximum": 100 },
+    "dpoApproval": { "type": "boolean" }
+  }
+}
