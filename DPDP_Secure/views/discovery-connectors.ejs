@@ -1230,14 +1230,14 @@
 <!-- ========================================== -->
 <!-- 6. ADD DATA CONNECTOR MODAL -->
 <!-- ========================================== -->
-<div id="newConnectorModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center; padding: 20px;">
-    <div class="card p-0" style="width: 100%; max-width: 560px; background: #0f172a; border: 1px solid var(--border-color); box-shadow: 0 20px 48px rgba(0,0,0,0.8); border-radius: 12px; overflow: hidden; position: relative;">
+<div id="newConnectorModal" onclick="if(event.target === this) closeNewConnectorModal();" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); z-index: 99999; align-items: center; justify-content: center; padding: 20px;">
+    <div class="card p-0" onclick="event.stopPropagation();" style="width: 100%; max-width: 560px; background: #0f172a; border: 1px solid var(--border-color); box-shadow: 0 20px 48px rgba(0,0,0,0.8); border-radius: 12px; overflow: hidden; position: relative;">
         <div style="padding: 18px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3);">
             <div>
                 <h3 style="font-size: 16px; font-weight: 800; color: #ffffff; margin: 0;">Connect New Data Source</h3>
                 <p style="font-size: 12px; color: var(--text-muted); margin: 2px 0 0 0;">Add an enterprise database, cloud bucket, or local folder.</p>
             </div>
-            <button type="button" id="btnCloseNewConnector" onclick="document.getElementById('newConnectorModal').style.display='none'; if(typeof closeNewConnectorModal==='function')closeNewConnectorModal();" style="background: transparent; border: none; color: var(--text-muted); font-size: 24px; cursor: pointer; padding: 4px 8px; line-height: 1;">&times;</button>
+            <button type="button" id="btnCloseNewConnector" onclick="closeNewConnectorModal(); return false;" aria-label="Close modal" title="Close" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #ffffff; font-size: 22px; cursor: pointer; width: 36px; height: 36px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; line-height: 1; transition: all 0.2s;" onmouseover="this.style.background='#ef4444'; this.style.borderColor='#ef4444';" onmouseout="this.style.background='rgba(255,255,255,0.08)'; this.style.borderColor='rgba(255,255,255,0.2)';">&times;</button>
         </div>
         <form id="newConnectorForm" onsubmit="handleCreateConnector(event)" style="padding: 20px 24px;">
             <div style="margin-bottom: 14px;">
@@ -1260,7 +1260,7 @@
                 <span>✓</span> Guaranteed 100% on-premise execution with Zero External Cloud Egress.
             </div>
             <div style="display: flex; justify-content: flex-end; gap: 8px;">
-                <button type="button" id="btnCancelNewConnector" onclick="document.getElementById('newConnectorModal').style.display='none'; if(typeof closeNewConnectorModal==='function')closeNewConnectorModal();" class="btn-secondary" style="padding: 8px 16px; font-size: 12px; cursor: pointer;">Cancel</button>
+                <button type="button" id="btnCancelNewConnector" onclick="closeNewConnectorModal(); return false;" class="btn-secondary" style="padding: 8px 18px; font-size: 12px; font-weight: 600; cursor: pointer;">Cancel</button>
                 <button type="submit" class="btn-primary" style="padding: 8px 18px; font-size: 12px;">Register & Test Connection</button>
             </div>
         </form>
@@ -1268,38 +1268,76 @@
 </div>
 
 <script>
-window.closeNewConnectorModal = function() {
-    const modal = document.getElementById('newConnectorModal');
-    if (modal) modal.style.display = 'none';
-};
-window.openNewConnectorModal = function() {
-    const modal = document.getElementById('newConnectorModal');
-    if (modal) modal.style.display = 'flex';
-};
+function closeNewConnectorModal() {
+    var modal = document.getElementById('newConnectorModal');
+    if (modal) {
+        modal.style.setProperty('display', 'none', 'important');
+        modal.style.display = 'none';
+    }
+}
+function openNewConnectorModal() {
+    var modal = document.getElementById('newConnectorModal');
+    if (modal) {
+        modal.style.setProperty('display', 'flex', 'important');
+        modal.style.display = 'flex';
+    }
+}
+window.closeNewConnectorModal = closeNewConnectorModal;
+window.openNewConnectorModal = openNewConnectorModal;
+
+document.addEventListener('DOMContentLoaded', function() {
+    var btnClose = document.getElementById('btnCloseNewConnector');
+    if (btnClose) {
+        btnClose.onclick = function(e) {
+            if (e) { e.preventDefault(); e.stopPropagation(); }
+            closeNewConnectorModal();
+            return false;
+        };
+    }
+    var btnCancel = document.getElementById('btnCancelNewConnector');
+    if (btnCancel) {
+        btnCancel.onclick = function(e) {
+            if (e) { e.preventDefault(); e.stopPropagation(); }
+            closeNewConnectorModal();
+            return false;
+        };
+    }
+    var btnOpen = document.getElementById('btnOpenNewConnector');
+    if (btnOpen) {
+        btnOpen.onclick = function(e) {
+            if (e) { e.preventDefault(); }
+            openNewConnectorModal();
+            return false;
+        };
+    }
+});
+
 window.addEventListener('click', function(e) {
-    const modal = document.getElementById('newConnectorModal');
+    var modal = document.getElementById('newConnectorModal');
     if (e.target === modal) {
         closeNewConnectorModal();
     }
-    const schemaModal = document.getElementById('schemaModal');
+    var schemaModal = document.getElementById('schemaModal');
     if (e.target === schemaModal) {
         if (typeof closeSchemaModal === 'function') closeSchemaModal();
         else schemaModal.style.display = 'none';
     }
 });
+
 window.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
+    if (e.key === 'Escape' || e.key === 'Esc') {
         closeNewConnectorModal();
-        const schemaModal = document.getElementById('schemaModal');
+        var schemaModal = document.getElementById('schemaModal');
         if (schemaModal) schemaModal.style.display = 'none';
     }
 });
+
 window.switchDiscoveryView = function(view) {
-    const topologySvg = document.getElementById('architectureGraph');
-    const lifecycleSvg = document.getElementById('lifecycleGraph');
-    const filterGroup = document.getElementById('topologyFilterGroup');
-    const tabTopology = document.getElementById('tabViewTopology');
-    const tabLifecycle = document.getElementById('tabViewLifecycle');
+    var topologySvg = document.getElementById('architectureGraph');
+    var lifecycleSvg = document.getElementById('lifecycleGraph');
+    var filterGroup = document.getElementById('topologyFilterGroup');
+    var tabTopology = document.getElementById('tabViewTopology');
+    var tabLifecycle = document.getElementById('tabViewLifecycle');
 
     if (view === 'lifecycle') {
         if (topologySvg) topologySvg.style.display = 'none';
@@ -1333,5 +1371,5 @@ window.switchDiscoveryView = function(view) {
 };
 </script>
 
-<script src="/js/discoveryScanner.js"></script>
+<script src="/js/discoveryScanner.js?v=20261025_3"></script>
 <%- include('partials/footer') %>
