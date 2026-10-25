@@ -1,0 +1,11 @@
+.console-box { max-width: 900px; margin: 2rem auto; padding: 1.5rem; }
+.timer { background: var(--color-danger-bg); color: var(--color-danger); font-family: monospace; font-weight: 700; padding: 0.5rem 1rem; display: inline-block; border-radius: 4px; }
+
+.timer { animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.7; } }
+
+.badge-danger { border: 1px solid rgba(239,68,68,0.3); }
+
+li:has(input:checked) { text-decoration: line-through; color: var(--text-muted); }
+
+pre { background: #111; color: #eee; padding: 10px; border-radius: 4px; }

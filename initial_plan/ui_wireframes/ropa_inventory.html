@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Record of Processing Activities (RoPA)</title>
+  <link rel="stylesheet" href="../design_system/tokens.css">
+  <link rel="stylesheet" href="../design_system/base.css">
+  <link rel="stylesheet" href="ropa.css">
+</head>
+<body>
+  <div class="ropa-container">
+    <h2>Record of Processing Activities (Section 8)</h2>
+    <div class="table-container" style="margin-top: 1.5rem;">
+      <table class="data-table">
+        <thead>
+          <tr><th>Activity ID</th><th>Purpose</th><th>Legal Basis</th><th>Data Categories</th><th>Retention</th><th>Processors</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>ROPA-01</td><td>GST Tax Invoicing</td><td>Legal Obligation (GST Act)</td><td>Name, Phone, Items</td><td>7 Years</td><td>Local Node</td></tr>
+          <tr><td>ROPA-02</td><td>Order Status SMS</td><td>Affirmative Consent</td><td>Phone Number</td><td>30 Days</td><td>Gupshup / MSG91</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>
+
+
+<div class="ropa-summary grid" style="grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1.5rem;">
+  <div class="card"><h4>Total Activities</h4><p class="score-val">12</p></div>
+  <div class="card"><h4>Consent-Based</h4><p class="score-val">4</p></div>
+  <div class="card"><h4>Statutory Legal</h4><p class="score-val">8</p></div>
+</div>
+
+
+<input type="text" placeholder="Filter RoPA activities by purpose or processor..." class="form-input" style="max-width: 380px; margin-bottom: 1rem;">

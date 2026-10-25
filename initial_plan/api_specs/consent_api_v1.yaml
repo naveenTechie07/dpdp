@@ -1,0 +1,23 @@
+openapi: 3.0.3
+info:
+  title: DPDP_Secure Consent API
+  version: 1.0.0
+paths:
+  /api/v1/consent/notices:
+    get:
+      summary: List notices
+
+  /api/v1/consent/records:
+    post:
+      summary: Record consent
+
+components:
+  schemas:
+    ConsentArtifact:
+      type: object
+      properties:
+        id: { type: string }
+
+  /api/v1/consent/{id}/revoke:
+    post:
+      summary: Revoke consent

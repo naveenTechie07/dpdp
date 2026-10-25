@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "VendorDataProcessingAgreement",
+  "type": "object",
+  "required": ["vendorId", "vendorName", "contractEffectiveDate", "securityStandards"],
+  "properties": {
+    "vendorId": { "type": "string" },
+    "vendorName": { "type": "string" },
+    "contractEffectiveDate": { "type": "string", "format": "date" },
+    "hasBreachNotificationClause": { "type": "boolean" },
+    "hasSubprocessorConsentClause": { "type": "boolean" }
+  }
+}

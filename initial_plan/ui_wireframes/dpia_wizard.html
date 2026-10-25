@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DPIA Assessment Calculator</title>
+  <link rel="stylesheet" href="../design_system/tokens.css">
+  <link rel="stylesheet" href="../design_system/base.css">
+  <link rel="stylesheet" href="dpia_wizard.css">
+</head>
+<body>
+  <div class="dpia-container">
+    <h2>Data Protection Impact Assessment (Section 10)</h2>
+    <p>Evaluate systemic privacy risks for new processing operations</p>
+    <div class="dpia-card">
+      <div class="risk-score-box">
+        <span>Assessed Risk Level:</span>
+        <span class="badge badge-warning">MODERATE RISK (Score: 28/100)</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+
+
+<div class="dpia-form" style="margin-top: 1.5rem;">
+  <div class="form-group">
+    <label class="form-label">Processing Purpose Title</label>
+    <input type="text" class="form-input" value="Customer WhatsApp Order Notifications">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Data Principal Category</label>
+    <select class="form-select"><option>Retail Walk-in Customers</option><option>Minor / Children Data (Strict)</option></select>
+  </div>
+</div>
+
+
+<div class="mitigations-box" style="margin-top: 1.5rem;">
+  <h4>Recommended Risk Safeguards</h4>
+  <span class="badge badge-info">Implement Opt-In Checkbox</span>
+  <span class="badge badge-info">Enforce 30-Day Auto Purge</span>
+  <span class="badge badge-info">Encrypt Phone at Rest</span>
+</div>
+
+
+<div class="signature-pad-box" style="margin-top: 1.5rem; border: 1px dashed var(--border-color); padding: 1rem; border-radius: var(--radius-md);">
+  <strong>DPO Sign-Off & Attestation</strong>
+  <p style="font-size: 0.8125rem; color: var(--text-muted);">Digital attestation conforming to DPDP Act Section 10 obligations.</p>
+  <button class="btn btn-secondary btn-sm" style="margin-top: 0.5rem;">Apply Cryptographic DPO Seal</button>
+</div>
