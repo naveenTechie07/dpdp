@@ -84,7 +84,9 @@
                     <th style="padding: 14px 20px; font-weight: 600; width: 12%;">Retention Period</th>
                     <th style="padding: 14px 20px; font-weight: 600; width: 10%;">Storage Location</th>
                     <th style="padding: 14px 20px; font-weight: 600; width: 10%;">Status</th>
-                    <th style="padding: 14px 20px; font-weight: 600; width: 8%;">Actions</th>
+                    <th style="padding: 14px 20px; font-weight: 600; width: 8%;">Status</th>
+                <th style="padding: 14px 20px; font-weight: 600; width: 10%;">Mapped Silos</th>
+                <th style="padding: 14px 20px; font-weight: 600; width: 12%;">Actions</th>
                 </tr>
             </thead>
             <tbody id="ropaTableBody">
@@ -115,10 +117,16 @@
                             <td style="padding: 14px 20px; font-size: 11px; color: var(--text-muted);">
                                 <span class="badge" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 600;">Active</span>
                             </td>
+                            <td style="padding: 14px 20px; font-size: 11px; color: var(--text-muted);" id="ropa-silos-<%= r.id %>">
+                                <span class="badge" style="background: rgba(99, 102, 241, 0.1); color: #6366f1; padding: 4px 8px; border-radius: 6px; font-size: 10px;">No silos mapped</span>
+                            </td>
                             <td style="padding: 14px 20px; text-align: right;">
                                 <div class="btn-group" style="display: flex; gap: 6px;">
                                     <button class="btn-sm btn-primary" onclick="editRoPA('<%= r.id %>', '<%= r.activityName.replace(/'/g, "\\'") %>', '<%= r.dataCategories.replace(/'/g, "\\'") %>', '<%= r.purpose.replace(/'/g, "\\'") %>', '<%= r.legalBasis.replace(/'/g, "\\'") %>', '<%= r.retentionPeriod.replace(/'/g, "\\'") %>', '<%= r.storageLocation.replace(/'/g, "\\'") %>', '<%= r.securitySafeguards.replace(/'/g, "\\'") %>')" title="Edit">
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4"></path><polyline points="18 6 12 12 6 18"></polyline></svg>
+                                    </button>
+                                    <button class="btn-sm btn-secondary" onclick="mapSilosToRoPA('<%= r.id %>', '<%= r.activityName.replace(/'/g, "\\'") %>')" title="Map Silos">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-4l14-8z"></path></svg>
                                     </button>
                                     <button class="btn-sm btn-danger" onclick="deleteRoPA('<%= r.id %>', '<%= r.activityName.replace(/'/g, "\\'") %>')" title="Delete">
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6h8a2 2 0 0 1 2 2h7a2 2 0 0 0 2-2v-4h2"></path></svg>
@@ -129,7 +137,7 @@
                     <% }); %>
                 <% } else { %>
                     <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td colspan="8" style="padding: 40px 20px; text-align: center; color: var(--text-muted);">
+                        <td colspan="9" style="padding: 40px 20px; text-align: center; color: var(--text-muted);">
                             <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
                                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v5"></path><line x1="17" y1="11" x2="17" y2="13"></line><line x1="7" y1="11" x2="7" y2="13"></line></svg>
                                 <span>No records found. Create your first processing activity.</span>
@@ -203,6 +211,8 @@
 
 <script>
 let currentEditId = null;
+let currentRoPAId = null;
+let currentRoPASiloMap = {}; // Maps ropaId -> array of siloIds
 
 document.addEventListener('DOMContentLoaded', () => {
     const btnResynthesize = document.getElementById('btnResynthesizeRoPA');
@@ -328,7 +338,97 @@ function syncRoPA() {
 window.addEventListener('click', (e) => {
     const modal = document.getElementById('ropaModal');
     if (e.target === modal) closeRoPAModal();
+    const siloModal = document.getElementById('siloMappingModal');
+    if (e.target === siloModal) closeSiloModal();
 });
+
+function mapSilosToRoPA(ropaId, activityName) {
+    currentRoPAId = ropaId;
+    document.getElementById('modalActivityName').textContent = activityName;
+    
+    // Fetch silos
+    fetch('/api/silos')
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                const siloList = document.getElementById('siloMappingList');
+                siloList.innerHTML = '';
+                data.data.forEach(silo => {
+                    const isAlreadyMapped = currentRoPASiloMap[ropaId] && currentRoPASiloMap[ropaId].includes(silo.id);
+                    const checkbox = document.createElement('div');
+                    checkbox.className = 'silo-checkbox';
+                    checkbox.innerHTML = `
+                        <label style="display: flex; align-items: center; cursor: pointer; padding: 8px; border-radius: 6px; ${isAlreadyMapped ? 'background: rgba(99, 102, 241, 0.1);' : ''}">
+                            <input type="checkbox" value="${silo.id}" ${isAlreadyMapped ? 'checked' : ''} style="margin-right: 8px;">
+                            <span>${silo.siloName || silo.name || 'Unnamed Silo'}</span>
+                            <span style="font-size: 10px; color: var(--text-muted); margin-left: auto;">${silo.siloType || 'Unknown'}</span>
+                        </label>
+                    `;
+                    siloList.appendChild(checkbox);
+                });
+            }
+        })
+        .catch(err => console.error('Failed to fetch silos:', err));
+
+    document.getElementById('siloMappingModal').style.display = 'block';
+}
+
+function closeSiloModal() {
+    document.getElementById('siloMappingModal').style.display = 'none';
+    currentRoPAId = null;
+}
+
+function saveSiloMappings() {
+    if (!currentRoPAId) return;
+    
+    const checkboxes = document.querySelectorAll('#siloMappingList input[type="checkbox"]:checked');
+    const siloIds = Array.from(checkboxes).map(cb => cb.value);
+    
+    // First remove all existing mappings for this RoPA
+    fetch(`/api/ropa/${currentRoPAId}/silos`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' }
+    }).then(() => {
+        // Then add selected ones
+        if (siloIds.length > 0) {
+            return Promise.all(siloIds.map(siloId =>
+                fetch('/api/ropa/' + currentRoPAId + '/silos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ siloId })
+                })
+            ));
+        }
+    }).then(results => {
+        closeSiloModal();
+        alert('Silo mappings updated successfully!');
+        window.location.reload();
+    }).catch(err => {
+        alert('Request failed: ' + err.message);
+    });
+}
 </script>
+
+<!-- Silo Mapping Modal -->
+<div id="siloMappingModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content" style="max-width: 500px; width: 90%;">
+        <div class="modal-header">
+            <h3 id="modalActivityName">Map Silos to Activity</h3>
+            <button class="btn-close" onclick="closeSiloModal()" style="background: none; border: none; font-size: 20px; color: var(--text-muted); cursor: pointer;">&times;</button>
+        </div>
+        <div class="modal-body" style="padding: 20px;">
+            <div style="margin-bottom: 16px;">
+                <label class="form-label">Select informal systems to map to this activity:</label>
+            </div>
+            <div id="siloMappingList" style="max-height: 300px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; background: rgba(255,255,255,0.03);">
+                <!-- Silos will be populated here -->
+            </div>
+        </div>
+        <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
+            <button type="button" class="btn-secondary" onclick="closeSiloModal()" style="padding: 10px 20px;">Cancel</button>
+            <button type="button" class="btn-primary" onclick="saveSiloMappings()" style="padding: 10px 24px; font-weight: 600;">Save Mappings</button>
+        </div>
+    </div>
+</div>
 
 <%- include('partials/footer') %>

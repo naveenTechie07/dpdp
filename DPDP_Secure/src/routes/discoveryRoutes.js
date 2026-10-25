@@ -229,6 +229,12 @@ router.post('/api/discovery/upload', upload.single('siloFile'), discoveryControl
 router.get('/api/discovery/findings', discoveryController.getFindings);
 router.post('/api/discovery/sanitize-text', discoveryController.sanitizeText);
 
+// Enterprise Connector Catalog & Schema APIs
+router.get('/api/connectors/catalog', discoveryController.getConnectorCatalog);
+router.get('/api/connectors/schema/:tableId', discoveryController.getTableSchema);
+router.post(['/api/connectors/scan', '/api/connectors/scan/:connectorId'], discoveryController.scanConnector);
+
+
 // RoPA Section 8(4) Endpoints
 router.get('/inventory/ropa/print', discoveryController.renderRoPAPrint);
 router.get('/api/ropa/export-csv', discoveryController.exportRoPaCsv);

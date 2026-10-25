@@ -24,8 +24,68 @@ async function seedDatabase() {
   ]);
   console.log('  [+] Seeded Tenant: Aarogya Diagnostic Center');
 
-  // 2. Seed Informal Data Silos
+  // 2. Seed Enterprise Connectors & Informal Data Silos
   const silos = [
+    {
+      id: 'SILO-CLAIMS-DB',
+      tenantId,
+      siloName: 'Claims Database (claims, policyholders, medical_histories)',
+      siloType: 'ENTERPRISE_RDBMS',
+      filePath: 'postgresql://claims-replica.internal:5432/aarogya_claims',
+      itemCount: 1840,
+      riskLevel: 'CRITICAL',
+      lastScannedAt: new Date().toISOString()
+    },
+    {
+      id: 'SILO-POLICY-ADMIN-DB',
+      tenantId,
+      siloName: 'Policy Administration Database (customers, policies, nominees)',
+      siloType: 'ENTERPRISE_CORE',
+      filePath: 'oracle://policy-admin.internal:1521/aarogya_core',
+      itemCount: 2650,
+      riskLevel: 'HIGH',
+      lastScannedAt: new Date().toISOString()
+    },
+    {
+      id: 'SILO-EXCEL-FILES',
+      tenantId,
+      siloName: 'Excel Files (agent_commission, tpa_network, customer_leads)',
+      siloType: 'SPREADSHEET',
+      filePath: 'smb://nas-storage.clinic/accounts_spreadsheets/',
+      itemCount: 780,
+      riskLevel: 'MEDIUM',
+      lastScannedAt: new Date().toISOString()
+    },
+    {
+      id: 'SILO-PDFS',
+      tenantId,
+      siloName: 'PDF Documents (blood_reports, discharge_summaries, kyc_scans)',
+      siloType: 'PDF_DOCUMENTS',
+      filePath: 'file:///data/pdf_vault/lab_reports/',
+      itemCount: 520,
+      riskLevel: 'CRITICAL',
+      lastScannedAt: new Date().toISOString()
+    },
+    {
+      id: 'SILO-DOCUMENTS',
+      tenantId,
+      siloName: 'Office Documents (clinical_notes, doctor_rx, consent_declarations)',
+      siloType: 'OFFICE_DOCUMENTS',
+      filePath: 'file:///data/clinical_docs/',
+      itemCount: 340,
+      riskLevel: 'HIGH',
+      lastScannedAt: new Date().toISOString()
+    },
+    {
+      id: 'SILO-CLOUD-STORAGE',
+      tenantId,
+      siloName: 'Cloud Storage (s3://aarogya-records, gcs://claims-archive)',
+      siloType: 'CLOUD_OBJECT_STORE',
+      filePath: 's3://aarogya-clinic-records-vault/indiranagar-central/',
+      itemCount: 1120,
+      riskLevel: 'RESTRICTED',
+      lastScannedAt: new Date().toISOString()
+    },
     {
       id: 'SILO-WHATSAPP-01',
       tenantId,
@@ -64,10 +124,90 @@ async function seedDatabase() {
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `, [s.id, s.tenantId, s.siloName, s.siloType, s.filePath, s.itemCount, s.riskLevel, s.lastScannedAt]);
   }
-  console.log('  [+] Seeded 3 Informal Data Silos (WhatsApp, Leads, Invoices)');
+  console.log(`  [+] Seeded ${silos.length} Multi-System Connectors (Claims DB, Policy Admin DB, Excel, PDFs, Docs, Cloud, WhatsApp)`);
 
-  // 3. Seed Discovered Indian PII Findings
+  // 3. Seed Discovered Indian PII Findings Across All Connectors
   const findings = [
+    {
+      id: 'PII-CLM-01',
+      siloId: 'SILO-CLAIMS-DB',
+      entityName: 'Rajesh Sundaram',
+      piiType: 'AADHAAR',
+      maskedValue: 'XXXXXXXX4819',
+      rawSample: 'claims.policyholders: Aadhaar 4921-8374-4819 (Verhoeff D5 Valid)',
+      lineNumber: 12,
+      confidenceScore: 0.99
+    },
+    {
+      id: 'PII-CLM-02',
+      siloId: 'SILO-CLAIMS-DB',
+      entityName: 'Rajesh Sundaram',
+      piiType: 'HEALTH_DIAGNOSTIC',
+      maskedValue: 'E11.9 (Type 2 Diabetes Mellitus with Ketoacidosis)',
+      rawSample: 'claims.claims: Diagnosis E11.9, FBS: 178 mg/dL, HbA1c: 8.4%',
+      lineNumber: 14,
+      confidenceScore: 0.98
+    },
+    {
+      id: 'PII-POL-01',
+      siloId: 'SILO-POLICY-ADMIN-DB',
+      entityName: 'Kavitha Nambiar',
+      piiType: 'PAN',
+      maskedValue: 'ABCPN4821F',
+      rawSample: 'policy_admin.customers: PAN ABCPN4821F (Individual Citizen Char P)',
+      lineNumber: 4,
+      confidenceScore: 0.99
+    },
+    {
+      id: 'PII-POL-02',
+      siloId: 'SILO-POLICY-ADMIN-DB',
+      entityName: 'Devika Nambiar',
+      piiType: 'AADHAAR',
+      maskedValue: 'XXXXXXXX7712',
+      rawSample: 'policy_admin.nominees: Minor Ward Nominee Aadhaar 6201-9941-7712',
+      lineNumber: 19,
+      confidenceScore: 0.99
+    },
+    {
+      id: 'PII-XLS-01',
+      siloId: 'SILO-EXCEL-FILES',
+      entityName: 'K. S. Ramanathan',
+      piiType: 'PAN',
+      maskedValue: 'ABCPR9821K',
+      rawSample: 'agent_commission_tracker.xlsx: Agent PAN ABCPR9821K TDS Locked',
+      lineNumber: 8,
+      confidenceScore: 0.99
+    },
+    {
+      id: 'PII-PDF-01',
+      siloId: 'SILO-PDFS',
+      entityName: 'Sunita Deshmukh',
+      piiType: 'HEALTH_DIAGNOSTIC',
+      maskedValue: 'HbA1c: 9.1%, Fasting Blood Sugar: 168 mg/dL',
+      rawSample: 'blood_investigation_report.pdf: Mindray Automated Panel',
+      lineNumber: 3,
+      confidenceScore: 0.97
+    },
+    {
+      id: 'PII-DOC-01',
+      siloId: 'SILO-DOCUMENTS',
+      entityName: 'Nalini Swaminathan',
+      piiType: 'HEALTH_DIAGNOSTIC',
+      maskedValue: 'Exertional dyspnea, suspected mitral regurgitation',
+      rawSample: 'clinical_consultation_notes.docx: Dr. Ananya Murthy OPD Notes',
+      lineNumber: 16,
+      confidenceScore: 0.95
+    },
+    {
+      id: 'PII-CLD-01',
+      siloId: 'SILO-CLOUD-STORAGE',
+      entityName: 'Patient #7731',
+      piiType: 'HEALTH_DIAGNOSTIC',
+      maskedValue: 'Chest PA View: Bilateral Infiltration DICOM Study',
+      rawSample: 's3://aarogya-clinic-records-vault/dicom/patient_7731.dcm',
+      lineNumber: 1,
+      confidenceScore: 0.96
+    },
     {
       id: 'PII-01',
       siloId: 'SILO-WHATSAPP-01',

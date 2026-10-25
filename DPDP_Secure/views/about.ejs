@@ -219,6 +219,70 @@
 </div>
 
 <!-- ========================================== -->
+<!-- 2.5. MULTI-CONNECTOR DATA LANDSCAPE -->
+<!-- ========================================== -->
+<div class="card p-4 mb-4" style="background: rgba(17, 24, 39, 0.7); border: 1px solid var(--border-color);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+        <div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="badge" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa; font-size: 10px; font-weight: 700;">MULTI-SOURCE TOPOLOGY</span>
+                <h3 style="font-size: 16px; font-weight: 700; color: #ffffff; margin: 0;">Multi-Connector Data Hierarchy for SMEs</h3>
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted); margin: 4px 0 0 0;">
+                DPDP_Secure bridges the gap between formal core databases, clinical files, and unstructured communication silos.
+            </p>
+        </div>
+        <a href="/discovery/connectors" class="btn-primary" style="padding: 8px 14px; font-size: 12px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+            <span>⚡ Open Connector Studio</span> &rarr;
+        </a>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <!-- Left: Hierarchical ASCII/Box Tree -->
+        <div style="background: rgba(10, 15, 29, 0.8); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 18px; font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 12px; line-height: 1.8;">
+            <div style="color: #60a5fa; font-weight: 700; margin-bottom: 8px;">Aarogya Diagnostic Center Silos:</div>
+            <div style="color: #94a3b8;">│</div>
+            <div><span style="color: #94a3b8;">├── </span><strong style="color: #38bdf8;">Claims Database</strong> <span style="font-size: 10px; color: #6ee7b7;">[RDBMS]</span></div>
+            <div><span style="color: #94a3b8;">│     ├── </span><span style="color: #cbd5e1;">claims</span> <span style="font-size: 10px; color: #f87171;">(claim_id, patient, diag, aadhaar)</span></div>
+            <div><span style="color: #94a3b8;">│     ├── </span><span style="color: #cbd5e1;">policyholders</span> <span style="font-size: 10px; color: #f87171;">(holder_id, name, aadhaar, phone)</span></div>
+            <div><span style="color: #94a3b8;">│     └── </span><span style="color: #cbd5e1;">medical_histories</span> <span style="font-size: 10px; color: #fb7185;">(diag, Rx, biometrics Sec 2t)</span></div>
+            <div style="color: #94a3b8;">│</div>
+            <div><span style="color: #94a3b8;">├── </span><strong style="color: #a855f7;">Policy Administration Database</strong> <span style="font-size: 10px; color: #c084fc;">[CORE]</span></div>
+            <div><span style="color: #94a3b8;">│     ├── </span><span style="color: #cbd5e1;">customers</span> <span style="font-size: 10px; color: #fbbf24;">(PAN, KYC status, mobile, UPI)</span></div>
+            <div><span style="color: #94a3b8;">│     ├── </span><span style="color: #cbd5e1;">policies</span> <span style="font-size: 10px; color: #60a5fa;">(sum insured, premium, dates)</span></div>
+            <div><span style="color: #94a3b8;">│     └── </span><span style="color: #cbd5e1;">nominees</span> <span style="font-size: 10px; color: #f87171;">(minor nominee, aadhaar token)</span></div>
+            <div style="color: #94a3b8;">│</div>
+            <div><span style="color: #94a3b8;">├── </span><strong style="color: #fbbf24;">Excel files</strong> <span style="font-size: 10px; color: #94a3b8;">(agent_commission, tpa_hospitals, leads)</span></div>
+            <div><span style="color: #94a3b8;">├── </span><strong style="color: #f87171;">PDFs</strong> <span style="font-size: 10px; color: #94a3b8;">(blood_reports, discharge_summaries, KYC scans)</span></div>
+            <div><span style="color: #94a3b8;">├── </span><strong style="color: #c084fc;">Documents</strong> <span style="font-size: 10px; color: #94a3b8;">(clinical_notes.docx, doctor_Rx, consent)</span></div>
+            <div><span style="color: #94a3b8;">└── </span><strong style="color: #22d3ee;">Cloud storage</strong> <span style="font-size: 10px; color: #94a3b8;">(s3://vault, gcs://claims, azure://lake)</span></div>
+        </div>
+
+        <!-- Right: Technical Capabilities Summary -->
+        <div style="display: flex; flex-direction: column; justify-content: space-between; gap: 12px; font-size: 13px;">
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 14px;">
+                <h4 style="font-size: 13px; font-weight: 700; color: #38bdf8; margin: 0 0 6px 0;">1. Zero Cloud Egress Ingestion</h4>
+                <p style="font-size: 12px; color: var(--text-muted); margin: 0; line-height: 1.5;">
+                    Whether connecting to PostgreSQL claims replicas, Oracle core databases, local Excel files, or clinical PDFs, all parsing executes locally in memory. No citizen health data is ever transmitted to external cloud providers.
+                </p>
+            </div>
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 14px;">
+                <h4 style="font-size: 13px; font-weight: 700; color: #a855f7; margin: 0 0 6px 0;">2. Automated RoPA Synthesis</h4>
+                <p style="font-size: 12px; color: var(--text-muted); margin: 0; line-height: 1.5;">
+                    Every detected table column (e.g. <code>medical_histories.prescriptions</code> or <code>nominees.aadhaar_token</code>) is instantly linked to statutory Record of Processing Activities under Section 8(4) of DPDP Act 2023.
+                </p>
+            </div>
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 14px;">
+                <h4 style="font-size: 13px; font-weight: 700; color: #34d399; margin: 0 0 6px 0;">3. Dual-Track Statutory Shield</h4>
+                <p style="font-size: 12px; color: var(--text-muted); margin: 0; line-height: 1.5;">
+                    Prevents statutory collisions by enforcing a 72-month retention lock on financial tax invoices under Section 36 of CGST Act while allowing citizen right-to-erasure across marketing leads and informal chat backups.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================== -->
 <!-- 3. THE FOUR CORE COMPLIANCE PILLARS -->
 <!-- ========================================== -->
 <div style="margin-bottom: 32px;">

@@ -93,8 +93,68 @@ async function seedDemoData() {
   );
   console.log('  [+] Step 3: Seeded Tenant Aarogya Diagnostic Center (GSTIN: 29AAAAA0000A1Z5)');
 
-  // 4. Seed Informal Data Silos (Total: 1,420 items)
+  // 4. Seed Enterprise Connectors & Informal Silos
   const silos = [
+    {
+      id: 'SILO-CLAIMS-DB',
+      tenantId: TENANT_ID,
+      siloName: 'Claims Database (claims, policyholders, medical_histories)',
+      siloType: 'ENTERPRISE_RDBMS',
+      filePath: 'postgresql://claims-replica.internal:5432/aarogya_claims',
+      itemCount: 1840,
+      riskLevel: 'CRITICAL',
+      lastScannedAt: new Date(Date.now() - 1800000).toISOString()
+    },
+    {
+      id: 'SILO-POLICY-ADMIN-DB',
+      tenantId: TENANT_ID,
+      siloName: 'Policy Administration Database (customers, policies, nominees)',
+      siloType: 'ENTERPRISE_CORE',
+      filePath: 'oracle://policy-admin.internal:1521/aarogya_core',
+      itemCount: 2650,
+      riskLevel: 'HIGH',
+      lastScannedAt: new Date(Date.now() - 3600000).toISOString()
+    },
+    {
+      id: 'SILO-EXCEL-FILES',
+      tenantId: TENANT_ID,
+      siloName: 'Excel Files (agent_commission, tpa_network, customer_leads)',
+      siloType: 'SPREADSHEET',
+      filePath: 'smb://nas-storage.clinic/accounts_spreadsheets/',
+      itemCount: 780,
+      riskLevel: 'MEDIUM',
+      lastScannedAt: new Date(Date.now() - 7200000).toISOString()
+    },
+    {
+      id: 'SILO-PDFS',
+      tenantId: TENANT_ID,
+      siloName: 'PDF Documents (blood_reports, discharge_summaries, kyc_scans)',
+      siloType: 'PDF_DOCUMENTS',
+      filePath: 'file:///data/pdf_vault/lab_reports/',
+      itemCount: 520,
+      riskLevel: 'CRITICAL',
+      lastScannedAt: new Date(Date.now() - 5400000).toISOString()
+    },
+    {
+      id: 'SILO-DOCUMENTS',
+      tenantId: TENANT_ID,
+      siloName: 'Office Documents (clinical_notes, doctor_rx, consent_declarations)',
+      siloType: 'OFFICE_DOCUMENTS',
+      filePath: 'file:///data/clinical_docs/',
+      itemCount: 340,
+      riskLevel: 'HIGH',
+      lastScannedAt: new Date(Date.now() - 9000000).toISOString()
+    },
+    {
+      id: 'SILO-CLOUD-STORAGE',
+      tenantId: TENANT_ID,
+      siloName: 'Cloud Storage (s3://aarogya-records, gcs://claims-archive)',
+      siloType: 'CLOUD_OBJECT_STORE',
+      filePath: 's3://aarogya-clinic-records-vault/indiranagar-central/',
+      itemCount: 1120,
+      riskLevel: 'RESTRICTED',
+      lastScannedAt: new Date(Date.now() - 14400000).toISOString()
+    },
     {
       id: 'SILO-WHATSAPP-01',
       tenantId: TENANT_ID,
@@ -134,10 +194,173 @@ async function seedDemoData() {
       [s.id, s.tenantId, s.siloName, s.siloType, s.filePath, s.itemCount, s.riskLevel, s.lastScannedAt]
     );
   }
-  console.log('  [+] Step 4: Seeded 3 informal silos (840 WhatsApp + 350 Leads + 230 Billing = 1,420 items)');
+  console.log(`  [+] Step 4: Seeded ${silos.length} multi-system connectors (Claims DB, Policy Admin DB, Excel, PDFs, Docs, Cloud, WhatsApp)`);
 
-  // 5. Seed Discovered PII Findings
+  // 5. Seed Discovered PII Findings Across All Connectors
   const findings = [
+    // Claims DB Findings
+    {
+      id: 'PII-CLM-01',
+      siloId: 'SILO-CLAIMS-DB',
+      entityName: 'Rajesh Sundaram',
+      piiType: 'AADHAAR',
+      maskedValue: 'XXXXXXXX4819',
+      rawSample: 'claims.policyholders: Aadhaar 4921-8374-4819 (Verhoeff D5 Valid)',
+      lineNumber: 12,
+      confidenceScore: 0.99
+    },
+    {
+      id: 'PII-CLM-02',
+      siloId: 'SILO-CLAIMS-DB',
+      entityName: 'Rajesh Sundaram',
+      piiType: 'HEALTH_DIAGNOSTIC',
+      maskedValue: 'E11.9 (Type 2 Diabetes Mellitus with Ketoacidosis)',
+      rawSample: 'claims.claims: Diagnosis E11.9, FBS: 178 mg/dL, HbA1c: 8.4%',
+      lineNumber: 14,
+      confidenceScore: 0.98
+    },
+    {
+      id: 'PII-CLM-03',
+      siloId: 'SILO-CLAIMS-DB',
+      entityName: 'Meenakshi Iyer',
+      piiType: 'HEALTH_DIAGNOSTIC',
+      maskedValue: 'I10 (Essential Primary Hypertension & Cardiac Stent)',
+      rawSample: 'claims.medical_histories: Post-Angioplasty Stent Surveillance',
+      lineNumber: 28,
+      confidenceScore: 0.96
+    },
+    {
+      id: 'PII-CLM-04',
+      siloId: 'SILO-CLAIMS-DB',
+      entityName: 'Rajesh Sundaram',
+      piiType: 'MOBILE',
+      maskedValue: '+91 98450 12891',
+      rawSample: 'claims.policyholders: Primary Contact Phone +91 98450 12891',
+      lineNumber: 12,
+      confidenceScore: 1.0
+    },
+
+    // Policy Administration DB Findings
+    {
+      id: 'PII-POL-01',
+      siloId: 'SILO-POLICY-ADMIN-DB',
+      entityName: 'Kavitha Nambiar',
+      piiType: 'PAN',
+      maskedValue: 'ABCPN4821F',
+      rawSample: 'policy_admin.customers: PAN ABCPN4821F (Individual Citizen Char P)',
+      lineNumber: 4,
+      confidenceScore: 0.99
+    },
+    {
+      id: 'PII-POL-02',
+      siloId: 'SILO-POLICY-ADMIN-DB',
+      entityName: 'Devika Nambiar',
+      piiType: 'AADHAAR',
+      maskedValue: 'XXXXXXXX7712',
+      rawSample: 'policy_admin.nominees: Minor Ward Nominee Aadhaar 6201-9941-7712',
+      lineNumber: 19,
+      confidenceScore: 0.99
+    },
+    {
+      id: 'PII-POL-03',
+      siloId: 'SILO-POLICY-ADMIN-DB',
+      entityName: 'Kavitha Nambiar',
+      piiType: 'UPI_VPA',
+      maskedValue: 'kavitha.nambiar@okhdfcbank',
+      rawSample: 'policy_admin.customers: Direct Premium Debit VPA',
+      lineNumber: 4,
+      confidenceScore: 0.98
+    },
+
+    // Excel Files Findings
+    {
+      id: 'PII-XLS-01',
+      siloId: 'SILO-EXCEL-FILES',
+      entityName: 'K. S. Ramanathan',
+      piiType: 'PAN',
+      maskedValue: 'ABCPR9821K',
+      rawSample: 'agent_commission_tracker.xlsx: Agent PAN ABCPR9821K TDS Locked',
+      lineNumber: 8,
+      confidenceScore: 0.99
+    },
+    {
+      id: 'PII-XLS-02',
+      siloId: 'SILO-EXCEL-FILES',
+      entityName: 'Vikram Mehta',
+      piiType: 'MOBILE',
+      maskedValue: '+91 98450 12345',
+      rawSample: 'customer_leads_tracker.csv: Walk-in inquiry lead contact',
+      lineNumber: 5,
+      confidenceScore: 1.0
+    },
+
+    // PDFs Findings
+    {
+      id: 'PII-PDF-01',
+      siloId: 'SILO-PDFS',
+      entityName: 'Sunita Deshmukh',
+      piiType: 'HEALTH_DIAGNOSTIC',
+      maskedValue: 'HbA1c: 9.1%, Fasting Blood Sugar: 168 mg/dL',
+      rawSample: 'blood_investigation_report.pdf: Mindray Automated Panel',
+      lineNumber: 3,
+      confidenceScore: 0.97
+    },
+    {
+      id: 'PII-PDF-02',
+      siloId: 'SILO-PDFS',
+      entityName: 'Ramesh Kumar',
+      piiType: 'AADHAAR',
+      maskedValue: 'XXXXXXXX6210',
+      rawSample: 'kyc_identity_proofs.pdf: Scanned Government ID Token (D5 Valid)',
+      lineNumber: 1,
+      confidenceScore: 0.99
+    },
+
+    // Documents Findings
+    {
+      id: 'PII-DOC-01',
+      siloId: 'SILO-DOCUMENTS',
+      entityName: 'Nalini Swaminathan',
+      piiType: 'HEALTH_DIAGNOSTIC',
+      maskedValue: 'Exertional dyspnea, suspected mitral regurgitation',
+      rawSample: 'clinical_consultation_notes.docx: Dr. Ananya Murthy OPD Notes',
+      lineNumber: 16,
+      confidenceScore: 0.95
+    },
+    {
+      id: 'PII-DOC-02',
+      siloId: 'SILO-DOCUMENTS',
+      entityName: 'Priya Sharma',
+      piiType: 'MOBILE',
+      maskedValue: '+91 98867 55441',
+      rawSample: 'patient_consent_declaration.docx: DPDP Section 5 Notice Executed',
+      lineNumber: 9,
+      confidenceScore: 1.0
+    },
+
+    // Cloud Storage Findings
+    {
+      id: 'PII-CLD-01',
+      siloId: 'SILO-CLOUD-STORAGE',
+      entityName: 'Patient #7731',
+      piiType: 'HEALTH_DIAGNOSTIC',
+      maskedValue: 'Chest PA View: Bilateral Infiltration DICOM Study',
+      rawSample: 's3://aarogya-clinic-records-vault/dicom/patient_7731.dcm',
+      lineNumber: 1,
+      confidenceScore: 0.96
+    },
+    {
+      id: 'PII-CLD-02',
+      siloId: 'SILO-CLOUD-STORAGE',
+      entityName: 'Aarogya Diagnostic Center',
+      piiType: 'PAN',
+      maskedValue: 'AABCA4412P',
+      rawSample: 'gcs://claims-archive-indiranagar/claims_fy25_26/settlement_bundle.tar.gz',
+      lineNumber: 2,
+      confidenceScore: 0.99
+    },
+
+    // WhatsApp & Billing Informal Silos
     {
       id: 'PII-DEMO-01',
       siloId: 'SILO-WHATSAPP-01',
@@ -207,7 +430,7 @@ async function seedDemoData() {
       [f.id, f.siloId, f.entityName, f.piiType, f.maskedValue, f.rawSample, f.lineNumber, f.confidenceScore]
     );
   }
-  console.log('  [+] Step 5: Seeded categorized Indian PII findings (Aadhaar, PAN, Health, Phone, UPI)');
+  console.log(`  [+] Step 5: Seeded ${findings.length} categorized Indian PII findings across all connectors (Aadhaar, PAN, Health, Phone, UPI)`);
 
   // 6. Seed Multilingual Section 5 Notices (English, Kannada, Hindi)
   const notices = [

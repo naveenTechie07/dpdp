@@ -1,147 +1,880 @@
 <%- include('partials/header') %>
 
-<!-- Top Discovery Metrics -->
-<div class="metrics-grid mb-4" style="grid-template-columns: repeat(4, 1fr);">
-    <div class="card metric-card">
+<!-- Top Discovery & Connector Metrics -->
+<div class="metrics-grid mb-4" style="grid-template-columns: repeat(6, 1fr); gap: 12px;">
+    <div class="card metric-card p-3">
         <div class="metric-info w-100">
-            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px;">INFORMAL REPOSITORIES</span>
-            <h2 class="metric-value" style="margin-top: 8px;"><%= (typeof silos !== 'undefined' && silos) ? silos.length : 3 %> <span style="font-size: 12px; font-weight: 400; color: var(--success);">&#9679; Active</span></h2>
+            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 700; letter-spacing: 0.5px;">ACTIVE CONNECTORS</span>
+            <h2 class="metric-value" style="margin-top: 6px; font-size: 20px;"><%= (typeof stats !== 'undefined' && stats.connectorsCount) ? stats.connectorsCount : 7 %> <span style="font-size: 11px; font-weight: 500; color: #10b981;">&#9679; Connected</span></h2>
         </div>
     </div>
-    <div class="card metric-card">
+    <div class="card metric-card p-3">
         <div class="metric-info w-100">
-            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px;">DISCOVERED INDIAN PII</span>
-            <h2 class="metric-value" id="tickerRecords" style="margin-top: 8px; color: var(--warning);"><%= (typeof stats !== 'undefined' && stats.totalPiiCount) ? stats.totalPiiCount.toLocaleString() : '1,420' %></h2>
+            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 700; letter-spacing: 0.5px;">CONTAINERS & TABLES</span>
+            <h2 class="metric-value" style="margin-top: 6px; font-size: 20px; color: #60a5fa;"><%= (typeof catalogStats !== 'undefined' && catalogStats.totalTables) ? catalogStats.totalTables : 17 %> <span style="font-size: 11px; font-weight: 500; color: var(--text-muted);">Cataloged</span></h2>
         </div>
     </div>
-    <div class="card metric-card">
+    <div class="card metric-card p-3">
         <div class="metric-info w-100">
-            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px;">AADHAAR TOKENS (D5 VALID)</span>
-            <h2 class="metric-value" id="tickerAadhaar" style="margin-top: 8px; color: #f87171;">18</h2>
+            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 700; letter-spacing: 0.5px;">DISCOVERED INDIAN PII</span>
+            <h2 class="metric-value" id="tickerRecords" style="margin-top: 6px; font-size: 20px; color: #fbbf24;"><%= (typeof stats !== 'undefined' && stats.totalPiiCount) ? stats.totalPiiCount.toLocaleString() : '2,840' %></h2>
         </div>
     </div>
-    <div class="card metric-card">
+    <div class="card metric-card p-3">
         <div class="metric-info w-100">
-            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px;">SECTION 2(t) HEALTH DATA</span>
-            <h2 class="metric-value" id="tickerHealth" style="margin-top: 8px; color: #fb7185;">24</h2>
+            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 700; letter-spacing: 0.5px;">AADHAAR (VERHOEFF D5)</span>
+            <h2 class="metric-value" id="tickerAadhaar" style="margin-top: 6px; font-size: 20px; color: #f87171;"><%= (typeof stats !== 'undefined' && stats.aadhaarTokens) ? stats.aadhaarTokens : 64 %></h2>
+        </div>
+    </div>
+    <div class="card metric-card p-3">
+        <div class="metric-info w-100">
+            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 700; letter-spacing: 0.5px;">SECTION 2(t) HEALTH DATA</span>
+            <h2 class="metric-value" id="tickerHealth" style="margin-top: 6px; font-size: 20px; color: #fb7185;"><%= (typeof stats !== 'undefined' && stats.healthTokens) ? stats.healthTokens : 98 %></h2>
+        </div>
+    </div>
+    <div class="card metric-card p-3">
+        <div class="metric-info w-100">
+            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 700; letter-spacing: 0.5px;">AIR-GAPPED COMPLIANCE</span>
+            <h2 class="metric-value" style="margin-top: 6px; font-size: 20px; color: #34d399;">100% <span style="font-size: 11px; font-weight: 500; color: #34d399;">0 Egress</span></h2>
         </div>
     </div>
 </div>
 
-<!-- Header with 1-Click Fast Track Button -->
-<div class="dashboard-header mb-4" style="align-items: center; justify-content: space-between;">
+<!-- Header with Action Bar -->
+<div class="dashboard-header mb-4" style="align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
     <div class="title-group">
-        <h1>Data Discovery & PII Scanner Studio</h1>
-        <p>100% Offline-first detection for informal systems (WhatsApp chats, Lead spreadsheets, Tally exports) under DPDP Act 2023.</p>
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+            <span style="background: rgba(99, 102, 241, 0.2); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.4); font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px;">PILLAR 1: DATA DISCOVERY & CONNECTORS</span>
+            <span style="font-size: 12px; color: var(--text-muted);">Aarogya Diagnostic Center &bull; GSTIN: 29AAAAA0000A1Z5</span>
+        </div>
+        <h1 style="font-size: 24px; font-weight: 800; color: #ffffff; margin: 0;">Multi-Connector Data Discovery & Schema Studio</h1>
+        <p style="font-size: 13px; color: var(--text-muted); margin: 4px 0 0 0;">
+            Continuous, 100% offline-first discovery across enterprise databases, claim archives, spreadsheets, clinical PDFs, and informal silos.
+        </p>
     </div>
-    <div style="display: flex; gap: 12px;">
-        <button id="btnScanSample" class="btn-primary" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);">
+    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <button id="btnScanAll" class="btn-primary" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);">
             <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-            ⚡ Scan Pre-Loaded Aarogya Clinic Files
+            ⚡ Scan All Connectors (Deep Discovery)
         </button>
+        <button id="btnOpenNewConnector" class="btn-secondary" style="background: rgba(255,255,255,0.06); color: var(--text-main); border: 1px solid var(--border-color); padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Connect Data Source
+        </button>
+        <a href="/inventory/ropa" class="btn-secondary" style="background: rgba(255,255,255,0.06); color: var(--text-main); border: 1px solid var(--border-color); padding: 10px 16px; border-radius: 8px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 8px;">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+            RoPA Register &rarr;
+        </a>
     </div>
 </div>
 
 <!-- Progress Bar Indicator -->
-<div id="scanProgressContainer" class="card mb-4 p-4" style="display: none; background: rgba(17, 24, 39, 0.85); border: 1px solid var(--primary);">
+<div id="scanProgressContainer" class="card mb-4 p-4" style="display: none; background: rgba(17, 24, 39, 0.95); border: 1px solid var(--primary); box-shadow: 0 8px 32px rgba(99, 102, 241, 0.2);">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-        <span id="scanStatusText" style="font-size: 13px; font-weight: 600; color: var(--text-main);">Scanning data silos...</span>
-        <span style="font-size: 12px; color: var(--text-muted);">Zero Cloud Egress Guaranteed</span>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <div class="spinner-border" style="width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.2); border-top-color: #6366f1; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+            <span id="scanStatusText" style="font-size: 13px; font-weight: 600; color: #ffffff;">Scanning active data silos across Claims DB, Policy Admin DB, Excel, PDFs, Docs, and Cloud Storage...</span>
+        </div>
+        <span style="font-size: 11px; color: #10b981; font-weight: 600; display: flex; align-items: center; gap: 4px;">
+            <span>✓</span> Air-Gapped Local Execution (Zero External Cloud Egress)
+        </span>
     </div>
     <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
-        <div id="scanProgressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #6366f1, #10b981); transition: width 0.3s ease;"></div>
+        <div id="scanProgressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #6366f1, #3b82f6, #10b981); transition: width 0.3s ease;"></div>
     </div>
 </div>
 
-<!-- Connector Overview Grid (4 Cards) -->
-<div class="metrics-grid mb-4" style="grid-template-columns: repeat(4, 1fr);">
-    <div class="card p-4" style="border-top: 3px solid #ef4444;">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-            <div>
-                <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: #f87171; font-size: 10px; font-weight: 700;">WHATSAPP EXPORTS</span>
-                <h3 style="font-size: 14px; margin-top: 8px; font-weight: 600;">Reception WhatsApp Backup</h3>
-                <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;"><code>clinic_reception_chat.txt</code></p>
+<!-- ========================================== -->
+<!-- 1. HIGH-IMPACT PLATFORM ARCHITECTURE & TOPOLOGY GRAPH -->
+<!-- ========================================== -->
+<div class="card p-4 mb-4" style="background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-color); position: relative; overflow: hidden;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+        <div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; font-size: 10px; font-weight: 700;">IN-DEPTH PLATFORM ARCHITECTURE</span>
+                <span style="font-size: 11px; color: var(--text-muted);">&#9679; Click any node to inspect live telemetry</span>
             </div>
-            <span style="color: #ef4444; font-size: 10px; font-weight: 700;">CRITICAL RISK</span>
+            <h2 style="font-size: 18px; font-weight: 800; color: #ffffff; margin: 0;">How DPDP_Secure Discovers, Protects & Maps Your SME Data</h2>
+            <p style="font-size: 13px; color: var(--text-muted); margin: 4px 0 0 0;">
+                Visual interactive graph: from heterogeneous enterprise & informal data connectors to verifiable DPDP Act 2023 compliance.
+            </p>
         </div>
-        <div style="margin-top: 14px; font-size: 12px; color: var(--text-muted); display: flex; justify-content: space-between;">
-            <span>840 PII findings</span>
-            <span style="color: var(--success);">&#10003; Verhoeff Aadhaar</span>
+        <div style="display: flex; gap: 8px; align-items: center;">
+            <button class="graph-filter-btn active" data-flow="ALL" style="background: rgba(255,255,255,0.1); border: 1px solid var(--border-color); color: var(--text-main); padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer;">All Pipelines</button>
+            <button class="graph-filter-btn" data-flow="DB" style="background: transparent; border: 1px solid var(--border-color); color: #60a5fa; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer;">Claims & Policy DBs</button>
+            <button class="graph-filter-btn" data-flow="FILES" style="background: transparent; border: 1px solid var(--border-color); color: #fbbf24; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer;">Files, PDFs & Cloud</button>
+            <button class="graph-filter-btn" data-flow="GOV" style="background: transparent; border: 1px solid var(--border-color); color: #34d399; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer;">Governance & Locks</button>
         </div>
     </div>
 
-    <div class="card p-4" style="border-top: 3px solid #f59e0b;">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-            <div>
-                <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; font-size: 10px; font-weight: 700;">SPREADSHEETS</span>
-                <h3 style="font-size: 14px; margin-top: 8px; font-weight: 600;">Customer Leads Tracker</h3>
-                <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;"><code>customer_leads.csv</code></p>
+    <!-- Interactive SVG Architecture Topology Graph -->
+    <div style="overflow-x: auto; padding: 8px 0;">
+        <svg id="architectureGraph" viewBox="0 0 1120 340" style="width: 100%; min-width: 980px; height: auto;" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="gBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#1e3a8a" stop-opacity="0.9"/>
+                    <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.3"/>
+                </linearGradient>
+                <linearGradient id="gPurple" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#581c87" stop-opacity="0.9"/>
+                    <stop offset="100%" stop-color="#a855f7" stop-opacity="0.3"/>
+                </linearGradient>
+                <linearGradient id="gAmber" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#78350f" stop-opacity="0.9"/>
+                    <stop offset="100%" stop-color="#f59e0b" stop-opacity="0.3"/>
+                </linearGradient>
+                <linearGradient id="gGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#064e3b" stop-opacity="0.9"/>
+                    <stop offset="100%" stop-color="#10b981" stop-opacity="0.3"/>
+                </linearGradient>
+                <linearGradient id="gRed" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#7f1d1d" stop-opacity="0.9"/>
+                    <stop offset="100%" stop-color="#ef4444" stop-opacity="0.3"/>
+                </linearGradient>
+
+                <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="4" result="blur" />
+                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                </filter>
+            </defs>
+
+            <!-- CONNECTOR FLOW PATHS (Curved Animated SVG Paths) -->
+            <!-- Stage 1 -> Stage 2 -->
+            <path class="flow-line flow-db" d="M 230 50 C 300 50, 300 160, 380 160" stroke="#3b82f6" stroke-width="2" fill="none" stroke-dasharray="4,4" opacity="0.75"/>
+            <path class="flow-line flow-db" d="M 230 110 C 300 110, 300 160, 380 160" stroke="#3b82f6" stroke-width="2" fill="none" stroke-dasharray="4,4" opacity="0.75"/>
+            <path class="flow-line flow-files" d="M 230 170 C 300 170, 300 170, 380 170" stroke="#f59e0b" stroke-width="2" fill="none" stroke-dasharray="4,4" opacity="0.75"/>
+            <path class="flow-line flow-files" d="M 230 230 C 300 230, 300 180, 380 180" stroke="#f59e0b" stroke-width="2" fill="none" stroke-dasharray="4,4" opacity="0.75"/>
+            <path class="flow-line flow-files" d="M 230 290 C 300 290, 300 180, 380 180" stroke="#06b6d4" stroke-width="2" fill="none" stroke-dasharray="4,4" opacity="0.75"/>
+
+            <!-- Stage 2 -> Stage 3 (Air-Gapped to Indian PII Engine) -->
+            <path class="flow-line" d="M 490 170 L 570 170" stroke="#10b981" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+
+            <!-- Stage 3 -> Stage 4 (PII Engine to Governance & Statutory Dual-Track) -->
+            <path class="flow-line flow-gov" d="M 700 140 C 760 140, 760 80, 830 80" stroke="#a855f7" stroke-width="2" fill="none" stroke-dasharray="4,4" opacity="0.8"/>
+            <path class="flow-line flow-gov" d="M 700 170 C 760 170, 760 170, 830 170" stroke="#10b981" stroke-width="2" fill="none" stroke-dasharray="4,4" opacity="0.8"/>
+            <path class="flow-line flow-gov" d="M 700 200 C 760 200, 760 260, 830 260" stroke="#ef4444" stroke-width="2" fill="none" stroke-dasharray="4,4" opacity="0.8"/>
+
+            <!-- Stage 4 -> Stage 5 (Trust & SHA-256 Merkle Ledger) -->
+            <path class="flow-line" d="M 970 80 C 1010 80, 1010 160, 1040 160" stroke="#3b82f6" stroke-width="2" fill="none" opacity="0.7"/>
+            <path class="flow-line" d="M 970 170 L 1040 170" stroke="#10b981" stroke-width="2" fill="none" opacity="0.7"/>
+            <path class="flow-line" d="M 970 260 C 1010 260, 1010 180, 1040 180" stroke="#ef4444" stroke-width="2" fill="none" opacity="0.7"/>
+
+            <!-- COLUMN 1: CONNECTORS & SOURCES -->
+            <!-- Claims DB Node -->
+            <g class="graph-node" data-node="CLAIMS_DB" style="cursor: pointer;">
+                <rect x="20" y="25" width="210" height="50" rx="8" fill="url(#gBlue)" stroke="#3b82f6" stroke-width="1.5"/>
+                <circle cx="40" cy="50" r="10" fill="#3b82f6" fill-opacity="0.3"/>
+                <text x="40" y="54" font-size="11" text-anchor="middle" fill="#60a5fa">&#128450;</text>
+                <text x="60" y="44" fill="#ffffff" font-size="12" font-weight="700">Claims Database</text>
+                <text x="60" y="60" fill="#94a3b8" font-size="10">claims &bull; policyholders &bull; med_hist</text>
+            </g>
+
+            <!-- Policy Admin DB Node -->
+            <g class="graph-node" data-node="POLICY_ADMIN_DB" style="cursor: pointer;">
+                <rect x="20" y="85" width="210" height="50" rx="8" fill="url(#gBlue)" stroke="#3b82f6" stroke-width="1.5"/>
+                <circle cx="40" cy="110" r="10" fill="#3b82f6" fill-opacity="0.3"/>
+                <text x="40" y="114" font-size="11" text-anchor="middle" fill="#60a5fa">&#128737;</text>
+                <text x="60" y="104" fill="#ffffff" font-size="12" font-weight="700">Policy Administration DB</text>
+                <text x="60" y="120" fill="#94a3b8" font-size="10">customers &bull; policies &bull; nominees</text>
+            </g>
+
+            <!-- Excel Files Node -->
+            <g class="graph-node" data-node="EXCEL_FILES" style="cursor: pointer;">
+                <rect x="20" y="145" width="210" height="50" rx="8" fill="url(#gAmber)" stroke="#f59e0b" stroke-width="1.5"/>
+                <circle cx="40" cy="170" r="10" fill="#f59e0b" fill-opacity="0.3"/>
+                <text x="40" y="174" font-size="11" text-anchor="middle" fill="#fbbf24">&#128202;</text>
+                <text x="60" y="164" fill="#ffffff" font-size="12" font-weight="700">Excel Files & Spreadsheets</text>
+                <text x="60" y="180" fill="#94a3b8" font-size="10">agent_payouts &bull; tpa_net &bull; leads</text>
+            </g>
+
+            <!-- PDFs & Reports Node -->
+            <g class="graph-node" data-node="PDFS" style="cursor: pointer;">
+                <rect x="20" y="205" width="210" height="50" rx="8" fill="url(#gRed)" stroke="#ef4444" stroke-width="1.5"/>
+                <circle cx="40" cy="230" r="10" fill="#ef4444" fill-opacity="0.3"/>
+                <text x="40" y="234" font-size="11" text-anchor="middle" fill="#f87171">&#128196;</text>
+                <text x="60" y="224" fill="#ffffff" font-size="12" font-weight="700">PDFs & Diagnostic Reports</text>
+                <text x="60" y="240" fill="#94a3b8" font-size="10">blood_panels &bull; discharge &bull; kyc</text>
+            </g>
+
+            <!-- Cloud Storage & Docs Node -->
+            <g class="graph-node" data-node="CLOUD_STORAGE" style="cursor: pointer;">
+                <rect x="20" y="265" width="210" height="50" rx="8" fill="url(#gPurple)" stroke="#06b6d4" stroke-width="1.5"/>
+                <circle cx="40" cy="290" r="10" fill="#06b6d4" fill-opacity="0.3"/>
+                <text x="40" y="294" font-size="11" text-anchor="middle" fill="#38bdf8">&#9729;</text>
+                <text x="60" y="284" fill="#ffffff" font-size="12" font-weight="700">Cloud Storage & Docs</text>
+                <text x="60" y="300" fill="#94a3b8" font-size="10">s3://vault &bull; gcs://claims &bull; .docx</text>
+            </g>
+
+            <!-- COLUMN 2: AIR-GAPPED ISOLATION PIPELINE -->
+            <g class="graph-node" data-node="AIR_GAPPED_PIPELINE" style="cursor: pointer;">
+                <rect x="370" y="105" width="130" height="130" rx="12" fill="rgba(15, 23, 42, 0.95)" stroke="#10b981" stroke-width="2" filter="url(#glow)"/>
+                <circle cx="435" cy="140" r="18" fill="#10b981" fill-opacity="0.2"/>
+                <text x="435" y="146" font-size="18" text-anchor="middle" fill="#10b981">&#128274;</text>
+                <text x="435" y="174" fill="#ffffff" font-size="11" font-weight="800" text-anchor="middle">AIR-GAPPED</text>
+                <text x="435" y="190" fill="#34d399" font-size="10" font-weight="700" text-anchor="middle">INGESTION</text>
+                <text x="435" y="210" fill="#94a3b8" font-size="9" text-anchor="middle">0 Cloud Egress</text>
+                <text x="435" y="222" fill="#94a3b8" font-size="8" text-anchor="middle">CSV Injection Safe</text>
+            </g>
+
+            <!-- COLUMN 3: DETERMINISTIC INDIAN PII ENGINE -->
+            <g class="graph-node" data-node="PII_ENGINE" style="cursor: pointer;">
+                <rect x="560" y="90" width="150" height="160" rx="12" fill="rgba(30, 27, 75, 0.95)" stroke="#6366f1" stroke-width="2" filter="url(#glow)"/>
+                <circle cx="635" cy="125" r="18" fill="#6366f1" fill-opacity="0.2"/>
+                <text x="635" y="131" font-size="16" text-anchor="middle" fill="#a5b4fc">&#9881;</text>
+                <text x="635" y="158" fill="#ffffff" font-size="12" font-weight="800" text-anchor="middle">INDIAN PII ENGINE</text>
+                <text x="635" y="176" fill="#f87171" font-size="9" font-weight="700" text-anchor="middle">&bull; Verhoeff Aadhaar D5</text>
+                <text x="635" y="192" fill="#fbbf24" font-size="9" font-weight="700" text-anchor="middle">&bull; PAN 4th Char P Entity</text>
+                <text x="635" y="208" fill="#fb7185" font-size="9" font-weight="700" text-anchor="middle">&bull; Sec 2(t) Clinical Health</text>
+                <text x="635" y="224" fill="#818cf8" font-size="9" font-weight="700" text-anchor="middle">&bull; Phone (+91) & UPI VPA</text>
+                <text x="635" y="238" fill="#34d399" font-size="8" text-anchor="middle">Zero False Positives</text>
+            </g>
+
+            <!-- COLUMN 4: GOVERNANCE & STATUTORY DUAL-TRACK RESOLVER -->
+            <!-- RoPA Node -->
+            <g class="graph-node" data-node="ROPA_REGISTER" style="cursor: pointer;">
+                <rect x="820" y="55" width="160" height="55" rx="8" fill="url(#gPurple)" stroke="#a855f7" stroke-width="1.5"/>
+                <text x="835" y="76" fill="#ffffff" font-size="12" font-weight="700">Section 8(4) RoPA</text>
+                <text x="835" y="94" fill="#cbd5e1" font-size="10">Auto Purpose Binding</text>
+                <circle cx="960" cy="82" r="8" fill="#a855f7" fill-opacity="0.3"/>
+                <text x="960" y="86" font-size="10" text-anchor="middle" fill="#e9d5ff">&#10003;</text>
+            </g>
+
+            <!-- Multilingual Consent Node -->
+            <g class="graph-node" data-node="CONSENT_GATEWAY" style="cursor: pointer;">
+                <rect x="820" y="145" width="160" height="55" rx="8" fill="url(#gGreen)" stroke="#10b981" stroke-width="1.5"/>
+                <text x="835" y="166" fill="#ffffff" font-size="12" font-weight="700">Multilingual Consent</text>
+                <text x="835" y="184" fill="#cbd5e1" font-size="10">8 Indian Languages (Sec 5)</text>
+                <circle cx="960" cy="172" r="8" fill="#10b981" fill-opacity="0.3"/>
+                <text x="960" y="176" font-size="10" text-anchor="middle" fill="#a7f3d0">&#10003;</text>
+            </g>
+
+            <!-- Dual-Track Tax Collision Shield -->
+            <g class="graph-node" data-node="COLLISION_RESOLVER" style="cursor: pointer;">
+                <rect x="820" y="235" width="160" height="55" rx="8" fill="url(#gRed)" stroke="#ef4444" stroke-width="1.5"/>
+                <text x="835" y="254" fill="#ffffff" font-size="11" font-weight="800">CGST Sec 36 Tax Lock</text>
+                <text x="835" y="272" fill="#cbd5e1" font-size="9">72-Mo Lock vs DPBI Erasure</text>
+                <circle cx="960" cy="262" r="8" fill="#ef4444" fill-opacity="0.3"/>
+                <text x="960" y="266" font-size="10" text-anchor="middle" fill="#fecaca">&#9878;</text>
+            </g>
+
+            <!-- COLUMN 5: CRYPTOGRAPHIC MERKLE AUDIT LEDGER -->
+            <g class="graph-node" data-node="MERKLE_AUDIT" style="cursor: pointer;">
+                <rect x="1030" y="125" width="75" height="90" rx="8" fill="rgba(15, 23, 42, 0.95)" stroke="#3b82f6" stroke-width="1.5"/>
+                <circle cx="1067" cy="150" r="12" fill="#3b82f6" fill-opacity="0.2"/>
+                <text x="1067" y="155" font-size="12" text-anchor="middle" fill="#60a5fa">&#128279;</text>
+                <text x="1067" y="178" fill="#ffffff" font-size="10" font-weight="700" text-anchor="middle">SHA-256</text>
+                <text x="1067" y="192" fill="#34d399" font-size="8" font-weight="700" text-anchor="middle">VERIFIED</text>
+                <text x="1067" y="204" fill="#94a3b8" font-size="7" text-anchor="middle">Untampered</text>
+            </g>
+        </svg>
+    </div>
+
+    <!-- Interactive Node Details Box (Dynamic on Node Click) -->
+    <div id="nodeDetailBox" style="margin-top: 14px; padding: 12px 18px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <div id="nodeIconBox" style="width: 36px; height: 36px; border-radius: 8px; background: rgba(99,102,241,0.2); display: flex; align-items: center; justify-content: center; font-size: 18px;">
+                &#128450;
             </div>
-            <span style="color: #fbbf24; font-size: 10px; font-weight: 700;">HIGH RISK</span>
+            <div>
+                <h4 id="nodeTitle" style="font-size: 14px; font-weight: 700; color: #ffffff; margin: 0;">Claims Database (Enterprise Connector)</h4>
+                <p id="nodeDesc" style="font-size: 12px; color: var(--text-muted); margin: 2px 0 0 0;">
+                    3 core tables (<code>claims</code>, <code>policyholders</code>, <code>medical_histories</code>) with 1,840 records & 420 PII findings. Air-gapped on-premise connection.
+                </p>
+            </div>
         </div>
-        <div style="margin-top: 14px; font-size: 12px; color: var(--text-muted); display: flex; justify-content: space-between;">
-            <span>420 PII findings</span>
-            <span style="color: var(--success);">&#10003; PAN Entity Filter</span>
+        <div style="display: flex; gap: 8px; align-items: center;">
+            <span id="nodeBadgeRisk" class="badge" style="background: rgba(239,68,68,0.15); color: #f87171; font-size: 11px; font-weight: 700;">CRITICAL HEALTH RISK</span>
+            <button id="btnNodeInspect" class="btn-secondary" style="padding: 6px 12px; font-size: 12px; border-radius: 6px; cursor: pointer;">Inspect Schema</button>
+            <button id="btnNodeScan" class="btn-primary" style="padding: 6px 14px; font-size: 12px; border-radius: 6px; cursor: pointer;">Scan Node</button>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- 2. HIERARCHICAL CONNECTOR TREE EXPLORER (The SME Universe) -->
+<!-- ========================================== -->
+<div class="card p-0 mb-4" style="overflow: hidden; border: 1px solid var(--border-color);">
+    <div style="padding: 16px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; background: rgba(0,0,0,0.2);">
+        <div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="badge" style="background: rgba(99, 102, 241, 0.2); color: #a5b4fc; font-size: 10px; font-weight: 700;">HIERARCHICAL CATALOG</span>
+                <h3 style="font-size: 15px; font-weight: 700; color: #ffffff; margin: 0;">Data Silo & Schema Explorer Tree</h3>
+            </div>
+            <p style="font-size: 12px; color: var(--text-muted); margin: 4px 0 0 0;">
+                Click any table, spreadsheet, or document to inspect its full column schema, sample masked rows, and Section 8 RoPA bindings.
+            </p>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+            <input type="text" id="treeSearchInput" placeholder="Filter tables or files..." style="background: rgba(255,255,255,0.06); border: 1px solid var(--border-color); color: var(--text-main); padding: 6px 12px; border-radius: 6px; font-size: 12px; width: 220px;">
+            <button id="btnExpandAllTree" class="btn-secondary" style="padding: 6px 10px; font-size: 11px; font-weight: 600; border-radius: 6px; cursor: pointer;">Expand All</button>
+            <button id="btnCollapseAllTree" class="btn-secondary" style="padding: 6px 10px; font-size: 11px; font-weight: 600; border-radius: 6px; cursor: pointer;">Collapse All</button>
         </div>
     </div>
 
-    <div class="card p-4" style="border-top: 3px solid #10b981;">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-            <div>
-                <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; font-size: 10px; font-weight: 700;">BILLING SYSTEM</span>
-                <h3 style="font-size: 14px; margin-top: 8px; font-weight: 600;">Tally Invoices & Billing</h3>
-                <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;"><code>invoices_billing.csv</code></p>
-            </div>
-            <span style="color: #34d399; font-size: 10px; font-weight: 700;">STATUTORY TAX</span>
+    <!-- Tree View Container -->
+    <div style="padding: 20px; background: rgba(10, 15, 29, 0.6); font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 13px;">
+        <!-- ROOT NODE -->
+        <div class="tree-root" style="color: #60a5fa; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+            <span>&#127973;</span> Aarogya Diagnostic Center Data Silo Universe (<code>TENANT-AAROGYA-01</code>)
+            <span style="font-size: 11px; color: var(--text-muted); font-weight: 400;">&bull; 7 Integrated Connectors</span>
         </div>
-        <div style="margin-top: 14px; font-size: 12px; color: var(--text-muted); display: flex; justify-content: space-between;">
-            <span>160 PII findings</span>
-            <span style="color: #34d399;">CGST Sec 36 Lock</span>
+
+        <div class="tree-branches" style="padding-left: 14px; border-left: 2px dashed rgba(255,255,255,0.15);">
+            <!-- BRANCH 1: Claims Database -->
+            <div class="tree-node mb-3" data-category="DATABASE">
+                <div class="tree-node-header" style="display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: rgba(30, 58, 138, 0.2); border-radius: 6px; cursor: pointer;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span class="tree-arrow" style="color: #60a5fa; transition: transform 0.2s;">&#9660;</span>
+                        <span style="color: #3b82f6;">&#128450;</span>
+                        <strong style="color: #ffffff;">Claims Database</strong>
+                        <span style="font-size: 10px; background: rgba(59, 130, 246, 0.2); color: #93c5fd; padding: 1px 6px; border-radius: 4px;">RDBMS (PostgreSQL)</span>
+                    </div>
+                    <div style="display: flex; gap: 10px; font-size: 11px;">
+                        <span style="color: var(--text-muted);">1,840 records</span>
+                        <span style="color: #f87171; font-weight: 700;">420 PII tokens</span>
+                        <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: #f87171; font-size: 10px;">CRITICAL RISK</span>
+                    </div>
+                </div>
+                <div class="tree-children" style="padding-left: 24px; margin-top: 6px; display: flex; flex-direction: column; gap: 6px;">
+                    <div class="tree-leaf" onclick="inspectTable('tbl-claims')" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 2px solid #3b82f6; cursor: pointer;">
+                        <div>
+                            <span style="color: var(--text-muted);">├── </span>
+                            <strong style="color: #93c5fd;">claims</strong>
+                            <span style="font-size: 11px; color: var(--text-muted); margin-left: 8px;">(claim_id, policy_no, patient_name, claim_amount, diagnosis_code, aadhaar_token)</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <span style="font-size: 11px; color: #fbbf24;">180 PII</span>
+                            <span class="badge" style="background: rgba(225, 29, 72, 0.15); color: #fb7185; font-size: 10px;">Health Sec 2(t)</span>
+                            <button class="btn-view-schema" style="background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); font-size: 10px; padding: 2px 8px; border-radius: 4px;">View Schema &rarr;</button>
+                        </div>
+                    </div>
+                    <div class="tree-leaf" onclick="inspectTable('tbl-policyholders')" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 2px solid #3b82f6; cursor: pointer;">
+                        <div>
+                            <span style="color: var(--text-muted);">├── </span>
+                            <strong style="color: #93c5fd;">policyholders</strong>
+                            <span style="font-size: 11px; color: var(--text-muted); margin-left: 8px;">(holder_id, full_name, aadhaar_number, mobile_number, email, dob, address)</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <span style="font-size: 11px; color: #f87171;">150 PII</span>
+                            <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: #f87171; font-size: 10px;">Aadhaar (Verhoeff)</span>
+                            <button class="btn-view-schema" style="background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); font-size: 10px; padding: 2px 8px; border-radius: 4px;">View Schema &rarr;</button>
+                        </div>
+                    </div>
+                    <div class="tree-leaf" onclick="inspectTable('tbl-medical-histories')" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 2px solid #ef4444; cursor: pointer;">
+                        <div>
+                            <span style="color: var(--text-muted);">└── </span>
+                            <strong style="color: #f87171;">medical_histories</strong>
+                            <span style="font-size: 11px; color: var(--text-muted); margin-left: 8px;">(history_id, patient_aadhaar, primary_diagnosis, prescriptions, biometrics)</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <span style="font-size: 11px; color: #f87171;">90 PII</span>
+                            <span class="badge" style="background: rgba(225, 29, 72, 0.2); color: #fb7185; font-size: 10px;">Critical Clinical</span>
+                            <button class="btn-view-schema" style="background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); font-size: 10px; padding: 2px 8px; border-radius: 4px;">View Schema &rarr;</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BRANCH 2: Policy Administration Database -->
+            <div class="tree-node mb-3" data-category="DATABASE">
+                <div class="tree-node-header" style="display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: rgba(79, 70, 229, 0.2); border-radius: 6px; cursor: pointer;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span class="tree-arrow" style="color: #a5b4fc; transition: transform 0.2s;">&#9660;</span>
+                        <span style="color: #6366f1;">&#128737;</span>
+                        <strong style="color: #ffffff;">Policy Administration Database</strong>
+                        <span style="font-size: 10px; background: rgba(99, 102, 241, 0.2); color: #c7d2fe; padding: 1px 6px; border-radius: 4px;">Core RDBMS (Oracle/SQLite)</span>
+                    </div>
+                    <div style="display: flex; gap: 10px; font-size: 11px;">
+                        <span style="color: var(--text-muted);">2,650 records</span>
+                        <span style="color: #fbbf24; font-weight: 700;">310 PII tokens</span>
+                        <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; font-size: 10px;">HIGH RISK</span>
+                    </div>
+                </div>
+                <div class="tree-children" style="padding-left: 24px; margin-top: 6px; display: flex; flex-direction: column; gap: 6px;">
+                    <div class="tree-leaf" onclick="inspectTable('tbl-customers')" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 2px solid #f59e0b; cursor: pointer;">
+                        <div>
+                            <span style="color: var(--text-muted);">├── </span>
+                            <strong style="color: #fde68a;">customers</strong>
+                            <span style="font-size: 11px; color: var(--text-muted); margin-left: 8px;">(customer_id, full_name, pan_number, kyc_status, mobile, bank_account, upi_id)</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <span style="font-size: 11px; color: #fbbf24;">160 PII</span>
+                            <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; font-size: 10px;">PAN & KYC</span>
+                            <button class="btn-view-schema" style="background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); font-size: 10px; padding: 2px 8px; border-radius: 4px;">View Schema &rarr;</button>
+                        </div>
+                    </div>
+                    <div class="tree-leaf" onclick="inspectTable('tbl-policies')" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 2px solid #6366f1; cursor: pointer;">
+                        <div>
+                            <span style="color: var(--text-muted);">├── </span>
+                            <strong style="color: #c7d2fe;">policies</strong>
+                            <span style="font-size: 11px; color: var(--text-muted); margin-left: 8px;">(policy_id, plan_code, sum_insured, annual_premium, issue_date, status)</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <span style="font-size: 11px; color: var(--text-muted);">50 PII</span>
+                            <span class="badge" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa; font-size: 10px;">Financial Insurance</span>
+                            <button class="btn-view-schema" style="background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); font-size: 10px; padding: 2px 8px; border-radius: 4px;">View Schema &rarr;</button>
+                        </div>
+                    </div>
+                    <div class="tree-leaf" onclick="inspectTable('tbl-nominees')" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 2px solid #ef4444; cursor: pointer;">
+                        <div>
+                            <span style="color: var(--text-muted);">└── </span>
+                            <strong style="color: #f87171;">nominees</strong>
+                            <span style="font-size: 11px; color: var(--text-muted); margin-left: 8px;">(nominee_id, policy_id, nominee_name, relationship, aadhaar_token, nominee_dob)</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <span style="font-size: 11px; color: #f87171;">100 PII</span>
+                            <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: #f87171; font-size: 10px;">Minor / Family Aadhaar</span>
+                            <button class="btn-view-schema" style="background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); font-size: 10px; padding: 2px 8px; border-radius: 4px;">View Schema &rarr;</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BRANCH 3: Excel Files -->
+            <div class="tree-node mb-3" data-category="FILES">
+                <div class="tree-node-header" style="display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: rgba(217, 119, 6, 0.2); border-radius: 6px; cursor: pointer;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span class="tree-arrow" style="color: #fbbf24; transition: transform 0.2s;">&#9660;</span>
+                        <span style="color: #f59e0b;">&#128202;</span>
+                        <strong style="color: #ffffff;">Excel files</strong>
+                        <span style="font-size: 10px; background: rgba(245, 158, 11, 0.2); color: #fde68a; padding: 1px 6px; border-radius: 4px;">Spreadsheets (.xlsx / .csv)</span>
+                    </div>
+                    <div style="display: flex; gap: 10px; font-size: 11px;">
+                        <span style="color: var(--text-muted);">780 records</span>
+                        <span style="color: #fbbf24; font-weight: 700;">240 PII tokens</span>
+                        <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; font-size: 10px;">MEDIUM RISK</span>
+                    </div>
+                </div>
+                <div class="tree-children" style="padding-left: 24px; margin-top: 6px; display: flex; flex-direction: column; gap: 6px;">
+                    <div class="tree-leaf" onclick="inspectTable('file-agent-commission')" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 2px solid #10b981; cursor: pointer;">
+                        <div>
+                            <span style="color: var(--text-muted);">├── </span>
+                            <strong style="color: #86efac;">agent_commission_tracker.xlsx</strong>
+                            <span style="font-size: 11px; color: var(--text-muted); margin-left: 8px;">Agent Payouts, PAN Number, TDS 194H (CGST Locked)</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <span style="font-size: 11px; color: #10b981;">95 PII</span>
+                            <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; font-size: 10px;">Tax Lock</span>
+                            <button class="btn-view-schema" style="background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); font-size: 10px; padding: 2px 8px; border-radius: 4px;">View Schema &rarr;</button>
+                        </div>
+                    </div>
+                    <div class="tree-leaf" onclick="inspectTable('file-tpa-network')" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 2px solid #f59e0b; cursor: pointer;">
+                        <div>
+                            <span style="color: var(--text-muted);">├── </span>
+                            <strong style="color: #fde68a;">tpa_network_hospitals.xlsx</strong>
+                            <span style="font-size: 11px; color: var(--text-muted); margin-left: 8px;">Cashless hospital tie-ups, doctor SPOC phone contacts</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <span style="font-size: 11px; color: var(--text-muted);">45 PII</span>
+                            <span class="badge" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa; font-size: 10px;">Commercial SPOC</span>
+                            <button class="btn-view-schema" style="background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); font-size: 10px; padding: 2px 8px; border-radius: 4px;">View Schema &rarr;</button>
+                        </div>
+                    </div>
+                    <div class="tree-leaf" onclick="inspectTable('file-customer-leads')" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 2px solid #3b82f6; cursor: pointer;">
+                        <div>
+                            <span style="color: var(--text-muted);">└── </span>
+                            <strong style="color: #93c5fd;">customer_leads_tracker.csv</strong>
+                            <span style="font-size: 11px; color: var(--text-muted); margin-left: 8px;">Walk-in checkup inquiries, phone contacts, lead follow-ups</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <span style="font-size: 11px; color: #fbbf24;">100 PII</span>
+                            <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; font-size: 10px;">Phone Contacts</span>
+                            <button class="btn-view-schema" style="background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); font-size: 10px; padding: 2px 8px; border-radius: 4px;">View Schema &rarr;</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BRANCH 4: PDFs -->
+            <div class="tree-node mb-3" data-category="DOCUMENTS">
+                <div class="tree-node-header" style="display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: rgba(185, 28, 28, 0.2); border-radius: 6px; cursor: pointer;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span class="tree-arrow" style="color: #f87171; transition: transform 0.2s;">&#9660;</span>
+                        <span style="color: #ef4444;">&#128196;</span>
+                        <strong style="color: #ffffff;">PDFs</strong>
+                        <span style="font-size: 10px; background: rgba(239, 68, 68, 0.2); color: #fca5a5; padding: 1px 6px; border-radius: 4px;">Clinical Documents & Scans</span>
+                    </div>
+                    <div style="display: flex; gap: 10px; font-size: 11px;">
+                        <span style="color: var(--text-muted);">520 records</span>
+                        <span style="color: #f87171; font-weight: 700;">180 PII tokens</span>
+                        <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: #f87171; font-size: 10px;">CRITICAL RISK</span>
+                    </div>
+                </div>
+                <div class="tree-children" style="padding-left: 24px; margin-top: 6px; display: flex; flex-direction: column; gap: 6px;">
+                    <div class="tree-leaf" onclick="inspectTable('file-blood-report')" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 2px solid #ef4444; cursor: pointer;">
+                        <div>
+                            <span style="color: var(--text-muted);">├── </span>
+                            <strong style="color: #fca5a5;">blood_investigation_report.pdf</strong>
+                            <span style="font-size: 11px; color: var(--text-muted); margin-left: 8px;">Mindray Hematology, HbA1c, Fasting Blood Sugar, Aadhaar</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <span style="font-size: 11px; color: #f87171;">75 PII</span>
+                            <span class="badge" style="background: rgba(225, 29, 72, 0.2); color: #fb7185; font-size: 10px;">Health Sec 2(t)</span>
+                            <button class="btn-view-schema" style="background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); font-size: 10px; padding: 2px 8px; border-radius: 4px;">View Schema &rarr;</button>
+                        </div>
+                    </div>
+                    <div class="tree-leaf" onclick="inspectTable('file-discharge-summary')" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 2px solid #ef4444; cursor: pointer;">
+                        <div>
+                            <span style="color: var(--text-muted);">├── </span>
+                            <strong style="color: #fca5a5;">claim_discharge_summary.pdf</strong>
+                            <span style="font-size: 11px; color: var(--text-muted); margin-left: 8px;">Laparoscopic Cholecystectomy, ICD-10 K80.20 diagnosis</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <span style="font-size: 11px; color: #f87171;">60 PII</span>
+                            <span class="badge" style="background: rgba(225, 29, 72, 0.2); color: #fb7185; font-size: 10px;">Hospitalization</span>
+                            <button class="btn-view-schema" style="background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); font-size: 10px; padding: 2px 8px; border-radius: 4px;">View Schema &rarr;</button>
+                        </div>
+                    </div>
+                    <div class="tree-leaf" onclick="inspectTable('file-kyc-proofs')" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 2px solid #f59e0b; cursor: pointer;">
+                        <div>
+                            <span style="color: var(--text-muted);">└── </span>
+                            <strong style="color: #fde68a;">kyc_identity_proofs.pdf</strong>
+                            <span style="font-size: 11px; color: var(--text-muted); margin-left: 8px;">Scanned Aadhaar & PAN document proofs, address history</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <span style="font-size: 11px; color: #fbbf24;">45 PII</span>
+                            <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; font-size: 10px;">Aadhaar (D5 Proof)</span>
+                            <button class="btn-view-schema" style="background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); font-size: 10px; padding: 2px 8px; border-radius: 4px;">View Schema &rarr;</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BRANCH 5: Documents -->
+            <div class="tree-node mb-3" data-category="DOCUMENTS">
+                <div class="tree-node-header" style="display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: rgba(109, 40, 217, 0.2); border-radius: 6px; cursor: pointer;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span class="tree-arrow" style="color: #c084fc; transition: transform 0.2s;">&#9660;</span>
+                        <span style="color: #8b5cf6;">&#128196;</span>
+                        <strong style="color: #ffffff;">Documents</strong>
+                        <span style="font-size: 10px; background: rgba(139, 92, 246, 0.2); color: #ddd6fe; padding: 1px 6px; border-radius: 4px;">Clinical Word Notes (.docx / .doc)</span>
+                    </div>
+                    <div style="display: flex; gap: 10px; font-size: 11px;">
+                        <span style="color: var(--text-muted);">340 records</span>
+                        <span style="color: #fbbf24; font-weight: 700;">95 PII tokens</span>
+                        <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; font-size: 10px;">HIGH RISK</span>
+                    </div>
+                </div>
+                <div class="tree-children" style="padding-left: 24px; margin-top: 6px; display: flex; flex-direction: column; gap: 6px;">
+                    <div class="tree-leaf" onclick="inspectTable('file-clinical-notes')" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 2px solid #8b5cf6; cursor: pointer;">
+                        <div>
+                            <span style="color: var(--text-muted);">├── </span>
+                            <strong style="color: #ddd6fe;">clinical_consultation_notes.docx</strong>
+                            <span style="font-size: 11px; color: var(--text-muted); margin-left: 8px;">Doctor OPD consultation notes, dyspnea observations</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <span style="font-size: 11px; color: #fb7185;">40 PII</span>
+                            <span class="badge" style="background: rgba(225, 29, 72, 0.15); color: #fb7185; font-size: 10px;">OPD Health</span>
+                            <button class="btn-view-schema" style="background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); font-size: 10px; padding: 2px 8px; border-radius: 4px;">View Schema &rarr;</button>
+                        </div>
+                    </div>
+                    <div class="tree-leaf" onclick="inspectTable('file-rx-summary')" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 2px solid #8b5cf6; cursor: pointer;">
+                        <div>
+                            <span style="color: var(--text-muted);">├── </span>
+                            <strong style="color: #ddd6fe;">doctor_prescription_summary.docx</strong>
+                            <span style="font-size: 11px; color: var(--text-muted); margin-left: 8px;">Active drug prescriptions, dosage schedules</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <span style="font-size: 11px; color: var(--text-muted);">30 PII</span>
+                            <span class="badge" style="background: rgba(99, 102, 241, 0.15); color: #818cf8; font-size: 10px;">Prescriptions</span>
+                            <button class="btn-view-schema" style="background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); font-size: 10px; padding: 2px 8px; border-radius: 4px;">View Schema &rarr;</button>
+                        </div>
+                    </div>
+                    <div class="tree-leaf" onclick="inspectTable('file-consent-decl')" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 2px solid #10b981; cursor: pointer;">
+                        <div>
+                            <span style="color: var(--text-muted);">└── </span>
+                            <strong style="color: #86efac;">patient_consent_declaration.docx</strong>
+                            <span style="font-size: 11px; color: var(--text-muted); margin-left: 8px;">Executed Section 5 Notice consent records with SHA-256 tokens</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <span style="font-size: 11px; color: #10b981;">25 PII</span>
+                            <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; font-size: 10px;">Section 5 Proof</span>
+                            <button class="btn-view-schema" style="background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); font-size: 10px; padding: 2px 8px; border-radius: 4px;">View Schema &rarr;</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BRANCH 6: Cloud storage -->
+            <div class="tree-node mb-3" data-category="CLOUD">
+                <div class="tree-node-header" style="display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: rgba(8, 145, 178, 0.2); border-radius: 6px; cursor: pointer;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span class="tree-arrow" style="color: #22d3ee; transition: transform 0.2s;">&#9660;</span>
+                        <span style="color: #06b6d4;">&#9729;</span>
+                        <strong style="color: #ffffff;">Cloud storage</strong>
+                        <span style="font-size: 10px; background: rgba(6, 182, 212, 0.2); color: #a5f3fc; padding: 1px 6px; border-radius: 4px;">Object Store (S3 / GCS / Azure)</span>
+                    </div>
+                    <div style="display: flex; gap: 10px; font-size: 11px;">
+                        <span style="color: var(--text-muted);">1,120 records</span>
+                        <span style="color: #818cf8; font-weight: 700;">195 PII tokens</span>
+                        <span class="badge" style="background: rgba(99, 102, 241, 0.15); color: #818cf8; font-size: 10px;">AIR-GAPPED GATEWAY</span>
+                    </div>
+                </div>
+                <div class="tree-children" style="padding-left: 24px; margin-top: 6px; display: flex; flex-direction: column; gap: 6px;">
+                    <div class="tree-leaf" onclick="inspectTable('bucket-s3-vault')" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 2px solid #06b6d4; cursor: pointer;">
+                        <div>
+                            <span style="color: var(--text-muted);">├── </span>
+                            <strong style="color: #67e8f9;">s3://aarogya-clinic-records-vault/</strong>
+                            <span style="font-size: 11px; color: var(--text-muted); margin-left: 8px;">KMS encrypted DICOM imaging studies, chest X-Ray headers</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <span style="font-size: 11px; color: #fb7185;">95 PII</span>
+                            <span class="badge" style="background: rgba(225, 29, 72, 0.15); color: #fb7185; font-size: 10px;">DICOM Health</span>
+                            <button class="btn-view-schema" style="background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); font-size: 10px; padding: 2px 8px; border-radius: 4px;">View Schema &rarr;</button>
+                        </div>
+                    </div>
+                    <div class="tree-leaf" onclick="inspectTable('bucket-gcs-claims')" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 2px solid #10b981; cursor: pointer;">
+                        <div>
+                            <span style="color: var(--text-muted);">├── </span>
+                            <strong style="color: #86efac;">gcs://claims-archive-indiranagar/</strong>
+                            <span style="font-size: 11px; color: var(--text-muted); margin-left: 8px;">72-Month statutory claims & Tally tax invoice archives</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <span style="font-size: 11px; color: #10b981;">65 PII</span>
+                            <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; font-size: 10px;">CGST Sec 36</span>
+                            <button class="btn-view-schema" style="background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); font-size: 10px; padding: 2px 8px; border-radius: 4px;">View Schema &rarr;</button>
+                        </div>
+                    </div>
+                    <div class="tree-leaf" onclick="inspectTable('bucket-azure-scans')" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 2px solid #06b6d4; cursor: pointer;">
+                        <div>
+                            <span style="color: var(--text-muted);">└── </span>
+                            <strong style="color: #67e8f9;">azure://diagnostic-scans-lake/</strong>
+                            <span style="font-size: 11px; color: var(--text-muted); margin-left: 8px;">Multi-slice CT & MRI brain scans with patient metadata</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <span style="font-size: 11px; color: var(--text-muted);">35 PII</span>
+                            <span class="badge" style="background: rgba(99, 102, 241, 0.15); color: #818cf8; font-size: 10px;">Radiology</span>
+                            <button class="btn-view-schema" style="background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); font-size: 10px; padding: 2px 8px; border-radius: 4px;">View Schema &rarr;</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BRANCH 7: WhatsApp & Informal Messaging -->
+            <div class="tree-node mb-1" data-category="INFORMAL">
+                <div class="tree-node-header" style="display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: rgba(220, 38, 38, 0.2); border-radius: 6px; cursor: pointer;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span class="tree-arrow" style="color: #f87171; transition: transform 0.2s;">&#9660;</span>
+                        <span style="color: #ef4444;">&#128172;</span>
+                        <strong style="color: #ffffff;">WhatsApp & Informal Silos</strong>
+                        <span style="font-size: 10px; background: rgba(239, 68, 68, 0.2); color: #fca5a5; padding: 1px 6px; border-radius: 4px;">Reception Chats & Invoices</span>
+                    </div>
+                    <div style="display: flex; gap: 10px; font-size: 11px;">
+                        <span style="color: var(--text-muted);">1,070 records</span>
+                        <span style="color: #f87171; font-weight: 700;">390 PII tokens</span>
+                        <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: #f87171; font-size: 10px;">CRITICAL RISK</span>
+                    </div>
+                </div>
+                <div class="tree-children" style="padding-left: 24px; margin-top: 6px; display: flex; flex-direction: column; gap: 6px;">
+                    <div class="tree-leaf" onclick="inspectTable('file-whatsapp-chat')" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 2px solid #ef4444; cursor: pointer;">
+                        <div>
+                            <span style="color: var(--text-muted);">├── </span>
+                            <strong style="color: #fca5a5;">clinic_reception_chat.txt</strong>
+                            <span style="font-size: 11px; color: var(--text-muted); margin-left: 8px;">Frontdesk WhatsApp transcripts, blood report photo disclosures</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <span style="font-size: 11px; color: #f87171;">230 PII</span>
+                            <span class="badge" style="background: rgba(239, 68, 68, 0.2); color: #f87171; font-size: 10px;">Aadhaar Leak Risk</span>
+                            <button class="btn-view-schema" style="background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); font-size: 10px; padding: 2px 8px; border-radius: 4px;">View Schema &rarr;</button>
+                        </div>
+                    </div>
+                    <div class="tree-leaf" onclick="inspectTable('file-invoices-billing')" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; background: rgba(255,255,255,0.02); border-radius: 4px; border-left: 2px solid #10b981; cursor: pointer;">
+                        <div>
+                            <span style="color: var(--text-muted);">└── </span>
+                            <strong style="color: #86efac;">invoices_billing.csv</strong>
+                            <span style="font-size: 11px; color: var(--text-muted); margin-left: 8px;">Tally Prime accounting register, GST invoices (CGST Sec 36 Lock)</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <span style="font-size: 11px; color: #10b981;">160 PII</span>
+                            <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; font-size: 10px;">CGST Tax Lock</span>
+                            <button class="btn-view-schema" style="background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); font-size: 10px; padding: 2px 8px; border-radius: 4px;">View Schema &rarr;</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- 3. MULTI-CONNECTOR CARDS GRID -->
+<!-- ========================================== -->
+<div class="dashboard-header mb-3" style="align-items: center; justify-content: space-between;">
+    <h3 style="font-size: 16px; font-weight: 700; color: #ffffff; margin: 0;">Connected Enterprise Systems & Informal Gateways</h3>
+    <span style="font-size: 12px; color: var(--text-muted);">7 Active Data Pipelines</span>
+</div>
+
+<div class="metrics-grid mb-4" style="grid-template-columns: repeat(3, 1fr); gap: 16px;">
+    <!-- Card 1: Claims Database -->
+    <div class="card p-4" style="border-top: 3px solid #ef4444; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: #f87171; font-size: 10px; font-weight: 700;">DATABASE RDBMS</span>
+                <span style="color: #ef4444; font-size: 10px; font-weight: 700;">CRITICAL HEALTH</span>
+            </div>
+            <h3 style="font-size: 15px; font-weight: 700; margin: 0; color: #ffffff;">Claims Database</h3>
+            <p style="font-size: 11px; color: var(--text-muted); margin: 4px 0 10px 0;">PostgreSQL air-gapped replica</p>
+            <div style="font-size: 12px; color: var(--text-main); display: flex; flex-direction: column; gap: 4px;">
+                <div>&bull; <code>claims</code> &bull; <code>policyholders</code></div>
+                <div>&bull; <code>medical_histories</code> (Sec 2t Health)</div>
+            </div>
+        </div>
+        <div style="margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 12px; color: #f87171; font-weight: 600;">420 PII tokens</span>
+            <div style="display: flex; gap: 6px;">
+                <button class="btn-secondary" onclick="inspectTable('tbl-claims')" style="padding: 4px 8px; font-size: 11px;">Schema</button>
+                <button class="btn-primary" onclick="triggerScanConnector('CLAIMS_DB')" style="padding: 4px 10px; font-size: 11px;">Scan</button>
+            </div>
         </div>
     </div>
 
-    <div class="card p-4" style="border-top: 3px solid #6366f1;">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-            <div>
-                <span class="badge" style="background: rgba(99, 102, 241, 0.15); color: #818cf8; font-size: 10px; font-weight: 700;">LOCAL STORAGE</span>
-                <h3 style="font-size: 14px; margin-top: 8px; font-weight: 600;">Desktop Reception PC</h3>
-                <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Lab Requisitions & Reports</p>
+    <!-- Card 2: Policy Administration Database -->
+    <div class="card p-4" style="border-top: 3px solid #f59e0b; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; font-size: 10px; font-weight: 700;">CORE ADMIN RDBMS</span>
+                <span style="color: #fbbf24; font-size: 10px; font-weight: 700;">HIGH RISK</span>
             </div>
-            <span style="color: #818cf8; font-size: 10px; font-weight: 700;">ON-PREMISE</span>
+            <h3 style="font-size: 15px; font-weight: 700; margin: 0; color: #ffffff;">Policy Administration DB</h3>
+            <p style="font-size: 11px; color: var(--text-muted); margin: 4px 0 10px 0;">Oracle / SQLite Core Engine</p>
+            <div style="font-size: 12px; color: var(--text-main); display: flex; flex-direction: column; gap: 4px;">
+                <div>&bull; <code>customers</code> (PAN & KYC)</div>
+                <div>&bull; <code>policies</code> &bull; <code>nominees</code> (Minor Aadhaar)</div>
+            </div>
         </div>
-        <div style="margin-top: 14px; font-size: 12px; color: var(--text-muted); display: flex; justify-content: space-between;">
-            <span>Air-Gapped Vault</span>
-            <span style="color: var(--success);">&#10003; 0 Cloud Egress</span>
+        <div style="margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 12px; color: #fbbf24; font-weight: 600;">310 PII tokens</span>
+            <div style="display: flex; gap: 6px;">
+                <button class="btn-secondary" onclick="inspectTable('tbl-customers')" style="padding: 4px 8px; font-size: 11px;">Schema</button>
+                <button class="btn-primary" onclick="triggerScanConnector('POLICY_ADMIN_DB')" style="padding: 4px 10px; font-size: 11px;">Scan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 3: Excel Files -->
+    <div class="card p-4" style="border-top: 3px solid #10b981; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; font-size: 10px; font-weight: 700;">SPREADSHEETS</span>
+                <span style="color: #34d399; font-size: 10px; font-weight: 700;">TAX & LEADS</span>
+            </div>
+            <h3 style="font-size: 15px; font-weight: 700; margin: 0; color: #ffffff;">Excel files</h3>
+            <p style="font-size: 11px; color: var(--text-muted); margin: 4px 0 10px 0;">Corporate & TPA files (.xlsx/.csv)</p>
+            <div style="font-size: 12px; color: var(--text-main); display: flex; flex-direction: column; gap: 4px;">
+                <div>&bull; <code>agent_commission_tracker.xlsx</code></div>
+                <div>&bull; <code>tpa_network_hospitals.xlsx</code> &bull; <code>leads</code></div>
+            </div>
+        </div>
+        <div style="margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 12px; color: #34d399; font-weight: 600;">240 PII tokens</span>
+            <div style="display: flex; gap: 6px;">
+                <button class="btn-secondary" onclick="inspectTable('file-agent-commission')" style="padding: 4px 8px; font-size: 11px;">Schema</button>
+                <button class="btn-primary" onclick="triggerScanConnector('EXCEL_FILES')" style="padding: 4px 10px; font-size: 11px;">Scan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 4: PDFs -->
+    <div class="card p-4" style="border-top: 3px solid #ef4444; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: #f87171; font-size: 10px; font-weight: 700;">PDF DOCUMENTS</span>
+                <span style="color: #ef4444; font-size: 10px; font-weight: 700;">CRITICAL RISK</span>
+            </div>
+            <h3 style="font-size: 15px; font-weight: 700; margin: 0; color: #ffffff;">PDFs</h3>
+            <p style="font-size: 11px; color: var(--text-muted); margin: 4px 0 10px 0;">Diagnostic & KYC PDFs</p>
+            <div style="font-size: 12px; color: var(--text-main); display: flex; flex-direction: column; gap: 4px;">
+                <div>&bull; <code>blood_investigation_report.pdf</code></div>
+                <div>&bull; <code>claim_discharge_summary.pdf</code> &bull; <code>kyc</code></div>
+            </div>
+        </div>
+        <div style="margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 12px; color: #f87171; font-weight: 600;">180 PII tokens</span>
+            <div style="display: flex; gap: 6px;">
+                <button class="btn-secondary" onclick="inspectTable('file-blood-report')" style="padding: 4px 8px; font-size: 11px;">Schema</button>
+                <button class="btn-primary" onclick="triggerScanConnector('PDFS')" style="padding: 4px 10px; font-size: 11px;">Scan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 5: Documents -->
+    <div class="card p-4" style="border-top: 3px solid #8b5cf6; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                <span class="badge" style="background: rgba(139, 92, 246, 0.15); color: #a78bfa; font-size: 10px; font-weight: 700;">OFFICE DOCUMENTS</span>
+                <span style="color: #a78bfa; font-size: 10px; font-weight: 700;">HIGH RISK</span>
+            </div>
+            <h3 style="font-size: 15px; font-weight: 700; margin: 0; color: #ffffff;">Documents</h3>
+            <p style="font-size: 11px; color: var(--text-muted); margin: 4px 0 10px 0;">Doctor Notes & Consent Declarations</p>
+            <div style="font-size: 12px; color: var(--text-main); display: flex; flex-direction: column; gap: 4px;">
+                <div>&bull; <code>clinical_consultation_notes.docx</code></div>
+                <div>&bull; <code>doctor_prescription_summary.docx</code> &bull; <code>consent</code></div>
+            </div>
+        </div>
+        <div style="margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 12px; color: #a78bfa; font-weight: 600;">95 PII tokens</span>
+            <div style="display: flex; gap: 6px;">
+                <button class="btn-secondary" onclick="inspectTable('file-clinical-notes')" style="padding: 4px 8px; font-size: 11px;">Schema</button>
+                <button class="btn-primary" onclick="triggerScanConnector('DOCUMENTS')" style="padding: 4px 10px; font-size: 11px;">Scan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 6: Cloud storage -->
+    <div class="card p-4" style="border-top: 3px solid #06b6d4; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                <span class="badge" style="background: rgba(6, 182, 212, 0.15); color: #67e8f9; font-size: 10px; font-weight: 700;">CLOUD STORAGE</span>
+                <span style="color: #67e8f9; font-size: 10px; font-weight: 700;">AIR-GAPPED</span>
+            </div>
+            <h3 style="font-size: 15px; font-weight: 700; margin: 0; color: #ffffff;">Cloud storage</h3>
+            <p style="font-size: 11px; color: var(--text-muted); margin: 4px 0 10px 0;">S3 & GCS Encrypted Vaults</p>
+            <div style="font-size: 12px; color: var(--text-main); display: flex; flex-direction: column; gap: 4px;">
+                <div>&bull; <code>s3://aarogya-clinic-records-vault</code></div>
+                <div>&bull; <code>gcs://claims-archive-indiranagar</code></div>
+            </div>
+        </div>
+        <div style="margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 12px; color: #67e8f9; font-weight: 600;">195 PII tokens</span>
+            <div style="display: flex; gap: 6px;">
+                <button class="btn-secondary" onclick="inspectTable('bucket-s3-vault')" style="padding: 4px 8px; font-size: 11px;">Schema</button>
+                <button class="btn-primary" onclick="triggerScanConnector('CLOUD_STORAGE')" style="padding: 4px 10px; font-size: 11px;">Scan</button>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- Drag & Drop Upload Zone -->
 <div class="card mb-4 p-4">
-    <div id="siloDropzone" style="border: 2px dashed var(--border-color); border-radius: 8px; padding: 28px; text-align: center; cursor: pointer; transition: all 0.2s ease;">
-        <input type="file" id="siloFileInput" style="display: none;" accept=".txt,.csv,.xlsx">
+    <div id="siloDropzone" style="border: 2px dashed var(--border-color); border-radius: 8px; padding: 26px; text-align: center; cursor: pointer; transition: all 0.2s ease; background: rgba(0,0,0,0.15);">
+        <input type="file" id="siloFileInput" style="display: none;" accept=".txt,.csv,.xlsx,.xml">
         <svg viewBox="0 0 24 24" width="36" height="36" stroke="var(--primary)" stroke-width="1.5" fill="none" style="margin-bottom: 8px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-        <h4 style="font-size: 14px; font-weight: 600; color: var(--text-main);">Drop your informal files here, or <span style="color: var(--primary);">browse</span></h4>
-        <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Supports WhatsApp Chat Exports (.txt), Spreadsheets (.csv, .xlsx) up to 10MB. Protected against CSV Formula Injection.</p>
+        <h4 style="font-size: 14px; font-weight: 600; color: var(--text-main);">Drop your files or database dumps here, or <span style="color: var(--primary);">browse</span></h4>
+        <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Supports WhatsApp Chats (.txt), Spreadsheets (.csv, .xlsx), and Tally ERP XML exports up to 10MB. Protected against CSV Formula Injection.</p>
     </div>
 </div>
 
-<!-- Interactive Findings Table & Radar -->
-<div class="card p-0" style="overflow: hidden;">
+<!-- ========================================== -->
+<!-- 4. INTERACTIVE FINDINGS TABLE -->
+<!-- ========================================== -->
+<div class="card p-0" style="overflow: hidden; border: 1px solid var(--border-color);">
     <!-- Filter Tabs Header -->
-    <div class="table-tabs" style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-        <div style="display: flex; gap: 12px; align-items: center;">
-            <span style="font-size: 13px; font-weight: 700; color: var(--text-main); margin-right: 8px;">Filter Findings:</span>
-            <button class="discovery-filter-tab active" data-filter="ALL" style="background: rgba(255,255,255,0.08); border: 1px solid var(--border-color); color: var(--text-main); padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">All Findings</button>
-            <button class="discovery-filter-tab" data-filter="HEALTH" style="background: transparent; border: 1px solid var(--border-color); color: #fb7185; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">Critical Health</button>
-            <button class="discovery-filter-tab" data-filter="AADHAAR" style="background: transparent; border: 1px solid var(--border-color); color: #f87171; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">Aadhaar & KYC</button>
-            <button class="discovery-filter-tab" data-filter="PAN" style="background: transparent; border: 1px solid var(--border-color); color: #fbbf24; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">PAN Cards</button>
-            <button class="discovery-filter-tab" data-filter="UPI" style="background: transparent; border: 1px solid var(--border-color); color: #818cf8; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">Financial / UPI</button>
-            <button class="discovery-filter-tab" data-filter="PHONE" style="background: transparent; border: 1px solid var(--border-color); color: #60a5fa; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">Contacts</button>
+    <div class="table-tabs" style="padding: 16px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; background: rgba(0,0,0,0.2);">
+        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+            <span style="font-size: 12px; font-weight: 700; color: var(--text-main); margin-right: 4px;">Filter Source:</span>
+            <button class="discovery-filter-tab active" data-filter="ALL" style="background: rgba(255,255,255,0.08); border: 1px solid var(--border-color); color: var(--text-main); padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer;">All Sources</button>
+            <button class="discovery-filter-tab" data-filter="CLAIMS" style="background: transparent; border: 1px solid var(--border-color); color: #60a5fa; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer;">Claims DB</button>
+            <button class="discovery-filter-tab" data-filter="POLICY" style="background: transparent; border: 1px solid var(--border-color); color: #fbbf24; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer;">Policy Admin</button>
+            <button class="discovery-filter-tab" data-filter="SPREADSHEET" style="background: transparent; border: 1px solid var(--border-color); color: #34d399; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer;">Excel Files</button>
+            <button class="discovery-filter-tab" data-filter="PDF" style="background: transparent; border: 1px solid var(--border-color); color: #f87171; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer;">PDFs</button>
+            <button class="discovery-filter-tab" data-filter="DOC" style="background: transparent; border: 1px solid var(--border-color); color: #a78bfa; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer;">Documents</button>
+            <button class="discovery-filter-tab" data-filter="CLOUD" style="background: transparent; border: 1px solid var(--border-color); color: #67e8f9; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer;">Cloud Storage</button>
+            <button class="discovery-filter-tab" data-filter="WHATSAPP" style="background: transparent; border: 1px solid var(--border-color); color: #ef4444; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer;">WhatsApp Chat</button>
         </div>
-        <div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="text" id="findingsSearchInput" placeholder="Search entity, PII value..." style="background: rgba(255,255,255,0.06); border: 1px solid var(--border-color); color: var(--text-main); padding: 5px 12px; border-radius: 6px; font-size: 12px; width: 200px;">
             <span id="findingsCountBadge" class="badge" style="background: rgba(99, 102, 241, 0.2); color: #a5b4fc; padding: 6px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">
-                <%= (typeof findings !== 'undefined' && findings) ? findings.length : 5 %> findings
+                <%= (typeof findings !== 'undefined' && findings) ? findings.length : 21 %> findings
             </span>
         </div>
     </div>
@@ -151,48 +884,50 @@
         <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left;">
             <thead>
                 <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 11px; text-transform: uppercase;">
-                    <th style="padding: 12px 20px; font-weight: 600;">Source Silo</th>
-                    <th style="padding: 12px 20px; font-weight: 600;">Data Principal / Entity</th>
-                    <th style="padding: 12px 20px; font-weight: 600;">PII Type</th>
-                    <th style="padding: 12px 20px; font-weight: 600;">Masked Value</th>
-                    <th style="padding: 12px 20px; font-weight: 600;">Verification Proof</th>
-                    <th style="padding: 12px 20px; font-weight: 600;">Sensitivity</th>
+                    <th style="padding: 12px 18px; font-weight: 600;">Source Connector / Silo</th>
+                    <th style="padding: 12px 18px; font-weight: 600;">Data Principal / Entity</th>
+                    <th style="padding: 12px 18px; font-weight: 600;">PII Type</th>
+                    <th style="padding: 12px 18px; font-weight: 600;">Masked Value</th>
+                    <th style="padding: 12px 18px; font-weight: 600;">Verification Proof</th>
+                    <th style="padding: 12px 18px; font-weight: 600;">Statutory Risk</th>
                 </tr>
             </thead>
             <tbody id="findingsTableBody" style="font-size: 13px;">
                 <% if (typeof findings !== 'undefined' && findings && findings.length > 0) { %>
-                    <% findings.slice(0, 30).forEach(function(f) { %>
-                        <tr style="border-bottom: 1px solid var(--border-color);" data-category="<%= (f.piiType || '').toUpperCase() %>">
-                            <td style="padding: 14px 20px; font-size: 12px; font-weight: 600; color: var(--text-main);"><%= f.siloName || f.source || 'clinic_reception_chat.txt' %></td>
-                            <td style="padding: 14px 20px; font-size: 12px; color: var(--text-muted);"><%= f.entityName || 'Aarogya Patient' %></td>
-                            <td style="padding: 14px 20px;">
-                                <% if (f.piiType === 'AADHAAR') { %>
-                                    <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: #f87171; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 12px;">AADHAAR</span>
-                                <% } else if (f.piiType && f.piiType.includes('PAN')) { %>
-                                    <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 12px;"><%= f.piiType %></span>
-                                <% } else if (f.piiType && (f.piiType.includes('HEALTH') || f.piiType.includes('CLINICAL'))) { %>
-                                    <span class="badge" style="background: rgba(225, 29, 72, 0.15); color: #fb7185; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 12px;">CLINICAL HEALTH</span>
-                                <% } else if (f.piiType === 'UPI') { %>
-                                    <span class="badge" style="background: rgba(99, 102, 241, 0.15); color: #818cf8; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 12px;">FINANCIAL UPI</span>
+                    <% findings.forEach(function(f) { %>
+                        <tr style="border-bottom: 1px solid var(--border-color);" data-category="<%= (f.piiType || '').toUpperCase() %>" data-silo="<%= (f.siloId || f.siloName || '').toUpperCase() %>">
+                            <td style="padding: 12px 18px; font-size: 12px; font-weight: 600; color: var(--text-main);">
+                                <span style="color: #60a5fa;">&#128450;</span> <%= f.siloName || f.source || 'Claims Database' %>
+                            </td>
+                            <td style="padding: 12px 18px; font-size: 12px; color: var(--text-muted);"><%= f.entityName || 'Aarogya Patient' %></td>
+                            <td style="padding: 12px 18px;">
+                                <% const pType = (f.piiType || '').toUpperCase(); %>
+                                <% if (pType === 'AADHAAR') { %>
+                                    <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: #f87171; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px;">AADHAAR</span>
+                                <% } else if (pType.includes('PAN')) { %>
+                                    <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px;">INDIVIDUAL PAN</span>
+                                <% } else if (pType.includes('HEALTH') || pType.includes('CLINICAL') || pType.includes('DIAGNOSTIC')) { %>
+                                    <span class="badge" style="background: rgba(225, 29, 72, 0.15); color: #fb7185; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px;">HEALTH SEC 2(t)</span>
+                                <% } else if (pType === 'UPI_VPA' || pType === 'UPI') { %>
+                                    <span class="badge" style="background: rgba(99, 102, 241, 0.15); color: #818cf8; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px;">FINANCIAL UPI</span>
                                 <% } else { %>
-                                    <span class="badge" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 12px;">CONTACT PHONE</span>
+                                    <span class="badge" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px;">CONTACT PHONE</span>
                                 <% } %>
                             </td>
-                            <td style="padding: 14px 20px; font-family: monospace; font-size: 12px; color: var(--text-main);"><%= f.maskedValue %></td>
-                            <td style="padding: 14px 20px; font-size: 11px; color: var(--success);">&#10003; <%= f.piiType === 'AADHAAR' ? 'Verhoeff D5 Valid' : f.piiType.includes('PAN') ? 'Entity Char P Valid' : 'Lexicon Sec 2(t)' %></td>
-                            <td style="padding: 14px 20px; font-size: 10px; font-weight: 700; text-transform: uppercase; color: <%= f.piiType === 'AADHAAR' || f.piiType.includes('HEALTH') ? '#f87171' : '#fbbf24' %>;">
-                                <%= f.piiType === 'AADHAAR' || f.piiType.includes('HEALTH') ? 'CRITICAL' : 'HIGH' %>
+                            <td style="padding: 12px 18px; font-family: monospace; font-size: 12px; color: var(--text-main);"><%= f.maskedValue %></td>
+                            <td style="padding: 12px 18px; font-size: 11px; color: var(--success);">
+                                &#10003; <%= pType === 'AADHAAR' ? 'Verhoeff D5 Valid' : pType.includes('PAN') ? 'Entity Char P Valid' : pType.includes('HEALTH') ? 'Lexicon Sec 2(t)' : 'E.164 / VPA Valid' %>
+                            </td>
+                            <td style="padding: 12px 18px; font-size: 10px; font-weight: 700; text-transform: uppercase; color: <%= pType === 'AADHAAR' || pType.includes('HEALTH') ? '#f87171' : '#fbbf24' %>;">
+                                <%= pType === 'AADHAAR' || pType.includes('HEALTH') ? 'CRITICAL' : 'HIGH' %>
                             </td>
                         </tr>
                     <% }); %>
                 <% } else { %>
-                    <tr style="border-bottom: 1px solid var(--border-color);" data-category="AADHAAR">
-                        <td style="padding: 14px 20px; font-size: 12px; font-weight: 600; color: var(--text-main);">clinic_reception_chat.txt</td>
-                        <td style="padding: 14px 20px; font-size: 12px; color: var(--text-muted);">Ramesh Sharma</td>
-                        <td style="padding: 14px 20px;"><span class="badge" style="background: rgba(239, 68, 68, 0.15); color: #f87171; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 12px;">AADHAAR</span></td>
-                        <td style="padding: 14px 20px; font-family: monospace; font-size: 12px; color: var(--text-main);">XXXX-XXXX-2345</td>
-                        <td style="padding: 14px 20px; font-size: 11px; color: var(--success);">&#10003; Verhoeff D5 Valid</td>
-                        <td style="padding: 14px 20px; font-size: 10px; font-weight: 700; text-transform: uppercase; color: #f87171;">CRITICAL</td>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td colspan="6" style="padding: 32px; text-align: center; color: var(--text-muted);">
+                            No PII findings detected yet. Click "⚡ Scan All Connectors" to run full discovery across all 7 sources.
+                        </td>
                     </tr>
                 <% } %>
             </tbody>
@@ -200,11 +935,118 @@
     </div>
 
     <!-- Table Footer with Section 8 Action Link -->
-    <div style="padding: 16px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.15);">
-        <span style="font-size: 12px; color: var(--text-muted);">Findings automatically synthesize into Section 8(4) RoPA Register.</span>
+    <div style="padding: 14px 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.15);">
+        <span style="font-size: 12px; color: var(--text-muted);">All findings are mapped directly into Section 8(4) RoPA Register with lawful basis tagging.</span>
         <a href="/inventory/ropa" style="background: rgba(255,255,255,0.06); color: var(--text-main); border: 1px solid var(--border-color); padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 6px;">
-            View Section 8(4) RoPA Register &rarr;
+            Open Section 8(4) RoPA Register &rarr;
         </a>
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- 5. SCHEMA & LIVE RECORDS INSPECTOR MODAL -->
+<!-- ========================================== -->
+<div id="schemaModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center; padding: 20px;">
+    <div class="card p-0" style="width: 100%; max-width: 820px; max-height: 85vh; display: flex; flex-direction: column; background: #0f172a; border: 1px solid var(--border-color); box-shadow: 0 20px 48px rgba(0,0,0,0.8); border-radius: 12px; overflow: hidden;">
+        <!-- Modal Header -->
+        <div style="padding: 18px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3);">
+            <div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span id="modalConnectorBadge" class="badge" style="background: rgba(59, 130, 246, 0.2); color: #93c5fd; font-size: 10px; font-weight: 700;">CLAIMS DATABASE</span>
+                    <h3 id="modalTableTitle" style="font-size: 16px; font-weight: 800; color: #ffffff; margin: 0;">claims (Table Schema & Sample Data)</h3>
+                </div>
+                <p id="modalTableDesc" style="font-size: 12px; color: var(--text-muted); margin: 4px 0 0 0;">Table metadata and masked sample rows.</p>
+            </div>
+            <button onclick="closeSchemaModal()" style="background: transparent; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer;">&times;</button>
+        </div>
+
+        <!-- Tabs -->
+        <div style="padding: 10px 24px; border-bottom: 1px solid var(--border-color); display: flex; gap: 12px; background: rgba(0,0,0,0.15);">
+            <button id="tabBtnSchema" class="btn-schema-tab active" onclick="switchModalTab('schema')" style="background: rgba(255,255,255,0.08); border: 1px solid var(--border-color); color: #ffffff; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">Column Schema & PII Rules</button>
+            <button id="tabBtnRows" class="btn-schema-tab" onclick="switchModalTab('rows')" style="background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">Live Masked Records Sample</button>
+        </div>
+
+        <!-- Modal Body -->
+        <div style="padding: 20px 24px; overflow-y: auto; flex: 1;">
+            <!-- Tab 1: Column Schema Table -->
+            <div id="modalSchemaTab">
+                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 12px;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 11px; text-transform: uppercase;">
+                            <th style="padding: 8px 12px;">Column Name</th>
+                            <th style="padding: 8px 12px;">Data Type</th>
+                            <th style="padding: 8px 12px;">PII Classification</th>
+                            <th style="padding: 8px 12px;">Detection Rule</th>
+                            <th style="padding: 8px 12px;">Sample Value</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modalColumnsBody">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Tab 2: Sample Rows Table -->
+            <div id="modalRowsTab" style="display: none; overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 12px;">
+                    <thead id="modalRowsHead">
+                        <!-- Populated by JavaScript -->
+                    </thead>
+                    <tbody id="modalRowsBody">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div style="padding: 14px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3);">
+            <span style="font-size: 11px; color: var(--text-muted);">&#10003; 100% On-Premise Air-Gapped Simulation</span>
+            <div style="display: flex; gap: 8px;">
+                <button onclick="closeSchemaModal()" class="btn-secondary" style="padding: 6px 14px; font-size: 12px;">Close</button>
+                <button id="btnModalScanTable" class="btn-primary" style="padding: 6px 16px; font-size: 12px;">Scan This Table Now</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- 6. ADD DATA CONNECTOR MODAL -->
+<!-- ========================================== -->
+<div id="newConnectorModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center; padding: 20px;">
+    <div class="card p-0" style="width: 100%; max-width: 560px; background: #0f172a; border: 1px solid var(--border-color); box-shadow: 0 20px 48px rgba(0,0,0,0.8); border-radius: 12px; overflow: hidden;">
+        <div style="padding: 18px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3);">
+            <div>
+                <h3 style="font-size: 16px; font-weight: 800; color: #ffffff; margin: 0;">Connect New Data Source</h3>
+                <p style="font-size: 12px; color: var(--text-muted); margin: 2px 0 0 0;">Add an enterprise database, cloud bucket, or local folder.</p>
+            </div>
+            <button onclick="closeNewConnectorModal()" style="background: transparent; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer;">&times;</button>
+        </div>
+        <form id="newConnectorForm" onsubmit="handleCreateConnector(event)" style="padding: 20px 24px;">
+            <div style="margin-bottom: 14px;">
+                <label style="display: block; font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">CONNECTOR TYPE</label>
+                <select id="connTypeSelect" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); color: #ffffff; padding: 8px 12px; border-radius: 6px; font-size: 13px;">
+                    <option value="SQL_DATABASE">Enterprise SQL Database (PostgreSQL / MySQL / Oracle / SQLite)</option>
+                    <option value="CLOUD_STORAGE">Cloud Storage Bucket (AWS S3 / Google Cloud Storage / Azure Blob)</option>
+                    <option value="FILE_SYSTEM">Local Network Folder / NAS Share (Spreadsheets & Documents)</option>
+                </select>
+            </div>
+            <div style="margin-bottom: 14px;">
+                <label style="display: block; font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">CONNECTOR DISPLAY NAME</label>
+                <input type="text" id="connNameInput" placeholder="e.g., TPA Cashless Settlement Gateway" required style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); color: #ffffff; padding: 8px 12px; border-radius: 6px; font-size: 13px;">
+            </div>
+            <div style="margin-bottom: 14px;">
+                <label style="display: block; font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">CONNECTION URI / FILE PATH</label>
+                <input type="text" id="connUriInput" placeholder="e.g., postgresql://claims-read.internal:5432/claims_db" required style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); color: #ffffff; padding: 8px 12px; border-radius: 6px; font-size: 13px; font-family: monospace;">
+            </div>
+            <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 6px; padding: 10px 14px; margin-bottom: 16px; font-size: 12px; color: #6ee7b7; display: flex; align-items: center; gap: 8px;">
+                <span>✓</span> Guaranteed 100% on-premise execution with Zero External Cloud Egress.
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                <button type="button" onclick="closeNewConnectorModal()" class="btn-secondary" style="padding: 8px 16px; font-size: 12px;">Cancel</button>
+                <button type="submit" class="btn-primary" style="padding: 8px 18px; font-size: 12px;">Register & Test Connection</button>
+            </div>
+        </form>
     </div>
 </div>
 
