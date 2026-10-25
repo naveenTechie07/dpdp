@@ -9,6 +9,7 @@
  * role-based access control, and statutory Form DPBI-IR1 dossier generation.
  */
 
+const crypto = require('crypto');
 const models = require('../models');
 const {
   SME_THREAT_SCENARIOS,
@@ -16,6 +17,13 @@ const {
   compute72HourCountdown,
   sanitizeIncidentText
 } = require('../services/breachRiskCalculator');
+
+const {
+  generateDpbiDossier,
+  generateCitizenAlerts,
+  computeDossierFingerprint,
+  DEFAULT_FIDUCIARY
+} = require('../services/dossierGenerator');
 
 const DEFAULT_TENANT_ID = 'TENANT-AAROGYA-01';
 
@@ -30,12 +38,13 @@ const DEFAULT_INCIDENTS = [
     scenarioType: 'DEVICE_LOSS_UNENCRYPTED',
     severity: 'CRITICAL',
     affectedCount: 250,
-    dataCategories: 'Identity (Aadhaar), Contact (Phone), Clinical Health (Diagnostic Requisitions)',
+    dataCategories: 'Identity (Aadhaar, PAN), Contact (Phone), Clinical Health (Diagnostic Requisitions, Biopsy)',
     containmentActions: JSON.stringify([
       { id: 'ACT-01', text: 'Trigger Google Find My Device remote lock & wipe', done: true, urgent: true },
-      { id: 'ACT-02', text: 'Revoke active WhatsApp Business linked web sessions', done: true, urgent: true },
-      { id: 'ACT-03', text: 'Generate Form DPBI-IR1 72-Hour Intimation Dossier', done: false, urgent: true },
-      { id: 'ACT-04', text: 'Dispatch reassuring plain-language citizen alerts', done: false, urgent: false }
+      { id: 'ACT-02', text: 'Revoke active WhatsApp Business linked web sessions across all endpoints', done: true, urgent: true },
+      { id: 'ACT-03', text: 'Rotate clinic reception WhatsApp OTP & SIM card via telecom provider', done: false, urgent: false },
+      { id: 'ACT-04', text: 'Generate statutory Form DPBI-IR1 72-Hour Intimation Dossier', done: true, urgent: true },
+      { id: 'ACT-05', text: 'Dispatch reassuring plain-language citizen alerts without technical details', done: false, urgent: false }
     ]),
     reportedToDpbi: 0,
     citizenAlertSent: 0,
@@ -59,6 +68,24 @@ const DEFAULT_INCIDENTS = [
     citizenAlertSent: 0,
     discoveredAt: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
     createdAt: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString()
+  }
+];
+
+/**
+ * In-memory simulated citizen alert dispatch log for the Notification Center queue
+ */
+const RECENT_ALERT_DISPATCHES = [
+  {
+    id: 'DISP-2026-901',
+    incidentId: 'INC-2026-9921',
+    incidentTitle: 'Lost Receptionist Smartphone (Indiranagar Metro Station)',
+    channels: ['SMS', 'WhatsApp'],
+    languages: ['EN', 'KN', 'HI'],
+    deliveredCount: 250,
+    status: 'DELIVERED',
+    dispatchedAt: new Date(Date.now() - 2.5 * 60 * 60 * 1000).toISOString(),
+    vulnerabilityConcealed: true,
+    sha256Proof: '7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069'
   }
 ];
 
@@ -113,6 +140,10 @@ async function renderManagementView(req, res) {
     const primaryCritical = enrichedIncidents.find((i) => i.severity === 'CRITICAL' && !i.reportedToDpbi);
     const activeCountdown = primaryCritical ? primaryCritical.countdown : compute72HourCountdown(new Date(Date.now() - 3.75 * 60 * 60 * 1000));
 
+    // Sample alert text preview for modal
+    const sampleIncident = enrichedIncidents[0] || DEFAULT_INCIDENTS[0];
+    const alertPreviews = generateCitizenAlerts(sampleIncident);
+
     res.render('incidents-management', {
       title: 'Incident Management - DPDP_Secure',
       description: 'Track, assess, and respond to data incidents and security breaches under DPDP Rules, 2025 (Rule 7).',
@@ -121,6 +152,7 @@ async function renderManagementView(req, res) {
       incidents: enrichedIncidents,
       scenarios: SME_THREAT_SCENARIOS,
       activeCountdown,
+      alertPreviews,
       stats: {
         totalOpen,
         criticalHigh,
@@ -190,134 +222,42 @@ async function renderDashboardView(req, res) {
 async function renderDossier(req, res) {
   try {
     const incidentId = req.params.id;
-    let incident = await models.getIncidentById(incidentId);
+    const dossier = await generateDpbiDossier(incidentId);
 
-    // Fallback to preset if not found in SQLite
-    if (!incident) {
-      incident = DEFAULT_INCIDENTS.find(i => i.id === incidentId) || DEFAULT_INCIDENTS[0];
-    }
-
-    const discoveredDate = new Date(incident.discoveredAt || Date.now()).toLocaleString('en-IN', {
-      dateStyle: 'full',
-      timeStyle: 'medium',
-      timeZone: 'Asia/Kolkata'
+    res.render('dpbi-dossier-print', {
+      title: `Form DPBI-IR1 - ${dossier.incidentId} | DPDP_Secure`,
+      description: 'Statutory Personal Data Breach Intimation Dossier under Section 8(6) & Rule 7.',
+      path: `/incidents/dossier/${dossier.incidentId}`,
+      breadcrumbs: ['Workspace', 'Incidents', 'Form DPBI-IR1 Dossier'],
+      dossier
     });
-
-    const statutoryDeadline = new Date(new Date(incident.discoveredAt).getTime() + 72 * 60 * 60 * 1000).toLocaleString('en-IN', {
-      dateStyle: 'full',
-      timeStyle: 'medium',
-      timeZone: 'Asia/Kolkata'
-    });
-
-    let actions = [];
-    try {
-      actions = typeof incident.containmentActions === 'string'
-        ? JSON.parse(incident.containmentActions)
-        : (incident.containmentActions || []);
-    } catch (e) {
-      actions = [];
-    }
-
-    const dossierHtml = `
-      <!DOCTYPE html>
-      <html lang="en">
-      <head>
-        <meta charset="UTF-8">
-        <title>Form DPBI-IR1 - Breach Intimation Dossier | ${incident.id}</title>
-        <style>
-          body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #fff; color: #0f172a; padding: 40px; max-width: 820px; margin: 0 auto; line-height: 1.5; font-size: 13px; }
-          .header { border-bottom: 2px solid #0f172a; padding-bottom: 16px; margin-bottom: 24px; text-align: center; }
-          .header h1 { font-size: 18px; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; color: #0f172a; }
-          .header p { font-size: 12px; color: #475569; margin: 4px 0 0 0; font-weight: 600; }
-          .section-title { font-weight: 700; background: #f1f5f9; padding: 6px 12px; font-size: 12px; margin: 20px 0 8px 0; border-left: 4px solid #0284c7; text-transform: uppercase; letter-spacing: 0.5px; }
-          table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 16px; }
-          th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
-          th { background: #f8fafc; width: 32%; color: #334155; font-weight: 600; }
-          .badge-critical { background: #fee2e2; color: #991b1b; font-weight: 700; padding: 3px 8px; border-radius: 4px; font-size: 11px; border: 1px solid #f87171; }
-          .badge-high { background: #ffedd5; color: #9a3412; font-weight: 700; padding: 3px 8px; border-radius: 4px; font-size: 11px; border: 1px solid #fb923c; }
-          .btn-print { background: #0284c7; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 12px; margin-bottom: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-          .btn-print:hover { background: #0369a1; }
-          .checklist-item { margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
-          @media print { .btn-print { display: none; } body { padding: 0; } }
-        </style>
-      </head>
-      <body>
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <button class="btn-print" onclick="window.print()">🖨️ Print Statutory Form DPBI-IR1</button>
-          <span style="font-size:11px; color:#64748b; font-family:monospace;">STAMP: DPDP_SECURE_2026</span>
-        </div>
-
-        <div class="header">
-          <h1>Data Protection Board of India (DPBI)</h1>
-          <p>FORM DPBI-IR1 | STATUTORY BREACH INTIMATION DOSSIER [Section 8(6) & DPDP Rules, 2025 Rule 7]</p>
-        </div>
-
-        <div class="section-title">1. DATA FIDUCIARY IDENTIFICATION & REGISTRATION</div>
-        <table>
-          <tr><th>Entity Name</th><td><strong>Aarogya Diagnostic Center</strong> (Indiranagar, Bengaluru)</td></tr>
-          <tr><th>Fiduciary Category</th><td>Small Business Healthcare Diagnostic Center (SME Fiduciary)</td></tr>
-          <tr><th>GSTIN / Registration</th><td>29AAAAA0000A1Z5</td></tr>
-          <tr><th>Designated DPO</th><td>Ramesh Kumar (privacy@aarogyaclinic.in · +91 9845012345)</td></tr>
-        </table>
-
-        <div class="section-title">2. INCIDENT CHRONOLOGY & IMMUTABLE 72-HOUR STATUTORY WINDOW</div>
-        <table>
-          <tr><th>Incident Reference ID</th><td><strong>${incident.id}</strong></td></tr>
-          <tr><th>Initial Discovery Timestamp</th><td>${discoveredDate} <span style="font-size:10px; color:#64748b;">(Permanently locked)</span></td></tr>
-          <tr><th>Mandatory Reporting Deadline</th><td><strong>${statutoryDeadline}</strong> (72-Hour Window)</td></tr>
-          <tr><th>Statutory Severity Assessment</th><td><span class="${incident.severity === 'CRITICAL' ? 'badge-critical' : 'badge-high'}">${incident.severity} (Statutory Elevation Active)</span></td></tr>
-        </table>
-
-        <div class="section-title">3. NATURE OF PERSONAL DATA INVOLVED & ESTIMATED EXPOSURE</div>
-        <table>
-          <tr><th>Incident Title & Threat Vector</th><td>${incident.incidentTitle}</td></tr>
-          <tr><th>Impacted Silos</th><td>WhatsApp Reception Backup, Mobile Storage (${incident.scenarioType})</td></tr>
-          <tr><th>Categories of Personal Data</th><td>${incident.dataCategories}</td></tr>
-          <tr><th>Estimated Data Principals</th><td>~${incident.affectedCount} individuals</td></tr>
-        </table>
-
-        <div class="section-title">4. IMMEDIATE CONTAINMENT ACTIONS & REMEDIATION (RULE 7)</div>
-        <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 12px; margin-bottom: 20px;">
-          ${actions.length > 0
-            ? actions.map(a => `
-              <div class="checklist-item">
-                <input type="checkbox" ${a.done ? 'checked' : ''} disabled style="margin: 0;">
-                <span style="${a.done ? 'text-decoration: line-through; color: #475569;' : 'font-weight: 600; color: #0f172a;'}">${a.text || a}</span>
-                ${a.urgent ? '<span style="font-size:9px; background:#fee2e2; color:#991b1b; padding:1px 4px; border-radius:3px; font-weight:700;">URGENT</span>' : ''}
-              </div>
-            `).join('')
-            : `
-              <div class="checklist-item"><input type="checkbox" checked disabled> <span>Trigger Google Find My Device remote lock & wipe</span></div>
-              <div class="checklist-item"><input type="checkbox" checked disabled> <span>Revoke active WhatsApp Business linked web sessions</span></div>
-              <div class="checklist-item"><input type="checkbox" checked disabled> <span>Generate Form DPBI-IR1 72-Hour Intimation Dossier</span></div>
-              <div class="checklist-item"><input type="checkbox" disabled> <span>Dispatch reassuring plain-language citizen alerts</span></div>
-            `
-          }
-        </div>
-
-        <div class="section-title">5. STATUTORY CERTIFICATION</div>
-        <p style="font-size: 11px; color: #475569; margin-top: 8px;">
-          I hereby certify under Section 8(6) of the Digital Personal Data Protection Act, 2023 and Rule 7 of the DPDP Rules, 2025 that the intimation provided above accurately reflects the findings and containment measures implemented by the Data Fiduciary.
-        </p>
-        <div style="margin-top: 32px; display: flex; justify-content: space-between; border-top: 1px dashed #cbd5e1; padding-top: 12px;">
-          <div>
-            <div style="font-weight: 700;">Ramesh Kumar</div>
-            <div style="font-size: 11px; color: #64748b;">Designated Compliance Officer · Digital Verification Stamp Verified</div>
-          </div>
-          <div style="text-align: right;">
-            <div style="font-weight: 700; color: #0284c7;">DPDP_Secure Subsystem</div>
-            <div style="font-size: 11px; color: #64748b;">Srujana Tech Fest 2026 · Problem Statement LS-04</div>
-          </div>
-        </div>
-      </body>
-      </html>
-    `;
-
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.status(200).send(dossierHtml);
   } catch (error) {
     console.error('Error in incidentController.renderDossier:', error);
     res.status(500).send('Failed to generate statutory DPBI Form dossier.');
+  }
+}
+
+/**
+ * Returns canonical JSON of the statutory Form DPBI-IR1 Dossier with SHA-256 fingerprint
+ * GET /api/incidents/dossier/:id
+ */
+async function getDossierJson(req, res) {
+  try {
+    const incidentId = req.params.id;
+    const dossier = await generateDpbiDossier(incidentId);
+
+    return res.json({
+      success: true,
+      incidentId: dossier.incidentId,
+      dossier
+    });
+  } catch (error) {
+    console.error('Error in incidentController.getDossierJson:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to generate dossier JSON',
+      details: error.message
+    });
   }
 }
 
@@ -488,24 +428,73 @@ async function dispatchAlerts(req, res) {
   try {
     const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
     const actor = req.session?.user?.name || 'Ramesh Kumar (DPO)';
-    const { incidentId } = req.body || {};
+    const { incidentId, channels, languages } = req.body || {};
 
+    let targetIncident = null;
     if (incidentId) {
-      await models.updateIncident(incidentId, { citizenAlertSent: 1 });
-      await models.logAuditEvent(
-        tenantId,
-        actor,
-        'DISPATCH_CITIZEN_BREACH_ALERTS',
-        `incidents/${incidentId}`,
-        { incidentId, channels: ['SMS', 'WhatsApp'], languages: ['EN', 'KN', 'HI'] }
-      );
+      targetIncident = await models.getIncidentById(incidentId);
     }
+    if (!targetIncident) {
+      targetIncident = DEFAULT_INCIDENTS[0];
+    }
+
+    // Generate multi-lingual alerts (English, Kannada, Hindi)
+    const alertPackage = generateCitizenAlerts(targetIncident);
+    const selectedChannels = channels || ['SMS', 'WhatsApp'];
+    const selectedLanguages = languages || ['EN', 'KN', 'HI'];
+    const deliveredCount = targetIncident.affectedCount || 250;
+    const dispatchedAt = new Date().toISOString();
+
+    // Mark incident as citizen alerts dispatched
+    await models.updateIncident(targetIncident.id, { citizenAlertSent: 1 });
+
+    // Compute cryptographic hash of dispatch event
+    const sha256Proof = crypto.createHash('sha256')
+      .update(targetIncident.id + dispatchedAt + JSON.stringify(selectedChannels))
+      .digest('hex');
+
+    // Record into simulated notification queue
+    const dispatchRecord = {
+      id: `DISP-2026-${Math.floor(1000 + Math.random() * 9000)}`,
+      incidentId: targetIncident.id,
+      incidentTitle: targetIncident.incidentTitle,
+      channels: selectedChannels,
+      languages: selectedLanguages,
+      deliveredCount,
+      status: 'DELIVERED',
+      dispatchedAt,
+      vulnerabilityConcealed: true,
+      sha256Proof,
+      alerts: alertPackage.languages
+    };
+    RECENT_ALERT_DISPATCHES.unshift(dispatchRecord);
+
+    // Write audit log entry with SHA-256 hash chaining
+    await models.logAuditEvent(
+      tenantId,
+      actor,
+      'DISPATCH_CITIZEN_BREACH_ALERTS',
+      `incidents/${targetIncident.id}`,
+      {
+        incidentId: targetIncident.id,
+        channels: selectedChannels,
+        languages: selectedLanguages,
+        deliveredCount,
+        sha256Proof,
+        vulnerabilityConcealed: true
+      }
+    );
 
     return res.json({
       success: true,
-      deliveredCount: 250,
-      channels: ['SMS', 'WhatsApp'],
-      languages: ['EN', 'KN', 'HI'],
+      incidentId: targetIncident.id,
+      deliveredCount,
+      channels: selectedChannels,
+      languages: selectedLanguages,
+      dispatchedAt,
+      sha256Proof,
+      proofSha256: sha256Proof,
+      alerts: alertPackage.languages,
       message: 'Reassuring plain-language citizen alerts dispatched without disclosing internal technical vulnerabilities.'
     });
   } catch (error) {
@@ -518,12 +507,48 @@ async function dispatchAlerts(req, res) {
   }
 }
 
+/**
+ * Renders the multi-channel Notification Center with citizen alert dispatch queue & regional templates
+ * GET /notifications/center
+ */
+async function renderNotificationCenter(req, res) {
+  try {
+    const tab = req.query.tab || 'breach_alerts';
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+
+    // Fetch live incidents
+    const incidents = await models.getIncidents(tenantId);
+    const sampleIncident = (incidents && incidents.length > 0) ? incidents[0] : DEFAULT_INCIDENTS[0];
+    const regionalAlerts = generateCitizenAlerts(sampleIncident);
+
+    res.render('notifications-center', {
+      title: 'Notification Center - DPDP_Secure',
+      description: 'Configure providers, breach notification queues, and regional citizen advisories under DPDP Act Section 8(6).',
+      breadcrumbs: ['Workspace', 'Notifications'],
+      activeTab: tab,
+      path: '/notifications/center',
+      dispatches: RECENT_ALERT_DISPATCHES,
+      regionalAlerts,
+      sampleIncident
+    });
+  } catch (error) {
+    console.error('Error in incidentController.renderNotificationCenter:', error);
+    res.status(500).render('500', {
+      title: '500 Server Error | DPDP_Secure',
+      message: 'Failed to load Notification Center.'
+    });
+  }
+}
+
 module.exports = {
   renderManagementView,
   renderDashboardView,
   renderDossier,
+  getDossierJson,
   createIncident,
   triageIncident,
   dispatchAlerts,
-  DEFAULT_INCIDENTS
+  renderNotificationCenter,
+  DEFAULT_INCIDENTS,
+  RECENT_ALERT_DISPATCHES
 };

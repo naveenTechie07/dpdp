@@ -3,7 +3,7 @@
  * Problem Statement LS-04: Personal Data in Informal Systems
  * Srujana Tech Fest 2026
  *
- * Pillar 4: Security Incident Triage & 72-Hour Statutory Intimation
+ * Pillar 4: Security Incident Triage, 72-Hour Form DPBI-IR1 Dossier & Regional Citizen Alerts
  * Restricts incident declaration & triage strictly to SME_OWNER and COMPLIANCE_OFFICER.
  */
 
@@ -12,22 +12,14 @@ const router = express.Router();
 const { requireRole } = require('../middlewares/authMiddleware');
 const incidentController = require('../controllers/incidentController');
 
-// Incident Views
+// Incident & Breach Management Views
 router.get('/incidents/dashboard', incidentController.renderDashboardView);
 router.get('/incidents/management', requireRole(['SME_OWNER', 'COMPLIANCE_OFFICER']), incidentController.renderManagementView);
 router.get('/incidents/dossier/:id', incidentController.renderDossier);
+router.get('/api/incidents/dossier/:id', incidentController.getDossierJson);
 
-// Notification Center View
-router.get('/notifications/center', (req, res) => {
-  const tab = req.query.tab || 'providers';
-  res.render('notifications-center', {
-    title: 'Notification Center - DPDP_Secure',
-    description: 'Configure providers, message templates, and test sends for email, SMS, WhatsApp, and in-app channels.',
-    breadcrumbs: ['Workspace', 'Notifications'],
-    activeTab: tab,
-    path: '/notifications/center'
-  });
-});
+// Multi-Channel Notification Center View (Queues, Templates & History)
+router.get('/notifications/center', incidentController.renderNotificationCenter);
 
 // Incident Action APIs (Restricted via Role-Based Access Control)
 router.post('/api/incidents/create', requireRole(['SME_OWNER', 'COMPLIANCE_OFFICER']), incidentController.createIncident);

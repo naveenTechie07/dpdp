@@ -13,6 +13,7 @@ const dsrSearchEngine = require('./dsrSearchEngine');
 const statutoryCollisionResolver = require('./statutoryCollisionResolver');
 const certificateGenerator = require('./certificateGenerator');
 const breachRiskCalculator = require('./breachRiskCalculator');
+const dossierGenerator = require('./dossierGenerator');
 
 module.exports = {
   ...verhoeffAlgorithm,
@@ -24,6 +25,7 @@ module.exports = {
   ...statutoryCollisionResolver,
   ...certificateGenerator,
   ...breachRiskCalculator,
+  ...dossierGenerator,
   verhoeffAlgorithm,
   indianPiiEngine,
   fileParsers,
@@ -32,6 +34,6 @@ module.exports = {
   dsrSearchEngine,
   statutoryCollisionResolver,
   certificateGenerator,
-  breachRiskCalculator
+  breachRiskCalculator,
+  dossierGenerator
 };
-

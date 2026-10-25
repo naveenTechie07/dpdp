@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form DPBI-IR1 | Statutory Breach Intimation Dossier - <%= dossier.incidentId %> | DPDP_Secure</title>
+  <style>
+    :root {
+      --primary-navy: #0f172a;
+      --secondary-slate: #334155;
+      --border-slate: #cbd5e1;
+      --bg-header: #f8fafc;
+      --accent-blue: #0284c7;
+      --accent-rose: #e11d48;
+      --accent-emerald: #059669;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: #f1f5f9;
+      color: var(--primary-navy);
+      line-height: 1.5;
+      font-size: 13px;
+      padding: 24px;
+    }
+
+    .toolbar-container {
+      max-width: 900px;
+      margin: 0 auto 20px auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: white;
+      padding: 12px 20px;
+      border-radius: 10px;
+      border: 1px solid var(--border-slate);
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s ease;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--accent-blue);
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #0369a1;
+    }
+
+    .btn-secondary {
+      background: #e2e8f0;
+      color: var(--secondary-slate);
+    }
+    .btn-secondary:hover {
+      background: #cbd5e1;
+    }
+
+    .dossier-paper {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      padding: 48px;
+      border-radius: 8px;
+      border: 1px solid var(--border-slate);
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.08);
+      position: relative;
+    }
+
+    /* Statutory Header */
+    .statutory-header {
+      border-bottom: 3px double var(--primary-navy);
+      padding-bottom: 20px;
+      margin-bottom: 24px;
+      text-align: center;
+      position: relative;
+    }
+
+    .statutory-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--accent-blue);
+      margin-bottom: 6px;
+    }
+
+    .statutory-title {
+      font-size: 20px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--primary-navy);
+    }
+
+    .statutory-subtitle {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    .statutory-ref {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--secondary-slate);
+      margin-top: 6px;
+      font-family: monospace;
+    }
+
+    /* Section Styling */
+    .section-title {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      background: var(--bg-header);
+      padding: 6px 12px;
+      margin: 24px 0 10px 0;
+      border-left: 4px solid var(--accent-blue);
+      border-top: 1px solid var(--border-slate);
+      border-right: 1px solid var(--border-slate);
+      border-bottom: 1px solid var(--border-slate);
+      color: var(--primary-navy);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 12px;
+      font-size: 12px;
+    }
+
+    th, td {
+      border: 1px solid var(--border-slate);
+      padding: 8px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f8fafc;
+      width: 28%;
+      color: var(--secondary-slate);
+      font-weight: 700;
+    }
+
+    .badge-critical {
+      background: #fee2e2;
+      color: #991b1b;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      border: 1px solid #f87171;
+      display: inline-block;
+    }
+
+    .badge-compliant {
+      background: #d1fae5;
+      color: #065f46;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      border: 1px solid #34d399;
+      display: inline-block;
+    }
+
+    .checklist-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 8px 12px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .checklist-row:last-child {
+      border-bottom: none;
+    }
+
+    .check-icon {
+      color: var(--accent-emerald);
+      font-weight: bold;
+    }
+
+    .fingerprint-box {
+      background: #f8fafc;
+      border: 1px dashed var(--border-slate);
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 11px;
+      color: #475569;
+      word-break: break-all;
+      margin-top: 8px;
+    }
+
+    .signature-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-top: 36px;
+      padding-top: 20px;
+      border-top: 1px dashed var(--border-slate);
+    }
+
+    .official-seal {
+      width: 80px;
+      height: 80px;
+      border: 2px dashed #94a3b8;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: 9px;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      line-height: 1.1;
+    }
+
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+      .toolbar-container {
+        display: none !important;
+      }
+      .dossier-paper {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 20px 0 !important;
+        max-width: 100% !important;
+      }
+      @page {
+        margin: 1.5cm;
+        size: A4 portrait;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Screen Toolbar -->
+  <div class="toolbar-container">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <a href="/incidents/management" class="btn btn-secondary">
+        &larr; Back to Incidents Management
+      </a>
+      <span style="font-size: 12px; color: #64748b; font-family: monospace;">Ref: <%= dossier.incidentId %></span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <button class="btn btn-secondary" onclick="downloadJsonDossier()">
+        📥 Download JSON Dossier
+      </button>
+      <button class="btn btn-primary" onclick="window.print()">
+        🖨️ Print Form DPBI-IR1 / Export PDF
+      </button>
+    </div>
+  </div>
+
+  <!-- Printable Dossier Paper Container -->
+  <div class="dossier-paper">
+    
+    <!-- Statutory Header -->
+    <div class="statutory-header">
+      <div class="statutory-badge">DATA PROTECTION BOARD OF INDIA | FORM DPBI-IR1 (Section 8(6) & Rule 7)</div>
+      <h1 class="statutory-title">Form DPBI-IR1</h1>
+      <p class="statutory-subtitle">STATUTORY BREACH INTIMATION DOSSIER</p>
+      <div class="statutory-ref">
+        Data Protection Board of India (DPBI) &bull; Pursuant to Section 8(6) of the Digital Personal Data Protection Act, 2023 & Rule 7 of the DPDP Rules, 2025
+      </div>
+    </div>
+
+    <!-- Section 1: Data Fiduciary Identification -->
+    <div class="section-title">
+      <span>1. Data Fiduciary Identification & Legal Entity Registration</span>
+      <span style="font-size: 10px; font-weight: normal; font-family: monospace;">DPDP Rules, 2025 Rule 7(1)(a)</span>
+    </div>
+    <table>
+      <tr>
+        <th>Entity Legal Name</th>
+        <td><strong><%= dossier.fiduciary.name %></strong></td>
+      </tr>
+      <tr>
+        <th>Fiduciary Classification</th>
+        <td><%= dossier.fiduciary.category %></td>
+      </tr>
+      <tr>
+        <th>GSTIN / Registration</th>
+        <td><strong style="font-family: monospace;"><%= dossier.fiduciary.gstin %></strong> (Medical Reg: <%= dossier.fiduciary.registrationNumber %>)</td>
+      </tr>
+      <tr>
+        <th>Registered Address</th>
+        <td><%= dossier.fiduciary.address %></td>
+      </tr>
+      <tr>
+        <th>Designated DPO / Grievance Officer</th>
+        <td>
+          <strong><%= dossier.fiduciary.dpoName %></strong> (<%= dossier.fiduciary.dpoDesignation %>)<br>
+          <span style="font-size: 11px; color: #475569;">
+            Email: <%= dossier.fiduciary.dpoEmail %> &bull; Phone: <%= dossier.fiduciary.dpoPhone %>
+          </span>
+        </td>
+      </tr>
+    </table>
+
+    <!-- Section 2: Statutory Chronology & 72-Hour SLA Lock -->
+    <div class="section-title">
+      <span>2. Incident Chronology & 72-Hour Window (Statutory Compliance SLA)</span>
+      <span style="font-size: 10px; font-weight: normal; font-family: monospace;">Rule 7(1)(b) & Section 8(6)</span>
+    </div>
+    <table>
+      <tr>
+        <th>Incident Reference ID</th>
+        <td><strong style="font-family: monospace; color: var(--accent-rose);"><%= dossier.incidentId %></strong></td>
+      </tr>
+      <tr>
+        <th>Initial Discovery Timestamp</th>
+        <td>
+          <strong><%= new Date(dossier.chronology.discoveryTimestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'full', timeStyle: 'medium' }) %></strong>
+          <span style="font-size: 11px; color: #0284c7; margin-left: 8px;">(🔒 Permanently Locked)</span>
+        </td>
+      </tr>
+      <tr>
+        <th>72-Hour Statutory Reporting Deadline</th>
+        <td>
+          <%= new Date(dossier.chronology.statutoryDeadline).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'full', timeStyle: 'medium' }) %>
+          <span style="font-size: 11px; color: #64748b; margin-left: 6px;">(Strict 72-Hour Regulatory Limit)</span>
+        </td>
+      </tr>
+      <tr>
+        <th>Intimation Submission Timestamp</th>
+        <td>
+          <%= new Date(dossier.chronology.submissionTimestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'full', timeStyle: 'medium' }) %>
+        </td>
+      </tr>
+      <tr>
+        <th>Statutory Compliance Determination</th>
+        <td>
+          <% if (dossier.chronology.isWithin72Hours) { %>
+            <span class="badge-compliant">✓ STATUTORY 72-HOUR TIMELINE COMPLIANT</span>
+            <span style="font-size: 11px; color: #065f46; margin-left: 8px;">Submitted with <%= dossier.chronology.hoursRemaining %> hours remaining.</span>
+          <% } else { %>
+            <span class="badge-critical">⚠️ SUBMITTED BEYOND 72-HOUR TIMELINE</span>
+          <% } %>
+        </td>
+      </tr>
+    </table>
+
+    <!-- Section 3: Nature of Breach & Informal System Vector -->
+    <div class="section-title">
+      <span>3. Incident Description & Informal SME Threat Vector</span>
+      <span style="font-size: 10px; font-weight: normal; font-family: monospace;">Rule 7(1)(c)</span>
+    </div>
+    <table>
+      <tr>
+        <th>Incident Title</th>
+        <td><strong><%= dossier.threatVector.title %></strong></td>
+      </tr>
+      <tr>
+        <th>Threat Scenario Type</th>
+        <td><span style="font-family: monospace; font-weight: 700;"><%= dossier.threatVector.scenarioType %></span></td>
+      </tr>
+      <tr>
+        <th>Informal Silos Affected</th>
+        <td>
+          <ul style="padding-left: 18px; margin: 0;">
+            <% (dossier.threatVector.impactedSilos || []).forEach(function(silo) { %>
+              <li style="margin-bottom: 2px;"><%= silo %></li>
+            <% }); %>
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <th>Circumstances of Exposure</th>
+        <td><%= dossier.threatVector.vectorDescription %></td>
+      </tr>
+    </table>
+
+    <!-- Section 4: Nature & Categories of Impacted Personal Data -->
+    <div class="section-title">
+      <span>4. Categories of Personal Data & Estimated Exposure</span>
+      <span style="font-size: 10px; font-weight: normal; font-family: monospace;">Rule 7(1)(d)</span>
+    </div>
+    <table>
+      <tr>
+        <th>Estimated Data Principals Impacted</th>
+        <td><strong style="font-size: 14px; color: var(--primary-navy);"><%= dossier.exposure.estimatedCount %> individuals</strong> (Patients & Clinic Clients)</td>
+      </tr>
+      <tr>
+        <th>Personal Data Categories</th>
+        <td><%= dossier.exposure.dataCategories %></td>
+      </tr>
+      <tr>
+        <th>Special / Sensitive Data Markers</th>
+        <td>
+          <span style="background: #fef2f2; color: #991b1b; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 700; border: 1px solid #fecaca; margin-right: 6px;">
+            Aadhaar Identification Present
+          </span>
+          <span style="background: #fff7ed; color: #c2410c; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 700; border: 1px solid #fed7aa;">
+            Clinical Health Diagnostic Data Present
+          </span>
+        </td>
+      </tr>
+      <tr>
+        <th>Statutory Severity Assessment</th>
+        <td>
+          <span class="<%= dossier.severityAssessment.severity === 'CRITICAL' ? 'badge-critical' : 'badge-compliant' %>">
+            <%= dossier.severityAssessment.severity %> (Risk Score: <%= dossier.severityAssessment.riskScore %>/100)
+          </span>
+          <p style="font-size: 11px; color: #475569; margin-top: 4px;">
+            <%= dossier.severityAssessment.statutoryElevationReason %>
+          </p>
+        </td>
+      </tr>
+    </table>
+
+    <!-- Section 5: Remedial Containment Measures Taken -->
+    <div class="section-title">
+      <span>5. Remedial Actions & Immediate Containment Measures Taken</span>
+      <span style="font-size: 10px; font-weight: normal; font-family: monospace;">Rule 7(1)(e)</span>
+    </div>
+    <div style="background: #f8fafc; border: 1px solid var(--border-slate); border-radius: 6px; padding: 8px 12px; margin-bottom: 12px;">
+      <% (dossier.containmentMeasures || []).forEach(function(m) { %>
+        <div class="checklist-row">
+          <span class="check-icon"><%= m.done ? '☑' : '☐' %></span>
+          <div style="flex: 1;">
+            <span style="<%= m.done ? 'font-weight: 700; color: var(--primary-navy);' : 'color: #64748b;' %>">
+              <%= m.action %>
+            </span>
+            <% if (m.urgent) { %>
+              <span style="font-size: 9px; background: #fee2e2; color: #991b1b; padding: 1px 4px; border-radius: 3px; font-weight: 700; margin-left: 6px;">URGENT</span>
+            <% } %>
+            <% if (m.done) { %>
+              <span style="font-size: 10px; color: #059669; margin-left: 6px;">(Verified Complete)</span>
+            <% } %>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+
+    <!-- Section 6: Citizen Notification Plan -->
+    <div class="section-title">
+      <span>6. Data Principal Notification Plan (Section 8(6) Compliance)</span>
+      <span style="font-size: 10px; font-weight: normal; font-family: monospace;">Rule 7(2)</span>
+    </div>
+    <table>
+      <tr>
+        <th>Citizen Notification Status</th>
+        <td>
+          <% if (dossier.citizenNotificationPlan.status === 'ALERTS_DISPATCHED') { %>
+            <span class="badge-compliant">✓ REASSURANCE ALERTS DISPATCHED</span>
+          <% } else { %>
+            <span style="background: #fef3c7; color: #92400e; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; border: 1px solid #fde68a;">READY FOR MULTI-LINGUAL DISPATCH</span>
+          <% } %>
+        </td>
+      </tr>
+      <tr>
+        <th>Communication Channels</th>
+        <td><%= dossier.citizenNotificationPlan.channels.join(', ') %></td>
+      </tr>
+      <tr>
+        <th>Languages Supported</th>
+        <td><%= dossier.citizenNotificationPlan.languagesSupported.join(', ') %></td>
+      </tr>
+      <tr>
+        <th>Cybersecurity Safeguard Policy</th>
+        <td>
+          <span style="color: #065f46; font-weight: 600;">Vulnerability Concealment Enforced</span>:
+          <%= dossier.citizenNotificationPlan.policyRationale %>
+        </td>
+      </tr>
+    </table>
+
+    <!-- Cryptographic Integrity Proof -->
+    <div style="margin-top: 16px;">
+      <div style="font-size: 11px; font-weight: 700; color: var(--secondary-slate); text-transform: uppercase;">
+        Statutory Dossier SHA-256 Cryptographic Fingerprint
+      </div>
+      <div class="fingerprint-box">
+        <%= dossier.sha256Fingerprint %>
+      </div>
+      <div style="font-size: 10px; color: #94a3b8; margin-top: 4px;">
+        Deterministic hash computed over canonical regulatory payload. Proves document integrity under Section 8(6) evidentiary requirements.
+      </div>
+    </div>
+
+    <!-- Signature Block -->
+    <div class="signature-grid">
+      <div>
+        <div style="font-size: 11px; font-weight: 700; color: var(--secondary-slate); text-transform: uppercase; margin-bottom: 8px;">
+          Fiduciary Statutory Certification
+        </div>
+        <p style="font-size: 11px; color: #475569; line-height: 1.4; margin-bottom: 16px;">
+          <%= dossier.statutoryCertification.legalDeclaration %>
+        </p>
+        <div style="font-weight: 800; font-size: 13px; color: var(--primary-navy);"><%= dossier.statutoryCertification.certifierName %></div>
+        <div style="font-size: 11px; color: #64748b;"><%= dossier.statutoryCertification.certifierDesignation %></div>
+        <div style="font-size: 10px; color: #0284c7; font-family: monospace; margin-top: 4px;">STAMP: <%= dossier.statutoryCertification.verificationStamp %></div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-end;">
+        <div class="official-seal">
+          <span>DPBI</span>
+          <span>IR-1</span>
+          <span>VERIFIED</span>
+        </div>
+        <div style="text-align: right; margin-top: 8px;">
+          <div style="font-weight: 700; font-size: 12px; color: var(--accent-blue);">DPDP_Secure Subsystem</div>
+          <div style="font-size: 10px; color: #94a3b8;">Chanakya University &bull; Srujana Tech Fest 2026</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function downloadJsonDossier() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(<%- JSON.stringify(dossier) %>, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", "FORM_DPBI_IR1_<%= dossier.incidentId %>.json");
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+  </script>
+</body>
+</html>

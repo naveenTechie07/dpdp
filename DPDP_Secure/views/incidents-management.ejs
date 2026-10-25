@@ -57,7 +57,7 @@
         class="px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 transition-colors shadow flex items-center gap-1.5"
       >
         <span>📄</span>
-        <span>View Form DPBI-IR1 Dossier</span>
+        <span>Generate 72-Hour DPBI Dossier</span>
       </a>
       <button
         type="button"
@@ -65,7 +65,7 @@
         class="px-3.5 py-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition-colors shadow-lg shadow-rose-900/40 flex items-center gap-1.5"
       >
         <span>📢</span>
-        <span>Dispatch Patient Alerts</span>
+        <span>Dispatch Customer Alerts</span>
       </button>
     </div>
   </div>
@@ -193,14 +193,15 @@
                       class="px-2.5 py-1.5 rounded-lg bg-sky-600/20 hover:bg-sky-600/30 text-sky-300 font-semibold text-xs border border-sky-500/30 transition-colors"
                       title="Generate and print statutory Form DPBI-IR1"
                     >
-                      📄 Form DPBI-IR1
+                      📄 Form DPBI-IR1 Dossier
                     </a>
                     <button
                       type="button"
                       class="btn-trigger-citizen-alert px-2.5 py-1.5 rounded-lg bg-rose-600/20 hover:bg-rose-600/30 text-rose-300 font-semibold text-xs border border-rose-500/30 transition-colors"
                       data-incident="<%= inc.id %>"
+                      data-title="<%= inc.incidentTitle %>"
                     >
-                      📢 Notify
+                      📢 Dispatch Customer Alerts
                     </button>
                   </div>
                 </td>
@@ -406,6 +407,112 @@
       </form>
     </div>
   </div>
+
+  <!-- Citizen Alert Dispatch Modal -->
+  <div id="citizenAlertModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border-2 border-rose-500/40 rounded-2xl max-w-2xl w-full max-h-[92vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in duration-200">
+      <div class="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-950/80">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-950 text-rose-400 border border-rose-500/40">
+              SECTION 8(6) CITIZEN ADVISORY
+            </span>
+            <span class="text-xs text-slate-400">Vulnerability Concealment Enforced</span>
+          </div>
+          <h2 class="text-lg font-bold text-white mt-1">Dispatch Customer Alerts</h2>
+          <p class="text-xs text-slate-400 mt-0.5">
+            Notify impacted patients with plain-language reassurance across SMS & WhatsApp in English, Kannada, and Hindi.
+          </p>
+        </div>
+        <button type="button" id="btnCloseAlertModal" class="text-slate-400 hover:text-white p-1.5 rounded-lg transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <div class="p-6 space-y-5 overflow-y-auto">
+        <!-- Target Incident Info -->
+        <div class="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800">
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Target Security Incident</span>
+          <div class="text-sm font-bold text-white mt-0.5" id="alertModalIncidentTitle">Lost Receptionist Smartphone (Indiranagar Metro Station)</div>
+          <div class="text-xs text-rose-400 font-mono mt-0.5" id="alertModalIncidentId">INC-2026-9921</div>
+        </div>
+
+        <!-- Language Preview Tabs -->
+        <div>
+          <label class="block text-xs font-bold text-white uppercase tracking-wider mb-2">Message Preview by Language</label>
+          <div class="flex gap-2 mb-2">
+            <button type="button" class="btn-lang-tab px-3 py-1 rounded-lg text-xs font-semibold bg-rose-600 text-white" data-lang="en">English (EN)</button>
+            <button type="button" class="btn-lang-tab px-3 py-1 rounded-lg text-xs font-semibold bg-slate-800 text-slate-400 hover:text-white" data-lang="kn">Kannada (ಕನ್ನಡ)</button>
+            <button type="button" class="btn-lang-tab px-3 py-1 rounded-lg text-xs font-semibold bg-slate-800 text-slate-400 hover:text-white" data-lang="hi">Hindi (हिन्दी)</button>
+          </div>
+          <div id="alertPreviewBox" class="p-4 rounded-xl bg-slate-950/80 border border-slate-800 text-xs text-slate-300 leading-relaxed font-sans min-h-[90px]">
+            "Dear Aarogya Clinic Patient, on [Date], a clinic front-desk mobile phone was reported lost. Your contact and appointment record were stored on the device. We immediately triggered a remote wipe and locked the phone. No unauthorized access has been confirmed. As a precaution, please ignore any suspicious payment messages claiming to be from our clinic. For queries, contact our DPO at privacy@aarogyaclinic.in."
+          </div>
+        </div>
+
+        <!-- Channel Selection -->
+        <div>
+          <label class="block text-xs font-bold text-white uppercase tracking-wider mb-2">Select Delivery Channels</label>
+          <div class="grid grid-cols-2 gap-3">
+            <label class="flex items-center gap-2.5 p-3 rounded-xl bg-slate-950/40 border border-slate-800 cursor-pointer">
+              <input type="checkbox" id="chkAlertSms" checked class="rounded border-slate-700 text-rose-600">
+              <div>
+                <div class="text-xs font-bold text-white">Twilio SMS Gateway</div>
+                <div class="text-[10px] text-slate-400">DLT registered sender: AAROGY</div>
+              </div>
+            </label>
+            <label class="flex items-center gap-2.5 p-3 rounded-xl bg-slate-950/40 border border-slate-800 cursor-pointer">
+              <input type="checkbox" id="chkAlertWhatsapp" checked class="rounded border-slate-700 text-rose-600">
+              <div>
+                <div class="text-xs font-bold text-white">WhatsApp Business API</div>
+                <div class="text-[10px] text-slate-400">Rich text with caution bullets</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Languages Selection -->
+        <div>
+          <label class="block text-xs font-bold text-white uppercase tracking-wider mb-2">Select Broadcast Languages</label>
+          <div class="flex items-center gap-4 text-xs text-slate-300">
+            <label class="flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" class="chk-lang" value="EN" checked>
+              <span>English</span>
+            </label>
+            <label class="flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" class="chk-lang" value="KN" checked>
+              <span>Kannada (ಕನ್ನಡ)</span>
+            </label>
+            <label class="flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" class="chk-lang" value="HI" checked>
+              <span>Hindi (हिन्दी)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Vulnerability Concealment Policy Note -->
+        <div class="p-3 rounded-lg bg-emerald-950/30 border border-emerald-500/30 text-[11px] text-emerald-300 flex items-center gap-2">
+          <span>✓</span>
+          <span><strong>Vulnerability Concealment Active</strong>: Notification texts guide patients to ignore phishing without disclosing software versions, unencrypted stores, or administrative credentials.</span>
+        </div>
+      </div>
+
+      <div class="p-5 border-t border-slate-800 flex items-center justify-between bg-slate-950/80">
+        <a href="/notifications/center?tab=breach_alerts" target="_blank" class="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1">
+          <span>View Notification Center</span> &rarr;
+        </a>
+        <div class="flex items-center gap-3">
+          <button type="button" id="btnCancelAlertModal" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold">
+            Cancel
+          </button>
+          <button type="button" id="btnConfirmDispatchAlerts" class="px-5 py-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shadow-lg shadow-rose-900/40 flex items-center gap-2">
+            <span>📢</span>
+            <span>Dispatch Customer Alerts (~250 Patients)</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -420,6 +527,99 @@
     const wizardSeverityBadge = document.getElementById('wizardSeverityBadge');
     const scenarioRadios = document.querySelectorAll('input[name="scenarioSelect"]');
     const btnQuickAlerts = document.getElementById('btnQuickCitizenAlerts');
+
+    // Citizen Alert Modal elements
+    const alertModal = document.getElementById('citizenAlertModal');
+    const closeAlertBtn = document.getElementById('btnCloseAlertModal');
+    const cancelAlertBtn = document.getElementById('btnCancelAlertModal');
+    const confirmAlertBtn = document.getElementById('btnConfirmDispatchAlerts');
+    const alertModalIncidentId = document.getElementById('alertModalIncidentId');
+    const alertModalIncidentTitle = document.getElementById('alertModalIncidentTitle');
+    const alertPreviewBox = document.getElementById('alertPreviewBox');
+    const langTabs = document.querySelectorAll('.btn-lang-tab');
+
+    let currentAlertIncidentId = 'INC-2026-9921';
+
+    const ALERT_TEXTS = {
+      en: "Dear Aarogya Clinic Patient, on [Date], a clinic front-desk mobile phone was reported lost. Your contact and appointment record were stored on the device. We immediately triggered a remote wipe and locked the phone. No unauthorized access has been confirmed. As a precaution, please ignore any suspicious payment messages claiming to be from our clinic. For queries, contact our DPO at privacy@aarogyaclinic.in.",
+      kn: "ಆರೋಗ್ಯ ಕ್ಲಿನಿಕ್ ರೋಗಿಗಳಿಗೆ ಪ್ರಮುಖ ಸೂಚನೆ: ನಮ್ಮ ಕ್ಲಿನಿಕ್ನ ರಿಸೆಪ್ಷನ್ ಮೊಬೈಲ್ ಕಳೆದುಹೋಗಿದ್ದು, ಸುರಕ್ಷತಾ ಕ್ರಮವಾಗಿ ಅದನ್ನು ತಕ್ಷಣ ದೂರದಿಂದಲೇ ಲಾಕ್ ಮತ್ತು ವೈಪ್ ಮಾಡಲಾಗಿದೆ. ಯಾವುದೇ ಅನಧಿಕೃತ ಸಂದೇಶಗಳು ಅಥವಾ ಹಣ ಪಾವತಿ ಬೇಡಿಕೆಗಳು ಬಂದರೆ ದಯವಿಟ್ಟು ಗಮನಿಸಬೇಡಿ. ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗೆ ನಮ್ಮ ಅಧಿಕಾರಿಯನ್ನು ಸಂಪರ್ಕಿಸಿ: privacy@aarogyaclinic.in",
+      hi: "आरोग्य क्लिनिक के सम्मानित मरीज, आपको सूचित किया जाता है कि क्लिनिक का एक फोन खो गया था जिसे सुरक्षा के तहत तुरंत ब्लॉक और रिमोट वाइप कर दिया गया है। किसी अनधिकृत पहुंच की पुष्टि नहीं हुई है। एहतियात के तौर पर, कृपया किसी भी संदिग्ध भुगतान संदेश पर ध्यान न दें। संपर्क: privacy@aarogyaclinic.in"
+    };
+
+    langTabs.forEach(tab => {
+      tab.addEventListener('click', (e) => {
+        const lang = e.target.getAttribute('data-lang');
+        langTabs.forEach(t => {
+          t.className = 'btn-lang-tab px-3 py-1 rounded-lg text-xs font-semibold bg-slate-800 text-slate-400 hover:text-white';
+        });
+        e.target.className = 'btn-lang-tab px-3 py-1 rounded-lg text-xs font-semibold bg-rose-600 text-white';
+        alertPreviewBox.textContent = `"${ALERT_TEXTS[lang]}"`;
+      });
+    });
+
+    function openAlertModal(incId, incTitle) {
+      currentAlertIncidentId = incId || 'INC-2026-9921';
+      if (alertModalIncidentId) alertModalIncidentId.textContent = currentAlertIncidentId;
+      if (alertModalIncidentTitle) alertModalIncidentTitle.textContent = incTitle || 'Lost Receptionist Smartphone (Indiranagar Metro Station)';
+      if (alertModal) alertModal.classList.remove('hidden');
+    }
+
+    if (closeAlertBtn) closeAlertBtn.addEventListener('click', () => alertModal.classList.add('hidden'));
+    if (cancelAlertBtn) cancelAlertBtn.addEventListener('click', () => alertModal.classList.add('hidden'));
+
+    if (btnQuickAlerts) {
+      btnQuickAlerts.addEventListener('click', () => {
+        openAlertModal('INC-2026-9921', 'Lost Receptionist Smartphone (Indiranagar Metro Station)');
+      });
+    }
+
+    document.querySelectorAll('.btn-trigger-citizen-alert').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const incId = btn.getAttribute('data-incident');
+        const incTitle = btn.getAttribute('data-title');
+        openAlertModal(incId, incTitle);
+      });
+    });
+
+    if (confirmAlertBtn) {
+      confirmAlertBtn.addEventListener('click', async () => {
+        confirmAlertBtn.disabled = true;
+        confirmAlertBtn.innerHTML = '<span>⏳</span><span>Dispatching Regional Alerts...</span>';
+
+        const channels = [];
+        if (document.getElementById('chkAlertSms')?.checked) channels.push('SMS');
+        if (document.getElementById('chkAlertWhatsapp')?.checked) channels.push('WhatsApp');
+
+        const languages = [];
+        document.querySelectorAll('.chk-lang:checked').forEach(c => languages.push(c.value));
+
+        try {
+          const res = await fetch('/api/incidents/dispatch-alerts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              incidentId: currentAlertIncidentId,
+              channels,
+              languages
+            })
+          });
+
+          const data = await res.json();
+          if (data.success) {
+            alert(`Customer Alerts Dispatched Successfully!\n\nDelivered to: ${data.deliveredCount} Patients\nChannels: ${data.channels.join(', ')}\nLanguages: English, Kannada, Hindi\nDelivery Proof (SHA-256): ${data.sha256Proof ? data.sha256Proof.slice(0, 16) + '...' : 'Verified'}\n\nRedirecting to Notification Center...`);
+            window.location.href = '/notifications/center?tab=breach_alerts';
+          } else {
+            alert(data.error || 'Failed to dispatch alerts.');
+            confirmAlertBtn.disabled = false;
+            confirmAlertBtn.innerHTML = '<span>📢</span><span>Dispatch Customer Alerts (~250 Patients)</span>';
+          }
+        } catch (err) {
+          alert('Network communication error: ' + err.message);
+          confirmAlertBtn.disabled = false;
+          confirmAlertBtn.innerHTML = '<span>📢</span><span>Dispatch Customer Alerts (~250 Patients)</span>';
+        }
+      });
+    }
 
     // Scenario preset selection changes
     scenarioRadios.forEach((radio) => {
@@ -535,29 +735,6 @@
         }
       });
     });
-
-    // Quick Citizen Alert trigger
-    if (btnQuickAlerts) {
-      btnQuickAlerts.addEventListener('click', async () => {
-        btnQuickAlerts.disabled = true;
-        btnQuickAlerts.textContent = 'Dispatching alerts...';
-        try {
-          const res = await fetch('/api/incidents/dispatch-alerts', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ incidentId: 'INC-2026-9921' })
-          });
-          const data = await res.json();
-          alert(`Patient Alerts Dispatched!\n\nDelivered: ${data.deliveredCount} recipients\nChannels: ${data.channels.join(', ')}\nLanguages: English, Kannada, Hindi\n\n${data.message}`);
-          btnQuickAlerts.disabled = false;
-          btnQuickAlerts.textContent = '📢 Dispatch Patient Alerts';
-        } catch (e) {
-          alert('Failed to dispatch alerts.');
-          btnQuickAlerts.disabled = false;
-          btnQuickAlerts.textContent = '📢 Dispatch Patient Alerts';
-        }
-      });
-    }
   })();
 </script>
 

@@ -1,426 +1,500 @@
 <%- include('partials/header') %>
 
-<style>
-.tab-link {
-    color: var(--text-muted);
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 600;
-    padding: 8px 16px;
-    border-radius: 6px;
-}
-.tab-link.active {
-    background: rgba(255,255,255,0.05);
-    color: white;
-}
-.tab-link:hover:not(.active) {
-    color: white;
-}
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-800 pb-5">
+    <div>
+      <div class="flex items-center gap-2">
+        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+          DPDP Act Section 8(6) & Section 5
+        </span>
+        <span class="text-xs text-slate-400">Pillar 4: Dual-Channel Citizen Notification Suite</span>
+      </div>
+      <h1 class="text-2xl font-bold text-white tracking-tight mt-1">Notification Center</h1>
+      <p class="text-sm text-slate-400 mt-1">
+        Configure delivery providers, inspect regional citizen breach advisories (English, Kannada, Hindi), and monitor statutory dispatch queues.
+      </p>
+    </div>
+    <div class="flex items-center gap-3">
+      <a href="/incidents/management" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-colors">
+        <span>🚨</span>
+        <span>Incident Operations &rarr;</span>
+      </a>
+      <a href="/incidents/dossier/INC-2026-9921" target="_blank" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold transition-all shadow-lg shadow-sky-900/30">
+        <span>📄</span>
+        <span>Print Form DPBI-IR1</span>
+      </a>
+    </div>
+  </div>
 
-.modal-overlay {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.7);
-    backdrop-filter: blur(4px);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
-}
-.modal-overlay.active {
-    display: flex;
-}
-.modal-content {
-    background: var(--bg-surface);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    width: 100%;
-    max-width: 600px;
-}
-.key-form-label {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-main);
-    margin-bottom: 8px;
-    display: block;
-}
-.key-input {
-    width: 100%;
-    background: rgba(0,0,0,0.2);
-    border: 1px solid var(--border-color);
-    color: var(--text-main);
-    padding: 10px 12px;
-    border-radius: 6px;
-    font-size: 13px;
-    margin-bottom: 24px;
-}
-.pill-status {
-    display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; background: rgba(255,255,255,0.05); color: var(--text-muted);
-}
-.pill-channel {
-    display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; background: rgba(255,255,255,0.05); color: var(--text-muted);
-}
-</style>
+  <% const currentTab = (typeof activeTab !== 'undefined' && activeTab) ? activeTab : 'breach_alerts'; %>
+  <% const dispatchList = (typeof dispatches !== 'undefined' && dispatches) ? dispatches : []; %>
+  <% const totalDispatched = 3 + dispatchList.reduce((acc, d) => acc + (d.deliveredCount || 0), 0); %>
 
-<div style="padding: 24px; max-width: 1400px; margin: 0 auto;">
-    
-    <!-- Top Metrics -->
-    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px;">
-        <div class="card" style="padding: 20px;">
-            <div style="font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">PROVIDERS</div>
-            <div style="font-size: 28px; font-weight: 700; color: white;">2</div>
-        </div>
-        <div class="card" style="padding: 20px;">
-            <div style="font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">TEMPLATES</div>
-            <div style="font-size: 28px; font-weight: 700; color: white;">24</div>
-        </div>
-        <div class="card" style="padding: 20px;">
-            <div style="font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">MESSAGES SENT</div>
-            <div style="font-size: 28px; font-weight: 700; color: white;">3</div>
-        </div>
-        <div class="card" style="padding: 20px;">
-            <div style="font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">DEFAULT BRANDING</div>
-            <div style="font-size: 28px; font-weight: 700; color: white;">Not set</div>
-        </div>
+  <!-- Top Metrics 4-Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-lg backdrop-blur">
+      <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+        <span>ACTIVE PROVIDERS</span>
+        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+      </div>
+      <div class="text-3xl font-extrabold text-white">2</div>
+      <div class="text-xs text-slate-400 mt-1">Twilio SMS Gateway &bull; WhatsApp Cloud API</div>
     </div>
 
-    <% const currentTab = (typeof activeTab !== 'undefined' && activeTab) ? activeTab : 'providers'; %>
-    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px;">
+    <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-lg backdrop-blur">
+      <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+        <span>NOTICE TEMPLATES</span>
+        <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
+      </div>
+      <div class="text-3xl font-extrabold text-indigo-400">27</div>
+      <div class="text-xs text-indigo-400/80 mt-1">Includes EN, KN, HI Regional Breach Notices</div>
+    </div>
+
+    <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-lg backdrop-blur">
+      <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+        <span>MESSAGES DELIVERED</span>
+        <span class="w-2 h-2 rounded-full bg-sky-400"></span>
+      </div>
+      <div class="text-3xl font-extrabold text-sky-400"><%= totalDispatched %></div>
+      <div class="text-xs text-sky-400/80 mt-1">Simulated SMS & WhatsApp deliveries</div>
+    </div>
+
+    <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-lg backdrop-blur">
+      <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+        <span>VULNERABILITY CONCEALMENT</span>
+        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+      </div>
+      <div class="text-2xl font-bold text-emerald-400">100% Enforced</div>
+      <div class="text-xs text-emerald-400/80 mt-1">Zero technical CVE leak policy</div>
+    </div>
+  </div>
+
+  <!-- Tabbed Navigation Bar -->
+  <div class="bg-slate-900/80 border border-slate-800 rounded-2xl shadow-xl overflow-hidden backdrop-blur">
+    <div class="p-3 border-b border-slate-800 flex items-center justify-between bg-slate-950/40 flex-wrap gap-2">
+      <div class="inline-flex rounded-xl bg-slate-900 p-1 border border-slate-800 text-xs">
+        <a href="?tab=providers" class="px-4 py-2 rounded-lg font-semibold transition-colors <%= currentTab === 'providers' ? 'bg-indigo-600 text-white shadow' : 'text-slate-400 hover:text-white' %>">
+          Delivery Providers
+        </a>
+        <a href="?tab=breach_alerts" class="px-4 py-2 rounded-lg font-semibold transition-colors flex items-center gap-1.5 <%= currentTab === 'breach_alerts' ? 'bg-rose-600 text-white shadow' : 'text-slate-400 hover:text-white' %>">
+          <span>📢</span>
+          <span>Breach Advisories & Queue</span>
+          <span class="px-1.5 py-0.2 rounded text-[10px] bg-rose-950 text-rose-300 font-bold border border-rose-500/30">New</span>
+        </a>
+        <a href="?tab=templates" class="px-4 py-2 rounded-lg font-semibold transition-colors <%= currentTab === 'templates' ? 'bg-indigo-600 text-white shadow' : 'text-slate-400 hover:text-white' %>">
+          Message Templates
+        </a>
+        <a href="?tab=history" class="px-4 py-2 rounded-lg font-semibold transition-colors <%= currentTab === 'history' ? 'bg-indigo-600 text-white shadow' : 'text-slate-400 hover:text-white' %>">
+          Dispatch History
+        </a>
+        <a href="?tab=branding" class="px-4 py-2 rounded-lg font-semibold transition-colors <%= currentTab === 'branding' ? 'bg-indigo-600 text-white shadow' : 'text-slate-400 hover:text-white' %>">
+          Branding & Headers
+        </a>
+      </div>
+      <div class="text-xs text-slate-400 font-mono">
+        Tenant: <span class="text-white font-bold">Aarogya Diagnostic Center</span>
+      </div>
+    </div>
+
+    <!-- TAB 1: BREACH ALERTS & REGIONAL QUEUE -->
+    <% if (currentTab === 'breach_alerts') { %>
+      <div class="p-6 space-y-6">
+        <!-- Explanatory Banner -->
+        <div class="p-4 rounded-xl bg-gradient-to-r from-rose-950/40 via-slate-900 to-amber-950/30 border border-rose-500/30 flex items-start gap-4">
+          <div class="w-10 h-10 rounded-lg bg-rose-500/20 border border-rose-500/30 text-rose-400 text-xl flex items-center justify-center flex-shrink-0">
+            🛡️
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="text-sm font-bold text-white">DPDP Act Section 8(6) Citizen Reassurance Engine</h2>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-500/30">
+                VULNERABILITY CONCEALMENT ENFORCED
+              </span>
+            </div>
+            <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+              When personal data is exposed in informal systems (e.g. lost phone, misdirected chat), the Data Fiduciary must notify impacted Data Principals in clear, reassuring language without technical jargon or revealing exploitable vulnerabilities.
+            </p>
+          </div>
+        </div>
+
+        <!-- Multi-Lingual Regional Templates Showcase -->
         <div>
-            <h1 style="font-size: 20px; font-weight: 700; color: var(--text-main); margin: 0 0 8px 0;">Notification Center</h1>
-            <p style="color: var(--text-muted); font-size: 13px; margin: 0;">Configure providers, message templates, and test sends for email, SMS, WhatsApp, and in-app channels.</p>
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider">Multi-Lingual Citizen Reassurance Templates</h3>
+            <span class="text-xs text-slate-400">English, Kannada (ಕನ್ನಡ), Hindi (हिन्दी)</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- English Card -->
+            <div class="p-4 rounded-xl bg-slate-950/60 border border-slate-800 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-950 text-sky-400 border border-sky-500/30">ENGLISH (EN)</span>
+                  <span class="text-[10px] font-mono text-slate-400">SMS: ~382 chars</span>
+                </div>
+                <div class="text-xs font-bold text-white mb-2">Patient Phone Misplacement Reassurance</div>
+                <div class="p-3 rounded-lg bg-slate-900 text-slate-300 text-xs font-sans leading-relaxed border border-slate-800">
+                  "Dear Aarogya Clinic Patient, on [Date], a clinic front-desk mobile phone was reported lost. Your contact and appointment record were stored on the device. We immediately triggered a remote wipe and locked the phone. No unauthorized access has been confirmed. As a precaution, please ignore any suspicious payment messages claiming to be from our clinic. For queries, contact our DPO at privacy@aarogyaclinic.in."
+                </div>
+              </div>
+              <div class="mt-3 pt-3 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
+                <span>Channels: <strong>SMS &bull; WhatsApp</strong></span>
+                <span class="text-emerald-400 font-semibold">✓ Verified</span>
+              </div>
+            </div>
+
+            <!-- Kannada Card -->
+            <div class="p-4 rounded-xl bg-slate-950/60 border border-slate-800 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-950 text-amber-400 border border-amber-500/30">KANNADA (ಕನ್ನಡ - KN)</span>
+                  <span class="text-[10px] font-mono text-slate-400">SMS: ~288 chars</span>
+                </div>
+                <div class="text-xs font-bold text-white mb-2">ರೋಗಿಗಳಿಗೆ ಪ್ರಮುಖ ಸುರಕ್ಷತಾ ಸೂಚನೆ</div>
+                <div class="p-3 rounded-lg bg-slate-900 text-slate-300 text-xs font-sans leading-relaxed border border-slate-800">
+                  "ಆರೋಗ್ಯ ಕ್ಲಿನಿಕ್ ರೋಗಿಗಳಿಗೆ ಪ್ರಮುಖ ಸೂಚನೆ: ನಮ್ಮ ಕ್ಲಿನಿಕ್ನ ರಿಸೆಪ್ಷನ್ ಮೊಬೈಲ್ ಕಳೆದುಹೋಗಿದ್ದು, ಸುರಕ್ಷತಾ ಕ್ರಮವಾಗಿ ಅದನ್ನು ತಕ್ಷಣ ದೂರದಿಂದಲೇ ಲಾಕ್ ಮತ್ತು ವೈಪ್ ಮಾಡಲಾಗಿದೆ. ಯಾವುದೇ ಅನಧಿಕೃತ ಸಂದೇಶಗಳು ಅಥವಾ ಹಣ ಪಾವತಿ ಬೇಡಿಕೆಗಳು ಬಂದರೆ ದಯವಿಟ್ಟು ಗಮನಿಸಬೇಡಿ. ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗೆ ನಮ್ಮ ಅಧಿಕಾರಿಯನ್ನು ಸಂಪರ್ಕಿಸಿ: privacy@aarogyaclinic.in"
+                </div>
+              </div>
+              <div class="mt-3 pt-3 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
+                <span>Channels: <strong>SMS &bull; WhatsApp</strong></span>
+                <span class="text-emerald-400 font-semibold">✓ Verified</span>
+              </div>
+            </div>
+
+            <!-- Hindi Card -->
+            <div class="p-4 rounded-xl bg-slate-950/60 border border-slate-800 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-500/30">HINDI (हिन्दी - HI)</span>
+                  <span class="text-[10px] font-mono text-slate-400">SMS: ~264 chars</span>
+                </div>
+                <div class="text-xs font-bold text-white mb-2">मरीजों के लिए आवश्यक सुरक्षा सूचना</div>
+                <div class="p-3 rounded-lg bg-slate-900 text-slate-300 text-xs font-sans leading-relaxed border border-slate-800">
+                  "आरोग्य क्लिनिक के सम्मानित मरीज, आपको सूचित किया जाता है कि क्लिनिक का एक फोन खो गया था जिसे सुरक्षा के तहत तुरंत ब्लॉक और रिमोट वाइप कर दिया गया है। किसी अनधिकೃತ पहुंच की पुष्टि नहीं हुई है। एहतियात के तौर पर, कृपया किसी भी संदिग्ध भुगतान संदेश पर ध्यान न दें। संपर्क: privacy@aarogyaclinic.in"
+                </div>
+              </div>
+              <div class="mt-3 pt-3 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
+                <span>Channels: <strong>SMS &bull; WhatsApp</strong></span>
+                <span class="text-emerald-400 font-semibold">✓ Verified</span>
+              </div>
+            </div>
+          </div>
         </div>
-        <% if (currentTab === 'providers') { %>
-        <button class="btn-primary" style="background: #be185d; border: 1px solid #9d174d; color: white; padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px;">
-            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            Add Provider
-        </button>
-        <% } %>
-    </div>
 
-    <div class="card p-0">
-        <!-- Tabs -->
-        <div style="padding: 16px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: center;">
-            <div style="display: inline-flex; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; padding: 4px;">
-                <a href="?tab=providers" class="tab-link <%= currentTab === 'providers' ? 'active' : '' %>">Providers</a>
-                <a href="?tab=templates" class="tab-link <%= currentTab === 'templates' ? 'active' : '' %>">Templates</a>
-                <a href="?tab=history" class="tab-link <%= currentTab === 'history' ? 'active' : '' %>">Message History</a>
-                <a href="?tab=branding" class="tab-link <%= currentTab === 'branding' ? 'active' : '' %>">Branding</a>
+        <!-- Recent Breach Dispatch Queue Table -->
+        <div class="pt-4 border-t border-slate-800">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h3 class="text-sm font-bold text-white uppercase tracking-wider">Live Breach Alert Dispatch Queue</h3>
+              <p class="text-xs text-slate-400 mt-0.5">Cryptographically logged multi-channel alerts with delivery receipts</p>
             </div>
+            <a href="/incidents/management" class="text-xs text-rose-400 hover:text-rose-300 font-semibold flex items-center gap-1">
+              <span>Trigger Dispatch from Operations</span> &rarr;
+            </a>
+          </div>
+
+          <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/40">
+            <table class="w-full text-left text-xs">
+              <thead class="text-slate-400 uppercase tracking-wider border-b border-slate-800 bg-slate-950/60 font-semibold">
+                <tr>
+                  <th class="py-3 px-4">Dispatch ID</th>
+                  <th class="py-3 px-4">Incident Association</th>
+                  <th class="py-3 px-4">Channels</th>
+                  <th class="py-3 px-4">Languages</th>
+                  <th class="py-3 px-4">Recipients</th>
+                  <th class="py-3 px-4">Status</th>
+                  <th class="py-3 px-4">Timestamp</th>
+                  <th class="py-3 px-4 text-right">SHA-256 Proof</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800/60 text-slate-300">
+                <% if (dispatchList && dispatchList.length > 0) { %>
+                  <% dispatchList.forEach(function(d) { %>
+                    <tr class="hover:bg-slate-800/30 transition-colors">
+                      <td class="py-3 px-4 font-mono font-bold text-rose-400"><%= d.id %></td>
+                      <td class="py-3 px-4 font-sans max-w-xs">
+                        <div class="font-bold text-white truncate"><%= d.incidentTitle %></div>
+                        <div class="text-[11px] text-slate-400 font-mono"><%= d.incidentId %></div>
+                      </td>
+                      <td class="py-3 px-4">
+                        <% (d.channels || []).forEach(function(c) { %>
+                          <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-300 border border-slate-700 mr-1"><%= c %></span>
+                        <% }); %>
+                      </td>
+                      <td class="py-3 px-4 font-mono text-[11px] text-sky-400">
+                        <%= (d.languages || []).join(', ') %>
+                      </td>
+                      <td class="py-3 px-4 font-bold text-white font-mono">
+                        ~<%= d.deliveredCount || 250 %> patients
+                      </td>
+                      <td class="py-3 px-4">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-500/30">
+                          ✓ <%= d.status || 'DELIVERED' %>
+                        </span>
+                      </td>
+                      <td class="py-3 px-4 text-slate-400 font-mono text-[11px]">
+                        <%= new Date(d.dispatchedAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'short', timeStyle: 'short' }) %>
+                      </td>
+                      <td class="py-3 px-4 text-right font-mono text-[10px] text-slate-400 truncate max-w-[120px]" title="<%= d.sha256Proof %>">
+                        <%= (d.sha256Proof || '').slice(0, 12) %>...
+                      </td>
+                    </tr>
+                  <% }); %>
+                <% } else { %>
+                  <tr>
+                    <td colspan="8" class="py-6 text-center text-slate-500">
+                      No citizen breach alerts in queue. Clean compliance operational state.
+                    </td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
         </div>
-        
-        <% if (currentTab === 'providers') { %>
-            <div style="padding: 20px 24px; border-bottom: 1px solid var(--border-color);">
-                <label style="display: flex; align-items: flex-start; gap: 12px; cursor: pointer;">
-                    <input type="checkbox" style="margin-top: 2px;">
-                    <div>
-                        <div style="font-size: 13px; font-weight: 600; color: white; margin-bottom: 2px;">Send plain-text-only emails</div>
-                        <div style="font-size: 12px; color: var(--text-muted);">By default, every email includes both an HTML and plain-text version &mdash; the recipient's mail client picks the one it supports. Enable this to suppress the HTML version entirely for this tenant.</div>
-                    </div>
-                </label>
-            </div>
-            
-            <div style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
-                <input type="text" placeholder="Search providers..." style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 12px; border-radius: 6px; font-size: 13px; width: 300px;">
-                <div style="display: flex; gap: 16px; align-items: center; color: var(--text-muted); font-size: 13px;">
-                    <span>2 rows</span>
-                    <span>Previous</span>
-                    <span style="font-weight: 600; color: var(--text-main);">Page 1 of 1</span>
-                    <span>Next</span>
-                </div>
-            </div>
-            
-            <div style="overflow-x: auto;">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th style="padding-left: 24px; width: 80px;">ID <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2" fill="none" style="display: inline-block; vertical-align: middle;"><path d="M18 15l-6-6-6 6"/></svg></th>
-                            <th>Provider <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2" fill="none" style="display: inline-block; vertical-align: middle; margin-left: 4px; opacity: 0.5;"><path d="M7 15l5 5 5-5M7 9l5-5 5 5"/></svg></th>
-                            <th>Channel <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2" fill="none" style="display: inline-block; vertical-align: middle; margin-left: 4px; opacity: 0.5;"><path d="M7 15l5 5 5-5M7 9l5-5 5 5"/></svg></th>
-                            <th>Status <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2" fill="none" style="display: inline-block; vertical-align: middle; margin-left: 4px; opacity: 0.5;"><path d="M7 15l5 5 5-5M7 9l5-5 5 5"/></svg></th>
-                            <th style="padding-right: 24px; text-align: right;"><svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2" fill="none" style="display: inline-block; vertical-align: middle; opacity: 0.5;"><path d="M7 15l5 5 5-5M7 9l5-5 5 5"/></svg></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td style="padding-left: 24px; color: var(--text-muted);">#1</td>
-                            <td style="font-weight: 600; color: white;">
-                                DPDP_Secure SMTP Relay 
-                                <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" style="margin-left: 8px; color: var(--text-muted); cursor: pointer;" onclick="openModal()"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                            </td>
-                            <td><span class="pill-channel">EMAIL</span></td>
-                            <td><span class="pill-status">ENABLED</span></td>
-                            <td style="padding-right: 24px; text-align: right; color: var(--text-muted);">
-                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="padding-left: 24px; color: var(--text-muted);">#2</td>
-                            <td style="font-weight: 600; color: white;">
-                                DPDP_Secure MSG91 
-                                <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" style="margin-left: 8px; color: var(--text-muted);"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                            </td>
-                            <td><span class="pill-channel">SMS</span></td>
-                            <td><span class="pill-status">ENABLED</span></td>
-                            <td style="padding-right: 24px; text-align: right; color: var(--text-muted);">
-                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            
-            <div style="padding: 16px 24px; display: flex; justify-content: flex-end; align-items: center; gap: 16px; border-top: 1px solid var(--border-color); color: var(--text-muted); font-size: 13px;">
-                <span>Previous</span>
-                <span style="font-weight: 600; color: var(--text-main);">Page 1 of 1</span>
-                <span>Next</span>
-            </div>
-            
-            <!-- Modal Overlay -->
-            <div class="modal-overlay" id="editProviderModal">
-                <div class="modal-content">
-                    <div style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
-                        <h2 style="font-size: 16px; font-weight: 700; color: white; margin: 0;">Edit Provider</h2>
-                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" style="color: var(--text-muted); cursor: pointer;" onclick="closeModal()"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                    </div>
-                    
-                    <div style="padding: 24px;">
-                        <label class="key-form-label">Channel</label>
-                        <select class="key-input" style="appearance: none;">
-                            <option>EMAIL</option>
-                        </select>
-                        
-                        <label class="key-form-label">Provider Name</label>
-                        <input type="text" class="key-input" value="DPDP_Secure SMTP Relay">
-                        
-                        <label class="key-form-label">Config JSON</label>
-                        <textarea class="key-input" style="height: 120px; font-family: monospace; resize: vertical;">{
-  "from": "privacy@dpdpsecure.in",
-  "sender_name": "DPDP_Secure Privacy Team"
-}</textarea>
-                    </div>
-                    
-                    <div style="padding: 16px 24px; border-top: 1px solid var(--border-color); display: flex; gap: 12px;">
-                        <button class="btn-primary" style="background: #be185d; border: 1px solid #9d174d; color: white; padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 600; width: 50%;">Save Provider</button>
-                        <button onclick="closeModal()" class="action-btn" style="padding: 10px 20px; font-size: 14px; background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); border-radius: 6px; width: 50%;">Cancel</button>
-                    </div>
-                </div>
-            </div>
-            <script>
-            function openModal() { document.getElementById('editProviderModal').classList.add('active'); }
-            function closeModal() { document.getElementById('editProviderModal').classList.remove('active'); }
-            </script>
-        <% } else if (currentTab === 'templates') { %>
-            <div style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
-                <input type="text" placeholder="Search templates..." style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 12px; border-radius: 6px; font-size: 13px; width: 300px;">
-                <div style="display: flex; gap: 16px; align-items: center; color: var(--text-muted); font-size: 13px;">
-                    <span>24 rows</span>
-                    <span>Previous</span>
-                    <span style="font-weight: 600; color: var(--text-main);">Page 1 of 3</span>
-                    <span>Next</span>
-                </div>
-            </div>
-            
-            <div style="overflow-x: auto;">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th style="padding-left: 24px; width: 80px;">ID <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2" fill="none" style="display: inline-block; vertical-align: middle;"><path d="M18 15l-6-6-6 6"/></svg></th>
-                            <th>Name <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2" fill="none" style="display: inline-block; vertical-align: middle; margin-left: 4px; opacity: 0.5;"><path d="M7 15l5 5 5-5M7 9l5-5 5 5"/></svg></th>
-                            <th>Key <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2" fill="none" style="display: inline-block; vertical-align: middle; margin-left: 4px; opacity: 0.5;"><path d="M7 15l5 5 5-5M7 9l5-5 5 5"/></svg></th>
-                            <th>Channel <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2" fill="none" style="display: inline-block; vertical-align: middle; margin-left: 4px; opacity: 0.5;"><path d="M7 15l5 5 5-5M7 9l5-5 5 5"/></svg></th>
-                            <th>Status <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2" fill="none" style="display: inline-block; vertical-align: middle; margin-left: 4px; opacity: 0.5;"><path d="M7 15l5 5 5-5M7 9l5-5 5 5"/></svg></th>
-                            <th></th>
-                            <th style="padding-right: 24px;"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% const templates = [
-                            {id: '#1', name: 'DSR Request Received', key: 'dsr_received'},
-                            {id: '#2', name: 'DSR Request In Progress', key: 'dsr_in_progress'},
-                            {id: '#3', name: 'DSR Request Completed', key: 'dsr_completed'},
-                            {id: '#4', name: 'DSR Overdue Reminder', key: 'dsr_overdue_reminder'},
-                            {id: '#5', name: 'Consent Confirmation', key: 'consent_granted'},
-                            {id: '#6', name: 'Consent Withdrawal Confirmation', key: 'consent_withdrawn'},
-                            {id: '#7', name: 'DPIA Review Required', key: 'dpia_review_required'},
-                            {id: '#8', name: 'SLA Breach Alert', key: 'dprr_sla_breach'}
-                        ] %>
-                        <% templates.forEach(t => { %>
-                        <tr>
-                            <td style="padding-left: 24px; color: var(--text-muted);"><%= t.id %></td>
-                            <td style="font-weight: 600; color: white;"><%= t.name %></td>
-                            <td style="color: var(--text-muted); font-family: monospace; font-size: 12px;"><%= t.key %></td>
-                            <td><span class="pill-channel">EMAIL</span></td>
-                            <td><span class="pill-status">ACTIVE</span></td>
-                            <td style="text-align: right;">
-                                <button style="background: transparent; border: 1px solid rgba(255,255,255,0.1); color: white; padding: 4px 12px; border-radius: 4px; font-size: 11px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px;">
-                                    <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-                                    Customise
-                                </button>
-                            </td>
-                            <td style="padding-right: 24px; text-align: right;">
-                                <div style="display: inline-flex; align-items: center; gap: 6px; color: var(--text-muted); font-size: 11px; font-weight: 500; background: rgba(255,255,255,0.05); padding: 4px 12px; border-radius: 4px;">
-                                    <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                                    System
-                                </div>
-                            </td>
-                        </tr>
-                        <% }) %>
-                    </tbody>
-                </table>
-            </div>
-            
-            <div style="padding: 16px 24px; display: flex; justify-content: flex-end; align-items: center; gap: 16px; border-top: 1px solid var(--border-color); color: var(--text-muted); font-size: 13px;">
-                <span>Previous</span>
-                <span style="font-weight: 600; color: var(--text-main);">Page 1 of 3</span>
-                <span>Next</span>
-            </div>
+      </div>
 
-        <% } else if (currentTab === 'history') { %>
-            <div style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
-                <input type="text" placeholder="Search messages..." style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 12px; border-radius: 6px; font-size: 13px; width: 300px;">
-                <div style="display: flex; gap: 16px; align-items: center; color: var(--text-muted); font-size: 13px;">
-                    <span>Previous</span>
-                    <span>Next</span>
-                </div>
-            </div>
-            
-            <div style="overflow-x: auto;">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th style="padding-left: 24px;">ID</th>
-                            <th>SUBJECT</th>
-                            <th>CHANNEL</th>
-                            <th>RECIPIENT</th>
-                            <th>STATUS</th>
-                            <th>CREATED</th>
-                            <th style="padding-right: 24px;">SENT</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td style="padding-left: 24px; color: var(--text-muted);">#14</td>
-                            <td style="font-weight: 600; color: white;">(no subject)</td>
-                            <td><span class="pill-channel">IN_APP</span></td>
-                            <td style="color: var(--text-muted);">01a04e0b-c1b4-7e04-bf01-2add5c840877</td>
-                            <td><span class="pill-status">SENT</span></td>
-                            <td style="color: var(--text-muted); font-size: 12px;">09 Sept 2026, 11:52 am</td>
-                            <td style="padding-right: 24px; color: var(--text-muted); font-size: 12px;">09 Sept 2026, 11:52 am</td>
-                        </tr>
-                        <tr>
-                            <td style="padding-left: 24px; color: var(--text-muted);">#2</td>
-                            <td style="font-weight: 600; color: white;">Action required: BNPL Credit Scoring AI DPIA review due in 5 days</td>
-                            <td><span class="pill-channel">EMAIL</span></td>
-                            <td style="color: var(--text-muted);">dpo@dpdpsecure.in</td>
-                            <td><span class="pill-status">SIMULATED</span></td>
-                            <td style="color: var(--text-muted); font-size: 12px;">29 Aug 2026, 03:03 pm</td>
-                            <td style="padding-right: 24px; color: var(--text-muted); font-size: 12px;">22 Aug 2026, 03:03 pm</td>
-                        </tr>
-                        <tr>
-                            <td style="padding-left: 24px; color: var(--text-muted);">#1</td>
-                            <td style="font-weight: 600; color: white;">Your data rights request has been received &mdash; Ref: PR-1001</td>
-                            <td><span class="pill-channel">EMAIL</span></td>
-                            <td style="color: var(--text-muted);">rajesh.kumar@gmail.com</td>
-                            <td><span class="pill-status">SIMULATED</span></td>
-                            <td style="color: var(--text-muted); font-size: 12px;">29 Aug 2026, 03:03 pm</td>
-                            <td style="padding-right: 24px; color: var(--text-muted); font-size: 12px;">15 Aug 2026, 03:03 pm</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            
-            <div style="padding: 16px 24px; display: flex; justify-content: flex-end; align-items: center; gap: 16px; border-top: 1px solid var(--border-color); color: var(--text-muted); font-size: 13px;">
-                <span>Previous</span>
-                <span>Next</span>
-            </div>
+    <!-- TAB 2: DELIVERY PROVIDERS -->
+    <% } else if (currentTab === 'providers') { %>
+      <div class="p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h2 class="text-sm font-bold text-white uppercase tracking-wider">Configured Messaging Delivery Providers</h2>
+            <p class="text-xs text-slate-400 mt-0.5">Multi-channel routing for SMS, WhatsApp Cloud API, and SMTP email</p>
+          </div>
+          <button class="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow">
+            + Add Provider
+          </button>
+        </div>
 
-        <% } else if (currentTab === 'branding') { %>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; padding: 24px;">
-                <!-- Left: Branding Form -->
-                <div>
-                    <h2 style="font-size: 14px; font-weight: 600; color: white; margin: 0 0 4px 0;">Default Notification Branding</h2>
-                    <p style="color: var(--text-muted); font-size: 12px; margin: 0 0 24px 0;">Applied to all notification emails. Template-specific branding overrides this.</p>
-                    
-                    <label class="key-form-label">Logo URL</label>
-                    <input type="text" class="key-input" placeholder="https://example.com/logo.png" style="margin-bottom: 16px;">
-                    
-                    <label class="key-form-label">Or Upload Logo</label>
-                    <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 24px;">
-                        <button style="background: rgba(255,255,255,0.1); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 12px; border-radius: 6px; font-size: 13px;">Choose File</button>
-                        <span style="font-size: 13px; color: var(--text-muted);">No file chosen</span>
-                    </div>
-                    
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
-                        <div>
-                            <label class="key-form-label">Primary Colour</label>
-                            <div style="display: flex; gap: 12px; align-items: center; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 6px;">
-                                <div style="width: 20px; height: 20px; background: #6366f1; border-radius: 4px;"></div>
-                                <input type="text" value="#4F46E5" style="background: transparent; border: none; color: white; font-size: 13px; width: 100%; outline: none; text-transform: uppercase;">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="key-form-label">Secondary Colour</label>
-                            <div style="display: flex; gap: 12px; align-items: center; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 6px;">
-                                <div style="width: 20px; height: 20px; background: white; border-radius: 4px;"></div>
-                                <input type="text" value="#FFFFFF" style="background: transparent; border: none; color: white; font-size: 13px; width: 100%; outline: none; text-transform: uppercase;">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
-                        <div>
-                            <label class="key-form-label">Background</label>
-                            <div style="display: flex; gap: 12px; align-items: center; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 6px;">
-                                <div style="width: 20px; height: 20px; background: #f8fafc; border-radius: 4px;"></div>
-                                <input type="text" value="#F8FAFC" style="background: transparent; border: none; color: white; font-size: 13px; width: 100%; outline: none; text-transform: uppercase;">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="key-form-label">Text Colour</label>
-                            <div style="display: flex; gap: 12px; align-items: center; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 6px;">
-                                <div style="width: 20px; height: 20px; background: #0f172a; border-radius: 4px;"></div>
-                                <input type="text" value="#0F172A" style="background: transparent; border: none; color: white; font-size: 13px; width: 100%; outline: none; text-transform: uppercase;">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
-                        <div>
-                            <label class="key-form-label">Button Colour</label>
-                            <div style="display: flex; gap: 12px; align-items: center; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 6px;">
-                                <div style="width: 20px; height: 20px; background: #6366f1; border-radius: 4px;"></div>
-                                <input type="text" value="#4F46E5" style="background: transparent; border: none; color: white; font-size: 13px; width: 100%; outline: none; text-transform: uppercase;">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="key-form-label">Font Family</label>
-                            <select class="key-input" style="margin-bottom: 0; appearance: none;">
-                                <option>Arial</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Right: Preview -->
-                <div>
-                    <h2 style="font-size: 14px; font-weight: 600; color: white; margin: 0 0 4px 0;">Email Preview</h2>
-                    <p style="color: var(--text-muted); font-size: 12px; margin: 0 0 24px 0;">Live preview of how branded emails will appear.</p>
-                    
-                    <div style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
-                        <div style="background: #6366f1; height: 80px; padding: 24px; display: flex; align-items: center;">
-                            <div style="width: 32px; height: 32px; background: rgba(255,255,255,0.2); border-radius: 6px;"></div>
-                        </div>
-                        <div style="padding: 32px 24px; color: #0f172a; font-family: Arial, sans-serif;">
-                            <p style="font-size: 14px; margin: 0 0 16px 0;">Dear [Recipient],</p>
-                            <p style="font-size: 14px; margin: 0 0 24px 0; line-height: 1.5;">Your privacy request has been received. Our team will process it within the statutory timeframe and notify you once complete.</p>
-                            <button style="background: #6366f1; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer;">View Request</button>
-                        </div>
-                    </div>
-                </div>
+        <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/40">
+          <table class="w-full text-left text-xs">
+            <thead class="text-slate-400 uppercase tracking-wider border-b border-slate-800 bg-slate-950/60 font-semibold">
+              <tr>
+                <th class="py-3 px-4">ID</th>
+                <th class="py-3 px-4">Provider Name</th>
+                <th class="py-3 px-4">Channel</th>
+                <th class="py-3 px-4">Endpoint Status</th>
+                <th class="py-3 px-4">Latency</th>
+                <th class="py-3 px-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800/60 text-slate-300">
+              <tr class="hover:bg-slate-800/20 transition-colors">
+                <td class="py-3 px-4 font-mono text-slate-400">#PRV-01</td>
+                <td class="py-3 px-4 font-bold text-white">
+                  Twilio Telecom SMS Gateway (DLT Certified)
+                  <div class="text-[11px] text-slate-400 font-normal">Sender ID: AAROGY &bull; India DLT Entity Registered</div>
+                </td>
+                <td class="py-3 px-4">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-950 text-sky-400 border border-sky-500/30">SMS</span>
+                </td>
+                <td class="py-3 px-4">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-500/30">ONLINE &bull; ACTIVE</span>
+                </td>
+                <td class="py-3 px-4 font-mono text-slate-400">120ms</td>
+                <td class="py-3 px-4 text-right">
+                  <button class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px]">Configure</button>
+                </td>
+              </tr>
+              <tr class="hover:bg-slate-800/20 transition-colors">
+                <td class="py-3 px-4 font-mono text-slate-400">#PRV-02</td>
+                <td class="py-3 px-4 font-bold text-white">
+                  Meta WhatsApp Business Cloud API
+                  <div class="text-[11px] text-slate-400 font-normal">Verified Business Account &bull; Indiranagar Clinic Number</div>
+                </td>
+                <td class="py-3 px-4">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-500/30">WHATSAPP</span>
+                </td>
+                <td class="py-3 px-4">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-500/30">ONLINE &bull; ACTIVE</span>
+                </td>
+                <td class="py-3 px-4 font-mono text-slate-400">85ms</td>
+                <td class="py-3 px-4 text-right">
+                  <button class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px]">Configure</button>
+                </td>
+              </tr>
+              <tr class="hover:bg-slate-800/20 transition-colors">
+                <td class="py-3 px-4 font-mono text-slate-400">#PRV-03</td>
+                <td class="py-3 px-4 font-bold text-white">
+                  DPDP_Secure Local SMTP Relay
+                  <div class="text-[11px] text-slate-400 font-normal">privacy@aarogyaclinic.in (TLS Encrypted)</div>
+                </td>
+                <td class="py-3 px-4">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-950 text-indigo-400 border border-indigo-500/30">EMAIL</span>
+                </td>
+                <td class="py-3 px-4">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-500/30">ONLINE &bull; ACTIVE</span>
+                </td>
+                <td class="py-3 px-4 font-mono text-slate-400">45ms</td>
+                <td class="py-3 px-4 text-right">
+                  <button class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px]">Configure</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    <!-- TAB 3: MESSAGE TEMPLATES -->
+    <% } else if (currentTab === 'templates') { %>
+      <div class="p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h2 class="text-sm font-bold text-white uppercase tracking-wider">Statutory & Operational Notice Templates</h2>
+            <p class="text-xs text-slate-400 mt-0.5">Pre-cleared legal templates for Section 5 notices, DSR status, and Section 8(6) breach notifications</p>
+          </div>
+          <span class="text-xs text-slate-400 font-mono">Total: 27 templates</span>
+        </div>
+
+        <div class="space-y-3">
+          <!-- Featured Breach Alert Template -->
+          <div class="p-4 rounded-xl bg-gradient-to-r from-rose-950/30 via-slate-900 to-slate-950 border border-rose-500/40">
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                  STATUTORY SECTION 8(6)
+                </span>
+                <span class="text-xs font-bold text-white">Personal Data Breach Citizen Reassurance Notice</span>
+              </div>
+              <span class="text-[11px] text-slate-400 font-mono">key: breach_citizen_reassurance</span>
             </div>
-        <% } %>
-    </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Dispatched upon confirmation of a security incident impacting informal data repositories. Formatted across English, Kannada, and Hindi with actionable precautions (ignore unsolicited payment links, verify clinic communications).
+            </p>
+            <div class="mt-3 flex items-center justify-between pt-2 border-t border-slate-800 text-xs">
+              <span class="text-slate-400">Supported Channels: <strong class="text-white">SMS &bull; WhatsApp</strong></span>
+              <a href="?tab=breach_alerts" class="text-rose-400 hover:text-rose-300 font-semibold">View Regional Texts &rarr;</a>
+            </div>
+          </div>
+
+          <!-- Other Standard Templates -->
+          <div class="p-3.5 rounded-xl bg-slate-950/40 border border-slate-800 flex items-center justify-between">
+            <div>
+              <div class="text-xs font-bold text-white">Section 5 Consent Request & Purpose Specification</div>
+              <div class="text-[11px] text-slate-400">Itemised consent notice in Kannada, Hindi, and English with DPO contact</div>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-500/30">WHATSAPP / SMS</span>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-950/40 border border-slate-800 flex items-center justify-between">
+            <div>
+              <div class="text-xs font-bold text-white">Section 12 DSR Erasure Certificate Delivery</div>
+              <div class="text-[11px] text-slate-400">Delivers SHA-256 signed erasure compliance certificate following dual-track resolution</div>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-950 text-sky-400 border border-sky-500/30">EMAIL / SMS</span>
+          </div>
+        </div>
+      </div>
+
+    <!-- TAB 4: DISPATCH HISTORY -->
+    <% } else if (currentTab === 'history') { %>
+      <div class="p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h2 class="text-sm font-bold text-white uppercase tracking-wider">Comprehensive Notification Log</h2>
+            <p class="text-xs text-slate-400 mt-0.5">Chronological record of all outbound customer communications</p>
+          </div>
+          <span class="text-xs text-slate-400 font-mono">Total Sent: <%= totalDispatched %></span>
+        </div>
+
+        <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/40">
+          <table class="w-full text-left text-xs">
+            <thead class="text-slate-400 uppercase tracking-wider border-b border-slate-800 bg-slate-950/60 font-semibold">
+              <tr>
+                <th class="py-3 px-4">Log ID</th>
+                <th class="py-3 px-4">Subject / Notification Type</th>
+                <th class="py-3 px-4">Channel</th>
+                <th class="py-3 px-4">Recipient / Batch</th>
+                <th class="py-3 px-4">Status</th>
+                <th class="py-3 px-4 text-right">Timestamp</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800/60 text-slate-300">
+              <% (dispatchList || []).forEach(function(d) { %>
+                <tr class="hover:bg-slate-800/30 transition-colors">
+                  <td class="py-3 px-4 font-mono font-bold text-rose-400"><%= d.id %></td>
+                  <td class="py-3 px-4 font-bold text-white">
+                    Section 8(6) Breach Reassurance Alert (<%= d.incidentId %>)
+                  </td>
+                  <td class="py-3 px-4">
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-950 text-rose-300 border border-rose-500/30">
+                      <%= (d.channels || []).join(' + ') %>
+                    </span>
+                  </td>
+                  <td class="py-3 px-4 font-mono text-slate-300">~<%= d.deliveredCount || 250 %> Patients (Indiranagar Clinic)</td>
+                  <td class="py-3 px-4">
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-500/30">✓ DELIVERED</span>
+                  </td>
+                  <td class="py-3 px-4 text-right text-slate-400 font-mono">
+                    <%= new Date(d.dispatchedAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'short', timeStyle: 'short' }) %>
+                  </td>
+                </tr>
+              <% }); %>
+              <tr class="hover:bg-slate-800/20 transition-colors">
+                <td class="py-3 px-4 font-mono text-slate-400">#NOTIF-1002</td>
+                <td class="py-3 px-4 font-bold text-white">DSR Erasure Certificate Delivered (Ref: DSR-2026-8819)</td>
+                <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-950 text-sky-400 border border-sky-500/30">SMS + EMAIL</span></td>
+                <td class="py-3 px-4 font-mono text-slate-400">+91 9988776655</td>
+                <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-500/30">✓ DELIVERED</span></td>
+                <td class="py-3 px-4 text-right text-slate-400 font-mono">Earlier Today</td>
+              </tr>
+              <tr class="hover:bg-slate-800/20 transition-colors">
+                <td class="py-3 px-4 font-mono text-slate-400">#NOTIF-1001</td>
+                <td class="py-3 px-4 font-bold text-white">Section 5 Itemised WhatsApp Consent Notice</td>
+                <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-500/30">WHATSAPP</span></td>
+                <td class="py-3 px-4 font-mono text-slate-400">+91 9845012345</td>
+                <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-500/30">✓ DELIVERED</span></td>
+                <td class="py-3 px-4 text-right text-slate-400 font-mono">Yesterday</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    <!-- TAB 5: BRANDING -->
+    <% } else if (currentTab === 'branding') { %>
+      <div class="p-6">
+        <h2 class="text-sm font-bold text-white uppercase tracking-wider mb-2">Notification Branding & Trust Seals</h2>
+        <p class="text-xs text-slate-400 mb-6">Configure business identity, clinic stamps, and DPO verification footer for outbound notices.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="p-5 rounded-xl bg-slate-950/40 border border-slate-800 space-y-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Entity Brand Name</label>
+              <input type="text" value="Aarogya Diagnostic Center" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-xs text-white" readonly>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">DPO Grievance Email</label>
+              <input type="text" value="privacy@aarogyaclinic.in" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-xs text-white" readonly>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Helpline Phone (Karnataka)</label>
+              <input type="text" value="+91 9845012345" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-xs text-white" readonly>
+            </div>
+          </div>
+
+          <div class="p-5 rounded-xl bg-slate-950/40 border border-slate-800 flex flex-col justify-between">
+            <div>
+              <div class="text-xs font-bold text-white mb-2">Regulatory Trust Seal Preview</div>
+              <div class="p-4 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-300 font-sans space-y-2">
+                <div class="font-bold text-emerald-400 flex items-center gap-1.5">
+                  <span>🔒</span>
+                  <span>DPDP_Secure Statutory Verification Stamp</span>
+                </div>
+                <div class="text-[11px] text-slate-400">
+                  This message is verified under Digital Personal Data Protection Act, 2023. No financial transfers or OTPs will ever be requested by Aarogya Clinic.
+                </div>
+              </div>
+            </div>
+            <div class="text-[11px] text-slate-400 pt-3 border-t border-slate-800 mt-4">
+              Cryptographic integrity verified by local SHA-256 audit engine.
+            </div>
+          </div>
+        </div>
+      </div>
+    <% } %>
+  </div>
 </div>
 
 <%- include('partials/footer') %>
