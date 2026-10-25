@@ -82,3 +82,6 @@ input[type=radio]:checked + label { border-color: var(--color-primary); }
 
 
 .radio-card:focus-within { box-shadow: 0 0 0 2px var(--color-primary); }
+
+
+.alert-dismiss { width: 44px; height: 44px; }
