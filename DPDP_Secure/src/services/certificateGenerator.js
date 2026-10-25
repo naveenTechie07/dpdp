@@ -910,6 +910,7 @@ module.exports = {
   generateErasureCertificate,
   getCertificateById,
   buildConsentPassbookHtml,
+  generateConsentPassbookHtml: buildConsentPassbookHtml,
   CERTIFICATES_DIR
 };
 
