@@ -1,271 +1,181 @@
 <%- include('partials/header') %>
+<% var events = (typeof events !== 'undefined' && Array.isArray(events)) ? events : []; %>
 
-<div class="dashboard-header mb-4" style="align-items: center;">
-    <div class="title-group">
-        <h1>Consent ledger</h1>
-        <p>Summary records — one row per consent capture event. Click a row to inspect purposes, preferences, and data elements.</p>
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-800 pb-5">
+    <div>
+      <div class="flex items-center gap-2">
+        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+          DPDP Act Section 6(1) & 6(4)
+        </span>
+        <span class="text-xs text-slate-400">Pillar 2: Consent & Purpose Management</span>
+      </div>
+      <h1 class="text-2xl font-bold text-white tracking-tight mt-1">Immutable Consent Event Ledger</h1>
+      <p class="text-sm text-slate-400 mt-1">
+        Chronological audit grid recording citizen consent grants and statutory revocations with SHA-256 cryptographic proofs.
+      </p>
     </div>
-</div>
+    <div class="flex items-center gap-3">
+      <a href="/consent/collection-points" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold transition-colors shadow-lg shadow-emerald-900/30">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        <span>Notice Builder & Simulator</span>
+      </a>
+    </div>
+  </div>
 
-<div class="card p-0" style="overflow: hidden;">
-    <!-- Table Toolbar -->
-    <div class="table-toolbar" style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
-        <div class="search-bar" style="width: 350px; background: transparent; padding: 0; border: none;">
-            <input type="text" placeholder="Search subject, source, jurisdiction..." style="border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 6px; background: transparent; color: var(--text-main); width: 100%;">
-        </div>
-        
-        <div class="pagination" style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-muted);">
-            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Previous</button>
-            <button class="btn-secondary" style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: pointer;">Next</button>
-        </div>
+  <!-- Metric Counters -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+      <span class="text-xs font-medium text-slate-400">Total Consent Events</span>
+      <div class="text-2xl font-bold text-white mt-1"><%= events ? events.length : 0 %></div>
+      <div class="text-[11px] text-slate-400 mt-1">Immutable ledger entries</div>
+    </div>
+    <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+      <span class="text-xs font-medium text-slate-400">Active Consents</span>
+      <div class="text-2xl font-bold text-emerald-400 mt-1">
+        <%= events ? events.filter(e => e.status === 'ACTIVE' || e.status === 'GRANTED').length : 0 %>
+      </div>
+      <div class="text-[11px] text-emerald-400 mt-1">Section 6(1) Valid</div>
+    </div>
+    <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+      <span class="text-xs font-medium text-slate-400">Withdrawn Consents</span>
+      <div class="text-2xl font-bold text-amber-400 mt-1">
+        <%= events ? events.filter(e => e.status === 'WITHDRAWN').length : 0 %>
+      </div>
+      <div class="text-[11px] text-amber-400 mt-1">Section 6(4) Revoked</div>
+    </div>
+    <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+      <span class="text-xs font-medium text-slate-400">WhatsApp Channel Events</span>
+      <div class="text-2xl font-bold text-sky-400 mt-1">
+        <%= events ? events.filter(e => (e.channel || '').toUpperCase().includes('WHATSAPP')).length : 0 %>
+      </div>
+      <div class="text-[11px] text-sky-400 mt-1">1-Click Opt-in / Opt-out</div>
+    </div>
+  </div>
+
+  <!-- Main Consent Ledger Table -->
+  <div class="bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+    <div class="p-4 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div class="flex items-center gap-2">
+        <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+        </svg>
+        <h2 class="text-sm font-bold text-white uppercase tracking-wider">Cryptographic Consent Event Records</h2>
+      </div>
+      <div class="text-xs text-slate-400 font-mono">
+        Algorithm: <span class="text-emerald-400 font-semibold">SHA-256 Non-Repudiation</span>
+      </div>
     </div>
 
-    <!-- Data Table -->
-    <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse text-xs">
         <thead>
-            <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 11px; text-transform: uppercase;">
-                <th style="padding: 12px 24px; font-weight: 600;">LEDGER ID</th>
-                <th style="padding: 12px 16px; font-weight: 600;">SUBJECT</th>
-                <th style="padding: 12px 16px; font-weight: 600;">SOURCE</th>
-                <th style="padding: 12px 16px; font-weight: 600;">JURISDICTION</th>
-                <th style="padding: 12px 16px; font-weight: 600;">PURPOSES</th>
-                <th style="padding: 12px 16px; font-weight: 600;">CP VER.</th>
-                <th style="padding: 12px 24px; font-weight: 600;">CREATED</th>
-            </tr>
+          <tr class="border-b border-slate-800 text-[11px] font-semibold text-slate-400 uppercase tracking-wider bg-slate-950/40">
+            <th class="py-3.5 px-4">Timestamp (ISO 8601)</th>
+            <th class="py-3.5 px-4">Data Principal Identifier</th>
+            <th class="py-3.5 px-4">Purpose Code</th>
+            <th class="py-3.5 px-4">Channel</th>
+            <th class="py-3.5 px-4">Consent State</th>
+            <th class="py-3.5 px-4">SHA-256 Proof</th>
+            <th class="py-3.5 px-4 text-right">Statutory Action</th>
+          </tr>
         </thead>
-        <tbody style="font-size: 13px;">
-            <!-- Row 1 -->
-            <tr style="border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
-                <td style="padding: 16px 24px;">
-                    <a href="#" style="color: #3b82f6; text-decoration: none; font-family: monospace;">fc9d87cd..</a>
+        <tbody class="divide-y divide-slate-800/60 font-mono text-slate-300">
+          <% if (events && events.length > 0) { %>
+            <% events.forEach(function(event) { %>
+              <tr class="hover:bg-slate-800/20 transition-colors">
+                <td class="py-3 px-4 text-slate-400 whitespace-nowrap">
+                  <%= event.timestamp ? new Date(event.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'short' }) : 'Just now' %>
                 </td>
-                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">
-                    suresh.nair@gmail.com
+                <td class="py-3 px-4 font-semibold text-white whitespace-nowrap">
+                  <%= event.dataPrincipalPhone || event.phone || '+91 9845012345' %>
                 </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">
-                    DPDP_Secure Web Banking Portal
+                <td class="py-3 px-4">
+                  <span class="px-2 py-0.5 rounded bg-slate-800 text-emerald-300 font-mono text-[11px]">
+                    <%= event.purposeCode || 'PURP-DIAGNOSTIC-REPORTING' %>
+                  </span>
                 </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">
-                    IN
+                <td class="py-3 px-4 font-sans text-slate-300 whitespace-nowrap">
+                  <% if ((event.channel || '').toUpperCase().includes('WHATSAPP')) { %>
+                    <span class="inline-flex items-center gap-1 text-emerald-400">
+                      <span>💬</span> WhatsApp Business
+                    </span>
+                  <% } else { %>
+                    <span class="inline-flex items-center gap-1 text-sky-400">
+                      <span>🌐</span> <%= event.channel || 'Web Portal' %>
+                    </span>
+                  <% } %>
                 </td>
-                <td style="padding: 16px 16px;">
-                    <div style="display: flex; gap: 6px;">
-                        <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(16,185,129,0.3);">Granted</span>
-                        <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(16,185,129,0.3);">Granted</span>
-                    </div>
+                <td class="py-3 px-4 whitespace-nowrap">
+                  <% if (event.status === 'ACTIVE' || event.status === 'GRANTED') { %>
+                    <span class="consent-status-badge px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-950/80 text-emerald-400 border border-emerald-500/30">
+                      ACTIVE
+                    </span>
+                  <% } else { %>
+                    <span class="consent-status-badge px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-950/80 text-amber-400 border border-amber-500/30">
+                      WITHDRAWN
+                    </span>
+                  <% } %>
                 </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">
-                    v2
+                <td class="py-3 px-4">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-[11px] text-slate-400 font-mono" title="<%= event.sha256Proof %>">
+                      <%= (event.sha256Proof || '').slice(0, 12) %>...<%= (event.sha256Proof || '').slice(-6) %>
+                    </span>
+                    <button
+                      type="button"
+                      class="btn-copy-hash text-slate-400 hover:text-white p-1 rounded transition-colors"
+                      data-hash="<%= event.sha256Proof %>"
+                      title="Copy SHA-256 Proof"
+                    >
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                      </svg>
+                    </button>
+                  </div>
                 </td>
-                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">
-                    11 Jun 2026, 03:03 pm
+                <td class="py-3 px-4 text-right font-sans whitespace-nowrap">
+                  <% if (event.status === 'ACTIVE' || event.status === 'GRANTED') { %>
+                    <button
+                      type="button"
+                      class="btn-withdraw-consent px-2.5 py-1 rounded bg-amber-950 hover:bg-amber-900 text-amber-300 border border-amber-600/40 text-[11px] font-semibold transition-colors"
+                      data-phone="<%= event.dataPrincipalPhone || event.phone || '+91 9845012345' %>"
+                      data-purpose="<%= event.purposeCode || 'PURP-DIAGNOSTIC-REPORTING' %>"
+                    >
+                      Withdraw Consent
+                    </button>
+                  <% } else { %>
+                    <span class="text-[11px] text-slate-500 italic">Revoked (Sec 6(4))</span>
+                  <% } %>
                 </td>
+              </tr>
+            <% }); %>
+          <% } else { %>
+            <tr>
+              <td colspan="7" class="py-8 text-center text-slate-400">
+                No consent events recorded yet. Go to <a href="/consent/collection-points" class="text-sky-400 underline font-semibold">Notice Builder</a> to simulate citizen WhatsApp opt-in.
+              </td>
             </tr>
-            
-            <!-- Row 2 -->
-            <tr style="border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
-                <td style="padding: 16px 24px;">
-                    <a href="#" style="color: #3b82f6; text-decoration: none; font-family: monospace;">edd91a70..</a>
-                </td>
-                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">
-                    amit.tiwari@gmail.com
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">
-                    DPDP_Secure Mobile App
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">
-                    IN
-                </td>
-                <td style="padding: 16px 16px;">
-                    <div style="display: flex; gap: 6px;">
-                        <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(16,185,129,0.3);">Granted</span>
-                        <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(16,185,129,0.3);">Granted</span>
-                    </div>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">
-                    v1
-                </td>
-                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">
-                    15 Aug 2026, 03:03 pm
-                </td>
-            </tr>
-
-            <!-- Row 3 -->
-            <tr style="border-bottom: 1px solid var(--border-color); background: rgba(59, 130, 246, 0.05); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(59, 130, 246, 0.1)'" onmouseout="this.style.background='rgba(59, 130, 246, 0.05)'">
-                <td style="padding: 16px 24px;">
-                    <a href="#" style="color: #3b82f6; text-decoration: none; font-family: monospace;">e3dbaa35..</a>
-                </td>
-                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">
-                    karthik.rajan@gmail.com
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">
-                    DPDP_Secure Web Banking Portal
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">
-                    IN
-                </td>
-                <td style="padding: 16px 16px;">
-                    <div style="display: flex; gap: 6px;">
-                        <span class="badge" style="background: rgba(239, 68, 68, 0.1); color: #f87171; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(239, 68, 68, 0.3);">Withdrawn</span>
-                        <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(16,185,129,0.3);">Granted</span>
-                    </div>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">
-                    v2
-                </td>
-                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">
-                    24 Jul 2026, 03:03 pm
-                </td>
-            </tr>
-
-            <!-- Row 4 -->
-            <tr style="border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
-                <td style="padding: 16px 24px;">
-                    <a href="#" style="color: #3b82f6; text-decoration: none; font-family: monospace;">ded638c3..</a>
-                </td>
-                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">
-                    farhan.siddiqui@gmail.com
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">
-                    DPDP_Secure Mobile App
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">
-                    IN
-                </td>
-                <td style="padding: 16px 16px;">
-                    <div style="display: flex; gap: 6px;">
-                        <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(16,185,129,0.3);">Granted</span>
-                        <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(16,185,129,0.3);">Granted</span>
-                    </div>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">
-                    v1
-                </td>
-                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">
-                    25 Aug 2026, 03:03 pm
-                </td>
-            </tr>
-
-            <!-- Row 5 -->
-            <tr style="border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
-                <td style="padding: 16px 24px;">
-                    <a href="#" style="color: #3b82f6; text-decoration: none; font-family: monospace;">d96a015e..</a>
-                </td>
-                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">
-                    neha.verma@gmail.com
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">
-                    DPDP_Secure Mobile App
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">
-                    IN
-                </td>
-                <td style="padding: 16px 16px;">
-                    <div style="display: flex; gap: 6px;">
-                        <span class="badge" style="background: rgba(239, 68, 68, 0.1); color: #f87171; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(239, 68, 68, 0.3);">Withdrawn</span>
-                        <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(16,185,129,0.3);">Granted</span>
-                    </div>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">
-                    v1
-                </td>
-                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">
-                    01 Jun 2026, 03:03 pm
-                </td>
-            </tr>
-
-            <!-- Row 6 -->
-            <tr style="border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
-                <td style="padding: 16px 24px;">
-                    <a href="#" style="color: #3b82f6; text-decoration: none; font-family: monospace;">ce987370..</a>
-                </td>
-                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">
-                    priya.reddy@gmail.com
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">
-                    DPDP_Secure Web Banking Portal
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">
-                    IN
-                </td>
-                <td style="padding: 16px 16px;">
-                    <div style="display: flex; gap: 6px;">
-                        <span class="badge" style="background: rgba(239, 68, 68, 0.1); color: #f87171; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(239, 68, 68, 0.3);">Withdrawn</span>
-                        <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(16,185,129,0.3);">Granted</span>
-                    </div>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">
-                    v2
-                </td>
-                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">
-                    17 Mar 2026, 03:03 pm
-                </td>
-            </tr>
-            
-            <!-- Row 7 -->
-            <tr style="border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
-                <td style="padding: 16px 24px;">
-                    <a href="#" style="color: #3b82f6; text-decoration: none; font-family: monospace;">bd6279b8..</a>
-                </td>
-                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">
-                    kavitha.menon@gmail.com
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">
-                    DPDP_Secure Web Banking Portal
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">
-                    IN
-                </td>
-                <td style="padding: 16px 16px;">
-                    <div style="display: flex; gap: 6px;">
-                        <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(16,185,129,0.3);">Granted</span>
-                        <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(16,185,129,0.3);">Granted</span>
-                    </div>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">
-                    v2
-                </td>
-                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">
-                    09 May 2026, 03:03 pm
-                </td>
-            </tr>
-
-            <!-- Row 8 -->
-            <tr style="border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
-                <td style="padding: 16px 24px;">
-                    <a href="#" style="color: #3b82f6; text-decoration: none; font-family: monospace;">b7a5e85a..</a>
-                </td>
-                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">
-                    rahul.gupta@gmail.com
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">
-                    DPDP_Secure Mobile App
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">
-                    IN
-                </td>
-                <td style="padding: 16px 16px;">
-                    <div style="display: flex; gap: 6px;">
-                        <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(16,185,129,0.3);">Granted</span>
-                        <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(16,185,129,0.3);">Granted</span>
-                    </div>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">
-                    v1
-                </td>
-                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">
-                    24 Mar 2026, 03:03 pm
-                </td>
-            </tr>
+          <% } %>
         </tbody>
-    </table>
-    
-    <div class="table-toolbar" style="padding: 16px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; align-items: center;">
-        <div class="pagination" style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-muted);">
-            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Previous</button>
-            <button class="btn-secondary" style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: pointer;">Next</button>
-        </div>
+      </table>
     </div>
+
+    <!-- Statutory Section 6(4) Explanatory Notice -->
+    <div class="p-4 bg-slate-950/80 border-t border-slate-800 text-xs text-slate-400 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div class="flex items-center gap-2">
+        <span class="text-emerald-400 font-bold">DPDP Section 6(4):</span>
+        <span>Citizens may withdraw consent with the same ease as given. Revocation ceases informal processing immediately.</span>
+      </div>
+      <div class="text-[11px] font-mono text-slate-400">
+        DPDP_Secure Cryptographic Integrity Subsystem
+      </div>
+    </div>
+  </div>
 </div>
 
+<script src="/js/consentManager.js"></script>
 <%- include('partials/footer') %>

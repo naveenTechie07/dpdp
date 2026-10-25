@@ -97,6 +97,22 @@ app.use((req, res, next) => {
     role: 'SME_OWNER',
     tenantName: 'Aarogya Diagnostic Center'
   };
+  // Comprehensive fallbacks for optional template variables
+  res.locals.activeTab = 'providers';
+  res.locals.tab = 'designer';
+  res.locals.scanId = '1';
+  res.locals.silosCount = 3;
+  res.locals.piiCount = 1420;
+  res.locals.activeNoticesCount = 3;
+  res.locals.pendingDsrCount = 1;
+  res.locals.taxLockedCount = 1;
+  res.locals.activeIncidentsCount = 0;
+  res.locals.recentActivity = [];
+  res.locals.silos = [];
+  res.locals.findings = [];
+  res.locals.stats = {};
+  res.locals.ropaRecords = [];
+  res.locals.events = [];
   next();
 });
 

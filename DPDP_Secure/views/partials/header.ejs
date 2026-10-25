@@ -72,7 +72,7 @@
                         <svg class="chevron" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </div>
                     <div class="nav-section-content">
-                        <a href="/discovery/connectors" class="nav-item <%= typeof path !== 'undefined' && path.includes('/discovery') ? 'active' : '' %>">
+                        <a href="/discovery/connectors" class="nav-item <%= typeof path === 'string' && path.includes('/discovery') ? 'active' : '' %>">
                             <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><line x1="12" y1="12" x2="12" y2="12.01"></line></svg>
                             Silo Scanner (WhatsApp/Excel)
                         </a>
@@ -115,7 +115,7 @@
                             <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                             Specified Purpose Library
                         </a>
-                        <a href="/cookies/dashboard" class="nav-item <%= typeof path !== 'undefined' && path.includes('/cookies') ? 'active' : '' %>">
+                        <a href="/cookies/dashboard" class="nav-item <%= typeof path === 'string' && path.includes('/cookies') ? 'active' : '' %>">
                             <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                             Cookie Governance
                         </a>

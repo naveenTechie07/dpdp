@@ -39,15 +39,10 @@ router.get('/consent/preference-centers', (req, res) => {
   });
 });
 
-router.get('/consent/collection-points', (req, res) => {
-  res.render('consent-collectionpoints', {
-    title: 'Collection points - DPDP_Secure',
-    description: 'Select a collection point type, create a draft, then build and publish from the details workspace.',
-    breadcrumbs: ['Workspace', 'Consent', 'Collection points'],
-    path: '/consent/collection-points'
-  });
-});
+const consentController = require('../controllers/consentController');
 
+// Consent Views Routes
+router.get('/consent/collection-points', consentController.renderCollectionPoints);
 router.get('/consent/data-elements', (req, res) => {
   res.render('consent-dataelements', {
     title: 'Data Elements - DPDP_Secure',
@@ -56,15 +51,7 @@ router.get('/consent/data-elements', (req, res) => {
     path: '/consent/data-elements'
   });
 });
-
-router.get('/consent/ledger', (req, res) => {
-  res.render('consent-ledger', {
-    title: 'Consent ledger - DPDP_Secure',
-    description: 'Summary records — one row per consent capture event.',
-    breadcrumbs: ['Workspace', 'Consent', 'Consent ledger'],
-    path: '/consent/ledger'
-  });
-});
+router.get('/consent/ledger', consentController.renderLedger);
 
 router.get('/consent/transactions', (req, res) => {
   res.render('consent-transactions', {
@@ -150,48 +137,9 @@ router.get('/cookies/geo-rules', (req, res) => {
 });
 
 // Consent API Routes
-router.post('/api/consent/notices', (req, res) => {
-  const { title, purposeCode, language, noticeText } = req.body || {};
-  res.json({
-    success: true,
-    noticeId: `NOTICE-${Date.now()}`,
-    title: title || 'Patient Diagnostic Report Dispatch Notice',
-    message: 'Multilingual Section 5 notice created successfully.'
-  });
-});
-
-router.post('/api/consent/record-consent', (req, res) => {
-  const { phone, purposeCode, channel, status } = req.body || {};
-  const timestamp = new Date().toISOString();
-  const phoneVal = phone || '+91 9845012345';
-  const purposeVal = purposeCode || 'PURP-DIAGNOSTIC-REPORTING';
-  const statusVal = status || 'ACTIVE';
-
-  const sha256Proof = crypto
-    .createHash('sha256')
-    .update(phoneVal + purposeVal + statusVal + timestamp)
-    .digest('hex');
-
-  res.json({
-    success: true,
-    eventId: `EVT-${Date.now()}`,
-    phone: phoneVal,
-    purpose: purposeVal,
-    status: statusVal,
-    timestamp,
-    sha256Proof
-  });
-});
-
-router.post('/api/consent/withdraw-consent', (req, res) => {
-  const { phone, purposeCode } = req.body || {};
-  res.json({
-    success: true,
-    phone: phone || '+91 9845012345',
-    purposeCode: purposeCode || 'PURP-DIAGNOSTIC-REPORTING',
-    status: 'WITHDRAWN',
-    message: 'Consent successfully revoked under Section 6(4).'
-  });
-});
+router.post('/api/consent/notices', consentController.createNotice);
+router.get('/api/consent/notices/:id', consentController.getNoticeById);
+router.post('/api/consent/record-consent', consentController.recordConsent);
+router.post('/api/consent/withdraw-consent', consentController.withdrawConsent);
 
 module.exports = router;

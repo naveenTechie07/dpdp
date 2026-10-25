@@ -76,14 +76,14 @@
             <div class="pillar-header">
                 <div>
                     <div class="pillar-title">Pillar 1: Discovery</div>
-                    <div class="pillar-stat-main"><%= silosCount || 3 %> Silos Active</div>
+                    <div class="pillar-stat-main"><%= (typeof silosCount !== 'undefined') ? silosCount : 3 %> Silos Active</div>
                 </div>
                 <div class="pillar-icon-box" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa;">
                     <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                 </div>
             </div>
             <div class="pillar-stat-sub" style="margin-bottom: 6px;">
-                <strong style="color: #ffffff;"><%= piiCount || 1420 %></strong> Indian PII Items Discovered
+                <strong style="color: #ffffff;"><%= (typeof piiCount !== 'undefined') ? piiCount : 1420 %></strong> Indian PII Items Discovered
             </div>
             <p style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">
                 WhatsApp chats, Google Forms leads &amp; CSV billing files indexed in RoPA.
@@ -101,7 +101,7 @@
             <div class="pillar-header">
                 <div>
                     <div class="pillar-title">Pillar 2: Consent</div>
-                    <div class="pillar-stat-main"><%= activeNoticesCount || 3 %> Notices Live</div>
+                    <div class="pillar-stat-main"><%= (typeof activeNoticesCount !== 'undefined') ? activeNoticesCount : 3 %> Notices Live</div>
                 </div>
                 <div class="pillar-icon-box" style="background: rgba(16, 185, 129, 0.15); color: #34d399;">
                     <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
@@ -126,14 +126,14 @@
             <div class="pillar-header">
                 <div>
                     <div class="pillar-title">Pillar 3: Citizen DSR</div>
-                    <div class="pillar-stat-main"><%= pendingDsrCount || 1 %> Open Ticket</div>
+                    <div class="pillar-stat-main"><%= (typeof pendingDsrCount !== 'undefined') ? pendingDsrCount : 1 %> Open Ticket</div>
                 </div>
                 <div class="pillar-icon-box" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24;">
                     <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                 </div>
             </div>
             <div class="pillar-stat-sub" style="margin-bottom: 6px;">
-                <strong style="color: #fbbf24;"><%= taxLockedCount || 1 %></strong> CGST Section 36 Tax Lock
+                <strong style="color: #fbbf24;"><%= (typeof taxLockedCount !== 'undefined') ? taxLockedCount : 1 %></strong> CGST Section 36 Tax Lock
             </div>
             <p style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">
                 Dual-track resolver safely redacts informal marketing chats while locking invoices.
@@ -151,7 +151,7 @@
             <div class="pillar-header">
                 <div>
                     <div class="pillar-title">Pillar 4: Breach Triage</div>
-                    <div class="pillar-stat-main"><%= activeIncidentsCount || 0 %> Breaches Active</div>
+                    <div class="pillar-stat-main"><%= (typeof activeIncidentsCount !== 'undefined') ? activeIncidentsCount : 0 %> Breaches Active</div>
                 </div>
                 <div class="pillar-icon-box" style="background: rgba(239, 68, 68, 0.15); color: #f87171;">
                     <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>

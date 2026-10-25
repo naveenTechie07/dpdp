@@ -28,6 +28,11 @@ router.get('/settings/branding', (req, res) => {
   });
 });
 
+// Alias redirect for /branding -> /settings/branding
+router.get('/branding', (req, res) => {
+  res.redirect('/settings/branding');
+});
+
 router.get('/settings/organization', (req, res) => {
   res.render('settings-organization', {
     title: 'Organization Hierarchy - DPDP_Secure',

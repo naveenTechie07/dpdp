@@ -45,9 +45,10 @@ const discoveryController = {
       });
     } catch (err) {
       console.error('[DISCOVERY] renderConnectors error:', err);
-      res.status(500).render('error', {
+      res.status(500).render('500', {
         title: 'Discovery Error - DPDP_Secure',
-        message: 'Failed to load discovery connectors: ' + err.message
+        description: 'Failed to load discovery connectors: ' + err.message,
+        breadcrumbs: ['Workspace', 'Error']
       });
     }
   },
@@ -240,9 +241,10 @@ const discoveryController = {
       });
     } catch (err) {
       console.error('[DISCOVERY] renderRoPA error:', err);
-      res.status(500).render('error', {
+      res.status(500).render('500', {
         title: 'RoPA Error - DPDP_Secure',
-        message: 'Failed to load RoPA records: ' + err.message
+        description: 'Failed to load RoPA records: ' + err.message,
+        breadcrumbs: ['Workspace', 'Error']
       });
     }
   },

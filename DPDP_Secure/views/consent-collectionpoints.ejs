@@ -1,190 +1,356 @@
 <%- include('partials/header') %>
 
-<div class="dashboard-header mb-4" style="align-items: center;">
-    <div class="title-group">
-        <h1>Collection points</h1>
-        <p>Select a collection point type, create a draft, then build and publish from the details workspace.</p>
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-800 pb-5">
+    <div>
+      <div class="flex items-center gap-2">
+        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+          DPDP Act Section 5 & 6
+        </span>
+        <span class="text-xs text-slate-400">Pillar 2: Consent & Purpose Management</span>
+      </div>
+      <h1 class="text-2xl font-bold text-white tracking-tight mt-1">Section 5 Multilingual Notice Builder & WhatsApp Opt-in</h1>
+      <p class="text-sm text-slate-400 mt-1">
+        Design itemised purpose notices in English, Kannada, and Hindi, generate 1-click WhatsApp opt-in links, and log cryptographic SHA-256 proofs.
+      </p>
     </div>
-    <div style="display: flex; gap: 12px;">
-        <button class="btn-primary" style="background-color: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            New collection point
-        </button>
-        <button class="btn-secondary" style="background-color: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid rgba(255,255,255,0.1); padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer;">
-            Configure Data Elements
-        </button>
+    <div class="flex items-center gap-3">
+      <a href="/consent/ledger" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-semibold border border-slate-700 transition-colors">
+        <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+        <span>View Consent Ledger</span>
+      </a>
     </div>
-</div>
+  </div>
 
-<div class="card p-0" style="overflow: hidden;">
-    <!-- Table Toolbar -->
-    <div class="table-toolbar" style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
-        <div class="search-bar" style="width: 300px; background: transparent; padding: 0; border: none;">
-            <input type="text" placeholder="Search collection points..." style="border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 6px; background: transparent; color: var(--text-main); width: 100%;">
+  <!-- Pre-Configured Purpose Profiles -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <!-- Profile 1: Aarogya Clinic Diagnostic -->
+    <div class="p-4 rounded-xl bg-slate-900/60 border border-emerald-500/30 hover:border-emerald-500/60 transition-all cursor-pointer relative group">
+      <div class="flex items-center justify-between mb-2">
+        <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-950/80 text-emerald-400 border border-emerald-500/30">CLINICAL DIAGNOSTIC</span>
+        <span class="text-xs text-emerald-400 font-semibold">Active Profile</span>
+      </div>
+      <h3 class="text-sm font-bold text-white group-hover:text-emerald-300 transition-colors">Diagnostic Test Booking & Lab Report Dispatch</h3>
+      <p class="text-xs text-slate-400 mt-1">Aarogya Diagnostic Center — Dispatches lipid, glucose, biopsy lab reports to patient WhatsApp numbers.</p>
+      <div class="mt-3 pt-3 border-t border-slate-800 text-[11px] text-slate-400 flex items-center justify-between">
+        <span>Purpose: <strong class="text-slate-300">PURP-DIAGNOSTIC-REPORTING</strong></span>
+        <span class="text-emerald-400 font-medium">Sec. 6(1) Compliant</span>
+      </div>
+    </div>
+
+    <!-- Profile 2: Retail Order -->
+    <div class="p-4 rounded-xl bg-slate-900/40 border border-slate-800 hover:border-slate-700 transition-all">
+      <div class="flex items-center justify-between mb-2">
+        <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-slate-800 text-slate-400 border border-slate-700">RETAIL & E-COMMERCE</span>
+        <span class="text-xs text-slate-400">Template</span>
+      </div>
+      <h3 class="text-sm font-bold text-slate-300">Retail Order Processing & Home Delivery</h3>
+      <p class="text-xs text-slate-400 mt-1">Coordinates diagnostic home sample pickups and customer delivery communications.</p>
+      <div class="mt-3 pt-3 border-t border-slate-800 text-[11px] text-slate-400 flex items-center justify-between">
+        <span>Purpose: <strong class="text-slate-300">PURP-RETAIL-DELIVERY</strong></span>
+        <span class="text-slate-400">Non-Bundled</span>
+      </div>
+    </div>
+
+    <!-- Profile 3: Tax Archival -->
+    <div class="p-4 rounded-xl bg-slate-900/40 border border-slate-800 hover:border-slate-700 transition-all">
+      <div class="flex items-center justify-between mb-2">
+        <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-slate-800 text-slate-400 border border-slate-700">STATUTORY TAX LOCK</span>
+        <span class="text-xs text-slate-400">Sec 8(7) Mandatory</span>
+      </div>
+      <h3 class="text-sm font-bold text-slate-300">Professional Tax Archival & Billing</h3>
+      <p class="text-xs text-slate-400 mt-1">Invoices, GST returns, and billing software audit records locked for 72 months under CGST Act.</p>
+      <div class="mt-3 pt-3 border-t border-slate-800 text-[11px] text-slate-400 flex items-center justify-between">
+        <span>Purpose: <strong class="text-slate-300">PURP-STATUTORY-BILLING</strong></span>
+        <span class="text-amber-400">Mandatory 6-Yr Lock</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Grid: Notice Builder & WhatsApp Simulation -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <!-- Notice Builder Form (Col 7) -->
+    <div class="lg:col-span-7 bg-slate-900/60 border border-slate-800 rounded-2xl p-5 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div class="flex items-center gap-2">
+          <svg class="w-5 h-5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+          </svg>
+          <h2 class="text-sm font-bold text-white uppercase tracking-wider">Statutory Notice Authoring</h2>
+        </div>
+        <!-- Language Switcher Tabs -->
+        <div class="flex items-center gap-1.5 p-1 bg-slate-950/60 border border-slate-800 rounded-lg text-xs font-semibold">
+          <button type="button" class="notice-lang-tab px-3 py-1 rounded-md transition-all active-lang-tab" data-lang="English">
+            English
+          </button>
+          <button type="button" class="notice-lang-tab px-3 py-1 rounded-md transition-all text-slate-400 hover:text-white" data-lang="Kannada">
+            ಕನ್ನಡ (Kannada)
+          </button>
+          <button type="button" class="notice-lang-tab px-3 py-1 rounded-md transition-all text-slate-400 hover:text-white" data-lang="Hindi">
+            हिन्दी (Hindi)
+          </button>
+        </div>
+      </div>
+
+      <!-- Purpose & Title Inputs -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Notice Title</label>
+          <input
+            type="text"
+            id="noticeTitleInput"
+            class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-sky-500"
+            value="Diagnostic Test Booking & Lab Report Dispatch (English)"
+          />
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Purpose Code (Section 6(1))</label>
+          <select
+            id="purposeCodeSelect"
+            class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-sky-500"
+          >
+            <option value="PURP-DIAGNOSTIC-REPORTING" selected>PURP-DIAGNOSTIC-REPORTING (Clinical Lab)</option>
+            <option value="PURP-RETAIL-DELIVERY">PURP-RETAIL-DELIVERY (Sample Pickup)</option>
+            <option value="PURP-STATUTORY-BILLING">PURP-STATUTORY-BILLING (Tax & Invoicing)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Non-Bundled Consent Safeguards (Prohibition of Bundled Consent) -->
+      <div class="p-3 bg-slate-950/80 border border-slate-800 rounded-lg space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold text-slate-300">Granular Purpose Check (Section 6(1) Non-Bundled Defense)</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-500/30">PROHIBITION ENFORCED</span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+          <label class="flex items-center gap-2 text-slate-300 cursor-pointer">
+            <input type="checkbox" checked disabled class="rounded border-slate-700 text-emerald-500 bg-slate-900 focus:ring-0">
+            <span>Essential: Lab report dispatch via WhatsApp</span>
+          </label>
+          <label class="flex items-center gap-2 text-slate-400 cursor-pointer">
+            <input type="checkbox" class="rounded border-slate-700 text-sky-500 bg-slate-900 focus:ring-0">
+            <span>Optional: Clinic health camp announcements</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Notice Textarea -->
+      <div>
+        <div class="flex items-center justify-between mb-1">
+          <label class="text-xs font-medium text-slate-400">Notice Body Text (Statutory Section 5 Specification)</label>
+          <span id="noticeCharCount" class="text-[11px] text-slate-400 font-mono">0 characters</span>
+        </div>
+        <textarea
+          id="noticeTextarea"
+          rows="6"
+          class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-xs font-mono text-slate-200 focus:outline-none focus:border-sky-500 leading-relaxed"
+        ></textarea>
+      </div>
+
+      <!-- Action: 1-Click WhatsApp Link Generator -->
+      <div class="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+        <button
+          type="button"
+          id="btnGenerateWhatsAppLink"
+          class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition-colors shadow-lg shadow-emerald-900/30"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+          </svg>
+          <span>📲 Generate WhatsApp Notice Link</span>
+        </button>
+      </div>
+
+      <!-- Generated Link Box (Hidden by default) -->
+      <div id="waLinkOutput" class="hidden p-3 bg-emerald-950/40 border border-emerald-500/40 rounded-xl space-y-2">
+        <div class="flex items-center justify-between text-xs">
+          <span class="font-bold text-emerald-400">WhatsApp Click-to-Chat Link (URI-Encoded):</span>
+          <span class="text-[10px] text-slate-400 font-mono">XSS-Immune</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <input
+            type="text"
+            id="waLinkInput"
+            readonly
+            class="flex-1 px-3 py-1.5 bg-slate-950 border border-slate-800 rounded text-xs font-mono text-emerald-300 focus:outline-none"
+          />
+          <button
+            type="button"
+            id="btnCopyWaLink"
+            class="px-3 py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition-colors"
+          >
+            Copy
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Preview & Fast-Track Simulator (Col 5) -->
+    <div class="lg:col-span-5 space-y-5">
+      <!-- Live WhatsApp Bubble Preview -->
+      <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 space-y-3">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span class="text-xs font-bold text-white uppercase tracking-wider">WhatsApp Message Preview</span>
+          </div>
+          <span class="text-[10px] text-slate-400">Citizen Mobile UI</span>
         </div>
         
-        <div class="pagination" style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-muted);">
-            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Previous</button>
-            <span>Page 1 of 1</span>
-            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Next</button>
+        <!-- Mock Phone Screen -->
+        <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 relative overflow-hidden" style="background-image: radial-gradient(rgba(16, 185, 129, 0.05) 1px, transparent 0); background-size: 16px 16px;">
+          <!-- WhatsApp Chat Header -->
+          <div class="flex items-center gap-2.5 pb-3 border-b border-slate-800 mb-3">
+            <div class="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center text-white text-xs font-bold">
+              AC
+            </div>
+            <div>
+              <div class="text-xs font-bold text-white flex items-center gap-1">
+                <span>Aarogya Diagnostic Center</span>
+                <span class="text-emerald-400 text-[10px]">✓</span>
+              </div>
+              <div class="text-[10px] text-emerald-400 font-mono">Official Clinic Business Account</div>
+            </div>
+          </div>
+
+          <!-- Chat Bubble -->
+          <div class="bg-slate-900 border border-emerald-500/30 rounded-xl rounded-tl-none p-3 text-xs text-slate-200 leading-relaxed shadow-lg max-w-[95%]">
+            <div id="noticeLivePreview" class="whitespace-pre-wrap font-sans text-xs text-slate-300">
+              Loading notice preview...
+            </div>
+            <div class="text-right text-[10px] text-slate-400 mt-2 font-mono">
+              09:42 AM · Delivered ✓✓
+            </div>
+          </div>
         </div>
+      </div>
+
+      <!-- Evaluator Fast-Track Simulator Card -->
+      <div class="bg-gradient-to-br from-slate-900/90 to-emerald-950/30 border border-emerald-500/40 rounded-2xl p-5 space-y-3.5 shadow-xl">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-amber-400 text-sm">⚡</span>
+            <h3 class="text-sm font-bold text-white">Evaluator Fast-Track Simulator</h3>
+          </div>
+          <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-950 text-amber-400 border border-amber-500/30">1-CLICK DEMO</span>
+        </div>
+
+        <p class="text-xs text-slate-300">
+          Simulate a real-world citizen replying <strong>"YES"</strong> on WhatsApp. DPDP_Secure immediately logs an immutable Section 6 consent grant with a cryptographic SHA-256 proof.
+        </p>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Citizen Mobile & Name</label>
+          <input
+            type="text"
+            id="simPatientPhone"
+            class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-xs font-mono text-emerald-300 focus:outline-none"
+            value="+91 9845012345 - Ramesh Sharma"
+          />
+        </div>
+
+        <button
+          type="button"
+          id="btnSimulateWhatsAppOptIn"
+          class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-colors shadow-lg shadow-emerald-900/40"
+        >
+          <span>⚡ Simulate Patient Sending "YES" on WhatsApp</span>
+        </button>
+
+        <!-- Dynamic Simulation Result -->
+        <div id="simResultBox" class="hidden"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Active Published Collection Points Table -->
+  <div class="bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden">
+    <div class="p-4 border-b border-slate-800 flex items-center justify-between">
+      <div>
+        <h3 class="text-sm font-bold text-white uppercase tracking-wider">Active Published Collection Points</h3>
+        <p class="text-xs text-slate-400 mt-0.5">Live collection points authorized to capture Section 5 consent for Aarogya Diagnostic Center</p>
+      </div>
+      <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+        3 Active Channels
+      </span>
     </div>
 
-    <!-- Data Table -->
-    <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse text-xs">
         <thead>
-            <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 11px; text-transform: uppercase;">
-                <th style="padding: 12px 24px; font-weight: 600;">Name &#9652;</th>
-                <th style="padding: 12px 16px; font-weight: 600;">Channel &#8597;</th>
-                <th style="padding: 12px 16px; font-weight: 600;">Status &#8597;</th>
-                <th style="padding: 12px 16px; font-weight: 600;">Lifecycle &#8597;</th>
-                <th style="padding: 12px 16px; font-weight: 600;">Organization &#8597;</th>
-                <th style="padding: 12px 16px; font-weight: 600;">PRIVACY PORTAL</th>
-                <th style="padding: 12px 24px; font-weight: 600;">Updated &#8597;</th>
-                <th style="padding: 12px 24px; font-weight: 600;"></th>
-            </tr>
+          <tr class="border-b border-slate-800 text-[11px] font-semibold text-slate-400 uppercase tracking-wider bg-slate-950/40">
+            <th class="py-3 px-4">Channel / Identifier</th>
+            <th class="py-3 px-4">Purpose Group</th>
+            <th class="py-3 px-4">Supported Languages</th>
+            <th class="py-3 px-4">Statutory Basis</th>
+            <th class="py-3 px-4">Status</th>
+            <th class="py-3 px-4 text-right">Actions</th>
+          </tr>
         </thead>
-        <tbody style="font-size: 13px;">
-            <!-- Row 1 -->
-            <tr style="border-bottom: 1px solid var(--border-color);">
-                <td style="padding: 16px 24px; width: 250px;">
-                    <div style="font-weight: 600; color: var(--text-main); margin-bottom: 4px;">DPDP_Secure WhatsApp Bot</div>
-                    <div style="color: var(--text-muted); font-size: 11px;">hosted web form</div>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span class="badge" style="background: rgba(59, 130, 246, 0.1); color: #60a5fa; padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase;">Mobile</span>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase;">Enabled</span>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase;">Active</span>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">
-                    <span style="background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 4px;">Tenant-wide</span>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">
-                    Hidden
-                </td>
-                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">
-                    10 Sept 2026, 06:40 am
-                </td>
-                <td style="padding: 16px 24px; text-align: right;">
-                    <div style="display: flex; gap: 12px; justify-content: flex-end;">
-                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="var(--text-muted)" stroke-width="2" fill="none" style="cursor: pointer;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="var(--text-muted)" stroke-width="2" fill="none" style="cursor: pointer;"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
-                    </div>
-                </td>
-            </tr>
-            
-            <!-- Row 2 -->
-            <tr style="border-bottom: 1px solid var(--border-color); background: rgba(255,255,255,0.02);">
-                <td style="padding: 16px 24px; width: 250px;">
-                    <div style="font-weight: 600; color: var(--text-main); margin-bottom: 4px;">DPDP_Secure Support Portal</div>
-                    <div style="color: var(--text-muted); font-size: 11px;">hosted web form</div>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span class="badge" style="background: rgba(59, 130, 246, 0.1); color: #60a5fa; padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase;">Web</span>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase;">Enabled</span>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span class="badge" style="background: #fef3c7; color: #b45309; padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase;">Draft</span>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">
-                    <div style="display: flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 4px; width: fit-content;">
-                        DPDP_Secure Mumbai HQ
-                        <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                    </div>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">
-                    Hidden
-                </td>
-                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">
-                    09 Sept 2026, 11:36 am
-                </td>
-                <td style="padding: 16px 24px; text-align: right;">
-                    <div style="display: flex; gap: 12px; justify-content: flex-end;">
-                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="var(--text-muted)" stroke-width="2" fill="none" style="cursor: pointer;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="var(--text-muted)" stroke-width="2" fill="none" style="cursor: pointer;"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
-                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="var(--text-muted)" stroke-width="2" fill="none" style="cursor: pointer;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                    </div>
-                </td>
-            </tr>
-
-            <!-- Row 3 -->
-            <tr style="border-bottom: 1px solid var(--border-color);">
-                <td style="padding: 16px 24px; width: 250px;">
-                    <div style="font-weight: 600; color: var(--text-main); margin-bottom: 4px;">DPDP_Secure Web Banking Portal</div>
-                    <div style="color: var(--text-muted); font-size: 11px;">hosted web form</div>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span class="badge" style="background: rgba(59, 130, 246, 0.1); color: #60a5fa; padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase;">Web</span>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase;">Enabled</span>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase;">Active</span>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">
-                    <span style="background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 4px;">Tenant-wide</span>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: #e8dbfa; color: #6b21a8; padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 700;">Visible</span>
-                </td>
-                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">
-                    29 Aug 2026, 03:03 pm
-                </td>
-                <td style="padding: 16px 24px; text-align: right;">
-                    <div style="display: flex; gap: 12px; justify-content: flex-end;">
-                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="var(--text-muted)" stroke-width="2" fill="none" style="cursor: pointer;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="var(--text-muted)" stroke-width="2" fill="none" style="cursor: pointer;"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
-                    </div>
-                </td>
-            </tr>
-
-            <!-- Row 4 -->
-            <tr style="border-bottom: 1px solid var(--border-color); background: rgba(255,255,255,0.02);">
-                <td style="padding: 16px 24px; width: 250px;">
-                    <div style="font-weight: 600; color: var(--text-main); margin-bottom: 4px;">DPDP_Secure Mobile App</div>
-                    <div style="color: var(--text-muted); font-size: 11px;">hosted web form</div>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span class="badge" style="background: rgba(59, 130, 246, 0.1); color: #60a5fa; padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase;">Mobile</span>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase;">Enabled</span>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase;">Active</span>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">
-                    <span style="background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 4px;">Tenant-wide</span>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: #e8dbfa; color: #6b21a8; padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 700;">Visible</span>
-                </td>
-                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">
-                    29 Aug 2026, 03:03 pm
-                </td>
-                <td style="padding: 16px 24px; text-align: right;">
-                    <div style="display: flex; gap: 12px; justify-content: flex-end;">
-                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="var(--text-muted)" stroke-width="2" fill="none" style="cursor: pointer;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="var(--text-muted)" stroke-width="2" fill="none" style="cursor: pointer;"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
-                    </div>
-                </td>
-            </tr>
+        <tbody class="divide-y divide-slate-800/60 font-mono text-slate-300">
+          <tr>
+            <td class="py-3 px-4 font-sans font-semibold text-white flex items-center gap-2">
+              <span class="text-emerald-400">💬</span>
+              <span>Aarogya Clinic WhatsApp Bot (Cloud API)</span>
+            </td>
+            <td class="py-3 px-4 text-emerald-300">PURP-DIAGNOSTIC-REPORTING</td>
+            <td class="py-3 px-4 font-sans">
+              <span class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px]">English</span>
+              <span class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px]">ಕನ್ನಡ</span>
+              <span class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px]">हिन्दी</span>
+            </td>
+            <td class="py-3 px-4 font-sans text-slate-400">Section 6(1) Explicit Consent</td>
+            <td class="py-3 px-4">
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-500/30">ENABLED</span>
+            </td>
+            <td class="py-3 px-4 text-right font-sans">
+              <a href="/consent/ledger" class="text-sky-400 hover:text-sky-300 font-semibold text-xs">View Ledger &rarr;</a>
+            </td>
+          </tr>
+          <tr>
+            <td class="py-3 px-4 font-sans font-semibold text-white flex items-center gap-2">
+              <span class="text-sky-400">🌐</span>
+              <span>Online Patient Lab Booking Portal</span>
+            </td>
+            <td class="py-3 px-4 text-sky-300">PURP-RETAIL-DELIVERY</td>
+            <td class="py-3 px-4 font-sans">
+              <span class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px]">English</span>
+              <span class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px]">ಕನ್ನಡ</span>
+            </td>
+            <td class="py-3 px-4 font-sans text-slate-400">Section 6(1) Web Form</td>
+            <td class="py-3 px-4">
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-500/30">ENABLED</span>
+            </td>
+            <td class="py-3 px-4 text-right font-sans">
+              <a href="/consent/ledger" class="text-sky-400 hover:text-sky-300 font-semibold text-xs">View Ledger &rarr;</a>
+            </td>
+          </tr>
+          <tr>
+            <td class="py-3 px-4 font-sans font-semibold text-white flex items-center gap-2">
+              <span class="text-amber-400">📋</span>
+              <span>Physical Clinic Reception Desk Form</span>
+            </td>
+            <td class="py-3 px-4 text-amber-300">PURP-DIAGNOSTIC-REPORTING</td>
+            <td class="py-3 px-4 font-sans">
+              <span class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px]">English</span>
+              <span class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px]">ಕನ್ನಡ</span>
+            </td>
+            <td class="py-3 px-4 font-sans text-slate-400">Paper Form Digitized</td>
+            <td class="py-3 px-4">
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-500/30">ENABLED</span>
+            </td>
+            <td class="py-3 px-4 text-right font-sans">
+              <a href="/consent/ledger" class="text-sky-400 hover:text-sky-300 font-semibold text-xs">View Ledger &rarr;</a>
+            </td>
+          </tr>
         </tbody>
-    </table>
-    <div class="table-toolbar" style="padding: 16px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; align-items: center;">
-        <div class="pagination" style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-muted);">
-            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Previous</button>
-            <span>Page 1 of 1</span>
-            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Next</button>
-        </div>
+      </table>
     </div>
+  </div>
 </div>
 
+<script src="/js/consentManager.js"></script>
 <%- include('partials/footer') %>

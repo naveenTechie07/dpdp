@@ -72,8 +72,8 @@
 <body>
     <div class="error-card">
         <span class="badge">500 Server Notice</span>
-        <h1><%= title %></h1>
-        <p><%= description || 'An unexpected condition was encountered. All personal data operations remain protected.' %></p>
+        <h1><%= (typeof title !== 'undefined' && title) ? title : '500 - Server Error | DPDP_Secure' %></h1>
+        <p><%= (typeof description !== 'undefined' && description) ? description : ((typeof message !== 'undefined' && message) ? message : 'An unexpected condition was encountered. All personal data operations remain protected.') %></p>
         <a href="/" class="btn-home">Return to Dashboard</a>
     </div>
 </body>

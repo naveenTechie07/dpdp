@@ -84,12 +84,13 @@
         </div>
     </div>
 
+    <% const currentTab = (typeof activeTab !== 'undefined' && activeTab) ? activeTab : 'providers'; %>
     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px;">
         <div>
             <h1 style="font-size: 20px; font-weight: 700; color: var(--text-main); margin: 0 0 8px 0;">Notification Center</h1>
             <p style="color: var(--text-muted); font-size: 13px; margin: 0;">Configure providers, message templates, and test sends for email, SMS, WhatsApp, and in-app channels.</p>
         </div>
-        <% if (activeTab === 'providers') { %>
+        <% if (currentTab === 'providers') { %>
         <button class="btn-primary" style="background: #be185d; border: 1px solid #9d174d; color: white; padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px;">
             <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             Add Provider
@@ -101,14 +102,14 @@
         <!-- Tabs -->
         <div style="padding: 16px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: center;">
             <div style="display: inline-flex; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; padding: 4px;">
-                <a href="?tab=providers" class="tab-link <%= activeTab === 'providers' ? 'active' : '' %>">Providers</a>
-                <a href="?tab=templates" class="tab-link <%= activeTab === 'templates' ? 'active' : '' %>">Templates</a>
-                <a href="?tab=history" class="tab-link <%= activeTab === 'history' ? 'active' : '' %>">Message History</a>
-                <a href="?tab=branding" class="tab-link <%= activeTab === 'branding' ? 'active' : '' %>">Branding</a>
+                <a href="?tab=providers" class="tab-link <%= currentTab === 'providers' ? 'active' : '' %>">Providers</a>
+                <a href="?tab=templates" class="tab-link <%= currentTab === 'templates' ? 'active' : '' %>">Templates</a>
+                <a href="?tab=history" class="tab-link <%= currentTab === 'history' ? 'active' : '' %>">Message History</a>
+                <a href="?tab=branding" class="tab-link <%= currentTab === 'branding' ? 'active' : '' %>">Branding</a>
             </div>
         </div>
         
-        <% if (activeTab === 'providers') { %>
+        <% if (currentTab === 'providers') { %>
             <div style="padding: 20px 24px; border-bottom: 1px solid var(--border-color);">
                 <label style="display: flex; align-items: flex-start; gap: 12px; cursor: pointer;">
                     <input type="checkbox" style="margin-top: 2px;">
@@ -209,7 +210,7 @@
             function openModal() { document.getElementById('editProviderModal').classList.add('active'); }
             function closeModal() { document.getElementById('editProviderModal').classList.remove('active'); }
             </script>
-        <% } else if (activeTab === 'templates') { %>
+        <% } else if (currentTab === 'templates') { %>
             <div style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
                 <input type="text" placeholder="Search templates..." style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 12px; border-radius: 6px; font-size: 13px; width: 300px;">
                 <div style="display: flex; gap: 16px; align-items: center; color: var(--text-muted); font-size: 13px;">
@@ -275,7 +276,7 @@
                 <span>Next</span>
             </div>
 
-        <% } else if (activeTab === 'history') { %>
+        <% } else if (currentTab === 'history') { %>
             <div style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
                 <input type="text" placeholder="Search messages..." style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 12px; border-radius: 6px; font-size: 13px; width: 300px;">
                 <div style="display: flex; gap: 16px; align-items: center; color: var(--text-muted); font-size: 13px;">
@@ -334,7 +335,7 @@
                 <span>Next</span>
             </div>
 
-        <% } else if (activeTab === 'branding') { %>
+        <% } else if (currentTab === 'branding') { %>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; padding: 24px;">
                 <!-- Left: Branding Form -->
                 <div>

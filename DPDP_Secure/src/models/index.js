@@ -142,6 +142,10 @@ const models = {
     return await all('SELECT * FROM consent_notices WHERE tenantId = ? AND isActive = 1 ORDER BY language ASC', [tenantId]);
   },
 
+  getNoticeById: async (id) => {
+    return await get('SELECT * FROM consent_notices WHERE id = ?', [id]);
+  },
+
   saveNotice: async (noticeData) => {
     const id = noticeData.id || uuidv4();
     await run(`
@@ -154,29 +158,44 @@ const models = {
   recordConsentEvent: async (eventData) => {
     const id = eventData.id || uuidv4();
     const timestamp = eventData.timestamp || new Date().toISOString();
-    const sha256Proof = crypto.createHash('sha256')
-      .update(id + (eventData.dataPrincipalPhone || '') + (eventData.purposeCode || '') + timestamp)
+    const tenantId = eventData.tenantId || 'TENANT-AAROGYA-01';
+    const phone = eventData.dataPrincipalPhone || eventData.phone || '';
+    const purposeCode = eventData.purposeCode || 'PURP-DIAGNOSTIC-REPORTING';
+    const status = eventData.status || 'ACTIVE';
+    const channel = eventData.channel || 'WHATSAPP';
+
+    const sha256Proof = eventData.sha256Proof || crypto.createHash('sha256')
+      .update(phone + purposeCode + status + timestamp + tenantId)
       .digest('hex');
 
     await run(`
       INSERT INTO consent_events (id, tenantId, dataPrincipalPhone, purposeCode, status, channel, timestamp, sha256Proof)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `, [id, eventData.tenantId || 'TENANT-AAROGYA-01', eventData.dataPrincipalPhone, eventData.purposeCode, eventData.status || 'GRANTED', eventData.channel || 'WHATSAPP', timestamp, sha256Proof]);
-    return { id, sha256Proof };
+    `, [id, tenantId, phone, purposeCode, status, channel, timestamp, sha256Proof]);
+    return { id, sha256Proof, timestamp, phone, purposeCode, status, channel };
   },
 
   withdrawConsent: async (phone, purposeCode, tenantId = 'TENANT-AAROGYA-01') => {
     const id = uuidv4();
     const timestamp = new Date().toISOString();
+    const status = 'WITHDRAWN';
     const sha256Proof = crypto.createHash('sha256')
-      .update(id + phone + purposeCode + 'WITHDRAWN' + timestamp)
+      .update(phone + purposeCode + status + timestamp + tenantId)
       .digest('hex');
 
+    // Update existing active events for this phone and purpose to WITHDRAWN
+    await run(`
+      UPDATE consent_events 
+      SET status = 'WITHDRAWN' 
+      WHERE dataPrincipalPhone = ? AND purposeCode = ? AND tenantId = ?
+    `, [phone, purposeCode, tenantId]);
+
+    // Also record the immutable withdrawal event in the ledger
     await run(`
       INSERT INTO consent_events (id, tenantId, dataPrincipalPhone, purposeCode, status, channel, timestamp, sha256Proof)
-      VALUES (?, ?, ?, ?, 'WITHDRAWN', 'CITIZEN_PORTAL', ?, ?)
+      VALUES (?, ?, ?, ?, 'WITHDRAWN', 'CITIZEN_WHATSAPP_REVOCATION', ?, ?)
     `, [id, tenantId, phone, purposeCode, timestamp, sha256Proof]);
-    return { id, sha256Proof, status: 'WITHDRAWN' };
+    return { id, sha256Proof, status: 'WITHDRAWN', timestamp };
   },
 
   getConsentLedger: async (tenantId = 'TENANT-AAROGYA-01') => {
