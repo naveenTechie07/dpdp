@@ -9,6 +9,7 @@ const indianPiiEngine = require('./indianPiiEngine');
 const fileParsers = require('./fileParsers');
 const ropaService = require('./ropaService');
 const aiService = require('./aiService');
+const dsrSearchEngine = require('./dsrSearchEngine');
 
 module.exports = {
   ...verhoeffAlgorithm,
@@ -16,10 +17,12 @@ module.exports = {
   ...fileParsers,
   ...ropaService,
   ...aiService,
+  ...dsrSearchEngine,
   verhoeffAlgorithm,
   indianPiiEngine,
   fileParsers,
   ropaService,
-  aiService
+  aiService,
+  dsrSearchEngine
 };
 

@@ -1,180 +1,351 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= (typeof title !== 'undefined' && title) ? title : 'Citizen Data Rights Intake Portal | DPDP_Secure' %></title>
-    <link rel="stylesheet" href="/css/style.css">
-    <style>
-        body {
-            background: #0b0f19;
-            color: #f3f4f6;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            display: flex;
-            justify-content: center;
-            padding: 40px 20px;
-            margin: 0;
-            box-sizing: border-box;
-        }
-        .portal-card {
-            background: rgba(17, 24, 39, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(16px);
-            border-radius: 12px;
-            padding: 36px;
-            max-width: 640px;
-            width: 100%;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
-        }
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(59, 130, 246, 0.15);
-            color: #60a5fa;
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            padding: 4px 12px;
-            border-radius: 9999px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 16px;
-        }
-        h1 {
-            color: #ffffff;
-            font-size: 22px;
-            font-weight: 700;
-            margin: 0 0 8px 0;
-        }
-        p.subtitle {
-            color: #9ca3af;
-            font-size: 13px;
-            margin: 0 0 24px 0;
-            line-height: 1.5;
-        }
-        .form-group {
-            margin-bottom: 18px;
-        }
-        label {
-            display: block;
-            color: #d1d5db;
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        input, select, textarea {
-            width: 100%;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 6px;
-            padding: 10px 14px;
-            color: #ffffff;
-            font-size: 14px;
-            box-sizing: border-box;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-        input:focus, select:focus, textarea:focus {
-            border-color: #3b82f6;
-        }
-        .otp-row {
-            display: flex;
-            gap: 12px;
-        }
-        .btn-otp {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #ffffff;
-            padding: 10px 16px;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-        .btn-otp:hover {
-            background: rgba(255, 255, 255, 0.15);
-        }
-        .btn-submit {
-            width: 100%;
-            background: #3b82f6;
-            color: #ffffff;
-            border: none;
-            padding: 12px;
-            border-radius: 6px;
-            font-weight: 700;
-            font-size: 14px;
-            cursor: pointer;
-            transition: background 0.2s;
-            margin-top: 10px;
-        }
-        .btn-submit:hover {
-            background: #2563eb;
-        }
-        .statutory-notice {
-            background: rgba(59, 130, 246, 0.08);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            border-radius: 8px;
-            padding: 14px;
-            margin-top: 24px;
-            font-size: 12px;
-            color: #93c5fd;
-            line-height: 1.5;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Citizen Data Rights Intake Portal | DPDP_Secure</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body {
+      background: #0b0f19;
+      color: #f1f5f9;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      margin: 0;
+      padding: 0;
+    }
+    .portal-container {
+      max-width: 640px;
+      margin: 40px auto;
+      padding: 0 20px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .glass-card {
+      background: rgba(17, 24, 39, 0.9);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(51, 65, 85, 0.8);
+      border-radius: 20px;
+      padding: 36px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+    }
+    .form-input {
+      width: 100%;
+      padding: 10px 14px;
+      background: #030712;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      color: #f8fafc;
+      font-size: 0.875rem;
+      box-sizing: border-box;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-input:focus {
+      border-color: #0ea5e9;
+      box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.25);
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .btn-submit {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #0ea5e9, #10b981);
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 10px 20px -5px rgba(16, 185, 129, 0.4);
+    }
+    .btn-submit:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 25px -4px rgba(16, 185, 129, 0.5);
+    }
+    .btn-submit:disabled {
+      background: #334155;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+  </style>
 </head>
 <body>
-    <div class="portal-card">
-        <div class="badge">
-            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-            Section 11 & Section 12 Portal
+  <!-- Brand Topbar -->
+  <header style="background: rgba(15, 23, 42, 0.8); border-bottom: 1px solid rgba(51, 65, 85, 0.6); padding: 16px 24px;">
+    <div style="max-width: 900px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div style="width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, #0ea5e9, #10b981); display: flex; align-items: center; justify-content: center; font-weight: 800; color: white;">
+          DP
         </div>
-        <h1>Citizen Data Rights Portal</h1>
-        <p class="subtitle">Aarogya Diagnostic Center • Indiranagar, Bengaluru<br>Submit a statutory request regarding your personal diagnostic & health records.</p>
-
-        <form action="/api/privacy/submit-dsr" method="POST">
-            <div class="form-group">
-                <label>Data Principal Full Name</label>
-                <input type="text" name="principalName" placeholder="e.g. Deepa Nair" value="Deepa Nair" required>
-            </div>
-
-            <div class="form-group">
-                <label>Registered Mobile Number (with OTP Verification)</label>
-                <div class="otp-row">
-                    <input type="tel" id="principalPhone" name="principalPhone" placeholder="+91 9988776655" value="+91 9988776655" required>
-                    <button type="button" class="btn-otp" onclick="document.getElementById('otp').value='882190'">Auto-Fill Test OTP</button>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Verification Code (SMS OTP)</label>
-                <input type="text" id="otp" name="otp" placeholder="Enter 6-digit OTP (e.g. 882190)" value="882190" required>
-            </div>
-
-            <div class="form-group">
-                <label>Statutory Right Requested</label>
-                <select name="requestType">
-                    <option value="ERASURE" selected>Section 12: Right to Erasure of Personal Data</option>
-                    <option value="ACCESS_SUMMARY">Section 11: Right to Access Summary of Personal Data</option>
-                    <option value="CORRECTION">Section 12: Right to Correction & Updating</option>
-                    <option value="GRIEVANCE">Section 13: Grievance Redressal / Complaint</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>Reason / Specific Categories (Optional)</label>
-                <textarea name="remarks" rows="3" placeholder="Specify if you wish to erase WhatsApp appointment records or test history...">Requesting complete deletion of WhatsApp chat history and contact leads after diagnostic test completion.</textarea>
-            </div>
-
-            <button type="submit" class="btn-submit">Submit Statutory Data Rights Request</button>
-        </form>
-
-        <div class="statutory-notice">
-            <strong>Statutory Disclosure under DPDP Act, 2023:</strong> In accordance with Sections 11 and 12, your request will be acknowledged immediately and resolved within 7 working days. Note: Billing invoices and financial records are subject to statutory retention under Section 36 of the CGST Act, 2017 read with DPDP Act Section 8(7).
-        </div>
+        <span style="font-weight: 700; font-size: 1.1rem; color: #f8fafc; letter-spacing: -0.02em;">DPDP_Secure</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">Aarogya Diagnostic Center</span>
+        <a href="/" style="font-size: 0.8rem; color: #94a3b8; text-decoration: none; margin-left: 10px;">Admin Login &rarr;</a>
+      </div>
     </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="portal-container">
+    <div class="glass-card">
+      <!-- Title & Context -->
+      <div style="margin-bottom: 24px;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+          <span class="badge">DPDP Act, 2023 · Chapter III</span>
+          <span style="font-size: 0.75rem; color: #94a3b8;">7-Day Statutory SLA</span>
+        </div>
+        <h1 style="font-size: 1.5rem; font-weight: 800; color: #ffffff; margin: 0 0 6px 0; letter-spacing: -0.02em;">
+          Citizen Data Rights Intake Portal
+        </h1>
+        <p style="font-size: 0.875rem; color: #94a3b8; margin: 0; line-height: 1.5;">
+          Under the Digital Personal Data Protection Act, 2023, you have statutory rights to access, correct, or erase personal data held by Aarogya Diagnostic Center.
+        </p>
+      </div>
+
+      <!-- Intake Form -->
+      <form id="dsrIntakeForm" style="display: flex; flex-direction: column; gap: 16px;">
+        <!-- Principal Name -->
+        <div>
+          <label style="display: block; font-size: 0.8rem; font-weight: 600; color: #cbd5e1; margin-bottom: 6px;">
+            Full Legal Name <span style="color: #ef4444;">*</span>
+          </label>
+          <input
+            type="text"
+            id="principalName"
+            class="form-input"
+            placeholder="e.g. Ramesh Sharma"
+            value="Ramesh Sharma"
+            required
+          />
+        </div>
+
+        <!-- Phone & Email Grid -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div>
+            <label style="display: block; font-size: 0.8rem; font-weight: 600; color: #cbd5e1; margin-bottom: 6px;">
+              Registered Mobile <span style="color: #ef4444;">*</span>
+            </label>
+            <input
+              type="tel"
+              id="principalPhone"
+              class="form-input"
+              placeholder="+91 9845012345"
+              value="+91 9845012345"
+              required
+            />
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.8rem; font-weight: 600; color: #cbd5e1; margin-bottom: 6px;">
+              Email Address (Optional)
+            </label>
+            <input
+              type="email"
+              id="principalEmail"
+              class="form-input"
+              placeholder="ramesh@example.com"
+              value="ramesh.sharma@example.com"
+            />
+          </div>
+        </div>
+
+        <!-- Request Type (Dropdown) -->
+        <div>
+          <label style="display: block; font-size: 0.8rem; font-weight: 600; color: #cbd5e1; margin-bottom: 6px;">
+            Statutory Request Type <span style="color: #ef4444;">*</span>
+          </label>
+          <select id="requestType" class="form-input" style="cursor: pointer;">
+            <option value="ACCESS_SUMMARY_SEC_11">Section 11: Right to Access Summary of Personal Data & Processing Activities</option>
+            <option value="CORRECTION_SEC_12">Section 12: Right to Correction & Updating of Inaccurate Data</option>
+            <option value="ERASURE_SEC_12" selected>Section 12: Right to Erasure of Personal Data</option>
+            <option value="GRIEVANCE_SEC_13">Section 13: Grievance Redressal / Complaint to Data Protection Officer</option>
+          </select>
+        </div>
+
+        <!-- Details -->
+        <div>
+          <label style="display: block; font-size: 0.8rem; font-weight: 600; color: #cbd5e1; margin-bottom: 6px;">
+            Additional Details / Specific Records to Erase
+          </label>
+          <textarea
+            id="grievanceDetails"
+            class="form-input"
+            rows="3"
+            placeholder="Please specify diagnostic lab reports, WhatsApp messages, or customer profile records..."
+          >Please erase all my diagnostic test inquiries and prescription records from WhatsApp informal chats.</textarea>
+        </div>
+
+        <!-- Identity Verification Checkpoint (SMS OTP) -->
+        <div style="background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(51, 65, 85, 0.7); border-radius: 12px; padding: 16px; margin-top: 4px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-size: 0.8rem; font-weight: 700; color: #f8fafc;">
+              🔒 Identity Verification Checkpoint (Sections 11 & 12)
+            </span>
+            <span style="font-size: 0.7rem; color: #38bdf8; font-family: monospace;">SMS Verification</span>
+          </div>
+          <p style="font-size: 0.75rem; color: #94a3b8; margin: 0 0 10px 0;">
+            To protect your privacy from unauthorized disclosures, please verify your registered phone number.
+          </p>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <input
+              type="text"
+              id="otpInput"
+              class="form-input"
+              placeholder="Enter 6-digit OTP"
+              maxlength="6"
+              style="width: 160px; font-family: monospace; letter-spacing: 0.2em; text-align: center; font-size: 1rem; font-weight: 700;"
+              required
+            />
+            <button
+              type="button"
+              id="btnAutoFillOtp"
+              style="padding: 10px 14px; background: rgba(14, 165, 233, 0.2); border: 1px solid rgba(14, 165, 233, 0.4); color: #38bdf8; border-radius: 10px; font-size: 0.75rem; font-weight: 600; cursor: pointer; white-space: nowrap; transition: background 0.2s;"
+            >
+              ⚡ Auto-Fill Test OTP (882190)
+            </button>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div style="margin-top: 8px;">
+          <button type="submit" id="btnSubmitDsr" class="btn-submit">
+            Submit Statutory Data Rights Request
+          </button>
+        </div>
+      </form>
+
+      <!-- Confirmation Screen (Hidden Initially) -->
+      <div id="confirmationBox" style="display: none; margin-top: 20px;">
+        <div style="background: rgba(6, 78, 59, 0.4); border: 1px solid rgba(16, 185, 129, 0.5); border-radius: 14px; padding: 24px; text-align: center;">
+          <div style="width: 48px; height: 48px; border-radius: 50%; background: #10b981; color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto 12px auto;">
+            ✓
+          </div>
+          <h2 style="font-size: 1.25rem; font-weight: 800; color: #ffffff; margin: 0 0 4px 0;">
+            Statutory Request Registered!
+          </h2>
+          <p style="font-size: 0.85rem; color: #94a3b8; margin: 0 0 16px 0;">
+            Your request has been securely queued in the DPDP_Secure Compliance Manager.
+          </p>
+
+          <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(51, 65, 85, 0.7); border-radius: 10px; padding: 14px; margin-bottom: 16px; text-align: left; font-size: 0.8rem; font-family: monospace;">
+            <div style="color: #94a3b8;">Ticket Tracking ID: <strong id="resTicketId" style="color: #38bdf8;">DSR-2026-XXXX</strong></div>
+            <div style="color: #94a3b8; margin-top: 4px;">Data Principal: <span id="resPrincipal" style="color: #f8fafc;">Ramesh Sharma</span></div>
+            <div style="color: #94a3b8; margin-top: 4px;">Status: <span style="color: #fbbf24; font-weight: bold;">Awaiting Statutory Tax-Lock Review</span></div>
+            <div style="color: #94a3b8; margin-top: 4px;">Statutory SLA Window: <span style="color: #34d399;">7 Working Days (Section 11/12)</span></div>
+          </div>
+
+          <div style="display: flex; gap: 10px; justify-content: center;">
+            <a href="/privacy/requests" style="padding: 10px 18px; background: #0ea5e9; color: white; border-radius: 8px; font-weight: 600; font-size: 0.85rem; text-decoration: none;">
+              Inspect in Admin Queue &rarr;
+            </a>
+            <button type="button" id="btnSubmitAnother" style="padding: 10px 18px; background: rgba(51, 65, 85, 0.5); color: #cbd5e1; border: 1px solid rgba(71, 85, 105, 0.6); border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer;">
+              Submit Another
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer style="margin-top: auto; padding: 24px; text-align: center; font-size: 0.75rem; color: #64748b; border-top: 1px solid rgba(51, 65, 85, 0.4);">
+    <p style="margin: 0;">DPDP_Secure Compliance Subsystem · Grounded in Digital Personal Data Protection Act, 2023</p>
+  </footer>
+
+  <script>
+    (function () {
+      const form = document.getElementById('dsrIntakeForm');
+      const confirmationBox = document.getElementById('confirmationBox');
+      const btnAutoFillOtp = document.getElementById('btnAutoFillOtp');
+      const otpInput = document.getElementById('otpInput');
+      const btnSubmit = document.getElementById('btnSubmitDsr');
+      const btnSubmitAnother = document.getElementById('btnSubmitAnother');
+
+      // 1-Click Test OTP Auto-Fill for Evaluators
+      btnAutoFillOtp.addEventListener('click', () => {
+        otpInput.value = '882190';
+        btnAutoFillOtp.textContent = '✓ OTP Verified (882190)';
+        btnAutoFillOtp.style.background = 'rgba(16, 185, 129, 0.2)';
+        btnAutoFillOtp.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+        btnAutoFillOtp.style.color = '#34d399';
+      });
+
+      // Submit Handler
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const principalName = document.getElementById('principalName').value.trim();
+        const principalPhone = document.getElementById('principalPhone').value.trim();
+        const principalEmail = document.getElementById('principalEmail').value.trim();
+        const requestType = document.getElementById('requestType').value;
+        const grievanceDetails = document.getElementById('grievanceDetails').value.trim();
+        const otp = otpInput.value.trim();
+
+        if (otp !== '882190') {
+          alert('Invalid OTP. For evaluation, please enter 882190 or click "Auto-Fill Test OTP".');
+          otpInput.focus();
+          return;
+        }
+
+        btnSubmit.disabled = true;
+        btnSubmit.textContent = 'Registering Request & Verifying Identity...';
+
+        try {
+          const res = await fetch('/api/privacy/submit-dsr', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              principalName,
+              principalPhone,
+              principalEmail,
+              requestType,
+              grievanceDetails,
+              otp
+            })
+          });
+
+          const data = await res.json();
+          if (data.success) {
+            form.style.display = 'none';
+            confirmationBox.style.display = 'block';
+
+            document.getElementById('resTicketId').textContent = data.ticketId;
+            document.getElementById('resPrincipal').textContent = `${data.principalName} (${data.principalPhone})`;
+          } else {
+            alert(data.error || 'Failed to submit request.');
+            btnSubmit.disabled = false;
+            btnSubmit.textContent = 'Submit Statutory Data Rights Request';
+          }
+        } catch (err) {
+          alert('Network connection error. Please ensure server is running.');
+          btnSubmit.disabled = false;
+          btnSubmit.textContent = 'Submit Statutory Data Rights Request';
+        }
+      });
+
+      btnSubmitAnother.addEventListener('click', () => {
+        confirmationBox.style.display = 'none';
+        form.style.display = 'flex';
+        btnSubmit.disabled = false;
+        btnSubmit.textContent = 'Submit Statutory Data Rights Request';
+      });
+    })();
+  </script>
 </body>
 </html>

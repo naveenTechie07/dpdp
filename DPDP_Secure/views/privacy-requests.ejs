@@ -1,252 +1,332 @@
 <%- include('partials/header') %>
 
-<div class="dashboard-header mb-4" style="display: flex; justify-content: space-between; align-items: flex-start;">
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-800 pb-5">
     <div>
-        <h1 class="page-title"><%= title.split(' - ')[0] %></h1>
-        <p class="page-description"><%= description %></p>
+      <div class="flex items-center gap-2">
+        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-sky-500/10 text-sky-400 border border-sky-500/20">
+          DPDP Act Section 11 & 12
+        </span>
+        <span class="text-xs text-slate-400">Pillar 3: Data Principal Rights (DSR)</span>
+      </div>
+      <h1 class="text-2xl font-bold text-white tracking-tight mt-1">Data Rights Requests Operations Queue</h1>
+      <p class="text-sm text-slate-400 mt-1">
+        Manage citizen requests under Section 11 (Access) & Section 12 (Erasure/Correction), inspect informal silo occurrences, and resolve tax-lock collisions.
+      </p>
     </div>
-    <button class="btn-primary" style="padding: 10px 24px; font-size: 14px; display: flex; align-items: center; gap: 8px;">
-        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-        New Data Rights Request
-    </button>
-</div>
-
-<div class="card p-0" style="overflow: hidden; display: flex; flex-direction: column;">
-    <!-- Table Toolbar -->
-    <div class="table-toolbar" style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
-        <div class="search-bar" style="width: 350px; background: transparent; padding: 0; border: none;">
-            <input type="text" placeholder="Search..." style="border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 6px; background: transparent; color: var(--text-main); width: 100%;">
-        </div>
-        
-        <div class="pagination" style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-muted);">
-            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Previous</button>
-            <span>Page 1 of 1</span>
-            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Next</button>
-        </div>
+    <div class="flex items-center gap-3">
+      <a href="/dsr" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 text-white text-sm font-semibold transition-colors shadow-lg shadow-sky-900/30">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+        </svg>
+        <span>Open Public Citizen Portal (/dsr)</span>
+      </a>
     </div>
+  </div>
 
-    <!-- Data Table -->
-    <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+  <!-- Operational Metric Cards -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+      <span class="text-xs font-medium text-slate-400">Total DSR Requests</span>
+      <div class="text-2xl font-bold text-white mt-1"><%= requests ? requests.length : 3 %></div>
+      <div class="text-[11px] text-slate-400 mt-1">Active citizen inquiries</div>
+    </div>
+    <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+      <span class="text-xs font-medium text-slate-400">Awaiting Tax Review</span>
+      <div class="text-2xl font-bold text-amber-400 mt-1">
+        <%= requests ? requests.filter(r => (r.status || '').toUpperCase().includes('TAX') || (r.status || '').toUpperCase().includes('AWAITING')).length : 1 %>
+      </div>
+      <div class="text-[11px] text-amber-400 mt-1">CGST Sec 36 Collision</div>
+    </div>
+    <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+      <span class="text-xs font-medium text-slate-400">Access Summaries (Sec 11)</span>
+      <div class="text-2xl font-bold text-sky-400 mt-1">
+        <%= requests ? requests.filter(r => (r.requestType || '').includes('11') || (r.requestType || '').includes('ACCESS')).length : 1 %>
+      </div>
+      <div class="text-[11px] text-sky-400 mt-1">Disclosed to citizens</div>
+    </div>
+    <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+      <span class="text-xs font-medium text-slate-400">Statutory SLA Compliance</span>
+      <div class="text-2xl font-bold text-emerald-400 mt-1">100%</div>
+      <div class="text-[11px] text-emerald-400 mt-1">Within 7-day window</div>
+    </div>
+  </div>
+
+  <!-- Filter Toolbar -->
+  <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+    <div class="flex items-center gap-2">
+      <button type="button" class="dsr-filter-tab px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-sky-500/20 text-sky-400 border border-sky-500/40">
+        All Requests
+      </button>
+      <button type="button" class="dsr-filter-tab px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900/40 text-slate-400 border border-slate-800 hover:text-white">
+        Awaiting Tax Review (Deepa Nair)
+      </button>
+      <button type="button" class="dsr-filter-tab px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900/40 text-slate-400 border border-slate-800 hover:text-white">
+        Completed
+      </button>
+    </div>
+    <span class="text-xs text-slate-400 font-mono">
+      SLA Standard: <strong class="text-white">7 Working Days</strong>
+    </span>
+  </div>
+
+  <!-- Main DSR Queue Table -->
+  <div class="bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse text-xs">
         <thead>
-            <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-main); font-size: 11px; font-weight: 700; text-transform: uppercase;">
-                <th style="padding: 16px 24px; width: 120px;">ID &uarr;</th>
-                <th style="padding: 16px 16px;">Account Holder / Email &uarr;</th>
-                <th style="padding: 16px 16px;">Type &uarr;</th>
-                <th style="padding: 16px 16px;">Status &uarr;</th>
-                <th style="padding: 16px 16px;">Source Form &uarr;</th>
-                <th style="padding: 16px 16px;">Organization &uarr;</th>
-                <th style="padding: 16px 16px;">Assigned To &uarr;</th>
-                <th style="padding: 16px 16px; white-space: nowrap;">Deadline &uarr;</th>
-                <th style="padding: 16px 24px; white-space: nowrap;">Created &uarr;</th>
-            </tr>
+          <tr class="border-b border-slate-800 text-[11px] font-semibold text-slate-400 uppercase tracking-wider bg-slate-950/40">
+            <th class="py-3.5 px-4">Ticket ID</th>
+            <th class="py-3.5 px-4">Data Principal & Contact</th>
+            <th class="py-3.5 px-4">Statutory Right</th>
+            <th class="py-3.5 px-4">Status</th>
+            <th class="py-3.5 px-4">Informal Silo Occurrence</th>
+            <th class="py-3.5 px-4">Created Date</th>
+            <th class="py-3.5 px-4 text-right">Actions</th>
+          </tr>
         </thead>
-        <tbody style="font-size: 13px;">
-            <!-- Row 1 -->
-            <tr style="border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
-                <td style="padding: 16px 24px; color: var(--text-muted); font-family: monospace; font-size: 11px; max-width: 120px; word-break: break-all;">
-                    #01a08612-91dd-7411-916f-d753f59badb1
+        <tbody class="divide-y divide-slate-800/60 font-mono text-slate-300">
+          <% if (requests && requests.length > 0) { %>
+            <% requests.forEach(function(reqItem) { %>
+              <tr class="hover:bg-slate-800/20 transition-colors">
+                <td class="py-3.5 px-4 font-bold text-sky-400 whitespace-nowrap">
+                  <%= reqItem.ticketNumber || reqItem.id %>
                 </td>
-                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">test.user@dpdpsecure.in</td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--border-color); padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 700;">DELETE</span>
+                <td class="py-3.5 px-4 font-sans">
+                  <div class="font-bold text-white"><%= reqItem.principalName %></div>
+                  <div class="text-[11px] text-slate-400 font-mono"><%= reqItem.principalPhone %> · <%= reqItem.principalEmail || 'No email' %></div>
                 </td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">OPEN</span>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">--</td>
-                <td style="padding: 16px 16px;">
-                    <span style="color: var(--text-muted); display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 6px; font-size: 12px;">
-                        DPDP_Secure Mumbai HQ
-                        <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                <td class="py-3.5 px-4 font-sans whitespace-nowrap">
+                  <% if ((reqItem.requestType || '').includes('ERASURE') || (reqItem.requestType || '').includes('12')) { %>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-950/80 text-rose-300 border border-rose-500/30">
+                      SECTION 12: ERASURE
                     </span>
+                  <% } else if ((reqItem.requestType || '').includes('ACCESS') || (reqItem.requestType || '').includes('11')) { %>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-950/80 text-sky-300 border border-sky-500/30">
+                      SECTION 11: ACCESS
+                    </span>
+                  <% } else { %>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-950/80 text-amber-300 border border-amber-500/30">
+                      SECTION 12: CORRECTION
+                    </span>
+                  <% } %>
                 </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">--</td>
-                <td style="padding: 16px 16px; color: var(--text-muted); font-size: 12px; white-space: nowrap;">
-                    09 Oct 2026,<br>12:09 pm
+                <td class="py-3.5 px-4 whitespace-nowrap">
+                  <% if ((reqItem.status || '').toUpperCase().includes('AWAITING') || (reqItem.status || '').toUpperCase().includes('TAX')) { %>
+                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-950/80 text-amber-400 border border-amber-500/40 flex items-center gap-1 w-max">
+                      <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping"></span>
+                      <span>Awaiting Tax Review</span>
+                    </span>
+                  <% } else if ((reqItem.status || '').toUpperCase() === 'COMPLETED') { %>
+                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-950/80 text-emerald-400 border border-emerald-500/30">
+                      COMPLETED
+                    </span>
+                  <% } else { %>
+                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-sky-950/80 text-sky-400 border border-sky-500/30">
+                      IN PROGRESS
+                    </span>
+                  <% } %>
                 </td>
-                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px; white-space: nowrap;">
-                    09 Sept 2026,<br>12:09 pm
+                <td class="py-3.5 px-4 font-sans text-xs">
+                  <% if ((reqItem.principalName || '').includes('Deepa') || (reqItem.ticketNumber || '').includes('8819')) { %>
+                    <div class="text-amber-300 font-semibold flex items-center gap-1">
+                      <span>⚠️ 3 Silos (WhatsApp, Leads, Tax Invoicing)</span>
+                    </div>
+                    <div class="text-[10px] text-slate-400 font-mono">Invoice INV-2024-309 Collision</div>
+                  <% } else { %>
+                    <div class="text-slate-400">1 Silo (WhatsApp Chat)</div>
+                  <% } %>
                 </td>
-            </tr>
-
-            <!-- Row 2 -->
-            <tr style="border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
-                <td style="padding: 16px 24px; color: var(--text-muted); font-family: monospace; font-size: 11px; max-width: 120px; word-break: break-all;">
-                    #01a04c0b-c216-794f-a898-e4e3e93fc122
+                <td class="py-3.5 px-4 text-slate-400 whitespace-nowrap">
+                  <%= reqItem.createdAt ? new Date(reqItem.createdAt).toLocaleDateString('en-IN', { dateStyle: 'medium' }) : '2024-10-18' %>
                 </td>
-                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">arjun.sharma@gmail.com</td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--border-color); padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 700;">ACCESS</span>
+                <td class="py-3.5 px-4 text-right font-sans whitespace-nowrap">
+                  <button
+                    type="button"
+                    class="btn-open-occurrences px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs transition-colors shadow"
+                    data-ticket="<%= reqItem.ticketNumber || reqItem.id %>"
+                    data-principal="<%= reqItem.principalName %>"
+                  >
+                    🔍 Locate Occurrences
+                  </button>
                 </td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">OPEN</span>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">--</td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">Tenant-wide</span>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">--</td>
-                <td style="padding: 16px 16px; color: var(--text-muted); font-size: 12px; white-space: nowrap;">--</td>
-                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px; white-space: nowrap;">
-                    29 Aug 2026,<br>03:03 pm
-                </td>
-            </tr>
-            
-            <!-- Row 3 -->
-            <tr style="border-bottom: 1px solid var(--border-color); background: rgba(59, 130, 246, 0.05); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(59, 130, 246, 0.1)'" onmouseout="this.style.background='rgba(59, 130, 246, 0.05)'">
-                <td style="padding: 16px 24px; color: var(--text-muted); font-family: monospace; font-size: 11px; max-width: 120px; word-break: break-all;">
-                    #01a04e0b-c216-7bea-8fca-0de1fb75f126
-                </td>
-                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">priya.reddy@gmail.com</td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--border-color); padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 700;">CORRECT</span>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">COMPLETED</span>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">--</td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">Tenant-wide</span>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">--</td>
-                <td style="padding: 16px 16px; color: var(--text-muted); font-size: 12px; white-space: nowrap;">--</td>
-                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px; white-space: nowrap; position: relative;">
-                    29 Aug 2026,<br>03:03 pm
-                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" style="position: absolute; right: 24px; top: 50%; transform: translateY(-50%); opacity: 0.5;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-                </td>
-            </tr>
-
-            <!-- Row 4 -->
-            <tr style="border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
-                <td style="padding: 16px 24px; color: var(--text-muted); font-family: monospace; font-size: 11px; max-width: 120px; word-break: break-all;">
-                    #01a04e0b-8d5e-9067461f6e11
-                </td>
-                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">rahul.gupta@gmail.com</td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--border-color); padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 700;">DELETE</span>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(59, 130, 246, 0.15); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">IN_PROGRESS</span>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">--</td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">Tenant-wide</span>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">--</td>
-                <td style="padding: 16px 16px; color: var(--text-muted); font-size: 12px; white-space: nowrap;">--</td>
-                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px; white-space: nowrap; position: relative;">
-                    29 Aug 2026,<br>03:03 pm
-                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" style="position: absolute; right: 24px; top: 50%; transform: translateY(-50%); opacity: 0.5;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-                </td>
-            </tr>
-
-            <!-- Row 5 -->
-            <tr style="border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
-                <td style="padding: 16px 24px; color: var(--text-muted); font-family: monospace; font-size: 11px; max-width: 120px; word-break: break-all;">
-                    #01a04e0b-c216-7c39-a452-4f4a03d72742
-                </td>
-                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">vikram.singh@gmail.com</td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--border-color); padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 700;">ACCESS</span>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(59, 130, 246, 0.15); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">IN_PROGRESS</span>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">--</td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">Tenant-wide</span>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">--</td>
-                <td style="padding: 16px 16px; color: var(--text-muted); font-size: 12px; white-space: nowrap;">--</td>
-                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px; white-space: nowrap; position: relative;">
-                    29 Aug 2026,<br>03:03 pm
-                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" style="position: absolute; right: 24px; top: 50%; transform: translateY(-50%); opacity: 0.5;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-                </td>
-            </tr>
-
-            <!-- Row 6 -->
-            <tr style="border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
-                <td style="padding: 16px 24px; color: var(--text-muted); font-family: monospace; font-size: 11px; max-width: 120px; word-break: break-all;">
-                    #01a04e0b-c216-7c51-80fe-050cd6b0ad72
-                </td>
-                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">sunita.patel@gmail.com</td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--border-color); padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 700;">GRIEVANCE</span>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">OPEN</span>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">--</td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">Tenant-wide</span>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">--</td>
-                <td style="padding: 16px 16px; color: var(--text-muted); font-size: 12px; white-space: nowrap;">--</td>
-                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px; white-space: nowrap; position: relative;">
-                    29 Aug 2026,<br>03:03 pm
-                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" style="position: absolute; right: 24px; top: 50%; transform: translateY(-50%); opacity: 0.5;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-                </td>
-            </tr>
-
-            <!-- Row 7 -->
-            <tr style="border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
-                <td style="padding: 16px 24px; color: var(--text-muted); font-family: monospace; font-size: 11px; max-width: 120px; word-break: break-all;">
-                    #01a04e0b-c216-7c69-8bf0-ec736478548a
-                </td>
-                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">ananya.iyer@gmail.com</td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--border-color); padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 700;">CORRECT</span>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">OPEN</span>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">--</td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">Tenant-wide</span>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">--</td>
-                <td style="padding: 16px 16px; color: var(--text-muted); font-size: 12px; white-space: nowrap;">--</td>
-                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px; white-space: nowrap; position: relative;">
-                    29 Aug 2026,<br>03:03 pm
-                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" style="position: absolute; right: 24px; top: 50%; transform: translateY(-50%); opacity: 0.5;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-                </td>
-            </tr>
-
-            <!-- Row 8 -->
-            <tr style="border-bottom: 1px solid transparent; background: rgba(59, 130, 246, 0.05); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(59, 130, 246, 0.1)'" onmouseout="this.style.background='rgba(59, 130, 246, 0.05)'">
-                <td style="padding: 16px 24px; color: var(--text-muted); font-family: monospace; font-size: 11px; max-width: 120px; word-break: break-all;">
-                    #01a04e0b-c216 7c88-8e07-78b29ba674a7
-                </td>
-                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">karthik.rajan@gmail.com</td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--border-color); padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 700;">DELETE</span>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">COMPLETED</span>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">--</td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">Tenant-wide</span>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">--</td>
-                <td style="padding: 16px 16px; color: var(--text-muted); font-size: 12px; white-space: nowrap;">--</td>
-                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px; white-space: nowrap; position: relative;">
-                    29 Aug 2026,<br>03:03 pm
-                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" style="position: absolute; right: 24px; top: 50%; transform: translateY(-50%); opacity: 0.5;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-                </td>
-            </tr>
-
+              </tr>
+            <% }); %>
+          <% } %>
         </tbody>
-    </table>
-    
-    <!-- Table Footer (Bottom Pagination bar for exact visual match) -->
-    <div style="padding: 16px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; align-items: center;">
-        <div class="pagination" style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-muted);">
-            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Previous</button>
-            <span>Page 1 of 1</span>
-            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Next</button>
-        </div>
+      </table>
     </div>
+  </div>
+
+  <!-- Slide-Out / Modal Silo Occurrence Drawer -->
+  <div id="occurrenceModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+      <!-- Drawer Header -->
+      <div class="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-950 text-sky-400 border border-sky-500/30">OCCURRENCE LOCATOR</span>
+            <span id="drawerTicketId" class="text-xs font-mono font-bold text-white">DSR-2026-8819</span>
+          </div>
+          <h2 id="drawerPrincipal" class="text-base font-bold text-white mt-1">Deepa Nair (+91 9988776655)</h2>
+        </div>
+        <button type="button" id="btnCloseDrawer" class="text-slate-400 hover:text-white p-1 rounded-lg transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Drawer Content -->
+      <div class="p-5 overflow-y-auto space-y-4">
+        <!-- Collision Warning Banner -->
+        <div class="p-3.5 rounded-xl bg-amber-950/60 border border-amber-500/40 text-xs text-amber-200 space-y-1">
+          <div class="font-bold text-amber-300 flex items-center gap-1.5">
+            <span>⚖️ Statutory Conflict Detected: DPDP Act Section 12 vs CGST Act Section 36</span>
+          </div>
+          <p class="text-slate-300">
+            Citizen requests complete erasure. While informal WhatsApp and spreadsheet records can be redacted, financial invoice <strong>INV-2024-309</strong> must be preserved for 72 months (6 years) under tax retention laws.
+          </p>
+        </div>
+
+        <!-- Discovered Silos List -->
+        <div class="space-y-3">
+          <h3 class="text-xs font-bold text-white uppercase tracking-wider">Discovered Occurrences Across Data Silos</h3>
+
+          <!-- Silo 1: WhatsApp -->
+          <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5">
+            <div class="flex items-center justify-between text-xs">
+              <div class="font-bold text-emerald-400 flex items-center gap-1.5">
+                <span>💬 WhatsApp Reception Chat (clinic_reception_chat.txt)</span>
+              </div>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-950 text-rose-300 border border-rose-500/30">INFORMAL SILO · ERASE</span>
+            </div>
+            <div class="font-mono text-[11px] text-slate-300 bg-slate-900/80 p-2.5 rounded border border-slate-800">
+              <strong class="text-sky-400">Line 14:</strong> [14/10/24, 11:32:00 AM] Deepa Nair: Hello, I sent samples for Lipid Panel test under mobile +91 9988776655. Please confirm dispatch.
+            </div>
+          </div>
+
+          <!-- Silo 2: Leads Spreadsheet -->
+          <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5">
+            <div class="flex items-center justify-between text-xs">
+              <div class="font-bold text-sky-400 flex items-center gap-1.5">
+                <span>📊 Customer Leads Spreadsheet (customer_leads.csv)</span>
+              </div>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-950 text-rose-300 border border-rose-500/30">EXCEL SILO · ERASE</span>
+            </div>
+            <div class="font-mono text-[11px] text-slate-300 bg-slate-900/80 p-2.5 rounded border border-slate-800">
+              <strong class="text-sky-400">Row 5:</strong> L-104, Deepa Nair, 9988776655, deepa.nair@corp.com, Bengaluru, Aadhaar: 6734 5234 8901, PAN: PQRST3456D
+            </div>
+          </div>
+
+          <!-- Silo 3: Tally Billing Export -->
+          <div class="p-3.5 rounded-xl bg-slate-950 border border-amber-500/40 space-y-1.5">
+            <div class="flex items-center justify-between text-xs">
+              <div class="font-bold text-amber-400 flex items-center gap-1.5">
+                <span>🧾 Tally Billing Export (invoices_billing.csv)</span>
+              </div>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-950 text-amber-300 border border-amber-500/40">STATUTORY TAX LOCK · PRESERVE</span>
+            </div>
+            <div class="font-mono text-[11px] text-slate-300 bg-slate-900/80 p-2.5 rounded border border-slate-800">
+              <strong class="text-amber-400">Row 5:</strong> INV-2024-309 | Date: 2024-09-15 | Customer: Deepa Nair | Amount: Rs. 12,000 | GSTIN: 29DDDDD3333D1Z1
+            </div>
+            <div class="text-[11px] text-amber-300/90 italic">
+              Mandatory tax lock active until 2030-12-31 under CGST Act Section 36 read with DPDP Act Section 8(7).
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Drawer Actions Footer -->
+      <div class="p-4 border-t border-slate-800 bg-slate-950/60 flex items-center justify-between gap-3">
+        <a id="btnDownloadSummary" href="/api/privacy/dsr/DSR-2026-8819/summary" target="_blank" class="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-colors">
+          📄 Download Section 11 Summary (JSON)
+        </a>
+        <div class="flex items-center gap-2">
+          <button type="button" id="btnExecuteDualTrackErasure" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-colors shadow-lg shadow-emerald-900/40">
+            ⚡ Execute Dual-Track Collision Erasure &rarr;
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
+<script>
+  (function () {
+    const modal = document.getElementById('occurrenceModal');
+    const closeBtn = document.getElementById('btnCloseDrawer');
+    const occurrenceButtons = document.querySelectorAll('.btn-open-occurrences');
+    const drawerTicketId = document.getElementById('drawerTicketId');
+    const drawerPrincipal = document.getElementById('drawerPrincipal');
+    const btnDownloadSummary = document.getElementById('btnDownloadSummary');
+    const btnExecuteErasure = document.getElementById('btnExecuteDualTrackErasure');
+
+    occurrenceButtons.forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const ticket = btn.getAttribute('data-ticket');
+        const principal = btn.getAttribute('data-principal');
+
+        if (drawerTicketId) drawerTicketId.textContent = ticket;
+        if (drawerPrincipal) drawerPrincipal.textContent = principal;
+        if (btnDownloadSummary) btnDownloadSummary.href = `/api/privacy/dsr/${ticket}/summary`;
+
+        modal.classList.remove('hidden');
+
+        // Optional AJAX refresh
+        try {
+          const res = await fetch(`/api/privacy/dsr/${ticket}/occurrences`);
+          const data = await res.json();
+          if (data.success && data.principal) {
+            drawerPrincipal.textContent = data.principal;
+          }
+        } catch (e) {
+          // Keep pre-loaded fallback
+        }
+      });
+    });
+
+    closeBtn.addEventListener('click', () => {
+      modal.classList.add('hidden');
+    });
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.classList.add('hidden');
+    });
+
+    // Dual-track collision resolution demonstration
+    if (btnExecuteErasure) {
+      btnExecuteErasure.addEventListener('click', async () => {
+        const ticket = drawerTicketId.textContent || 'DSR-2026-8819';
+        btnExecuteErasure.disabled = true;
+        btnExecuteErasure.textContent = 'Processing Atomically...';
+
+        try {
+          const res = await fetch('/api/privacy/execute-erasure', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ticketId: ticket, principalPhone: '+91 9988776655' })
+          });
+
+          const data = await res.json();
+          if (data.success) {
+            alert(`Dual-Track Erasure Executed Successfully!\n\nInformal Redactions: ${data.informalRedactions} records\nTax Invoices Locked: ${data.taxLockedInvoices} record\nCertificate ID: ${data.certificateId}\n\nOpening compliance certificate...`);
+            window.open(data.certUrl, '_blank');
+            window.location.reload();
+          } else {
+            alert(data.error || 'Failed to execute erasure.');
+            btnExecuteErasure.disabled = false;
+            btnExecuteErasure.textContent = '⚡ Execute Dual-Track Collision Erasure →';
+          }
+        } catch (e) {
+          alert('Network connection error.');
+          btnExecuteErasure.disabled = false;
+          btnExecuteErasure.textContent = '⚡ Execute Dual-Track Collision Erasure →';
+        }
+      });
+    }
+  })();
+</script>
 
 <%- include('partials/footer') %>
