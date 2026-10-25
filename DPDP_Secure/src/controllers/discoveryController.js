@@ -213,6 +213,107 @@ const discoveryController = {
         error: 'Failed to fetch findings: ' + err.message
       });
     }
+  },
+
+  /**
+   * Renders the Record of Processing Activities (RoPA) view under Section 8(4)
+   * Triggered by GET /inventory/ropa
+   */
+  renderRoPA: async (req, res) => {
+    try {
+      const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+      let ropaRecords = await models.getRoPARecords(tenantId);
+
+      // Auto-synthesize standard baseline if empty
+      if (!ropaRecords || ropaRecords.length === 0) {
+        const { synthesizeRoPA } = require('../services/ropaService');
+        const syn = await synthesizeRoPA(tenantId);
+        ropaRecords = syn.records;
+      }
+
+      res.render('inventory-ropa', {
+        title: 'Processing Activities (RoPA) - DPDP_Secure',
+        description: 'Statutory Record of Processing Activities under DPDP Act Section 8(4).',
+        breadcrumbs: ['Workspace', 'Data Mapping', 'RoPA'],
+        path: '/inventory/ropa',
+        ropaRecords
+      });
+    } catch (err) {
+      console.error('[DISCOVERY] renderRoPA error:', err);
+      res.status(500).render('error', {
+        title: 'RoPA Error - DPDP_Secure',
+        message: 'Failed to load RoPA records: ' + err.message
+      });
+    }
+  },
+
+  /**
+   * Streams a sanitized CSV file of the RoPA with formula injection defense
+   * Triggered by GET /api/ropa/export-csv
+   */
+  exportRoPaCsv: async (req, res) => {
+    try {
+      const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+      const { generateRoPaCsv } = require('../services/ropaService');
+      const csvContent = await generateRoPaCsv(tenantId);
+
+      res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+      res.setHeader('Content-Disposition', 'attachment; filename="DPDP_Secure_RoPA_Register.csv"');
+      res.status(200).send(csvContent);
+    } catch (err) {
+      console.error('[DISCOVERY] exportRoPaCsv error:', err);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to export RoPA CSV: ' + err.message
+      });
+    }
+  },
+
+  /**
+   * Returns RoPA records in JSON format
+   * Triggered by GET /api/ropa/data
+   */
+  getRoPaData: async (req, res) => {
+    try {
+      const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+      let records = await models.getRoPARecords(tenantId);
+      if (!records || records.length === 0) {
+        const { synthesizeRoPA } = require('../services/ropaService');
+        const syn = await synthesizeRoPA(tenantId);
+        records = syn.records;
+      }
+
+      res.json({
+        success: true,
+        count: records.length,
+        records
+      });
+    } catch (err) {
+      console.error('[DISCOVERY] getRoPaData error:', err);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch RoPA data: ' + err.message
+      });
+    }
+  },
+
+  /**
+   * Triggers automated RoPA re-synthesis from current pii_findings
+   * Triggered by POST /api/ropa/generate
+   */
+  generateRoPA: async (req, res) => {
+    try {
+      const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+      const { synthesizeRoPA } = require('../services/ropaService');
+      const result = await synthesizeRoPA(tenantId);
+      res.json(result);
+    } catch (err) {
+      console.error('[DISCOVERY] generateRoPA error:', err);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to synthesize RoPA: ' + err.message
+      });
+    }
   }
 };
 
