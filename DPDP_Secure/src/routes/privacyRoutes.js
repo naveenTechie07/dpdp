@@ -11,6 +11,7 @@ const router = express.Router();
 const rateLimit = require('express-rate-limit');
 const { requireRole } = require('../middlewares/authMiddleware');
 const privacyController = require('../controllers/privacyController');
+const models = require('../models');
 
 // Anti-DDoS Rate Limiting on Public Portal: Max 5 requests per 15 minutes per IP (with test environment allowance)
 const dsrPublicLimiter = rateLimit({
@@ -38,13 +39,78 @@ router.get('/privacy/dashboard', (req, res) => {
 router.get('/privacy/requests', privacyController.renderRequestsQueue);
 
 // Workflows & Form Designer Views
-router.get('/privacy/workflows', (req, res) => {
-  res.render('privacy-workflows', {
-    title: 'Workflows - DPDP_Secure',
-    description: 'Configurable stage-based workflows for Data Principal Rights requests.',
-    breadcrumbs: ['Workspace', 'Privacy', 'Workflows'],
-    path: '/privacy/workflows'
-  });
+router.get('/privacy/workflows', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    const workflows = await models.getWorkflows(tenantId);
+    res.render('privacy-workflows', {
+      title: 'Workflows - DPDP_Secure',
+      description: 'Configurable stage-based workflows for Data Principal Rights requests.',
+      breadcrumbs: ['Workspace', 'Privacy', 'Workflows'],
+      path: '/privacy/workflows',
+      workflows: workflows || []
+    });
+  } catch (err) {
+    console.error('[PRIVACY] getWorkflows error:', err);
+    res.status(500).render('500', { title: 'Error', description: err.message, breadcrumbs: ['Error'] });
+  }
+});
+
+router.get('/privacy/workflows/create', (req, res) => {
+  res.redirect('/privacy/workflows');
+});
+
+router.get('/api/workflows', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    const workflows = await models.getWorkflows(tenantId);
+    res.json({ success: true, data: workflows || [] });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.post(['/api/workflows', '/api/workflows/create'], async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    const { workflowName, triggerEvent, actions, isActive } = req.body;
+    if (!workflowName) {
+      return res.status(400).json({ success: false, error: 'Workflow name is required' });
+    }
+    const id = await models.createWorkflow({
+      tenantId,
+      workflowName,
+      triggerEvent: triggerEvent || 'DSR_SUBMITTED',
+      actions: actions || '[]',
+      isActive: isActive !== undefined ? (isActive ? 1 : 0) : 1
+    });
+    await models.logAuditEvent(tenantId, req.session?.user?.name || 'Admin', 'CREATE_WORKFLOW', id, req.body);
+    res.status(201).json({ success: true, id, message: 'Workflow created successfully' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.put('/api/workflows/:id', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    await models.updateWorkflow(req.params.id, req.body, tenantId);
+    await models.logAuditEvent(tenantId, req.session?.user?.name || 'Admin', 'UPDATE_WORKFLOW', req.params.id, req.body);
+    res.json({ success: true, message: 'Workflow updated successfully' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.delete('/api/workflows/:id', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    await models.deleteWorkflow(req.params.id, tenantId);
+    await models.logAuditEvent(tenantId, req.session?.user?.name || 'Admin', 'DELETE_WORKFLOW', req.params.id, {});
+    res.json({ success: true, message: 'Workflow deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
 });
 
 router.get('/privacy/workflows/:id', (req, res) => {

@@ -1,4 +1,8 @@
 <%- include('partials/header') %>
+<%
+  const safeLocales = (typeof locales !== 'undefined' && Array.isArray(locales)) ? locales : [];
+  const defaultLocale = safeLocales.find(l => l.isDefault) || safeLocales[0] || { language: 'English' };
+%>
 
 <style>
 .loc-tabs {
@@ -8,13 +12,13 @@
 }
 .loc-tabs-inner {
     display: flex;
-    background: transparent;
+    background: rgba(0,0,0,0.25);
     border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 4px;
 }
 .loc-tab {
-    padding: 8px 16px;
+    padding: 8px 18px;
     color: var(--text-muted);
     font-size: 13px;
     font-weight: 600;
@@ -23,36 +27,32 @@
     transition: all 0.2s;
 }
 .loc-tab.active {
-    background: rgba(255,255,255,0.05);
+    background: #3b82f6;
     color: white;
 }
 .loc-content-card {
-    background: transparent;
+    background: var(--bg-surface);
     border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 24px;
     margin-bottom: 24px;
 }
 .loc-section-title {
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 700;
     color: white;
     margin: 0 0 4px 0;
 }
 .loc-section-subtitle {
-    font-size: 12px;
+    font-size: 13px;
     color: var(--text-muted);
     margin: 0 0 24px 0;
 }
 .loc-label {
-    display: block; font-size: 12px; font-weight: 600; color: white; margin-bottom: 8px;
+    display: block; font-size: 13px; font-weight: 600; color: white; margin-bottom: 8px;
 }
 .loc-select {
-    width: 100%; max-width: 400px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: white; padding: 10px 12px; border-radius: 6px; font-size: 13px;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' width='14' height='14' stroke='white' stroke-width='2' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
+    width: 100%; max-width: 400px; background: rgba(0,0,0,0.25); border: 1px solid var(--border-color); color: white; padding: 10px 12px; border-radius: 6px; font-size: 13px;
 }
 .lang-grid {
     display: grid;
@@ -61,16 +61,17 @@
     margin-bottom: 32px;
 }
 .lang-card {
-    background: transparent; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 12px; display: flex; align-items: center; gap: 10px; color: white; font-size: 13px; cursor: pointer;
+    background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; color: white; font-size: 13px; cursor: pointer; transition: all 0.2s;
 }
-.lang-card.disabled {
-    opacity: 0.3; cursor: not-allowed;
+.lang-card.active {
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.1);
 }
 .lang-card input[type="checkbox"] {
-    accent-color: #3b82f6; width: 14px; height: 14px; cursor: pointer;
+    accent-color: #3b82f6; width: 15px; height: 15px; cursor: pointer;
 }
 .lang-code {
-    color: var(--text-muted); font-size: 12px; margin-left: auto;
+    color: var(--text-muted); font-size: 11px; margin-left: auto; font-family: monospace;
 }
 .loc-panel {
     display: none;
@@ -79,53 +80,27 @@
     display: block;
 }
 .loc-btn-primary {
-    background: #be185d; border: 1px solid #9d174d; color: white; padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+    background: #3b82f6; border: 1px solid #2563eb; color: white; padding: 10px 20px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s;
 }
-.loc-btn-outline {
-    background: transparent; border: 1px solid var(--border-color); color: white; padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;
+.loc-btn-primary:hover {
+    background: #2563eb;
 }
-.toggle-switch {
-    position: relative; display: inline-block; width: 44px; height: 24px;
+.toggle-switch-ui {
+    width: 44px; height: 24px; background: #374151; border-radius: 12px; position: relative; cursor: pointer; transition: background 0.2s;
 }
-.toggle-switch input { opacity: 0; width: 0; height: 0; }
-.toggle-slider {
-    position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border-color); transition: .4s; border-radius: 24px;
+.toggle-switch-ui.active { background: #3b82f6; }
+.toggle-switch-ui::after {
+    content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: white; border-radius: 50%; transition: left 0.2s;
 }
-.toggle-slider:before {
-    position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%;
-}
-input:checked + .toggle-slider { background-color: white; }
-input:checked + .toggle-slider:before { transform: translateX(20px); background-color: black; }
-.loc-message-key-select {
-    width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: white; padding: 10px 12px; border-radius: 6px; font-size: 13px; appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' width='14' height='14' stroke='white' stroke-width='2' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-}
-.loc-textarea {
-    width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: white; padding: 12px; border-radius: 8px; font-size: 13px; font-family: inherit; resize: vertical; min-height: 80px; margin-bottom: 16px;
-.loc-textarea {
-    width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: white; padding: 12px; border-radius: 8px; font-size: 13px; font-family: inherit; resize: vertical; min-height: 80px; margin-bottom: 16px;
-}
+.toggle-switch-ui.active::after { left: 22px; }
 .loc-table {
     width: 100%; border-collapse: collapse;
 }
 .loc-table th {
-    text-align: left; padding: 12px 16px; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border-color); background: rgba(0,0,0,0.1);
+    text-align: left; padding: 12px 16px; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border-color); background: rgba(0,0,0,0.15);
 }
 .loc-table td {
-    padding: 16px; font-size: 13px; color: white; border-bottom: 1px solid var(--border-color); vertical-align: top;
-}
-.loc-table tr:last-child td { border-bottom: none; }
-.loc-table tr:hover { background: rgba(255,255,255,0.02); }
-.pagination-container {
-    display: flex; gap: 12px; margin-bottom: 16px;
-}
-.pagination-btn {
-    background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: var(--text-muted); padding: 6px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;
-}
-.pagination-btn.active {
-    background: rgba(255,255,255,0.1); color: white;
+    padding: 14px 16px; font-size: 13px; color: white; border-bottom: 1px solid rgba(255,255,255,0.05); vertical-align: top;
 }
 </style>
 
@@ -133,434 +108,276 @@ input:checked + .toggle-slider:before { transform: translateX(20px); background-
     
     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
         <div>
-            <h1 style="font-size: 20px; font-weight: 700; color: white; margin: 0 0 8px 0;">Localization & Labels</h1>
-            <p style="color: var(--text-muted); font-size: 13px; margin: 0;">Manage tenant language defaults, translations, and label substitutions across the platform.</p>
+            <h1 style="font-size: 20px; font-weight: 700; color: white; margin: 0 0 6px 0;">Localization &amp; Multilingual Notices</h1>
+            <p style="color: var(--text-muted); font-size: 13px; margin: 0;">DPDP Act Section 5(3) mandatory 8th Schedule Indian languages management for patient consent forms.</p>
         </div>
         <div style="color: var(--text-muted); font-size: 12px;" id="last-updated-text">
-            Last updated 29 Aug 2026, 03:03 pm
+            3 Configured Languages (English, Kannada, Hindi)
         </div>
     </div>
 
     <!-- TABS -->
     <div class="loc-tabs">
         <div class="loc-tabs-inner">
-            <div class="loc-tab active" onclick="switchTab('consumer')">Consumer Languages</div>
-            <div class="loc-tab" onclick="switchTab('platform')">Platform Languages</div>
+            <div class="loc-tab active" onclick="switchTab('consumer')">Eighth Schedule Languages</div>
+            <div class="loc-tab" onclick="switchTab('messages')">Notice Translations</div>
             <div class="loc-tab" onclick="switchTab('settings')">Language Settings</div>
-            <div class="loc-tab" onclick="switchTab('messages')">Platform Messages</div>
-            <div class="loc-tab" onclick="switchTab('bundle')">Bundle Preview</div>
+            <div class="loc-tab" onclick="switchTab('bundle')">Portal Live Preview</div>
         </div>
     </div>
 
-    <% 
-    const indianLangs = [
-        { name: 'English', code: 'en-IN', checked: true },
-        { name: 'हिन्दी', code: 'hi-IN', checked: true },
-        { name: 'বাংলা', code: 'bn-IN', checked: false },
-        { name: 'தமிழ்', code: 'ta-IN', checked: false },
-        { name: 'తెలుగు', code: 'te-IN', checked: false },
-        { name: 'मराठी', code: 'mr-IN', checked: true },
-        { name: 'ગુજરાતી', code: 'gu-IN', checked: true },
-        { name: 'ಕನ್ನಡ', code: 'kn-IN', checked: false },
-        { name: 'മലയാളം', code: 'ml-IN', checked: false },
-        { name: 'ਪੰਜਾਬੀ', code: 'pa-IN', checked: false },
-        { name: 'ଓଡ଼ିଆ', code: 'or-IN', checked: false },
-        { name: 'অসমীয়া', code: 'as-IN', checked: false },
-        { name: 'اردو', code: 'ur-IN', checked: false },
-        { name: 'बड़ो', code: 'brx-IN', checked: false },
-        { name: 'डोगरी', code: 'doi-IN', checked: false },
-        { name: 'كأشُر', code: 'ks-IN', checked: false },
-        { name: 'कोंकणी', code: 'kok-IN', checked: false },
-        { name: 'मैथिली', code: 'mai-IN', checked: false },
-        { name: 'মৈতৈলোন্', code: 'mni-IN', checked: false },
-        { name: 'नेपाली', code: 'ne-IN', checked: false }
-    ];
-    const globalLangs = [
-        { name: 'English (US)', code: 'en-US' }, { name: 'English (UK)', code: 'en-GB' }, { name: 'English (AU)', code: 'en-AU' }, { name: 'English (CA)', code: 'en-CA' },
-        { name: 'Français', code: 'fr-FR' }, { name: 'Deutsch', code: 'de-DE' }, { name: 'Español', code: 'es-ES' }, { name: 'Italiano', code: 'it-IT' },
-        { name: 'Português', code: 'pt-PT' }, { name: 'Português (BR)', code: 'pt-BR' }, { name: 'Nederlands', code: 'nl-NL' }, { name: 'Polski', code: 'pl-PL' },
-        { name: 'Svenska', code: 'sv-SE' }, { name: 'Dansk', code: 'da-DK' }, { name: 'Norsk', code: 'nb-NO' }, { name: 'Suomi', code: 'fi-FI' },
-        { name: 'Čeština', code: 'cs-CZ' }, { name: 'Slovenčina', code: 'sk-SK' }, { name: 'Română', code: 'ro-RO' }, { name: 'Magyar', code: 'hu-HU' },
-        { name: 'Ελληνικά', code: 'el-GR' }, { name: 'Български', code: 'bg-BG' }, { name: 'Hrvatski', code: 'hr-HR' }, { name: 'Lietuvių', code: 'lt-LT' },
-        { name: 'Latviešu', code: 'lv-LV' }, { name: 'Eesti', code: 'et-EE' }, { name: '中文 (简体)', code: 'zh-CN' }, { name: '中文 (繁體)', code: 'zh-TW' },
-        { name: '日本語', code: 'ja-JP' }, { name: '한국어', code: 'ko-KR' }, { name: 'ภาษาไทย', code: 'th-TH' }, { name: 'Tiếng Việt', code: 'vi-VN' },
-        { name: 'Bahasa Indonesia', code: 'id-ID' }, { name: 'Bahasa Melayu', code: 'ms-MY' }, { name: 'Filipino', code: 'fil-PH' }, { name: 'العربية', code: 'ar-SA' },
-        { name: 'العربية (AE)', code: 'ar-AE' }, { name: 'עברית', code: 'he-IL' }, { name: 'Türkçe', code: 'tr-TR' }, { name: 'فارسی', code: 'fa-IR' },
-        { name: 'Español (MX)', code: 'es-MX' }, { name: 'Español (AR)', code: 'es-AR' }, { name: 'Español (CO)', code: 'es-CO' }, { name: 'Kiswahili', code: 'sw-KE' },
-        { name: 'Afrikaans', code: 'af-ZA' }
-    ];
-    %>
-
-    <!-- CONSUMER LANGUAGES TAB -->
+    <!-- 1. SCHEDULE 8 LANGUAGES TAB -->
     <div id="tab-consumer" class="loc-panel active">
         <div class="loc-content-card">
-            <h2 class="loc-section-title">Consumer-facing languages</h2>
-            <p class="loc-section-subtitle">Languages available to data subjects in consent forms, cookie banners, and DSR forms. Enable every language your end-users may need.</p>
+            <h2 class="loc-section-title">Active Patient Notice Languages</h2>
+            <p class="loc-section-subtitle">Languages available to patients in WhatsApp intake bots, physical notice QR codes, and SMS consent confirmations.</p>
             
             <div style="margin-bottom: 24px;">
-                <label class="loc-label">Default consumer locale</label>
-                <select class="loc-select">
-                    <option>en-IN · English</option>
+                <label class="loc-label">Default Clinic Locale</label>
+                <select class="loc-select" id="defaultLocaleSelect" onchange="updateDefaultLocale(this.value)">
+                    <option value="English" <%= defaultLocale.language === 'English' ? 'selected' : '' %>>English (en-IN)</option>
+                    <option value="Kannada" <%= defaultLocale.language === 'Kannada' ? 'selected' : '' %>>ಕನ್ನಡ - Kannada (kn-IN)</option>
+                    <option value="Hindi" <%= defaultLocale.language === 'Hindi' ? 'selected' : '' %>>हिन्दी - Hindi (hi-IN)</option>
                 </select>
             </div>
 
-            <h3 style="font-size: 13px; font-weight: 600; color: white; margin-bottom: 12px;">Indian languages</h3>
+            <h3 style="font-size: 14px; font-weight: 600; color: white; margin-bottom: 14px;">Active Clinic Languages in Bengaluru</h3>
             <div class="lang-grid">
-                <% indianLangs.forEach(l => { %>
-                    <label class="lang-card">
-                        <input type="checkbox" <%= l.checked ? 'checked' : '' %>>
-                        <span style="font-weight: <%= l.checked ? '600' : '400' %>"><%= l.name %></span>
-                        <span class="lang-code"><%= l.code %></span>
-                    </label>
-                <% }) %>
-            </div>
-
-            <h3 style="font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 12px;">Global languages (coming soon)</h3>
-            <div class="lang-grid">
-                <% globalLangs.forEach(l => { %>
-                    <label class="lang-card disabled">
-                        <input type="checkbox" disabled>
-                        <span><%= l.name %></span>
-                        <span class="lang-code"><%= l.code %></span>
-                    </label>
-                <% }) %>
-            </div>
-        </div>
-    </div>
-
-    <!-- PLATFORM LANGUAGES TAB -->
-    <div id="tab-platform" class="loc-panel">
-        <div class="loc-content-card">
-            <h2 class="loc-section-title">Platform workspace languages</h2>
-            <p class="loc-section-subtitle">Languages available in the admin portal UI (typically 1-2). Choose your default and fallback locale, then enable the locales workspace users can switch to.</p>
-            
-            <div style="display: flex; gap: 24px; margin-bottom: 24px;">
-                <div style="flex: 1; max-width: 400px;">
-                    <label class="loc-label">Default locale</label>
-                    <select class="loc-select" style="max-width: 100%;">
-                        <option>en-IN · English</option>
-                    </select>
-                </div>
-                <div style="flex: 1; max-width: 400px;">
-                    <label class="loc-label">Fallback locale</label>
-                    <select class="loc-select" style="max-width: 100%;">
-                        <option>en-IN · English</option>
-                    </select>
-                </div>
-            </div>
-
-            <h3 style="font-size: 13px; font-weight: 600; color: white; margin-bottom: 12px;">Indian languages</h3>
-            <div class="lang-grid">
-                <% indianLangs.forEach(l => { %>
-                    <label class="lang-card">
-                        <input type="checkbox" <%= l.checked ? 'checked' : '' %>>
-                        <span style="font-weight: <%= l.checked ? '600' : '400' %>"><%= l.name %></span>
-                        <span class="lang-code"><%= l.code %></span>
-                    </label>
-                <% }) %>
-            </div>
-        </div>
-    </div>
-
-    <!-- LANGUAGE SETTINGS TAB -->
-    <div id="tab-settings" class="loc-panel">
-        <div class="loc-content-card">
-            <h2 class="loc-section-title">Language settings</h2>
-            <p class="loc-section-subtitle">Global settings that apply across all language and translation features.</p>
-            
-            <div style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-                <div>
-                    <h3 style="font-size: 14px; font-weight: 600; color: white; margin: 0 0 4px 0;">Enable AI-assisted translation</h3>
-                    <p style="font-size: 12px; color: var(--text-muted); margin: 0;">Allow consent and privacy-rights translation panels to generate draft translations using AI. Requires en-IN as the default locale.</p>
-                </div>
-                <label class="toggle-switch">
-                    <input type="checkbox" checked>
-                    <span class="toggle-slider"></span>
+                <label class="lang-card active">
+                    <input type="checkbox" checked disabled>
+                    <span style="font-weight: 600;">English</span>
+                    <span class="lang-code">en-IN</span>
+                </label>
+                <label class="lang-card active">
+                    <input type="checkbox" checked disabled>
+                    <span style="font-weight: 600;">ಕನ್ನಡ (Kannada)</span>
+                    <span class="lang-code">kn-IN</span>
+                </label>
+                <label class="lang-card active">
+                    <input type="checkbox" checked disabled>
+                    <span style="font-weight: 600;">हिन्दी (Hindi)</span>
+                    <span class="lang-code">hi-IN</span>
+                </label>
+                <label class="lang-card">
+                    <input type="checkbox">
+                    <span>தமிழ் (Tamil)</span>
+                    <span class="lang-code">ta-IN</span>
+                </label>
+                <label class="lang-card">
+                    <input type="checkbox">
+                    <span>తెలుగు (Telugu)</span>
+                    <span class="lang-code">te-IN</span>
+                </label>
+                <label class="lang-card">
+                    <input type="checkbox">
+                    <span>മലയാളം (Malayalam)</span>
+                    <span class="lang-code">ml-IN</span>
+                </label>
+                <label class="lang-card">
+                    <input type="checkbox">
+                    <span>मराठी (Marathi)</span>
+                    <span class="lang-code">mr-IN</span>
+                </label>
+                <label class="lang-card">
+                    <input type="checkbox">
+                    <span>বাংলা (Bengali)</span>
+                    <span class="lang-code">bn-IN</span>
                 </label>
             </div>
-
-            <button class="loc-btn-primary">Save Changes</button>
+            
+            <div style="display: flex; justify-content: flex-end;">
+                <button class="loc-btn-primary" onclick="alert('Language preferences saved successfully!')">
+                    Save Active Locales
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- PLATFORM MESSAGES TAB -->
+    <!-- 2. NOTICE TRANSLATIONS TAB -->
     <div id="tab-messages" class="loc-panel">
         <div class="loc-content-card">
-            <div style="margin-bottom: 24px;">
-                <label class="loc-label">Message key</label>
-                <select class="loc-message-key-select">
-                    <option>portal.customer.name · Customer portal name</option>
-                </select>
-                <div style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">Platform default: "Customer Administration Portal"</div>
-            </div>
+            <h2 class="loc-section-title">Notice String Translations</h2>
+            <p class="loc-section-subtitle">Real-time localized strings delivered to patient WhatsApp chats and digital consent notices under Section 5.</p>
+            
+            <table class="loc-table" style="margin-bottom: 24px;">
+                <thead>
+                    <tr>
+                        <th style="width: 120px;">Language</th>
+                        <th style="width: 140px;">Translation Key</th>
+                        <th>Localized Value</th>
+                        <th style="width: 140px;">Updated</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (safeLocales.length === 0) { %>
+                        <tr>
+                            <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                                No translations recorded.
+                            </td>
+                        </tr>
+                    <% } else { %>
+                        <% safeLocales.forEach(loc => { 
+                            let parsed = {};
+                            try { parsed = typeof loc.translations === 'string' ? JSON.parse(loc.translations) : (loc.translations || {}); } catch(e) {}
+                        %>
+                            <% Object.entries(parsed).forEach(([k, v]) => { %>
+                                <tr>
+                                    <td>
+                                        <span style="font-weight: 600; color: white;"><%= loc.language %></span>
+                                        <% if (loc.isDefault) { %>
+                                            <span style="display: inline-block; font-size: 10px; background: rgba(59, 130, 246, 0.2); color: #93c5fd; padding: 1px 6px; border-radius: 8px; margin-left: 4px;">Default</span>
+                                        <% } %>
+                                    </td>
+                                    <td style="font-family: monospace; font-size: 12px; color: #93c5fd;"><%= k %></td>
+                                    <td style="color: white;"><%= v %></td>
+                                    <td style="color: var(--text-muted); font-size: 11px;"><%= loc.updatedAt ? new Date(loc.updatedAt).toLocaleDateString() : 'Live' %></td>
+                                </tr>
+                            <% }) %>
+                        <% }) %>
+                    <% } %>
+                </tbody>
+            </table>
 
-            <div style="margin-bottom: 24px;">
-                <label class="loc-label">English override (en-IN)</label>
-                <textarea class="loc-textarea">Default: "Customer Administration Portal"</textarea>
-                <button class="loc-btn-primary">Save English Override</button>
-            </div>
-
-            <div style="border-top: 1px solid var(--border-color); margin: 32px 0; padding-top: 32px;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
-                    <h2 style="font-size: 15px; font-weight: 700; color: white; margin: 0;">Translations for other platform locales</h2>
-                    <div style="display: flex; gap: 12px;">
-                        <button class="loc-btn-outline">Save language</button>
-                        <button class="loc-btn-primary">Save all drafts (0)</button>
+            <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px;">
+                <h3 style="font-size: 14px; font-weight: 600; color: white; margin: 0 0 16px 0;">Add / Override Localized String</h3>
+                <form id="transForm" onsubmit="handleSaveTranslation(event)">
+                    <div style="display: grid; grid-template-columns: 200px 200px 1fr auto; gap: 14px; align-items: flex-end;">
+                        <div>
+                            <label class="loc-label">Language</label>
+                            <select id="transLang" class="loc-select" style="max-width: 100%;">
+                                <option value="English">English</option>
+                                <option value="Kannada">Kannada</option>
+                                <option value="Hindi">Hindi</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="loc-label">String Key</label>
+                            <input type="text" id="transKey" placeholder="e.g. welcome" value="welcome" class="loc-select" style="max-width: 100%; box-sizing: border-box;" required>
+                        </div>
+                        <div>
+                            <label class="loc-label">Translated Text</label>
+                            <input type="text" id="transVal" placeholder="Enter translated text..." class="loc-select" style="max-width: 100%; box-sizing: border-box;" required>
+                        </div>
+                        <button type="submit" class="loc-btn-primary" style="padding: 10px 18px;">
+                            Save Translation
+                        </button>
                     </div>
-                </div>
-                
-                <div style="display: flex; gap: 24px;">
-                    <!-- Left: Search & Lang List -->
-                    <div style="width: 320px; flex-shrink: 0;">
-                        <label class="loc-label">Search languages</label>
-                        <div style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; margin-bottom: 8px;">
-                            <input type="text" style="width: 100%; background: transparent; border: none; color: white; font-size: 13px; outline: none;" placeholder="Search locale...">
-                        </div>
-                        
-                        <!-- Lang list items -->
-                        <div style="background: white; border-radius: 8px; padding: 12px; margin-bottom: 8px; display: flex; flex-direction: column; gap: 4px; color: black;">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <span style="font-weight: 600; font-size: 13px;">हिन्दी</span>
-                                <span style="font-family: monospace; font-size: 11px; color: #666;">hi-IN</span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #666;">
-                                <span>0/1 translated</span>
-                                <span>empty</span>
-                            </div>
-                        </div>
-
-                        <div style="padding: 12px; margin-bottom: 8px; display: flex; flex-direction: column; gap: 4px; color: var(--text-muted); cursor: pointer;">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <span style="font-size: 13px; color: white;">मराठी</span>
-                                <span style="font-family: monospace; font-size: 11px;">mr-IN</span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px;">
-                                <span>0/1 translated</span>
-                                <span>empty</span>
-                            </div>
-                        </div>
-
-                        <div style="padding: 12px; display: flex; flex-direction: column; gap: 4px; color: var(--text-muted); cursor: pointer;">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <span style="font-size: 13px; color: white;">ગુજરાતી</span>
-                                <span style="font-family: monospace; font-size: 11px;">gu-IN</span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px;">
-                                <span>0/1 translated</span>
-                                <span>empty</span>
-                            </div>
-                        </div>
-
-                    </div>
-                    
-                    <!-- Right: Editor -->
-                    <div style="flex: 1;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-                            <div>
-                                <div style="font-size: 16px; font-weight: 700; color: white; margin-bottom: 4px;">हिन्दी</div>
-                                <div style="font-size: 11px; color: var(--text-muted); font-family: monospace;">hi-IN · LTR</div>
-                            </div>
-                        </div>
-
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                            <div style="font-size: 12px; color: var(--text-muted);">No saved translation</div>
-                            <div style="font-size: 12px; color: white;">0 of 1 fields translated</div>
-                        </div>
-
-                        <div style="border: 1px solid var(--border-color); border-radius: 8px; padding: 24px;">
-                            <div style="font-size: 14px; font-weight: 600; color: white; margin-bottom: 16px; margin-top: -32px; background: var(--bg-surface); display: inline-block; padding: 0 8px; margin-left: -8px;">Translation</div>
-                            
-                            <label class="loc-label">Override value</label>
-                            <div style="position: relative; margin-bottom: 8px;">
-                                <div style="position: absolute; top: 12px; left: 12px; font-size: 13px; color: var(--text-muted); pointer-events: none;">SOURCE (EN-IN) Customer Administration Portal</div>
-                                <textarea class="loc-textarea" style="border-color: #ef4444; min-height: 100px; padding-top: 32px;"></textarea>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; font-size: 11px;">
-                                <div style="color: #ef4444;">This field is required.</div>
-                                <div style="color: var(--text-muted);">0/2000 characters</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- OVERRIDES TABLE -->
-            <div style="margin-top: 48px; border-top: 1px solid var(--border-color); margin: 32px -24px -24px -24px;">
-                <div style="padding: 24px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                        <input type="text" class="loc-select" placeholder="Search overrides..." style="max-width: 320px;">
-                        <div class="pagination-container" style="margin: 0; align-items: center;">
-                            <button class="pagination-btn">Previous</button>
-                            <span style="font-size: 13px; color: white; font-weight: 600;">Page 1 of 1</span>
-                            <button class="pagination-btn">Next</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <table class="loc-table">
-                    <thead>
-                        <tr>
-                            <th>Locale <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" style="display:inline;vertical-align:middle;margin-left:4px;"><path d="M12 5l-7 7h14l-7-7z"></path></svg></th>
-                            <th>Key <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" style="display:inline;vertical-align:middle;margin-left:4px;"><path d="M7 15l5 5 5-5M7 9l5-5 5 5"></path></svg></th>
-                            <th>Value <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" style="display:inline;vertical-align:middle;margin-left:4px;"><path d="M7 15l5 5 5-5M7 9l5-5 5 5"></path></svg></th>
-                            <th>Updated <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" style="display:inline;vertical-align:middle;margin-left:4px;"><path d="M7 15l5 5 5-5M7 9l5-5 5 5"></path></svg></th>
-                            <th style="width: 80px;"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td style="color: var(--text-muted); font-family: monospace;">en-IN</td>
-                            <td style="color: var(--text-muted); font-family: monospace;">nav.consent_preferences</td>
-                            <td style="font-weight: 700;">Consent & Permissions</td>
-                            <td style="color: var(--text-muted); font-size: 11px;">29 Aug 2026, 03:03 pm</td>
-                            <td style="color: var(--text-muted); text-align: right;">
-                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" style="margin-right:8px;cursor:pointer;"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
-                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" style="cursor:pointer;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="color: var(--text-muted); font-family: monospace;">en-IN</td>
-                            <td style="color: var(--text-muted); font-family: monospace;">nav.privacy_requests</td>
-                            <td style="font-weight: 700;">Data Principal Rights</td>
-                            <td style="color: var(--text-muted); font-size: 11px;">29 Aug 2026, 03:03 pm</td>
-                            <td style="color: var(--text-muted); text-align: right;">
-                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" style="margin-right:8px;cursor:pointer;"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
-                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" style="cursor:pointer;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="color: var(--text-muted); font-family: monospace;">en-IN</td>
-                            <td style="color: var(--text-muted); font-family: monospace;">term.data_principal</td>
-                            <td style="font-weight: 700;">Account Holder</td>
-                            <td style="color: var(--text-muted); font-size: 11px;">29 Aug 2026, 03:03 pm</td>
-                            <td style="color: var(--text-muted); text-align: right;">
-                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" style="margin-right:8px;cursor:pointer;"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
-                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" style="cursor:pointer;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="color: var(--text-muted); font-family: monospace;">en-IN</td>
-                            <td style="color: var(--text-muted); font-family: monospace;">term.privacy_request</td>
-                            <td style="font-weight: 700;">Data Rights Requests</td>
-                            <td style="color: var(--text-muted); font-size: 11px;">29 Aug 2026, 03:03 pm</td>
-                            <td style="color: var(--text-muted); text-align: right;">
-                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" style="margin-right:8px;cursor:pointer;"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
-                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" style="cursor:pointer;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="color: var(--text-muted); font-family: monospace;">en-IN</td>
-                            <td style="color: var(--text-muted); font-family: monospace;">term.purpose</td>
-                            <td style="font-weight: 700;">Consent Purposes</td>
-                            <td style="color: var(--text-muted); font-size: 11px;">29 Aug 2026, 03:03 pm</td>
-                            <td style="color: var(--text-muted); text-align: right;">
-                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" style="margin-right:8px;cursor:pointer;"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
-                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" style="cursor:pointer;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="color: var(--text-muted); font-family: monospace;">hi-IN</td>
-                            <td style="color: var(--text-muted); font-family: monospace;">nav.consent_preferences</td>
-                            <td style="font-weight: 700;">सहमति और अनुमति</td>
-                            <td style="color: var(--text-muted); font-size: 11px;">29 Aug 2026, 03:03 pm</td>
-                            <td style="color: var(--text-muted); text-align: right;">
-                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" style="margin-right:8px;cursor:pointer;"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
-                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" style="cursor:pointer;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="color: var(--text-muted); font-family: monospace;">hi-IN</td>
-                            <td style="color: var(--text-muted); font-family: monospace;">nav.privacy_requests</td>
-                            <td style="font-weight: 700;">डेटा अधिकार</td>
-                            <td style="color: var(--text-muted); font-size: 11px;">29 Aug 2026, 03:03 pm</td>
-                            <td style="color: var(--text-muted); text-align: right;">
-                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" style="margin-right:8px;cursor:pointer;"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
-                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" style="cursor:pointer;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                </form>
             </div>
         </div>
     </div>
 
-    <!-- BUNDLE PREVIEW TAB -->
+    <!-- 3. SETTINGS TAB -->
+    <div id="tab-settings" class="loc-panel">
+        <div class="loc-content-card">
+            <h2 class="loc-section-title">Language Automation Settings</h2>
+            <p class="loc-section-subtitle">Configures Section 5 linguistic compliance defaults and automatic script transliteration.</p>
+            
+            <div style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div>
+                    <h3 style="font-size: 14px; font-weight: 600; color: white; margin: 0 0 4px 0;">Automated Kannada / Hindi Notice Generation</h3>
+                    <p style="font-size: 12px; color: var(--text-muted); margin: 0;">Automatically generate draft Section 5 notices in Kannada and Hindi whenever a new clinical processing purpose is created.</p>
+                </div>
+                <div class="toggle-switch-ui active" onclick="this.classList.toggle('active')"></div>
+            </div>
+
+            <div style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <div>
+                    <h3 style="font-size: 14px; font-weight: 600; color: white; margin: 0 0 4px 0;">Patient Auto-Language Detection via WhatsApp Silo</h3>
+                    <p style="font-size: 12px; color: var(--text-muted); margin: 0;">Detect incoming WhatsApp message script (Kannada, Devanagari, English) and respond in the patient's preferred language.</p>
+                </div>
+                <div class="toggle-switch-ui active" onclick="this.classList.toggle('active')"></div>
+            </div>
+
+            <button class="loc-btn-primary" onclick="alert('Language automation settings saved!')">Save Language Settings</button>
+        </div>
+    </div>
+
+    <!-- 4. LIVE BUNDLE PREVIEW TAB -->
     <div id="tab-bundle" class="loc-panel">
         <div class="loc-content-card">
+            <h2 class="loc-section-title">Multilingual Live Bundle Inspection</h2>
+            <p class="loc-section-subtitle">Side-by-side inspection of localized clinical notices delivered to Aarogya Diagnostic Center patients.</p>
             
-            <div style="margin-bottom: 32px; display: flex; align-items: center; gap: 16px;">
-                <label class="loc-label" style="margin: 0;">Locale</label>
-                <select class="loc-select" style="max-width: 300px;">
-                    <option>en-IN · English</option>
-                </select>
-            </div>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+                <!-- English -->
+                <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                        <span style="font-size: 15px; font-weight: 700; color: white;">English (en-IN)</span>
+                        <span style="font-size: 11px; padding: 2px 8px; border-radius: 10px; background: rgba(59, 130, 246, 0.2); color: #93c5fd;">Default</span>
+                    </div>
+                    <div style="font-size: 11px; color: var(--text-muted); font-family: monospace; margin-bottom: 4px;">welcome</div>
+                    <div style="font-size: 13px; color: white; margin-bottom: 16px;">Welcome to Aarogya Privacy Portal</div>
+                    <div style="font-size: 11px; color: var(--text-muted); font-family: monospace; margin-bottom: 4px;">consentNotice</div>
+                    <div style="font-size: 13px; color: white; line-height: 1.4;">Healthcare Diagnostic &amp; Patient Scheduling Notice</div>
+                </div>
 
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
-                <div style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; padding: 16px;">
-                    <div style="font-family: monospace; font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">portal.customer.name</div>
-                    <div style="font-size: 14px; font-weight: 600; color: white;">Customer Administration Portal</div>
+                <!-- Kannada -->
+                <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                        <span style="font-size: 15px; font-weight: 700; color: white;">ಕನ್ನಡ (kn-IN)</span>
+                        <span style="font-size: 11px; padding: 2px 8px; border-radius: 10px; background: rgba(16, 185, 129, 0.2); color: #34d399;">Active</span>
+                    </div>
+                    <div style="font-size: 11px; color: var(--text-muted); font-family: monospace; margin-bottom: 4px;">welcome</div>
+                    <div style="font-size: 13px; color: white; margin-bottom: 16px;">ಆರೋಗ್ಯ ಗೌಪ್ಯತೆ ಪೋರ್ಟಲ್‌ಗೆ ಸುಸ್ವಾಗತ</div>
+                    <div style="font-size: 11px; color: var(--text-muted); font-family: monospace; margin-bottom: 4px;">consentNotice</div>
+                    <div style="font-size: 13px; color: white; line-height: 1.4;">ಆರೋಗ್ಯ ರೋಗನಿರ್ಣಯ ಮತ್ತು ನೇಮಕಾತಿ ಸೂಚನೆ</div>
                 </div>
-                <div style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; padding: 16px;">
-                    <div style="font-family: monospace; font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">nav.assessment_automation</div>
-                    <div style="font-size: 14px; font-weight: 600; color: white;">Assessment Automation</div>
-                </div>
-                <div style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; padding: 16px;">
-                    <div style="font-family: monospace; font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">nav.privacy_requests</div>
-                    <div style="font-size: 14px; font-weight: 600; color: white;">Data Principal Rights</div>
-                </div>
-                <div style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; padding: 16px;">
-                    <div style="font-family: monospace; font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">nav.notifications</div>
-                    <div style="font-size: 14px; font-weight: 600; color: white;">Notifications</div>
-                </div>
-                <div style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; padding: 16px;">
-                    <div style="font-family: monospace; font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">nav.localization</div>
-                    <div style="font-size: 14px; font-weight: 600; color: white;">Localization</div>
-                </div>
-                <div style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; padding: 16px;">
-                    <div style="font-family: monospace; font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">page.localization.title</div>
-                    <div style="font-size: 14px; font-weight: 600; color: white;">Localization & Labels</div>
-                </div>
-                <div style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; padding: 16px;">
-                    <div style="font-family: monospace; font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">page.notifications.title</div>
-                    <div style="font-size: 14px; font-weight: 600; color: white;">Notification Center</div>
-                </div>
-                <div style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; padding: 16px;">
-                    <div style="font-family: monospace; font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">term.privacy_request</div>
-                    <div style="font-size: 14px; font-weight: 600; color: white;">Data Rights Requests</div>
-                </div>
-                <div style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; padding: 16px;">
-                    <div style="font-family: monospace; font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">term.data_principal</div>
-                    <div style="font-size: 14px; font-weight: 600; color: white;">Account Holder</div>
+
+                <!-- Hindi -->
+                <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                        <span style="font-size: 15px; font-weight: 700; color: white;">हिन्दी (hi-IN)</span>
+                        <span style="font-size: 11px; padding: 2px 8px; border-radius: 10px; background: rgba(16, 185, 129, 0.2); color: #34d399;">Active</span>
+                    </div>
+                    <div style="font-size: 11px; color: var(--text-muted); font-family: monospace; margin-bottom: 4px;">welcome</div>
+                    <div style="font-size: 13px; color: white; margin-bottom: 16px;">आरोग्य गोपनीयता पोर्टल में आपका स्वागत है</div>
+                    <div style="font-size: 11px; color: var(--text-muted); font-family: monospace; margin-bottom: 4px;">consentNotice</div>
+                    <div style="font-size: 13px; color: white; line-height: 1.4;">आरोग्य डायग्नोस्टिक एवं रोगी परामर्श सूचना</div>
                 </div>
             </div>
-
         </div>
     </div>
 
 </div>
 
 <script>
-    function switchTab(tabId) {
-        // Update tabs
-        document.querySelectorAll('.loc-tab').forEach(t => t.classList.remove('active'));
-        event.target.classList.add('active');
+function switchTab(tabId) {
+    document.querySelectorAll('.loc-tab').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
 
-        // Update content panels
-        document.querySelectorAll('.loc-panel').forEach(p => p.classList.remove('active'));
-        document.getElementById('tab-' + tabId).classList.add('active');
+    document.querySelectorAll('.loc-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('tab-' + tabId).classList.add('active');
+}
 
-        // Update right text
-        const rightText = document.getElementById('last-updated-text');
-        if (tabId === 'messages') {
-            rightText.innerHTML = '7 overrides';
-            rightText.style.color = 'white';
-            rightText.style.fontWeight = '600';
+async function handleSaveTranslation(e) {
+    e.preventDefault();
+    const language = document.getElementById('transLang').value;
+    const key = document.getElementById('transKey').value.trim();
+    const val = document.getElementById('transVal').value.trim();
+
+    try {
+        const transObj = {};
+        transObj[key] = val;
+        const res = await fetch('/api/settings/localization', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                language,
+                translations: JSON.stringify(transObj)
+            })
+        });
+        const data = await res.json();
+        if (data.success) {
+            alert(`Translation for "${key}" in ${language} saved successfully!`);
+            window.location.reload();
         } else {
-            rightText.innerHTML = 'Last updated 29 Aug 2026, 03:03 pm';
-            rightText.style.color = 'var(--text-muted)';
-            rightText.style.fontWeight = 'normal';
+            alert('Failed to save translation: ' + (data.error || 'Unknown error'));
         }
+    } catch (err) {
+        alert('Error: ' + err.message);
     }
+}
 </script>
 
 <%- include('partials/footer') %>

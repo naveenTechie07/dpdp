@@ -25,13 +25,21 @@ const models = require('../models');
 router.get('/discovery/connectors', discoveryController.renderConnectors);
 router.get('/discovery/sanitizer', discoveryController.renderSanitizer);
 
-router.get('/inventory/assets', (req, res) => {
-  res.render('inventory-assets', {
-    title: 'Data Assets - DPDP_Secure',
-    description: 'Inventory of all informal data systems and repositories.',
-    breadcrumbs: ['Workspace', 'Data Mapping', 'Data Assets'],
-    path: '/inventory/assets'
-  });
+router.get('/inventory/assets', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    const assets = await models.getDataAssets(tenantId);
+    res.render('inventory-assets', {
+      title: 'Data Assets - DPDP_Secure',
+      description: 'Inventory of all informal data systems and repositories.',
+      breadcrumbs: ['Workspace', 'Data Mapping', 'Data Assets'],
+      path: '/inventory/assets',
+      assets: assets || []
+    });
+  } catch (err) {
+    console.error('[DISCOVERY] getAssets error:', err);
+    res.status(500).render('500', { title: 'Error', description: err.message, breadcrumbs: ['Error'] });
+  }
 });
 
 router.get('/inventory/assets/create', (req, res) => {
@@ -41,6 +49,16 @@ router.get('/inventory/assets/create', (req, res) => {
     breadcrumbs: ['Workspace', 'Data Mapping', 'Data Assets', 'New Asset'],
     path: '/inventory/assets/create'
   });
+});
+
+router.get('/api/assets', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    const assets = await models.getDataAssets(tenantId);
+    res.json({ success: true, data: assets || [] });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
 });
 
 router.post('/api/assets/create', async (req, res) => {
@@ -77,28 +95,112 @@ router.post('/api/assets/create', async (req, res) => {
       })
     );
 
-    res.json({ success: true, id, message: 'Asset created successfully' });
+    res.status(201).json({ success: true, id, message: 'Asset created successfully' });
   } catch (err) {
     console.error('[DISCOVERY] createAsset error:', err);
     res.status(500).json({ success: false, error: 'Failed to create asset: ' + err.message });
   }
 });
 
-router.get('/inventory/tags', (req, res) => {
-  res.render('inventory-tags', {
-    title: 'Classification Tags - DPDP_Secure',
-    description: 'Define Indian PII and sensitivity categories.',
-    breadcrumbs: ['Workspace', 'Data Mapping', 'Classification'],
-    path: '/inventory/tags'
-  });
+router.put('/api/assets/:id', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    await models.updateDataAsset(req.params.id, req.body, tenantId);
+    await models.logAuditEvent(tenantId, req.session?.user?.name || 'Admin', 'UPDATE_DATA_ASSET', req.params.id, req.body);
+    res.json({ success: true, message: 'Asset updated successfully' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.delete('/api/assets/:id', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    await models.deleteDataAsset(req.params.id, tenantId);
+    await models.logAuditEvent(tenantId, req.session?.user?.name || 'Admin', 'DELETE_DATA_ASSET', req.params.id, {});
+    res.json({ success: true, message: 'Asset deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.get('/inventory/tags', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    const tags = await models.getDataTags(tenantId);
+    res.render('inventory-tags', {
+      title: 'Classification Tags - DPDP_Secure',
+      description: 'Define Indian PII and sensitivity categories.',
+      breadcrumbs: ['Workspace', 'Data Mapping', 'Classification'],
+      path: '/inventory/tags',
+      tags: tags || []
+    });
+  } catch (err) {
+    console.error('[DISCOVERY] getTags error:', err);
+    res.status(500).render('500', { title: 'Error', description: err.message, breadcrumbs: ['Error'] });
+  }
 });
 
 router.get('/inventory/tags/create', (req, res) => {
   res.redirect('/inventory/tags');
 });
 
-router.post('/inventory/tags/create', (req, res) => {
-  res.json({ success: true, message: 'Tag created successfully' });
+router.get('/api/tags', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    const tags = await models.getDataTags(tenantId);
+    res.json({ success: true, data: tags || [] });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.post(['/api/tags/create', '/inventory/tags/create'], async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    const { tagName, category, subCategory, sensitivityWeight, colorTag, description } = req.body;
+
+    if (!tagName) {
+      return res.status(400).json({ success: false, error: 'Tag name is required' });
+    }
+
+    const id = await models.createDataTag({
+      tenantId,
+      tagName,
+      category: category || 'identifier',
+      subCategory: subCategory || '',
+      sensitivityWeight: sensitivityWeight ? parseInt(sensitivityWeight, 10) : 50,
+      colorTag: colorTag || '#8b5cf6',
+      description: description || ''
+    });
+
+    await models.logAuditEvent(tenantId, req.session?.user?.name || 'Admin', 'CREATE_DATA_TAG', id, req.body);
+    res.status(201).json({ success: true, id, message: 'Tag created successfully' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.put('/api/tags/:id', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    await models.updateDataTag(req.params.id, req.body, tenantId);
+    await models.logAuditEvent(tenantId, req.session?.user?.name || 'Admin', 'UPDATE_DATA_TAG', req.params.id, req.body);
+    res.json({ success: true, message: 'Tag updated successfully' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.delete('/api/tags/:id', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    await models.deleteDataTag(req.params.id, tenantId);
+    await models.logAuditEvent(tenantId, req.session?.user?.name || 'Admin', 'DELETE_DATA_TAG', req.params.id, {});
+    res.json({ success: true, message: 'Tag deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
 });
 
 router.get('/inventory/ropa', discoveryController.renderRoPA);
@@ -132,5 +234,56 @@ router.get('/inventory/ropa/print', discoveryController.renderRoPAPrint);
 router.get('/api/ropa/export-csv', discoveryController.exportRoPaCsv);
 router.get('/api/ropa/data', discoveryController.getRoPaData);
 router.post('/api/ropa/generate', discoveryController.generateRoPA);
+
+// RoPA CRUD endpoints
+router.get('/api/ropa/:id', discoveryController.getRoPARecordById);
+router.post('/api/ropa/create', discoveryController.createRoPARecord);
+router.put('/api/ropa/:id', discoveryController.updateRoPARecord);
+router.delete('/api/ropa/:id', discoveryController.deleteRoPARecord);
+
+// RoPA-Silo Mapping Endpoints
+router.get('/api/ropa/:id/silos', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    const silos = await models.getSilosForRopa(req.params.id, tenantId);
+    res.json({ success: true, silos: silos || [] });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.post('/api/ropa/:id/silos', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    const { siloId, mappingType } = req.body;
+    if (!siloId) {
+      return res.status(400).json({ success: false, error: 'siloId is required' });
+    }
+    const mapping = await models.createRopaSiloMapping(req.params.id, siloId, tenantId, mappingType || 'primary');
+    res.status(201).json({ success: true, mapping });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.delete('/api/ropa/:id/silos/:siloId', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    await models.deleteRopaSiloMapping(req.params.id, req.params.siloId, tenantId);
+    res.json({ success: true, message: 'Mapping deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.get('/api/silos/:id/ropa', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    const records = await models.getRopaForSilo(req.params.id, tenantId);
+    res.json({ success: true, records: records || [] });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
 
 module.exports = router;

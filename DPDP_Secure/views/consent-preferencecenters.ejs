@@ -1,130 +1,238 @@
 <%- include('partials/header') %>
+<%
+  const safeCenters = (typeof centers !== 'undefined' && Array.isArray(centers)) ? centers : [];
+%>
 
-<div class="dashboard-header mb-4" style="align-items: center;">
-    <div class="title-group">
-        <h1>Preference Centers</h1>
-        <p>Configure which purposes are shown in the privacy portal preference centre.</p>
-    </div>
-    <button class="btn-primary" style="background-color: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-        New preference center
-    </button>
-</div>
+<style>
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+.modal-overlay.active { display: flex; }
+.modal-content {
+    background: #111827;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    width: 100%;
+    max-width: 520px;
+    padding: 24px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+}
+.form-input {
+    width: 100%;
+    background: rgba(0,0,0,0.25);
+    border: 1px solid var(--border-color);
+    color: white;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    box-sizing: border-box;
+    margin-bottom: 16px;
+}
+.action-btn {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.action-btn:hover { background: rgba(255,255,255,0.1); }
+.action-btn.del { color: #fca5a5; background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); }
+.action-btn.del:hover { background: rgba(239, 68, 68, 0.2); }
+</style>
 
-<div class="alert mb-4" style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); padding: 12px 16px; border-radius: 6px; display: flex; gap: 12px; align-items: flex-start;">
-    <svg viewBox="0 0 24 24" width="16" height="16" stroke="#3b82f6" stroke-width="2" fill="none" style="margin-top: 2px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-    <div style="font-size: 13px; color: var(--text-muted); line-height: 1.5;">
-        Each preference center is linked to one collection point. For it to appear in the Privacy Portal, the linked collection point must also have <strong style="color: #3b82f6; font-weight: 600;">Show in Privacy Portal</strong> enabled (Collection Point &rarr; Build &rarr; Settings) and the preference center status must be <strong style="color: var(--text-main); font-weight: 600;">PUBLISHED</strong>.
-    </div>
-</div>
-
-<div class="card p-0" style="overflow: hidden;">
-    <!-- Table Toolbar -->
-    <div class="table-toolbar" style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
-        <div class="search-bar" style="width: 300px; background: transparent; padding: 0; border: none;">
-            <input type="text" placeholder="Search preference centers..." style="border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 6px; background: transparent; color: var(--text-main); width: 100%;">
+<div style="padding: 24px; max-width: 1400px; margin: 0 auto;">
+    
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
+        <div>
+            <h1 style="font-size: 20px; font-weight: 700; color: white; margin: 0 0 6px 0;">Preference Centers</h1>
+            <p style="color: var(--text-muted); font-size: 13px; margin: 0;">Configure which purposes and consent options are presented in patient self-service privacy portals under DPDP Section 6(7).</p>
         </div>
+        <button onclick="openModal()" class="btn-primary" style="background: #3b82f6; border: 1px solid #2563eb; color: white; padding: 10px 18px; border-radius: 6px; font-weight: 600; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            New Preference Center
+        </button>
+    </div>
+
+    <div class="alert mb-4" style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.25); padding: 14px 18px; border-radius: 8px; display: flex; gap: 12px; align-items: flex-start; margin-bottom: 24px;">
+        <svg viewBox="0 0 24 24" width="18" height="18" stroke="#3b82f6" stroke-width="2" fill="none" style="margin-top: 2px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        <div style="font-size: 13px; color: var(--text-muted); line-height: 1.5;">
+            Under the DPDP Act, patients possess statutory rights to review and withdraw consent with ease comparable to giving consent. Published preference centers are reachable via unique magic links sent via WhatsApp and SMS receipts.
+        </div>
+    </div>
+
+    <div class="card p-0" style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden;">
+        <!-- Table Toolbar -->
+        <div style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <input type="text" placeholder="Search preference centers..." oninput="filterCenters(this.value)" style="border: 1px solid var(--border-color); padding: 8px 14px; border-radius: 6px; background: rgba(0,0,0,0.25); color: white; font-size: 13px; width: 320px;">
+            <div style="font-size: 12px; color: var(--text-muted);">
+                Showing <%= safeCenters.length %> preference centers
+            </div>
+        </div>
+
+        <!-- Data Table -->
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+                <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 11px; text-transform: uppercase; background: rgba(0,0,0,0.15);">
+                    <th style="padding: 14px 24px; font-weight: 600;">Preference Center Name</th>
+                    <th style="padding: 14px 16px; font-weight: 600;">Bound Purposes</th>
+                    <th style="padding: 14px 16px; font-weight: 600;">Status</th>
+                    <th style="padding: 14px 16px; font-weight: 600;">Created</th>
+                    <th style="padding: 14px 24px; font-weight: 600; text-align: right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="centersTableBody" style="font-size: 13px;">
+                <% if (safeCenters.length === 0) { %>
+                    <tr>
+                        <td colspan="5" style="padding: 36px; text-align: center; color: var(--text-muted);">
+                            No preference centers configured. Click "New Preference Center" to publish one.
+                        </td>
+                    </tr>
+                <% } else { %>
+                    <% safeCenters.forEach(c => { %>
+                        <tr class="center-row" id="row-<%= c.id %>" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 16px 24px; width: 340px;">
+                                <div style="font-weight: 600; color: white; margin-bottom: 4px;"><%= c.centerName %></div>
+                                <div style="color: var(--text-muted); font-size: 11px; font-family: monospace;">Aarogya Clinic Patient Portal</div>
+                            </td>
+                            <td style="padding: 16px 16px;">
+                                <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+                                    <% (c.purposeIds ? c.purposeIds.split(',') : ['PURP-DIAGNOSTIC-REPORTING']).forEach(p => { %>
+                                        <span style="font-size: 11px; padding: 2px 8px; border-radius: 4px; background: rgba(59, 130, 246, 0.15); color: #93c5fd; border: 1px solid rgba(59, 130, 246, 0.25);">
+                                            <%= p.trim() %>
+                                        </span>
+                                    <% }) %>
+                                </div>
+                            </td>
+                            <td style="padding: 16px 16px;">
+                                <% if (c.isActive) { %>
+                                    <span style="display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3);">
+                                        Published
+                                    </span>
+                                <% } else { %>
+                                    <span style="display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3);">
+                                        Draft
+                                    </span>
+                                <% } %>
+                            </td>
+                            <td style="padding: 16px 16px; color: var(--text-muted); font-size: 12px;">
+                                <%= c.createdAt ? new Date(c.createdAt).toLocaleDateString() : 'Live' %>
+                            </td>
+                            <td style="padding: 16px 24px; text-align: right;">
+                                <button class="action-btn del" onclick="deleteCenter('<%= c.id %>', '<%= c.centerName %>')">
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                    <% }) %>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<!-- Create Preference Center Modal -->
+<div class="modal-overlay" id="createCenterModal" onclick="if(event.target===this) closeModal()">
+    <div class="modal-content">
+        <h2 style="font-size: 17px; font-weight: 700; color: white; margin: 0 0 6px 0;">New Preference Center</h2>
+        <p style="color: var(--text-muted); font-size: 13px; margin: 0 0 20px 0;">Create a branded self-service privacy portal for patients.</p>
         
-        <div class="pagination" style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-muted);">
-            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Previous</button>
-            <span>Page 1 of 1</span>
-            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Next</button>
-        </div>
-    </div>
-
-    <!-- Data Table -->
-    <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left;">
-        <thead>
-            <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 11px; text-transform: uppercase;">
-                <th style="padding: 12px 24px; font-weight: 600;">Name &#9652;</th>
-                <th style="padding: 12px 16px; font-weight: 600;">COLLECTION POINT</th>
-                <th style="padding: 12px 16px; font-weight: 600;">Layout &#8597;</th>
-                <th style="padding: 12px 16px; font-weight: 600;">Status &#8597;</th>
-                <th style="padding: 12px 24px; font-weight: 600;">Updated &#8597;</th>
-                <th style="padding: 12px 24px; font-weight: 600;"></th>
-            </tr>
-        </thead>
-        <tbody style="font-size: 13px;">
-            <!-- Row 1 -->
-            <tr style="border-bottom: 1px solid var(--border-color);">
-                <td style="padding: 16px 24px; width: 300px;">
-                    <a href="#" style="font-weight: 600; color: #3b82f6; text-decoration: none;">DPDP_Secure Mobile App Preference Centre</a>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-main);">
-                    DPDP_Secure Mobile App
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span style="border: 1px solid var(--text-muted); color: var(--text-muted); padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 600; text-transform: uppercase;">CENTER</span>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span class="badge" style="background: #fef3c7; color: #b45309; padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase;">Draft</span>
-                </td>
-                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">
-                    08 Sept 2026, 10:17 am
-                </td>
-                <td style="padding: 16px 24px; text-align: right;">
-                    <div style="display: flex; gap: 12px; justify-content: flex-end;">
-                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="var(--text-muted)" stroke-width="2" fill="none" style="cursor: pointer;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="var(--text-muted)" stroke-width="2" fill="none" style="cursor: pointer;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="var(--text-muted)" stroke-width="2" fill="none" style="cursor: pointer;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                    </div>
-                </td>
-            </tr>
+        <form id="createCenterForm" onsubmit="handleCreateCenter(event)">
+            <label style="display: block; font-size: 13px; font-weight: 600; color: white; margin-bottom: 6px;">Center Title <span style="color: #ef4444;">*</span></label>
+            <input type="text" id="cName" class="form-input" placeholder="e.g. Aarogya Patient Self-Service Portal" required>
             
-            <!-- Row 2 -->
-            <tr style="border-bottom: 1px solid var(--border-color); background: rgba(255,255,255,0.02);">
-                <td style="padding: 16px 24px; width: 300px;">
-                    <a href="#" style="font-weight: 600; color: #3b82f6; text-decoration: none;">DPDP_Secure Privacy Preference Centre</a>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-main);">
-                    DPDP_Secure Web Banking Portal
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span style="border: 1px solid var(--text-muted); color: var(--text-muted); padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 600; text-transform: uppercase;">CENTER</span>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; border: 1px solid rgba(16,185,129,0.3);">Published</span>
-                </td>
-                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">
-                    08 Sept 2026, 07:15 am
-                </td>
-                <td style="padding: 16px 24px; text-align: right;">
-                    <div style="display: flex; gap: 12px; justify-content: flex-end;">
-                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="var(--text-muted)" stroke-width="2" fill="none" style="cursor: pointer;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="var(--text-muted)" stroke-width="2" fill="none" style="cursor: pointer;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="var(--text-muted)" stroke-width="2" fill="none" style="cursor: pointer;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                    </div>
-                </td>
-            </tr>
-
-            <!-- Row 3 -->
-            <tr style="border-bottom: 1px solid var(--border-color);">
-                <td style="padding: 16px 24px; width: 300px;">
-                    <a href="#" style="font-weight: 600; color: #3b82f6; text-decoration: none;">DPDP_Secure WhatsApp Preference Centre</a>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
-                    DPDP_Secure WhatsApp Bot
-                    <span style="background: #fef3c7; color: #b45309; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 600; text-transform: uppercase;">Portal off</span>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span style="border: 1px solid var(--text-muted); color: var(--text-muted); padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 600; text-transform: uppercase;">CENTER</span>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span class="badge" style="background: #fef3c7; color: #b45309; padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase;">Draft</span>
-                </td>
-                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">
-                    29 Aug 2026, 03:03 pm
-                </td>
-                <td style="padding: 16px 24px; text-align: right;">
-                    <div style="display: flex; gap: 12px; justify-content: flex-end;">
-                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="var(--text-muted)" stroke-width="2" fill="none" style="cursor: pointer;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="var(--text-muted)" stroke-width="2" fill="none" style="cursor: pointer;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="var(--text-muted)" stroke-width="2" fill="none" style="cursor: pointer;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+            <label style="display: block; font-size: 13px; font-weight: 600; color: white; margin-bottom: 6px;">Included Purpose Codes <span style="color: #ef4444;">*</span></label>
+            <input type="text" id="cPurposes" class="form-input" placeholder="e.g. PURP-DIAGNOSTIC-REPORTING,PURP-APPOINTMENT-REMINDERS" value="PURP-DIAGNOSTIC-REPORTING,PURP-APPOINTMENT-REMINDERS" required>
+            
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 24px;">
+                <input type="checkbox" id="cIsActive" checked style="width: 18px; height: 18px; accent-color: #3b82f6;">
+                <label for="cIsActive" style="font-size: 13px; color: white; cursor: pointer;">Publish to live patient magic links immediately</label>
+            </div>
+            
+            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                <button type="button" onclick="closeModal()" class="action-btn" style="padding: 10px 18px;">Cancel</button>
+                <button type="submit" id="btnSubmitCenter" class="btn-primary" style="background: #3b82f6; border: 1px solid #2563eb; color: white; padding: 10px 20px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;">
+                    Publish Center
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
+
+<script>
+function filterCenters(q) {
+    const rows = document.querySelectorAll('.center-row');
+    const term = (q || '').toLowerCase();
+    rows.forEach(r => {
+        r.style.display = r.innerText.toLowerCase().includes(term) ? '' : 'none';
+    });
+}
+
+function openModal() {
+    document.getElementById('createCenterModal').classList.add('active');
+}
+
+function closeModal() {
+    document.getElementById('createCenterModal').classList.remove('active');
+}
+
+async function handleCreateCenter(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btnSubmitCenter');
+    btn.disabled = true;
+    btn.innerText = 'Saving...';
+
+    const centerName = document.getElementById('cName').value.trim();
+    const purposeIds = document.getElementById('cPurposes').value.trim();
+    const isActive = document.getElementById('cIsActive').checked ? 1 : 0;
+
+    try {
+        const res = await fetch('/api/consent/preference-centers', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ centerName, purposeIds, isActive })
+        });
+        const data = await res.json();
+        if (data.success) {
+            closeModal();
+            window.location.reload();
+        } else {
+            alert('Failed to save preference center: ' + (data.error || 'Unknown error'));
+        }
+    } catch (err) {
+        alert('Error: ' + err.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerText = 'Publish Center';
+    }
+}
+
+async function deleteCenter(id, name) {
+    if (!confirm(`Are you sure you want to delete preference center "${name}"?`)) return;
+    try {
+        const res = await fetch(`/api/consent/preference-centers/${id}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (data.success) {
+            const row = document.getElementById(`row-${id}`);
+            if (row) row.remove();
+            else window.location.reload();
+        } else {
+            alert('Failed to delete preference center: ' + (data.error || 'Unknown error'));
+        }
+    } catch (err) {
+        alert('Error: ' + err.message);
+    }
+}
+</script>
 
 <%- include('partials/footer') %>

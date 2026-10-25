@@ -282,14 +282,30 @@ const SCHEMA_DDL = `
     id TEXT PRIMARY KEY,
     tenantId TEXT NOT NULL,
     workflowName TEXT NOT NULL,
+    description TEXT,
     triggerEvent TEXT,
     actions TEXT,
+    stages TEXT DEFAULT '[]',
     isActive INTEGER DEFAULT 1,
     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(tenantId) REFERENCES tenants(id)
   );
 
-  CREATE INDEX IF NOT EXISTS idx_workflows_tenant ON workflows(tenantId);
+  CREATE TABLE IF NOT EXISTS ropa_silo_mapping (
+    id TEXT PRIMARY KEY,
+    tenantId TEXT NOT NULL,
+    ropaRecordId TEXT NOT NULL,
+    siloId TEXT NOT NULL,
+    mappingType TEXT DEFAULT 'primary',
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(ropaRecordId) REFERENCES ropa_records(id),
+    FOREIGN KEY(siloId) REFERENCES data_silos(id),
+    UNIQUE(ropaRecordId, siloId)
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_ropa_silo_mapping_ropa ON ropa_silo_mapping(ropaRecordId);
+  CREATE INDEX IF NOT EXISTS idx_ropa_silo_mapping_silo ON ropa_silo_mapping(siloId);
+  CREATE INDEX IF NOT EXISTS idx_ropa_silo_mapping_tenant ON ropa_silo_mapping(tenantId);
 
   CREATE TABLE IF NOT EXISTS data_processors (
     id TEXT PRIMARY KEY,

@@ -139,6 +139,22 @@ createDataAsset: async (assetData) => {
     return id;
   },
 
+  getDataAssetById: async (id, tenantId = 'TENANT-AAROGYA-01') => {
+    return await get('SELECT * FROM data_assets WHERE id = ? AND tenantId = ?', [id, tenantId]);
+  },
+
+  updateDataAsset: async (id, data, tenantId = 'TENANT-AAROGYA-01') => {
+    return await run(`
+      UPDATE data_assets
+      SET assetName = ?, assetType = ?, sourceSystem = ?, sensitivity = ?, elements = ?, status = ?, description = ?
+      WHERE id = ? AND tenantId = ?
+    `, [data.assetName, data.assetType, data.sourceSystem, data.sensitivity, data.elements || '0', data.status || 'active', data.description || '', id, tenantId]);
+  },
+
+  deleteDataAsset: async (id, tenantId = 'TENANT-AAROGYA-01') => {
+    return await run('DELETE FROM data_assets WHERE id = ? AND tenantId = ?', [id, tenantId]);
+  },
+
   // ==========================================
   // 2.6. DATA TAGS (CLASSIFICATION TAGS)
   // ==========================================
@@ -165,11 +181,59 @@ createDataAsset: async (assetData) => {
     return id;
   },
 
+  updateDataTag: async (id, data, tenantId = 'TENANT-AAROGYA-01') => {
+    return await run(`
+      UPDATE data_tags
+      SET tagName = ?, category = ?, subCategory = ?, sensitivityWeight = ?, colorTag = ?, description = ?
+      WHERE id = ? AND tenantId = ?
+    `, [data.tagName, data.category, data.subCategory || '', data.sensitivityWeight || 50, data.colorTag || '#8b5cf6', data.description || '', id, tenantId]);
+  },
+
+  deleteDataTag: async (id, tenantId = 'TENANT-AAROGYA-01') => {
+    return await run('DELETE FROM data_tags WHERE id = ? AND tenantId = ?', [id, tenantId]);
+  },
+
   // ==========================================
   // 3. ROPA (SECTION 8 RECORD OF PROCESSING)
   // ==========================================
   getRoPARecords: async (tenantId = 'TENANT-AAROGYA-01') => {
     return await all('SELECT * FROM ropa_records WHERE tenantId = ? ORDER BY createdAt DESC', [tenantId]);
+  },
+
+  getRoPARecordById: async (id, tenantId = 'TENANT-AAROGYA-01') => {
+    return await get('SELECT * FROM ropa_records WHERE id = ? AND tenantId = ?', [id, tenantId]);
+  },
+
+  createRoPARecord: async (ropaData) => {
+    const id = ropaData.id || `ROPA-${uuidv4().slice(0, 8).toUpperCase()}`;
+    await run(`
+      INSERT INTO ropa_records (id, tenantId, activityName, dataCategories, purpose, legalBasis, retentionPeriod, storageLocation, securitySafeguards)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `, [
+      id,
+      ropaData.tenantId || 'TENANT-AAROGYA-01',
+      ropaData.activityName,
+      ropaData.dataCategories,
+      ropaData.purpose,
+      ropaData.legalBasis,
+      ropaData.retentionPeriod,
+      ropaData.storageLocation,
+      ropaData.securitySafeguards
+    ]);
+    return { id, ...ropaData };
+  },
+
+  updateRoPARecord: async (id, data, tenantId = 'TENANT-AAROGYA-01') => {
+    await run(`
+      UPDATE ropa_records
+      SET activityName = ?, dataCategories = ?, purpose = ?, legalBasis = ?, retentionPeriod = ?, storageLocation = ?, securitySafeguards = ?
+      WHERE id = ? AND tenantId = ?
+    `, [data.activityName, data.dataCategories, data.purpose, data.legalBasis, data.retentionPeriod, data.storageLocation, data.securitySafeguards, id, tenantId]);
+    return { id, ...data };
+  },
+
+  deleteRoPARecord: async (id, tenantId = 'TENANT-AAROGYA-01') => {
+    return await run('DELETE FROM ropa_records WHERE id = ? AND tenantId = ?', [id, tenantId]);
   },
 
   saveRoPARecords: async (ropaArray = []) => {
@@ -186,6 +250,42 @@ createDataAsset: async (assetData) => {
       }
       return saved;
     });
+  },
+
+  // ==========================================
+  // 2.5. ROPA-SILO MAPPING (Section 8(4) Linkage)
+  // ==========================================
+  getSilosForRopa: async (ropaId, tenantId = 'TENANT-AAROGYA-01') => {
+    return await all(`
+      SELECT ds.*, rsm.mappingType, rsm.createdAt as mappedAt
+      FROM ropa_silo_mapping rsm
+      JOIN data_silos ds ON rsm.siloId = ds.id
+      WHERE rsm.ropaRecordId = ? AND rsm.tenantId = ?
+      ORDER BY ds.siloName ASC
+    `, [ropaId, tenantId]);
+  },
+
+  getRopaForSilo: async (siloId, tenantId = 'TENANT-AAROGYA-01') => {
+    return await all(`
+      SELECT rr.*, rsm.mappingType, rsm.createdAt as mappedAt
+      FROM ropa_silo_mapping rsm
+      JOIN ropa_records rr ON rsm.ropaRecordId = rr.id
+      WHERE rsm.siloId = ? AND rsm.tenantId = ?
+      ORDER BY rr.activityName ASC
+    `, [siloId, tenantId]);
+  },
+
+  createRopaSiloMapping: async (ropaRecordId, siloId, tenantId = 'TENANT-AAROGYA-01', mappingType = 'primary') => {
+    const id = `RSM-${uuidv4().slice(0, 8).toUpperCase()}`;
+    await run(`
+      INSERT OR REPLACE INTO ropa_silo_mapping (id, tenantId, ropaRecordId, siloId, mappingType)
+      VALUES (?, ?, ?, ?, ?)
+    `, [id, tenantId, ropaRecordId, siloId, mappingType]);
+    return { id, ropaRecordId, siloId, mappingType };
+  },
+
+  deleteRopaSiloMapping: async (ropaRecordId, siloId, tenantId = 'TENANT-AAROGYA-01') => {
+    return await run('DELETE FROM ropa_silo_mapping WHERE ropaRecordId = ? AND siloId = ? AND tenantId = ?', [ropaRecordId, siloId, tenantId]);
   },
 
   // ==========================================
@@ -439,6 +539,14 @@ createDataAsset: async (assetData) => {
     return id;
   },
 
+  updateWorkflow: async (id, data, tenantId = 'TENANT-AAROGYA-01') => {
+    return await run(`
+      UPDATE workflows
+      SET workflowName = ?, triggerEvent = ?, actions = ?, isActive = ?
+      WHERE id = ? AND tenantId = ?
+    `, [data.workflowName, data.triggerEvent || 'DSR_SUBMITTED', typeof data.actions === 'object' ? JSON.stringify(data.actions) : (data.actions || '[]'), data.isActive ?? 1, id, tenantId]);
+  },
+
   deleteWorkflow: async (id, tenantId = 'TENANT-AAROGYA-01') => {
     return await run('DELETE FROM workflows WHERE id = ? AND tenantId = ?', [id, tenantId]);
   },
@@ -516,6 +624,14 @@ createDataAsset: async (assetData) => {
     return { id, destinationCountry, recipientName };
   },
 
+  updateCrossBorderTransfer: async (id, data, tenantId = 'TENANT-AAROGYA-01') => {
+    return await run(`
+      UPDATE cross_border_transfers
+      SET destinationCountry = ?, recipientName = ?, dataCategories = ?, transferMechanism = ?, adequacyDecision = ?, riskLevel = ?
+      WHERE id = ? AND tenantId = ?
+    `, [data.destinationCountry, data.recipientName, data.dataCategories, data.transferMechanism, data.adequacyDecision, data.riskLevel, id, tenantId]);
+  },
+
   deleteCrossBorderTransfer: async (id, tenantId = 'TENANT-AAROGYA-01') => {
     return await run('DELETE FROM cross_border_transfers WHERE id = ? AND tenantId = ?', [id, tenantId]);
   },
@@ -583,6 +699,18 @@ createDataAsset: async (assetData) => {
     return { id, assessmentName };
   },
 
+  updateAssessment: async (id, data, tenantId = 'TENANT-AAROGYA-01') => {
+    return await run(`
+      UPDATE assessments
+      SET assessmentName = ?, assessmentType = ?, status = ?, score = ?, totalQuestions = ?, answeredQuestions = ?
+      WHERE id = ? AND tenantId = ?
+    `, [data.assessmentName, data.assessmentType, data.status, data.score, data.totalQuestions, data.answeredQuestions, id, tenantId]);
+  },
+
+  deleteAssessment: async (id, tenantId = 'TENANT-AAROGYA-01') => {
+    return await run('DELETE FROM assessments WHERE id = ? AND tenantId = ?', [id, tenantId]);
+  },
+
   getAssessmentTemplates: async (tenantId = 'TENANT-AAROGYA-01') => {
     return await all('SELECT * FROM assessment_templates WHERE tenantId = ? ORDER BY createdAt DESC', [tenantId]);
   },
@@ -595,6 +723,14 @@ createDataAsset: async (assetData) => {
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `, [id, data.tenantId || 'TENANT-AAROGYA-01', templateName, data.framework || 'DPDP Act 2023', data.questionCount || 15, data.isActive ?? 1, new Date().toISOString()]);
     return { id, templateName };
+  },
+
+  updateAssessmentTemplate: async (id, data, tenantId = 'TENANT-AAROGYA-01') => {
+    return await run(`
+      UPDATE assessment_templates
+      SET templateName = ?, framework = ?, questionCount = ?, isActive = ?
+      WHERE id = ? AND tenantId = ?
+    `, [data.templateName, data.framework, data.questionCount, data.isActive ? 1 : 0, id, tenantId]);
   },
 
   deleteAssessmentTemplate: async (id, tenantId = 'TENANT-AAROGYA-01') => {
@@ -613,6 +749,18 @@ createDataAsset: async (assetData) => {
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `, [id, data.tenantId || 'TENANT-AAROGYA-01', assessmentName, data.dataCategory || 'Diagnostic Health', data.riskLevel || 'MEDIUM', data.status || 'in_review', data.mitigations || '', new Date().toISOString()]);
     return { id, assessmentName };
+  },
+
+  updatePiaDpiaAssessment: async (id, data, tenantId = 'TENANT-AAROGYA-01') => {
+    return await run(`
+      UPDATE pia_dpia_assessments
+      SET assessmentName = ?, dataCategory = ?, riskLevel = ?, status = ?, mitigations = ?
+      WHERE id = ? AND tenantId = ?
+    `, [data.assessmentName, data.dataCategory, data.riskLevel, data.status, data.mitigations, id, tenantId]);
+  },
+
+  deletePiaDpiaAssessment: async (id, tenantId = 'TENANT-AAROGYA-01') => {
+    return await run('DELETE FROM pia_dpia_assessments WHERE id = ? AND tenantId = ?', [id, tenantId]);
   },
 
   getAssessmentSettings: async (tenantId = 'TENANT-AAROGYA-01') => {
@@ -646,6 +794,14 @@ createDataAsset: async (assetData) => {
     return { id, integrationName };
   },
 
+  updateIntegration: async (id, data, tenantId = 'TENANT-AAROGYA-01') => {
+    return await run(`
+      UPDATE integrations
+      SET integrationName = ?, provider = ?, status = ?, apiKeyPrefix = ?
+      WHERE id = ? AND tenantId = ?
+    `, [data.integrationName, data.provider, data.status, data.apiKeyPrefix || 'dpdp_live_', id, tenantId]);
+  },
+
   deleteIntegration: async (id, tenantId = 'TENANT-AAROGYA-01') => {
     return await run('DELETE FROM integrations WHERE id = ? AND tenantId = ?', [id, tenantId]);
   },
@@ -660,8 +816,20 @@ createDataAsset: async (assetData) => {
     await run(`
       INSERT INTO integration_hub (id, tenantId, connectorName, connectorType, config, isActive, createdAt)
       VALUES (?, ?, ?, ?, ?, ?, ?)
-    `, [id, data.tenantId || 'TENANT-AAROGYA-01', connectorName, data.connectorType || 'messaging', JSON.stringify(data.config || {}), data.isActive ? 1 : 0, new Date().toISOString()]);
+    `, [id, data.tenantId || 'TENANT-AAROGYA-01', connectorName, data.connectorType || 'messaging', typeof data.config === 'object' ? JSON.stringify(data.config) : (data.config || '{}'), data.isActive ? 1 : 0, new Date().toISOString()]);
     return { id, connectorName };
+  },
+
+  updateIntegrationHub: async (id, data, tenantId = 'TENANT-AAROGYA-01') => {
+    return await run(`
+      UPDATE integration_hub
+      SET connectorName = ?, connectorType = ?, config = ?, isActive = ?
+      WHERE id = ? AND tenantId = ?
+    `, [data.connectorName, data.connectorType, typeof data.config === 'object' ? JSON.stringify(data.config) : (data.config || '{}'), data.isActive ? 1 : 0, id, tenantId]);
+  },
+
+  deleteIntegrationHub: async (id, tenantId = 'TENANT-AAROGYA-01') => {
+    return await run('DELETE FROM integration_hub WHERE id = ? AND tenantId = ?', [id, tenantId]);
   },
 
   getApiKeys: async (tenantId = 'TENANT-AAROGYA-01') => {
@@ -685,6 +853,17 @@ createDataAsset: async (assetData) => {
 
   deleteApiKey: async (id, tenantId = 'TENANT-AAROGYA-01') => {
     return await run('DELETE FROM api_keys WHERE id = ? AND tenantId = ?', [id, tenantId]);
+  },
+
+  updateApiKey: async (id, data, tenantId = 'TENANT-AAROGYA-01') => {
+    const fields = [];
+    const params = [];
+    if (data.keyName) { fields.push('keyName = ?'); params.push(data.keyName); }
+    if (data.scopes) { fields.push('scopes = ?'); params.push(data.scopes); }
+    if (data.expiresAt !== undefined) { fields.push('expiresAt = ?'); params.push(data.expiresAt); }
+    if (fields.length === 0) return;
+    params.push(id, tenantId);
+    return await run(`UPDATE api_keys SET ${fields.join(', ')} WHERE id = ? AND tenantId = ?`, params);
   },
 
   // ==========================================
@@ -781,6 +960,14 @@ createDataAsset: async (assetData) => {
     return { id, roleName };
   },
 
+  updateRole: async (id, data, tenantId = 'TENANT-AAROGYA-01') => {
+    return await run(`
+      UPDATE role_permissions
+      SET roleName = ?, permissions = ?
+      WHERE id = ? AND tenantId = ?
+    `, [data.roleName, typeof data.permissions === 'object' ? JSON.stringify(data.permissions) : (data.permissions || '[]'), id, tenantId]);
+  },
+
   deleteRole: async (id, tenantId = 'TENANT-AAROGYA-01') => {
     return await run('DELETE FROM role_permissions WHERE id = ? AND tenantId = ? AND isSystem = 0', [id, tenantId]);
   },
@@ -802,6 +989,24 @@ createDataAsset: async (assetData) => {
   // ==========================================
   // 13. EXTENDED CONSENT LIBRARY MODULE
   // ==========================================
+  getConsentDashboardMetrics: async (tenantId = 'TENANT-AAROGYA-01') => {
+    const totalConsentsRow = await get('SELECT COUNT(*) as count FROM consent_events WHERE tenantId = ?', [tenantId]);
+    const activeConsentsRow = await get("SELECT COUNT(*) as count FROM consent_events WHERE tenantId = ? AND status = 'ACTIVE'", [tenantId]);
+    const withdrawnRow = await get("SELECT COUNT(*) as count FROM consent_events WHERE tenantId = ? AND status = 'WITHDRAWN'", [tenantId]);
+    const purposes = await all(`
+      SELECT purposeCode, COUNT(*) as count 
+      FROM consent_events 
+      WHERE tenantId = ? 
+      GROUP BY purposeCode
+    `, [tenantId]);
+    return {
+      totalConsents: totalConsentsRow?.count || 0,
+      activeConsents: activeConsentsRow?.count || 0,
+      withdrawnConsents: withdrawnRow?.count || 0,
+      byPurpose: purposes || []
+    };
+  },
+
   getConsentPurposes: async (tenantId = 'TENANT-AAROGYA-01') => {
     return await all('SELECT * FROM consent_purposes WHERE tenantId = ? ORDER BY createdAt DESC', [tenantId]);
   },
@@ -815,6 +1020,14 @@ createDataAsset: async (assetData) => {
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `, [id, data.tenantId || 'TENANT-AAROGYA-01', purposeName, purposeCode, data.description || '', data.isActive ?? 1, new Date().toISOString()]);
     return { id, purposeName, purposeCode };
+  },
+
+  updateConsentPurpose: async (id, data, tenantId = 'TENANT-AAROGYA-01') => {
+    return await run(`
+      UPDATE consent_purposes
+      SET purposeName = ?, purposeCode = ?, description = ?, isActive = ?
+      WHERE id = ? AND tenantId = ?
+    `, [data.purposeName, data.purposeCode, data.description || '', data.isActive ?? 1, id, tenantId]);
   },
 
   deleteConsentPurpose: async (id, tenantId = 'TENANT-AAROGYA-01') => {
@@ -835,6 +1048,18 @@ createDataAsset: async (assetData) => {
     return { id, preferenceName };
   },
 
+  updateConsentPreference: async (id, data, tenantId = 'TENANT-AAROGYA-01') => {
+    return await run(`
+      UPDATE consent_preferences
+      SET preferenceName = ?, preferenceValue = ?, isGlobal = ?
+      WHERE id = ? AND tenantId = ?
+    `, [data.preferenceName, data.preferenceValue, data.isGlobal ? 1 : 0, id, tenantId]);
+  },
+
+  deleteConsentPreference: async (id, tenantId = 'TENANT-AAROGYA-01') => {
+    return await run('DELETE FROM consent_preferences WHERE id = ? AND tenantId = ?', [id, tenantId]);
+  },
+
   getPreferenceCenters: async (tenantId = 'TENANT-AAROGYA-01') => {
     return await all('SELECT * FROM consent_preference_centers WHERE tenantId = ? ORDER BY createdAt DESC', [tenantId]);
   },
@@ -847,6 +1072,18 @@ createDataAsset: async (assetData) => {
       VALUES (?, ?, ?, ?, ?, ?)
     `, [id, data.tenantId || 'TENANT-AAROGYA-01', centerName, data.purposeIds || 'PURP-DIAGNOSTIC-REPORTING', data.isActive ?? 1, new Date().toISOString()]);
     return { id, centerName };
+  },
+
+  updatePreferenceCenter: async (id, data, tenantId = 'TENANT-AAROGYA-01') => {
+    return await run(`
+      UPDATE consent_preference_centers
+      SET centerName = ?, purposeIds = ?, isActive = ?
+      WHERE id = ? AND tenantId = ?
+    `, [data.centerName, data.purposeIds, data.isActive ? 1 : 0, id, tenantId]);
+  },
+
+  deletePreferenceCenter: async (id, tenantId = 'TENANT-AAROGYA-01') => {
+    return await run('DELETE FROM consent_preference_centers WHERE id = ? AND tenantId = ?', [id, tenantId]);
   },
 
   getDataElements: async (tenantId = 'TENANT-AAROGYA-01') => {
@@ -863,6 +1100,26 @@ createDataAsset: async (assetData) => {
     return { id, elementName };
   },
 
+  updateDataElement: async (id, data, tenantId = 'TENANT-AAROGYA-01') => {
+    return await run(`
+      UPDATE consent_data_elements
+      SET elementName = ?, elementType = ?, isSensitive = ?
+      WHERE id = ? AND tenantId = ?
+    `, [data.elementName, data.elementType, data.isSensitive ? 1 : 0, id, tenantId]);
+  },
+
+  deleteDataElement: async (id, tenantId = 'TENANT-AAROGYA-01') => {
+    return await run('DELETE FROM consent_data_elements WHERE id = ? AND tenantId = ?', [id, tenantId]);
+  },
+
+  getConsentTransactions: async (tenantId = 'TENANT-AAROGYA-01') => {
+    return await all('SELECT * FROM consent_events WHERE tenantId = ? ORDER BY timestamp DESC', [tenantId]);
+  },
+
+  getConsentTransactionById: async (id, tenantId = 'TENANT-AAROGYA-01') => {
+    return await get('SELECT * FROM consent_events WHERE id = ? AND tenantId = ?', [id, tenantId]);
+  },
+
   getConsentPolicies: async (tenantId = 'TENANT-AAROGYA-01') => {
     return await all('SELECT * FROM consent_policies WHERE tenantId = ? ORDER BY createdAt DESC', [tenantId]);
   },
@@ -875,6 +1132,14 @@ createDataAsset: async (assetData) => {
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `, [id, data.tenantId || 'TENANT-AAROGYA-01', policyName, data.policyText || '', data.version || '1.0', data.isActive ?? 1, new Date().toISOString()]);
     return { id, policyName };
+  },
+
+  updateConsentPolicy: async (id, data, tenantId = 'TENANT-AAROGYA-01') => {
+    return await run(`
+      UPDATE consent_policies
+      SET policyName = ?, policyText = ?, version = ?, isActive = ?
+      WHERE id = ? AND tenantId = ?
+    `, [data.policyName, data.policyText, data.version, data.isActive ? 1 : 0, id, tenantId]);
   },
 
   deleteConsentPolicy: async (id, tenantId = 'TENANT-AAROGYA-01') => {
@@ -907,11 +1172,15 @@ createDataAsset: async (assetData) => {
 
   createCookieScan: async (data) => {
     const id = data.id || `CSCAN-${uuidv4().slice(0, 8)}`;
+    const url = data.websiteUrl || data.scanUrl || 'https://aarogyaclinic.in';
+    const cCount = data.cookieCount || data.pagesScanned || data.maxPages || 8;
+    const nCount = data.necessaryCount || 5;
+    const nonCount = data.nonNecessaryCount || data.trackersFound || 3;
     await run(`
       INSERT INTO cookie_scan_results (id, tenantId, websiteUrl, scanDate, cookieCount, necessaryCount, nonNecessaryCount, status)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `, [id, data.tenantId || 'TENANT-AAROGYA-01', data.websiteUrl || 'https://aarogyaclinic.in', new Date().toISOString(), data.cookieCount || 8, data.necessaryCount || 5, data.nonNecessaryCount || 3, data.status || 'completed']);
-    return id;
+    `, [id, data.tenantId || 'TENANT-AAROGYA-01', url, new Date().toISOString(), cCount, nCount, nonCount, data.status || 'completed']);
+    return { id, websiteUrl: url, scanUrl: url, status: data.status || 'completed' };
   },
 
   getCookieScanById: async (id) => {
@@ -924,11 +1193,13 @@ createDataAsset: async (assetData) => {
 
   createCookieConsentLog: async (data) => {
     const id = data.id || `CLOG-${uuidv4().slice(0, 8)}`;
+    const session = data.sessionId || data.userIdentifier || `SES-${Math.floor(Math.random() * 90000 + 10000)}`;
+    const cats = data.cookieCategories || data.category || 'Necessary, Analytics';
     await run(`
       INSERT INTO cookie_consent_logs (id, tenantId, sessionId, action, cookieCategories, timestamp)
       VALUES (?, ?, ?, ?, ?, ?)
-    `, [id, data.tenantId || 'TENANT-AAROGYA-01', data.sessionId || `SES-${Math.floor(Math.random() * 90000 + 10000)}`, data.action || 'ACCEPT_ALL', data.cookieCategories || 'Necessary, Analytics', new Date().toISOString()]);
-    return id;
+    `, [id, data.tenantId || 'TENANT-AAROGYA-01', session, data.action || 'ACCEPT_ALL', cats, new Date().toISOString()]);
+    return { id, sessionId: session, action: data.action || 'ACCEPT_ALL' };
   },
 
   getCookieBanners: async (tenantId = 'TENANT-AAROGYA-01') => {
@@ -941,8 +1212,16 @@ createDataAsset: async (assetData) => {
     await run(`
       INSERT INTO cookie_banners (id, tenantId, bannerName, bannerText, buttonText, isActive, createdAt)
       VALUES (?, ?, ?, ?, ?, ?, ?)
-    `, [id, data.tenantId || 'TENANT-AAROGYA-01', bannerName, data.bannerText || 'We use essential cookies under DPDP Act 2023 for portal functionality.', data.buttonText || 'Accept Essential', data.isActive ?? 1, new Date().toISOString()]);
+    `, [id, data.tenantId || 'TENANT-AAROGYA-01', bannerName, data.bannerText || data.messageText || 'We use essential cookies under DPDP Act 2023 for portal functionality.', data.buttonText || 'Accept Essential', data.isActive ?? 1, new Date().toISOString()]);
     return { id, bannerName };
+  },
+
+  updateCookieBanner: async (id, data, tenantId = 'TENANT-AAROGYA-01') => {
+    return await run(`
+      UPDATE cookie_banners
+      SET bannerName = ?, bannerText = ?, buttonText = ?, isActive = ?
+      WHERE id = ? AND tenantId = ?
+    `, [data.bannerName, data.bannerText, data.buttonText, data.isActive ? 1 : 0, id, tenantId]);
   },
 
   deleteCookieBanner: async (id, tenantId = 'TENANT-AAROGYA-01') => {
@@ -955,11 +1234,22 @@ createDataAsset: async (assetData) => {
 
   createGeoRule: async (data) => {
     const id = data.id || `GEO-${uuidv4().slice(0, 8)}`;
+    const country = data.countryCode || data.regionCode || 'IN';
+    const type = data.ruleType || data.defaultAction || 'OPT_IN';
+    const val = data.ruleValue || data.ruleName || 'Strict Consent';
     await run(`
       INSERT INTO cookie_geo_rules (id, tenantId, countryCode, ruleType, ruleValue, isActive, createdAt)
       VALUES (?, ?, ?, ?, ?, ?, ?)
-    `, [id, data.tenantId || 'TENANT-AAROGYA-01', data.countryCode || 'IN', data.ruleType || 'OPT_IN', data.ruleValue || 'Strict Consent', data.isActive ?? 1, new Date().toISOString()]);
-    return id;
+    `, [id, data.tenantId || 'TENANT-AAROGYA-01', country, type, val, data.isActive ?? 1, new Date().toISOString()]);
+    return { id, countryCode: country, regionCode: country, ruleType: type, defaultAction: type };
+  },
+
+  updateGeoRule: async (id, data, tenantId = 'TENANT-AAROGYA-01') => {
+    return await run(`
+      UPDATE cookie_geo_rules
+      SET countryCode = ?, ruleType = ?, ruleValue = ?, isActive = ?
+      WHERE id = ? AND tenantId = ?
+    `, [data.countryCode, data.ruleType, data.ruleValue, data.isActive ? 1 : 0, id, tenantId]);
   },
 
   deleteGeoRule: async (id, tenantId = 'TENANT-AAROGYA-01') => {

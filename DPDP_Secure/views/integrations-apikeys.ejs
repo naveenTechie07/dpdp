@@ -1,4 +1,7 @@
 <%- include('partials/header') %>
+<%
+  const safeKeys = (typeof keys !== 'undefined' && Array.isArray(keys)) ? keys : [];
+%>
 
 <style>
 .key-form-label {
@@ -16,12 +19,12 @@
     padding: 10px 12px;
     border-radius: 6px;
     font-size: 13px;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
 }
 .scope-group {
     border: 1px solid var(--border-color);
     border-radius: 6px;
-    margin-top: 12px;
+    margin-top: 8px;
     background: rgba(0,0,0,0.1);
 }
 .scope-header {
@@ -39,6 +42,7 @@
     align-items: flex-start;
     gap: 12px;
     margin-bottom: 12px;
+    cursor: pointer;
 }
 .checkbox-row:last-child {
     margin-bottom: 0;
@@ -48,10 +52,11 @@
     border: 1px solid rgba(255,255,255,0.1);
     color: white;
     padding: 6px 12px;
-    border-radius: 16px;
+    border-radius: 6px;
     font-size: 12px;
     font-weight: 500;
     cursor: pointer;
+    transition: all 0.2s;
 }
 .action-btn:hover {
     background: rgba(255,255,255,0.1);
@@ -61,10 +66,13 @@
     border-color: rgba(239, 68, 68, 0.2);
     color: #fca5a5;
 }
+.action-btn.revoke:hover {
+    background: rgba(239, 68, 68, 0.2);
+}
 .modal-overlay {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.7);
+    background: rgba(0,0,0,0.75);
     backdrop-filter: blur(4px);
     display: none;
     align-items: center;
@@ -75,116 +83,172 @@
     display: flex;
 }
 .modal-content {
-    background: var(--bg-surface);
+    background: #111827;
     border: 1px solid var(--border-color);
     border-radius: 12px;
     width: 100%;
-    max-width: 500px;
+    max-width: 520px;
     padding: 24px;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.6);
 }
 </style>
 
 <div style="padding: 24px; max-width: 1400px; margin: 0 auto;">
-    <div style="margin-bottom: 32px;">
-        <h1 style="font-size: 20px; font-weight: 700; color: var(--text-main); margin: 0 0 8px 0;">API Key Vault</h1>
-        <p style="color: var(--text-muted); font-size: 13px; margin: 0;">Generate service keys for web, mobile, and backend integrations.</p>
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 28px;">
+        <div>
+            <h1 style="font-size: 20px; font-weight: 700; color: var(--text-main); margin: 0 0 6px 0;">API Key Vault</h1>
+            <p style="color: var(--text-muted); font-size: 13px; margin: 0;">Generate secure machine-to-machine service keys for web, mobile, and backend integrations under DPDP Act Sec 8.</p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 8px; padding: 8px 16px; text-align: right;">
+                <div style="font-size: 11px; text-transform: uppercase; color: #93c5fd; font-weight: 600;">Active Keys</div>
+                <div style="font-size: 18px; font-weight: 700; color: white;"><%= safeKeys.length %></div>
+            </div>
+        </div>
     </div>
 
-    <div style="display: grid; grid-template-columns: 350px 1fr; gap: 24px;">
+    <div style="display: grid; grid-template-columns: 380px 1fr; gap: 24px;">
         <!-- Left: Create new API key -->
-        <div class="card">
-            <h2 style="font-size: 16px; font-weight: 600; color: white; margin: 0 0 24px 0;">Create new API key</h2>
+        <div class="card" style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px;">
+            <h2 style="font-size: 16px; font-weight: 600; color: white; margin: 0 0 20px 0; display: flex; align-items: center; gap: 8px;">
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="#3b82f6" stroke-width="2" fill="none"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+                Create New API Key
+            </h2>
             
-            <label class="key-form-label">Key name <span style="color: #ef4444;">*</span></label>
-            <input type="text" class="key-input" placeholder="e.g. production-web">
-            
-            <label class="key-form-label" style="margin-bottom: 4px;">Scopes</label>
-            <input type="text" class="key-input" placeholder="Search scope code or description..." style="margin-bottom: 0;">
-            
-            <div class="scope-group" style="margin-bottom: 24px;">
-                <div class="scope-header">
-                    <div>
-                        <div style="font-size: 13px; font-weight: 600; color: white;">Consent Management</div>
-                        <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">CONSENT_LEDGER &middot; 1 scope</div>
-                    </div>
-                    <div style="font-size: 11px; color: var(--text-muted);">0 selected</div>
-                </div>
-                <div class="scope-list">
-                    <label class="checkbox-row">
-                        <input type="checkbox" style="margin-top: 2px;">
-                        <span style="font-size: 13px; color: var(--text-main);">Select all</span>
-                    </label>
-                    <div style="margin: 8px 0; border-bottom: 1px solid var(--border-color);"></div>
-                    <label class="checkbox-row">
-                        <input type="checkbox" style="margin-top: 2px;">
+            <form id="createApiKeyForm" onsubmit="handleCreateKey(event)">
+                <label class="key-form-label">Key Name <span style="color: #ef4444;">*</span></label>
+                <input type="text" id="newKeyName" class="key-input" placeholder="e.g. LIS Blood Analyzer Daemon" required>
+                
+                <label class="key-form-label" style="margin-bottom: 4px;">Assign Scopes <span style="color: #ef4444;">*</span></label>
+                <div class="scope-group" style="margin-bottom: 20px;">
+                    <div class="scope-header">
                         <div>
-                            <div style="font-size: 13px; font-weight: 600; color: white; margin-bottom: 2px;">consent.capture</div>
-                            <div style="font-size: 12px; color: var(--text-muted);">Capture end-user consent events</div>
+                            <div style="font-size: 13px; font-weight: 600; color: white;">DPDP Permissions</div>
+                            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Least-Privilege Role Bindings</div>
                         </div>
-                    </label>
+                    </div>
+                    <div class="scope-list">
+                        <label class="checkbox-row">
+                            <input type="checkbox" name="scopeOption" value="read:silos" checked style="margin-top: 2px;">
+                            <div>
+                                <div style="font-size: 13px; font-weight: 600; color: white;">read:silos</div>
+                                <div style="font-size: 11px; color: var(--text-muted);">Access informal system discoveries & scans</div>
+                            </div>
+                        </label>
+                        <label class="checkbox-row">
+                            <input type="checkbox" name="scopeOption" value="write:findings" checked style="margin-top: 2px;">
+                            <div>
+                                <div style="font-size: 13px; font-weight: 600; color: white;">write:findings</div>
+                                <div style="font-size: 11px; color: var(--text-muted);">Push discovered Indian PII & medical records</div>
+                            </div>
+                        </label>
+                        <label class="checkbox-row">
+                            <input type="checkbox" name="scopeOption" value="read:consent" checked style="margin-top: 2px;">
+                            <div>
+                                <div style="font-size: 13px; font-weight: 600; color: white;">read:consent</div>
+                                <div style="font-size: 11px; color: var(--text-muted);">Verify patient Section 5 notices & proofs</div>
+                            </div>
+                        </label>
+                        <label class="checkbox-row">
+                            <input type="checkbox" name="scopeOption" value="write:consent" checked style="margin-top: 2px;">
+                            <div>
+                                <div style="font-size: 13px; font-weight: 600; color: white;">write:consent</div>
+                                <div style="font-size: 11px; color: var(--text-muted);">Capture end-user WhatsApp consent transactions</div>
+                            </div>
+                        </label>
+                        <label class="checkbox-row">
+                            <input type="checkbox" name="scopeOption" value="dsr:approve" style="margin-top: 2px;">
+                            <div>
+                                <div style="font-size: 13px; font-weight: 600; color: white;">dsr:approve</div>
+                                <div style="font-size: 11px; color: var(--text-muted);">Approve or resolve Section 12 erasure requests</div>
+                            </div>
+                        </label>
+                    </div>
                 </div>
-            </div>
-            
-            <label class="key-form-label">Expiry date <span style="font-weight: 400; color: var(--text-muted);">(optional)</span></label>
-            <div style="position: relative;">
-                <input type="text" class="key-input" placeholder="dd-mm-yyyy" style="padding-right: 36px;">
-                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" style="position: absolute; right: 12px; top: 11px; color: var(--text-muted);"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-            </div>
-            
-            <button class="btn-primary" style="background: #be185d; border: 1px solid #9d174d; color: white; padding: 12px; border-radius: 6px; font-size: 14px; font-weight: 600; width: 100%;">Generate API Key</button>
+                
+                <label class="key-form-label">Expiry Date <span style="font-weight: 400; color: var(--text-muted);">(optional)</span></label>
+                <input type="date" id="newKeyExpires" class="key-input">
+                
+                <button type="submit" id="btnSubmitKey" class="btn-primary" style="background: #3b82f6; border: 1px solid #2563eb; color: white; padding: 12px; border-radius: 6px; font-size: 14px; font-weight: 600; width: 100%; cursor: pointer;">
+                    Generate API Key
+                </button>
+            </form>
         </div>
 
         <!-- Right: Existing keys -->
-        <div class="card p-0">
-            <div style="padding: 20px 24px; border-bottom: 1px solid var(--border-color);">
-                <h2 style="font-size: 16px; font-weight: 600; color: white; margin: 0;">Existing keys</h2>
+        <div class="card p-0" style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden;">
+            <div style="padding: 20px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                <h2 style="font-size: 16px; font-weight: 600; color: white; margin: 0;">Active Key Registry</h2>
+                <input type="text" placeholder="Search by name or scope..." oninput="filterKeys(this.value)" style="background: rgba(0,0,0,0.25); border: 1px solid var(--border-color); color: white; font-size: 12px; padding: 6px 12px; border-radius: 6px; width: 220px;">
             </div>
             
             <div style="overflow-x: auto;">
-                <table class="table">
+                <table class="table" style="width: 100%; border-collapse: collapse;">
                     <thead>
-                        <tr>
-                            <th style="padding-left: 24px;">NAME</th>
-                            <th>PREFIX</th>
-                            <th>SCOPES</th>
-                            <th>STATUS</th>
-                            <th>EXPIRES</th>
-                            <th>CREATED</th>
-                            <th style="padding-right: 24px;"></th>
+                        <tr style="border-bottom: 1px solid var(--border-color); text-align: left; font-size: 11px; color: var(--text-muted); text-transform: uppercase;">
+                            <th style="padding: 14px 20px;">Name</th>
+                            <th style="padding: 14px 16px;">Prefix</th>
+                            <th style="padding: 14px 16px;">Assigned Scopes</th>
+                            <th style="padding: 14px 16px;">Status</th>
+                            <th style="padding: 14px 16px;">Expires</th>
+                            <th style="padding: 14px 16px;">Created</th>
+                            <th style="padding: 14px 20px; text-align: right;">Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td style="padding-left: 24px; font-weight: 600; color: white;">dpdp_secure-web</td>
-                            <td><span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; background: rgba(255,255,255,0.05); color: var(--text-muted); font-family: monospace;">cmp_fs_web</span></td>
-                            <td style="color: var(--text-muted);">none</td>
-                            <td><span style="display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3);">Active</span></td>
-                            <td style="color: var(--text-muted);">Never</td>
-                            <td style="color: var(--text-muted);">29 Aug 2026, 03:03 pm</td>
-                            <td style="padding-right: 24px;">
-                                <div style="display: flex; gap: 8px; justify-content: flex-end;">
-                                    <button class="action-btn">Usage</button>
-                                    <button class="action-btn" onclick="openModal()">Edit scopes</button>
-                                    <button class="action-btn revoke">Revoke</button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="padding-left: 24px; font-weight: 600; color: white;">dpdp_secure-mobile</td>
-                            <td><span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; background: rgba(255,255,255,0.05); color: var(--text-muted); font-family: monospace;">cmp_fs_mob</span></td>
-                            <td style="color: var(--text-muted);">none</td>
-                            <td><span style="display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3);">Active</span></td>
-                            <td style="color: var(--text-muted);">Never</td>
-                            <td style="color: var(--text-muted);">29 Aug 2026, 03:03 pm</td>
-                            <td style="padding-right: 24px;">
-                                <div style="display: flex; gap: 8px; justify-content: flex-end;">
-                                    <button class="action-btn">Usage</button>
-                                    <button class="action-btn" onclick="openModal()">Edit scopes</button>
-                                    <button class="action-btn revoke">Revoke</button>
-                                </div>
-                            </td>
-                        </tr>
+                    <tbody id="keysTableBody">
+                        <% if (safeKeys.length === 0) { %>
+                            <tr>
+                                <td colspan="7" style="padding: 40px; text-align: center; color: var(--text-muted); font-size: 13px;">
+                                    No active API keys found. Generate a key using the left form to integrate with clinic systems.
+                                </td>
+                            </tr>
+                        <% } else { %>
+                            <% safeKeys.forEach(k => { %>
+                                <tr class="key-row" id="row-<%= k.id %>" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                    <td style="padding: 14px 20px; font-weight: 600; color: white;">
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></span>
+                                            <%= k.keyName %>
+                                        </div>
+                                    </td>
+                                    <td style="padding: 14px 16px;">
+                                        <span style="display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 11px; background: rgba(255,255,255,0.06); color: #93c5fd; font-family: monospace;">
+                                            <%= k.keyPrefix %>
+                                        </span>
+                                    </td>
+                                    <td style="padding: 14px 16px;">
+                                        <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+                                            <% (k.scopes ? k.scopes.split(',') : []).forEach(sc => { %>
+                                                <span style="font-size: 11px; padding: 2px 6px; border-radius: 4px; background: rgba(59, 130, 246, 0.15); color: #93c5fd; border: 1px solid rgba(59, 130, 246, 0.25);">
+                                                    <%= sc.trim() %>
+                                                </span>
+                                            <% }) %>
+                                        </div>
+                                    </td>
+                                    <td style="padding: 14px 16px;">
+                                        <span style="display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3);">
+                                            Active
+                                        </span>
+                                    </td>
+                                    <td style="padding: 14px 16px; color: var(--text-muted); font-size: 12px;">
+                                        <%= k.expiresAt ? new Date(k.expiresAt).toLocaleDateString() : 'Never' %>
+                                    </td>
+                                    <td style="padding: 14px 16px; color: var(--text-muted); font-size: 12px;">
+                                        <%= k.createdAt ? new Date(k.createdAt).toLocaleDateString() : 'Recently' %>
+                                    </td>
+                                    <td style="padding: 14px 20px; text-align: right;">
+                                        <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                                            <button class="action-btn" onclick="openEditScopesModal('<%= k.id %>', '<%= k.keyName %>', '<%= k.scopes || '' %>')">
+                                                Edit Scopes
+                                            </button>
+                                            <button class="action-btn revoke" onclick="revokeKey('<%= k.id %>', '<%= k.keyName %>')">
+                                                Revoke
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        <% } %>
                     </tbody>
                 </table>
             </div>
@@ -192,51 +256,227 @@
     </div>
 </div>
 
-<!-- Modal Overlay -->
+<!-- Key Created Success Modal -->
+<div class="modal-overlay" id="keyCreatedModal">
+    <div class="modal-content">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+            <div style="background: rgba(16, 185, 129, 0.2); padding: 8px; border-radius: 8px; color: #10b981;">
+                <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            </div>
+            <div>
+                <h2 style="font-size: 17px; font-weight: 700; color: white; margin: 0;">API Key Generated Successfully</h2>
+                <div style="font-size: 12px; color: var(--text-muted);">DPDP Section 8 Compliant Cryptographic Key</div>
+            </div>
+        </div>
+
+        <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 8px; padding: 12px; margin-bottom: 16px;">
+            <div style="font-size: 12px; font-weight: 600; color: #fca5a5; margin-bottom: 2px;">Important Security Warning</div>
+            <div style="font-size: 11px; color: #fecaca; line-height: 1.4;">Copy this secret key right now. To prevent unauthorized credential compromise under the DPDP Act, it will never be displayed in plain text again.</div>
+        </div>
+
+        <label class="key-form-label" style="font-size: 12px;">Your Secret API Key</label>
+        <div style="display: flex; gap: 8px; margin-bottom: 20px;">
+            <input type="text" id="createdSecretKey" readonly style="flex: 1; background: rgba(0,0,0,0.4); border: 1px solid var(--border-color); color: #34d399; font-family: monospace; font-size: 12px; padding: 10px 12px; border-radius: 6px;">
+            <button onclick="copyGeneratedKey()" id="btnCopyKey" style="background: #3b82f6; border: none; color: white; padding: 0 16px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">
+                Copy
+            </button>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end;">
+            <button onclick="closeCreatedModal()" class="action-btn" style="background: rgba(255,255,255,0.1); padding: 8px 18px; font-size: 13px;">
+                I Have Saved the Key
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Scopes Modal -->
 <div class="modal-overlay" id="editScopesModal">
     <div class="modal-content">
-        <h2 style="font-size: 18px; font-weight: 700; color: white; margin: 0 0 4px 0;">Edit scopes</h2>
-        <p style="color: var(--text-muted); font-size: 13px; margin: 0 0 24px 0;">dpdp_secure-mobile &mdash; changes apply immediately; the key itself never changes.</p>
+        <h2 style="font-size: 18px; font-weight: 700; color: white; margin: 0 0 4px 0;">Edit Scopes</h2>
+        <p id="editScopesSub" style="color: var(--text-muted); font-size: 13px; margin: 0 0 20px 0;">Update permissions for this API key.</p>
         
-        <input type="text" class="key-input" placeholder="Search scope code or description..." style="margin-bottom: 0;">
-        
+        <input type="hidden" id="editKeyId">
         <div class="scope-group" style="margin-bottom: 24px;">
             <div class="scope-header">
                 <div>
-                    <div style="font-size: 13px; font-weight: 600; color: white;">Consent Management</div>
-                    <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">CONSENT_LEDGER &middot; 1 scope</div>
+                    <div style="font-size: 13px; font-weight: 600; color: white;">Assigned DPDP Permissions</div>
+                    <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Changes take effect immediately</div>
                 </div>
-                <div style="font-size: 11px; color: var(--text-muted);">0 selected</div>
             </div>
             <div class="scope-list">
                 <label class="checkbox-row">
-                    <input type="checkbox" style="margin-top: 2px;">
-                    <span style="font-size: 13px; color: var(--text-main);">Select all</span>
-                </label>
-                <div style="margin: 8px 0; border-bottom: 1px solid var(--border-color);"></div>
-                <label class="checkbox-row">
-                    <input type="checkbox" style="margin-top: 2px;">
+                    <input type="checkbox" id="sc_silos" value="read:silos" style="margin-top: 2px;">
                     <div>
-                        <div style="font-size: 13px; font-weight: 600; color: white; margin-bottom: 2px;">consent.capture</div>
-                        <div style="font-size: 12px; color: var(--text-muted);">Capture end-user consent events</div>
+                        <div style="font-size: 13px; font-weight: 600; color: white;">read:silos</div>
+                        <div style="font-size: 11px; color: var(--text-muted);">Access informal system discoveries & scans</div>
+                    </div>
+                </label>
+                <label class="checkbox-row">
+                    <input type="checkbox" id="sc_findings" value="write:findings" style="margin-top: 2px;">
+                    <div>
+                        <div style="font-size: 13px; font-weight: 600; color: white;">write:findings</div>
+                        <div style="font-size: 11px; color: var(--text-muted);">Push discovered Indian PII & medical records</div>
+                    </div>
+                </label>
+                <label class="checkbox-row">
+                    <input type="checkbox" id="sc_rconsent" value="read:consent" style="margin-top: 2px;">
+                    <div>
+                        <div style="font-size: 13px; font-weight: 600; color: white;">read:consent</div>
+                        <div style="font-size: 11px; color: var(--text-muted);">Verify patient Section 5 notices & proofs</div>
+                    </div>
+                </label>
+                <label class="checkbox-row">
+                    <input type="checkbox" id="sc_wconsent" value="write:consent" style="margin-top: 2px;">
+                    <div>
+                        <div style="font-size: 13px; font-weight: 600; color: white;">write:consent</div>
+                        <div style="font-size: 11px; color: var(--text-muted);">Capture end-user WhatsApp consent transactions</div>
+                    </div>
+                </label>
+                <label class="checkbox-row">
+                    <input type="checkbox" id="sc_dsr" value="dsr:approve" style="margin-top: 2px;">
+                    <div>
+                        <div style="font-size: 13px; font-weight: 600; color: white;">dsr:approve</div>
+                        <div style="font-size: 11px; color: var(--text-muted);">Approve or resolve Section 12 erasure requests</div>
                     </div>
                 </label>
             </div>
         </div>
         
         <div style="display: flex; gap: 12px; justify-content: flex-end;">
-            <button onclick="closeModal()" class="action-btn" style="padding: 10px 20px; font-size: 14px; background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); border-radius: 6px;">Cancel</button>
-            <button class="btn-primary" style="background: #be185d; border: 1px solid #9d174d; color: white; padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 600;">Save changes</button>
+            <button onclick="closeEditModal()" class="action-btn" style="padding: 9px 18px; font-size: 13px;">Cancel</button>
+            <button onclick="handleSaveScopes()" class="btn-primary" style="background: #3b82f6; border: 1px solid #2563eb; color: white; padding: 9px 18px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;">
+                Save Scopes
+            </button>
         </div>
     </div>
 </div>
 
 <script>
-function openModal() {
+function filterKeys(q) {
+    const rows = document.querySelectorAll('.key-row');
+    const term = (q || '').toLowerCase();
+    rows.forEach(r => {
+        r.style.display = r.innerText.toLowerCase().includes(term) ? '' : 'none';
+    });
+}
+
+async function handleCreateKey(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btnSubmitKey');
+    const name = document.getElementById('newKeyName').value.trim();
+    const expiresAt = document.getElementById('newKeyExpires').value;
+    
+    const checkboxes = document.querySelectorAll('input[name="scopeOption"]:checked');
+    const scopes = Array.from(checkboxes).map(c => c.value).join(',');
+    
+    if (!name) return alert('Key name is required');
+    if (!scopes) return alert('At least one scope must be selected');
+
+    btn.disabled = true;
+    btn.innerText = 'Generating...';
+
+    try {
+        const res = await fetch('/api/integrations/api-keys', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ keyName: name, scopes, expiresAt: expiresAt || null })
+        });
+        const data = await res.json();
+        if (data.success) {
+            document.getElementById('createdSecretKey').value = data.secretKey || (data.apiKey && data.apiKey.fullKey) || '';
+            document.getElementById('keyCreatedModal').classList.add('active');
+        } else {
+            alert('Failed to generate key: ' + (data.error || 'Unknown error'));
+        }
+    } catch (err) {
+        alert('Error: ' + err.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerText = 'Generate API Key';
+    }
+}
+
+function copyGeneratedKey() {
+    const input = document.getElementById('createdSecretKey');
+    input.select();
+    navigator.clipboard.writeText(input.value);
+    const btn = document.getElementById('btnCopyKey');
+    btn.innerText = 'Copied!';
+    btn.style.background = '#10b981';
+    setTimeout(() => {
+        btn.innerText = 'Copy';
+        btn.style.background = '#3b82f6';
+    }, 2000);
+}
+
+function closeCreatedModal() {
+    document.getElementById('keyCreatedModal').classList.remove('active');
+    window.location.reload();
+}
+
+function openEditScopesModal(id, name, scopes) {
+    document.getElementById('editKeyId').value = id;
+    document.getElementById('editScopesSub').innerText = `${name} — changes apply immediately across API requests.`;
+    
+    const currentScopes = (scopes || '').split(',').map(s => s.trim());
+    document.getElementById('sc_silos').checked = currentScopes.includes('read:silos');
+    document.getElementById('sc_findings').checked = currentScopes.includes('write:findings');
+    document.getElementById('sc_rconsent').checked = currentScopes.includes('read:consent');
+    document.getElementById('sc_wconsent').checked = currentScopes.includes('write:consent');
+    document.getElementById('sc_dsr').checked = currentScopes.includes('dsr:approve');
+    
     document.getElementById('editScopesModal').classList.add('active');
 }
-function closeModal() {
+
+function closeEditModal() {
     document.getElementById('editScopesModal').classList.remove('active');
+}
+
+async function handleSaveScopes() {
+    const id = document.getElementById('editKeyId').value;
+    const selected = [];
+    if (document.getElementById('sc_silos').checked) selected.push('read:silos');
+    if (document.getElementById('sc_findings').checked) selected.push('write:findings');
+    if (document.getElementById('sc_rconsent').checked) selected.push('read:consent');
+    if (document.getElementById('sc_wconsent').checked) selected.push('write:consent');
+    if (document.getElementById('sc_dsr').checked) selected.push('dsr:approve');
+
+    try {
+        const res = await fetch(`/api/integrations/api-keys/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ scopes: selected.join(',') })
+        });
+        const data = await res.json();
+        if (data.success) {
+            closeEditModal();
+            window.location.reload();
+        } else {
+            alert('Failed to update scopes: ' + (data.error || 'Unknown error'));
+        }
+    } catch (err) {
+        alert('Error: ' + err.message);
+    }
+}
+
+async function revokeKey(id, name) {
+    if (!confirm(`Are you sure you want to revoke key "${name}"? Any background integration using it will immediately lose API access.`)) {
+        return;
+    }
+    try {
+        const res = await fetch(`/api/integrations/api-keys/${id}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (data.success) {
+            const row = document.getElementById(`row-${id}`);
+            if (row) row.remove();
+            else window.location.reload();
+        } else {
+            alert('Failed to revoke key: ' + (data.error || 'Unknown error'));
+        }
+    } catch (err) {
+        alert('Error: ' + err.message);
+    }
 }
 </script>
 

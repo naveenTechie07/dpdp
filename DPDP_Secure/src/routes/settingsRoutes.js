@@ -245,6 +245,26 @@ router.post('/api/settings/roles', async (req, res) => {
   }
 });
 
+router.put('/api/settings/roles/:id', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    await models.updateRole(req.params.id, req.body, tenantId);
+    res.json({ success: true, message: 'Role updated successfully' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.delete('/api/settings/roles/:id', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    await models.deleteRole(req.params.id, tenantId);
+    res.json({ success: true, message: 'Role deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 router.get('/api/settings/localization', async (req, res) => {
   try {
     const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;

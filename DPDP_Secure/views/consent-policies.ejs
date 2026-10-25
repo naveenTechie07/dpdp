@@ -1,120 +1,185 @@
 <%- include('partials/header') %>
+<%
+  const safePolicies = (typeof policies !== 'undefined' && Array.isArray(policies)) ? policies : [];
+%>
 
-<div class="dashboard-header mb-4">
-    <div>
-        <h1 class="page-title">Policies</h1>
-        <p class="page-description">Legal documents stored in the policy service. Create, update, or delete rows from this screen.</p>
-    </div>
-</div>
+<style>
+.form-input {
+    width: 100%;
+    background: rgba(0,0,0,0.25);
+    border: 1px solid var(--border-color);
+    color: white;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    box-sizing: border-box;
+}
+.action-btn {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.action-btn:hover { background: rgba(255,255,255,0.1); }
+.action-btn.del { color: #fca5a5; background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); }
+.action-btn.del:hover { background: rgba(239, 68, 68, 0.2); }
+</style>
 
-<div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 8px; padding: 24px; margin-bottom: 24px;">
-    <div style="display: flex; gap: 24px; align-items: flex-end;">
-        <div style="flex: 1;">
-            <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">Name <span style="color: #f87171;">*</span></label>
-            <input type="text" value="Privacy Policy" style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px;">
-        </div>
-        <div style="flex: 1;">
-            <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">Version <span style="color: #f87171;">*</span></label>
-            <input type="text" value="v1.0.0" style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px;">
-        </div>
-        <div style="flex: 2;">
-            <label style="display: block; font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">Content <span style="color: #f87171;">*</span></label>
-            <textarea style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px; resize: none; height: 42px;">DPDPA-aligned privacy notice.</textarea>
-        </div>
-        <div>
-            <button class="btn-primary" style="padding: 10px 24px; font-size: 14px;">Publish</button>
-        </div>
-    </div>
-</div>
-
-<div class="card p-0" style="overflow: hidden; display: flex; flex-direction: column;">
-    <!-- Table Toolbar -->
-    <div class="table-toolbar" style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
-        <div class="search-bar" style="width: 350px; background: transparent; padding: 0; border: none;">
-            <input type="text" placeholder="Search policies..." style="border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 6px; background: transparent; color: var(--text-main); width: 100%;">
-        </div>
-        
-        <div class="pagination" style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-muted);">
-            <span>3 rows</span>
-            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Previous</button>
-            <span>Page 1 of 1</span>
-            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Next</button>
-        </div>
-    </div>
-
-    <!-- Data Table -->
-    <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left; flex-grow: 1;">
-        <thead>
-            <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-main); font-size: 13px; font-weight: 700;">
-                <th style="padding: 16px 24px;">ID <svg style="display:inline; vertical-align:middle; width:12px; height:12px; opacity: 0.5;" viewBox="0 0 24 24" fill="currentColor"><path d="M7 14l5-5 5 5z"/></svg></th>
-                <th style="padding: 16px 16px;">Name <svg style="display:inline; vertical-align:middle; width:12px; height:12px; opacity: 0.5;" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/><path d="M7 14l5-5 5 5z"/></svg></th>
-                <th style="padding: 16px 16px;">Version <svg style="display:inline; vertical-align:middle; width:12px; height:12px; opacity: 0.5;" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/><path d="M7 14l5-5 5 5z"/></svg></th>
-                <th style="padding: 16px 16px;">Created <svg style="display:inline; vertical-align:middle; width:12px; height:12px; opacity: 0.5;" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/><path d="M7 14l5-5 5 5z"/></svg></th>
-                <th style="padding: 16px 16px;">Status <svg style="display:inline; vertical-align:middle; width:12px; height:12px; opacity: 0.5;" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/><path d="M7 14l5-5 5 5z"/></svg></th>
-                <th style="padding: 16px 24px; text-align: right;"></th>
-            </tr>
-        </thead>
-        <tbody style="font-size: 13px;">
-            <!-- Row 1 -->
-            <tr style="border-bottom: 1px solid var(--border-color);">
-                <td style="padding: 16px 24px; color: var(--text-muted);">#1</td>
-                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">Privacy Policy</td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(139, 92, 246, 0.15); color: #a78bfa; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">v1.0</span>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">29 Aug 2026, 03:03 pm</td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">Published</span>
-                </td>
-                <td style="padding: 16px 24px; text-align: right; color: var(--text-muted);">
-                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" style="cursor: pointer; margin-right: 12px;"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" style="cursor: pointer;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                </td>
-            </tr>
-            
-            <!-- Row 2 -->
-            <tr style="border-bottom: 1px solid var(--border-color);">
-                <td style="padding: 16px 24px; color: var(--text-muted);">#2</td>
-                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">Privacy Policy</td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(139, 92, 246, 0.15); color: #a78bfa; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">v1.1</span>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">29 Aug 2026, 03:03 pm</td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">Published</span>
-                </td>
-                <td style="padding: 16px 24px; text-align: right; color: var(--text-muted);">
-                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" style="cursor: pointer; margin-right: 12px;"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" style="cursor: pointer;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                </td>
-            </tr>
-
-            <!-- Row 3 -->
-            <tr style="border-bottom: 1px solid var(--border-color);">
-                <td style="padding: 16px 24px; color: var(--text-muted);">#3</td>
-                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">Cookie & Tracking Notice</td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(139, 92, 246, 0.15); color: #a78bfa; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">v1.0</span>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">29 Aug 2026, 03:03 pm</td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">Published</span>
-                </td>
-                <td style="padding: 16px 24px; text-align: right; color: var(--text-muted);">
-                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" style="cursor: pointer; margin-right: 12px;"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" style="cursor: pointer;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+<div style="padding: 24px; max-width: 1400px; margin: 0 auto;">
     
-    <div class="table-toolbar" style="padding: 16px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; align-items: center; margin-top: auto;">
-        <div class="pagination" style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-muted);">
-            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Previous</button>
-            <span>Page 1 of 1</span>
-            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Next</button>
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
+        <div>
+            <h1 style="font-size: 20px; font-weight: 700; color: white; margin: 0 0 6px 0;">Legal Policy Service</h1>
+            <p style="color: var(--text-muted); font-size: 13px; margin: 0;">Publish and version clinical privacy policies and terms referenced in patient Section 5 notices.</p>
         </div>
     </div>
+
+    <!-- Quick Policy Authoring Form -->
+    <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; margin-bottom: 28px;">
+        <h2 style="font-size: 15px; font-weight: 700; color: white; margin: 0 0 16px 0;">Publish New Policy Version</h2>
+        
+        <form id="createPolicyForm" onsubmit="handleCreatePolicy(event)">
+            <div style="display: grid; grid-template-columns: 2fr 1fr 3fr auto; gap: 16px; align-items: flex-end;">
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 600; color: white; margin-bottom: 6px;">Policy Title <span style="color: #ef4444;">*</span></label>
+                    <input type="text" id="polName" class="form-input" placeholder="e.g. Patient Privacy Notice" value="Aarogya Clinic DPDP Patient Privacy Notice" required>
+                </div>
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 600; color: white; margin-bottom: 6px;">Version <span style="color: #ef4444;">*</span></label>
+                    <input type="text" id="polVersion" class="form-input" placeholder="v2.2" value="v2.2" required>
+                </div>
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 600; color: white; margin-bottom: 6px;">Summary Notice Text <span style="color: #ef4444;">*</span></label>
+                    <input type="text" id="polText" class="form-input" placeholder="DPDPA Section 5 compliant privacy statement..." value="Patient personal data collected strictly for clinical pathology diagnostics and GST billing." required>
+                </div>
+                <div>
+                    <button type="submit" id="btnSubmitPolicy" class="btn-primary" style="background: #3b82f6; border: 1px solid #2563eb; color: white; padding: 10px 22px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap;">
+                        Publish Policy
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="card p-0" style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden;">
+        <!-- Table Toolbar -->
+        <div style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <input type="text" placeholder="Search policies..." oninput="filterPolicies(this.value)" style="border: 1px solid var(--border-color); padding: 8px 14px; border-radius: 6px; background: rgba(0,0,0,0.25); color: white; font-size: 13px; width: 300px;">
+            <div style="font-size: 12px; color: var(--text-muted);">
+                <%= safePolicies.length %> Published Policies
+            </div>
+        </div>
+
+        <!-- Data Table -->
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+                <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 11px; text-transform: uppercase; background: rgba(0,0,0,0.15);">
+                    <th style="padding: 14px 24px; font-weight: 600;">Policy Title</th>
+                    <th style="padding: 14px 16px; font-weight: 600;">Version</th>
+                    <th style="padding: 14px 16px; font-weight: 600;">Status</th>
+                    <th style="padding: 14px 16px; font-weight: 600;">Published Date</th>
+                    <th style="padding: 14px 24px; font-weight: 600; text-align: right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="policiesTableBody" style="font-size: 13px;">
+                <% if (safePolicies.length === 0) { %>
+                    <tr>
+                        <td colspan="5" style="padding: 36px; text-align: center; color: var(--text-muted);">
+                            No legal policies published. Use the form above to publish one.
+                        </td>
+                    </tr>
+                <% } else { %>
+                    <% safePolicies.forEach(pol => { %>
+                        <tr class="policy-row" id="row-<%= pol.id %>" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 16px 24px; font-weight: 600; color: white;">
+                                <%= pol.policyName %>
+                            </td>
+                            <td style="padding: 16px 16px;">
+                                <span style="background: rgba(139, 92, 246, 0.15); color: #a78bfa; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 700; border: 1px solid rgba(139, 92, 246, 0.3);">
+                                    <%= pol.version || 'v1.0' %>
+                                </span>
+                            </td>
+                            <td style="padding: 16px 16px;">
+                                <span style="background: rgba(16, 185, 129, 0.15); color: #34d399; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; border: 1px solid rgba(16, 185, 129, 0.3);">
+                                    Published
+                                </span>
+                            </td>
+                            <td style="padding: 16px 16px; color: var(--text-muted); font-size: 12px;">
+                                <%= pol.createdAt ? new Date(pol.createdAt).toLocaleDateString() : 'Live' %>
+                            </td>
+                            <td style="padding: 16px 24px; text-align: right;">
+                                <button class="action-btn del" onclick="deletePolicy('<%= pol.id %>', '<%= pol.policyName %>')">
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                    <% }) %>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+
 </div>
+
+<script>
+function filterPolicies(q) {
+    const rows = document.querySelectorAll('.policy-row');
+    const term = (q || '').toLowerCase();
+    rows.forEach(r => {
+        r.style.display = r.innerText.toLowerCase().includes(term) ? '' : 'none';
+    });
+}
+
+async function handleCreatePolicy(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btnSubmitPolicy');
+    btn.disabled = true;
+    btn.innerText = 'Publishing...';
+
+    const policyName = document.getElementById('polName').value.trim();
+    const version = document.getElementById('polVersion').value.trim();
+    const policyText = document.getElementById('polText').value.trim();
+
+    try {
+        const res = await fetch('/api/consent/policies', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ policyName, version, policyText, isActive: 1 })
+        });
+        const data = await res.json();
+        if (data.success) {
+            window.location.reload();
+        } else {
+            alert('Failed to publish policy: ' + (data.error || 'Unknown error'));
+        }
+    } catch (err) {
+        alert('Error: ' + err.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerText = 'Publish Policy';
+    }
+}
+
+async function deletePolicy(id, name) {
+    if (!confirm(`Are you sure you want to delete policy "${name}"?`)) return;
+    try {
+        const res = await fetch(`/api/consent/policies/${id}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (data.success) {
+            const row = document.getElementById(`row-${id}`);
+            if (row) row.remove();
+            else window.location.reload();
+        } else {
+            alert('Failed to delete policy: ' + (data.error || 'Unknown error'));
+        }
+    } catch (err) {
+        alert('Error: ' + err.message);
+    }
+}
+</script>
 
 <%- include('partials/footer') %>

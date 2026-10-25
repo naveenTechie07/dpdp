@@ -1,195 +1,197 @@
 <%- include('partials/header') %>
+<%
+  const safeTransactions = (typeof transactions !== 'undefined' && Array.isArray(transactions)) ? transactions : [];
+%>
 
-<div class="dashboard-header mb-4" style="align-items: flex-end;">
-    <div style="display: flex; gap: 12px; background: rgba(255, 255, 255, 0.05); padding: 4px; border-radius: 8px;">
-        <button style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 13px; cursor: pointer;">Purpose transactions</button>
-        <button style="background: transparent; border: 1px solid transparent; color: var(--text-muted); padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 13px; cursor: pointer;">Preference transactions</button>
-        <button style="background: transparent; border: 1px solid transparent; color: var(--text-muted); padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 13px; cursor: pointer;">Data element transactions</button>
+<style>
+.tx-row {
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.tx-row:hover {
+    background: rgba(255,255,255,0.03);
+}
+.tx-row.selected {
+    background: rgba(59, 130, 246, 0.1);
+}
+.badge-granted {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+}
+.badge-withdrawn {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+}
+.proof-box {
+    background: #0b0f19;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 16px;
+    font-family: monospace;
+    font-size: 12px;
+    color: #34d399;
+    word-break: break-all;
+}
+</style>
+
+<div style="padding: 24px; max-width: 1400px; margin: 0 auto;">
+    
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 28px;">
+        <div>
+            <h1 style="font-size: 20px; font-weight: 700; color: white; margin: 0 0 6px 0;">Consent Transactions &amp; Audit Trail</h1>
+            <p style="color: var(--text-muted); font-size: 13px; margin: 0;">Immutable record of every patient consent grant, modification, and withdrawal under Section 6 with SHA-256 cryptographic proof.</p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <a href="/consent/passbook/AAROGYA-PATIENT-01" class="btn-primary" style="background: rgba(255,255,255,0.08); border: 1px solid var(--border-color); color: white; padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; text-decoration: none;">
+                Download Sample Passbook
+            </a>
+        </div>
     </div>
-</div>
 
-<div class="card p-0" style="overflow: hidden; display: flex; flex-direction: column;">
-    <!-- Table Toolbar -->
-    <div class="table-toolbar" style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
-        <div class="search-bar" style="width: 350px; background: transparent; padding: 0; border: none;">
-            <input type="text" placeholder="Search subject, purpose, status..." style="border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 6px; background: transparent; color: var(--text-main); width: 100%;">
+    <div class="card p-0" style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; margin-bottom: 24px;">
+        <!-- Table Toolbar -->
+        <div style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <input type="text" placeholder="Search by phone, purpose, or status..." oninput="filterTx(this.value)" style="border: 1px solid var(--border-color); padding: 8px 14px; border-radius: 6px; background: rgba(0,0,0,0.25); color: white; font-size: 13px; width: 340px;">
+            <div style="font-size: 12px; color: var(--text-muted);">
+                <%= safeTransactions.length %> Recorded Consent Events
+            </div>
+        </div>
+
+        <!-- Data Table -->
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+                <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 11px; text-transform: uppercase; background: rgba(0,0,0,0.15);">
+                    <th style="padding: 14px 24px; font-weight: 600;">Event ID</th>
+                    <th style="padding: 14px 16px; font-weight: 600;">Data Principal</th>
+                    <th style="padding: 14px 16px; font-weight: 600;">Purpose Code</th>
+                    <th style="padding: 14px 16px; font-weight: 600;">Action Type</th>
+                    <th style="padding: 14px 16px; font-weight: 600;">Intake Channel</th>
+                    <th style="padding: 14px 24px; font-weight: 600;">Timestamp</th>
+                </tr>
+            </thead>
+            <tbody id="txTableBody" style="font-size: 13px;">
+                <% if (safeTransactions.length === 0) { %>
+                    <tr>
+                        <td colspan="6" style="padding: 36px; text-align: center; color: var(--text-muted);">
+                            No consent transactions recorded yet. Capture consent via WhatsApp Bot Simulator or Web Notice.
+                        </td>
+                    </tr>
+                <% } else { %>
+                    <% safeTransactions.forEach((tx, idx) => { 
+                        const isGranted = (tx.actionType || '').toUpperCase().includes('GIVEN') || (tx.actionType || '').toUpperCase().includes('GRANT');
+                    %>
+                        <tr class="tx-row <%= idx === 0 ? 'selected' : '' %>" id="row-tx-<%= tx.id %>" onclick="selectTx('<%= tx.id %>', '<%= tx.dataPrincipalId || tx.principalPhone %>', '<%= tx.purposeCode %>', '<%= tx.actionType %>', '<%= tx.verifiedVia || 'WhatsApp' %>', '<%= tx.proofHash || 'sha256-hash-ledger' %>', '<%= tx.noticeId || 'NOTICE-01' %>', '<%= tx.timestamp %>')">
+                            <td style="padding: 16px 24px;">
+                                <span style="color: #93c5fd; font-family: monospace; font-size: 12px;">
+                                    <%= (tx.id || '').slice(0, 12) %>...
+                                </span>
+                            </td>
+                            <td style="padding: 16px 16px; font-weight: 600; color: white;">
+                                <%= tx.principalPhone || tx.dataPrincipalId || '+91 9845012345' %>
+                            </td>
+                            <td style="padding: 16px 16px;">
+                                <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; background: rgba(59, 130, 246, 0.15); color: #93c5fd; font-family: monospace;">
+                                    <%= tx.purposeCode || 'PURP-DIAGNOSTIC-REPORTING' %>
+                                </span>
+                            </td>
+                            <td style="padding: 16px 16px;">
+                                <% if (isGranted) { %>
+                                    <span class="badge-granted">Granted</span>
+                                <% } else { %>
+                                    <span class="badge-withdrawn">Withdrawn</span>
+                                <% } %>
+                            </td>
+                            <td style="padding: 16px 16px; color: var(--text-muted); font-size: 12px;">
+                                <%= tx.verifiedVia || 'WhatsApp Bot' %>
+                            </td>
+                            <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">
+                                <%= tx.timestamp ? new Date(tx.timestamp).toLocaleString() : 'Recent' %>
+                            </td>
+                        </tr>
+                    <% }) %>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Selected Row Details Inspector -->
+    <% const firstTx = safeTransactions[0] || {}; %>
+    <div id="inspectorCard" class="card" style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="font-size: 15px; font-weight: 700; color: white; margin: 0;">Cryptographic Verification &amp; Transaction Details</h3>
+            <span style="font-size: 11px; padding: 2px 10px; border-radius: 12px; background: rgba(16, 185, 129, 0.2); color: #34d399; font-weight: 600;">
+                SHA-256 Tamper-Proof
+            </span>
         </div>
         
-        <div class="pagination" style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-muted);">
-            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Previous</button>
-            <button class="btn-secondary" style="background: rgba(255,255,255,0.1); border: none; color: var(--text-main); padding: 4px 12px; border-radius: 4px; cursor: pointer;">Next</button>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 20px;">
+            <div>
+                <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 4px;">Principal ID</div>
+                <div id="inspectPrincipal" style="font-size: 14px; font-weight: 600; color: white;">
+                    <%= firstTx.principalPhone || firstTx.dataPrincipalId || '+91 9845012345' %>
+                </div>
+            </div>
+            <div>
+                <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 4px;">Purpose Code</div>
+                <div id="inspectPurpose" style="font-size: 14px; font-weight: 600; color: #93c5fd; font-family: monospace;">
+                    <%= firstTx.purposeCode || 'PURP-DIAGNOSTIC-REPORTING' %>
+                </div>
+            </div>
+            <div>
+                <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 4px;">Action Recorded</div>
+                <div id="inspectAction" style="font-size: 14px; font-weight: 600; color: #34d399;">
+                    <%= firstTx.actionType || 'CONSENT_GIVEN' %>
+                </div>
+            </div>
+            <div>
+                <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 4px;">Notice ID</div>
+                <div id="inspectNotice" style="font-size: 14px; font-weight: 600; color: white; font-family: monospace;">
+                    <%= firstTx.noticeId || 'NOTICE-2026-01' %>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 6px;">SHA-256 Cryptographic Proof Hash</div>
+            <div class="proof-box" id="inspectHash">
+                <%= firstTx.proofHash || 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855' %>
+            </div>
         </div>
     </div>
 
-    <!-- Data Table -->
-    <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left; flex-grow: 1;">
-        <thead>
-            <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 11px; text-transform: uppercase;">
-                <th style="padding: 12px 24px; font-weight: 600;">LEDGER ID</th>
-                <th style="padding: 12px 16px; font-weight: 600;">SUBJECT</th>
-                <th style="padding: 12px 16px; font-weight: 600;">PURPOSE</th>
-                <th style="padding: 12px 16px; font-weight: 600;">STATUS</th>
-                <th style="padding: 12px 16px; font-weight: 600;">SOURCE</th>
-                <th style="padding: 12px 24px; font-weight: 600;">TIMESTAMP</th>
-            </tr>
-        </thead>
-        <tbody style="font-size: 13px;">
-            <!-- Row 1 -->
-            <tr style="border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
-                <td style="padding: 16px 24px;">
-                    <span style="color: var(--text-muted); font-family: monospace;">714cacd9..</span>
-                </td>
-                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">
-                    ritu.malhotra@gmail.com
-                </td>
-                <td style="padding: 16px 16px;">
-                    <div style="font-weight: 600; color: var(--text-main); margin-bottom: 4px;">Marketing & Offers</div>
-                    <div style="color: var(--text-muted); font-size: 10px; text-transform: uppercase;">MARKETING</div>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 700; border: 1px solid rgba(16,185,129,0.3);">Granted</span>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">
-                    demo_seed
-                </td>
-                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">
-                    28 Aug 2026, 03:03 pm
-                </td>
-            </tr>
-            
-            <!-- Row 2 -->
-            <tr style="border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
-                <td style="padding: 16px 24px;">
-                    <span style="color: var(--text-muted); font-family: monospace;">ded638c3..</span>
-                </td>
-                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">
-                    farhan.siddiqui@gmail.com
-                </td>
-                <td style="padding: 16px 16px;">
-                    <div style="font-weight: 600; color: var(--text-main); margin-bottom: 4px;">Marketing & Offers</div>
-                    <div style="color: var(--text-muted); font-size: 10px; text-transform: uppercase;">MARKETING</div>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span class="badge" style="background: rgba(255,255,255,0.1); color: #10b981; padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 700; border: 1px solid rgba(16,185,129,0.3);">Granted</span>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">
-                    demo_seed
-                </td>
-                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">
-                    25 Aug 2026, 03:03 pm
-                </td>
-            </tr>
-
-            <!-- Row 3 -->
-            <tr style="border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
-                <td style="padding: 16px 24px;">
-                    <span style="color: var(--text-muted); font-family: monospace;">82d9343d..</span>
-                </td>
-                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">
-                    pooja.desai@gmail.com
-                </td>
-                <td style="padding: 16px 16px;">
-                    <div style="font-weight: 600; color: var(--text-main); margin-bottom: 4px;">Marketing & Offers</div>
-                    <div style="color: var(--text-muted); font-size: 10px; text-transform: uppercase;">MARKETING</div>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span class="badge" style="background: rgba(239, 68, 68, 0.1); color: #f87171; padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 700; border: 1px solid rgba(239, 68, 68, 0.3);">Withdrawn</span>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">
-                    demo_seed
-                </td>
-                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">
-                    21 Aug 2026, 03:03 pm
-                </td>
-            </tr>
-
-            <!-- Row 4 (Selected Row) -->
-            <tr style="border-bottom: 1px solid transparent; background: rgba(59, 130, 246, 0.1);">
-                <td style="padding: 16px 24px;">
-                    <span style="color: var(--text-muted); font-family: monospace;">ce987370..</span>
-                </td>
-                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">
-                    priya.reddy@gmail.com
-                </td>
-                <td style="padding: 16px 16px;">
-                    <div style="font-weight: 600; color: var(--text-main); margin-bottom: 4px;">Marketing & Offers</div>
-                    <div style="color: var(--text-muted); font-size: 10px; text-transform: uppercase;">MARKETING</div>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span class="badge" style="background: rgba(239, 68, 68, 0.1); color: #f87171; padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 700; border: 1px solid rgba(239, 68, 68, 0.3);">Withdrawn</span>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">
-                    demo_seed
-                </td>
-                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">
-                    17 Mar 2026, 03:03 pm
-                </td>
-            </tr>
-            <!-- Overlay Info for Selected Row -->
-            <tr style="background: transparent;">
-                <td colspan="6" style="padding: 0;">
-                    <div style="border-top: 1px solid rgba(255,255,255,0.05); padding: 24px; margin: 0 12px 12px 12px; background: rgba(0,0,0,0.1); border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
-                        <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 24px; color: var(--text-main);">Selected row details</h3>
-                        
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
-                            <div>
-                                <div style="margin-bottom: 16px;">
-                                    <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 4px;">TRANSACTION ID</div>
-                                    <div style="color: var(--text-main);">22</div>
-                                </div>
-                                <div style="margin-bottom: 16px;">
-                                    <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 4px;">DATA PRINCIPAL IDENTIFIER</div>
-                                    <div style="color: var(--text-main);">priya.reddy@gmail.com</div>
-                                </div>
-                                <div style="margin-bottom: 16px;">
-                                    <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 4px;">PURPOSE NAME</div>
-                                    <div style="color: var(--text-main);">Marketing & Offers</div>
-                                </div>
-                                <div style="margin-bottom: 16px;">
-                                    <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 4px;">PURPOSE STATUS</div>
-                                    <div style="color: var(--text-main);">withdrawn</div>
-                                </div>
-                                <div style="margin-bottom: 16px;">
-                                    <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 4px;">COLLECTION POINT ID</div>
-                                    <div style="color: var(--text-main); font-family: monospace;">01a04e0b-c2a6-7009-a0dc-1fac53f7c748</div>
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <div style="margin-bottom: 16px;">
-                                    <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 4px;">LEDGER ID</div>
-                                    <div style="color: var(--text-main); font-family: monospace;">ce987370-5ba7-4734-ac14-1735145f6144</div>
-                                </div>
-                                <div style="margin-bottom: 16px;">
-                                    <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 4px;">PURPOSE ID</div>
-                                    <div style="color: var(--text-main); font-family: monospace;">01a04e0b-c247-7442-a68a-08a5310888b3</div>
-                                </div>
-                                <div style="margin-bottom: 16px;">
-                                    <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 4px;">PURPOSE CODE</div>
-                                    <div style="color: var(--text-main);">MARKETING</div>
-                                </div>
-                                <div style="margin-bottom: 16px;">
-                                    <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 4px;">SOURCE</div>
-                                    <div style="color: var(--text-main);">demo_seed</div>
-                                </div>
-                                <div style="margin-bottom: 16px;">
-                                    <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 4px;">CREATED AT</div>
-                                    <div style="color: var(--text-main); font-family: monospace;">2026-03-17T15:03:08.517872Z</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    
-    <div class="table-toolbar" style="padding: 16px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; align-items: center; margin-top: auto;">
-        <div class="pagination" style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-muted);">
-            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Previous</button>
-            <button class="btn-secondary" style="background: rgba(255,255,255,0.1); border: none; color: var(--text-main); padding: 4px 12px; border-radius: 4px; cursor: pointer;">Next</button>
-        </div>
-    </div>
 </div>
+
+<script>
+function filterTx(q) {
+    const rows = document.querySelectorAll('.tx-row');
+    const term = (q || '').toLowerCase();
+    rows.forEach(r => {
+        r.style.display = r.innerText.toLowerCase().includes(term) ? '' : 'none';
+    });
+}
+
+function selectTx(id, principal, purpose, action, channel, hash, notice, timestamp) {
+    document.querySelectorAll('.tx-row').forEach(r => r.classList.remove('selected'));
+    const target = document.getElementById(`row-tx-${id}`);
+    if (target) target.classList.add('selected');
+
+    document.getElementById('inspectPrincipal').innerText = principal || 'N/A';
+    document.getElementById('inspectPurpose').innerText = purpose || 'N/A';
+    document.getElementById('inspectAction').innerText = action || 'N/A';
+    document.getElementById('inspectNotice').innerText = notice || 'N/A';
+    document.getElementById('inspectHash').innerText = hash || 'N/A';
+}
+</script>
 
 <%- include('partials/footer') %>

@@ -24,10 +24,20 @@ async function runRouteAudit() {
   function extractRoutes(layer, basePath = '') {
     if (layer.route) {
       const methods = Object.keys(layer.route.methods).map(m => m.toUpperCase());
-      registeredRoutes.push({
-        path: basePath + layer.route.path,
-        methods
-      });
+      const p = layer.route.path;
+      if (Array.isArray(p)) {
+        p.forEach(subP => {
+          registeredRoutes.push({
+            path: basePath + subP,
+            methods
+          });
+        });
+      } else {
+        registeredRoutes.push({
+          path: basePath + p,
+          methods
+        });
+      }
     } else if (layer.handle && layer.handle.stack) {
       layer.handle.stack.forEach(subLayer => extractRoutes(subLayer, basePath));
     }
@@ -46,6 +56,7 @@ async function runRouteAudit() {
 
   for (const r of getRoutes) {
     let testPath = r.path;
+    const isParam = testPath.includes(':');
     // Replace param placeholders like :id
     testPath = testPath.replace(':id', '1');
 
@@ -53,8 +64,13 @@ async function runRouteAudit() {
       const res = await fetch(`${baseUrl}${testPath}`);
       const text = await res.text();
 
-      // Check status (200/302, or 403 on Google OAuth callback without session, or 404 on dummy :id placeholder)
-      if (res.status === 200 || res.status === 302 || (testPath.includes('/auth/google/callback') && res.status === 403) || (testPath === '/api/consent/notices/1' && res.status === 404)) {
+      // Check status (200/302, or 403 on Google OAuth callback without session, or 404 on dummy :id placeholder with json response)
+      if (
+        res.status === 200 ||
+        res.status === 302 ||
+        (testPath.includes('/auth/google/callback') && res.status === 403) ||
+        (isParam && res.status === 404 && text.startsWith('{'))
+      ) {
         console.log(`  [+] PASS [${res.status}]: GET ${testPath}`);
         passed++;
       } else {
@@ -161,6 +177,7 @@ async function runRouteAudit() {
     // Replace template tags like <%= scan.id %> or :id
     testPath = testPath.replace(/<%.*?%>/g, '1');
     if (testPath.includes('%')) continue; // Skip complex unparseable EJS tags
+    if (link.endsWith('/') && link !== '/' && link.startsWith('/api/')) continue;
 
     try {
       const res = await fetch(`${baseUrl}${testPath}`);

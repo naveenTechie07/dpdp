@@ -1,39 +1,47 @@
 <%- include('partials/header') %>
 
+<% 
+const pias = (typeof piaDpiaList !== 'undefined' && Array.isArray(piaDpiaList)) ? piaDpiaList : [];
+const totalPias = pias.length;
+const approvedCount = pias.filter(p => p.status === 'approved').length;
+const highRiskCount = pias.filter(p => p.riskLevel === 'HIGH').length;
+const inReviewCount = pias.filter(p => p.status === 'in_review' || p.status === 'draft').length;
+%>
+
 <!-- Top Metrics -->
 <div class="metrics-grid mb-4" style="grid-template-columns: repeat(4, 1fr);">
     <div class="card metric-card">
         <div class="metric-info w-100">
-            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">Assessments</span>
-            <h2 class="metric-value" style="margin-top: 8px;">3</h2>
+            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">Total DPIAs</span>
+            <h2 class="metric-value" style="margin-top: 8px;"><%= totalPias %></h2>
         </div>
     </div>
     <div class="card metric-card">
         <div class="metric-info w-100">
-            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">In Progress</span>
-            <h2 class="metric-value" style="margin-top: 8px;">3</h2>
+            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">Approved Safeguards</span>
+            <h2 class="metric-value" style="margin-top: 8px; color: #10b981;"><%= approvedCount %></h2>
         </div>
     </div>
     <div class="card metric-card">
         <div class="metric-info w-100">
-            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">Overdue</span>
-            <h2 class="metric-value" style="margin-top: 8px;">2</h2>
+            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">Special Category High Risk</span>
+            <h2 class="metric-value" style="margin-top: 8px; color: #ef4444;"><%= highRiskCount %></h2>
         </div>
     </div>
     <div class="card metric-card">
         <div class="metric-info w-100">
-            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">Reassessments Due</span>
-            <h2 class="metric-value" style="margin-top: 8px;">0</h2>
+            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">Under DPO Review</span>
+            <h2 class="metric-value" style="margin-top: 8px; color: #f59e0b;"><%= inReviewCount %></h2>
         </div>
     </div>
 </div>
 
-<div class="dashboard-header mb-4" style="align-items: center;">
+<div class="dashboard-header mb-4" style="align-items: center; justify-content: space-between; display: flex;">
     <div class="title-group">
-        <h1>Assessment Automation</h1>
-        <p>PIA and DPIA intake, conditional workflows, inventory linkage, reporting, and continued monitoring.</p>
+        <h1 class="page-title"><%= (typeof title !== 'undefined' ? title : 'PIA & DPIA Assessments').split(' - ')[0] %></h1>
+        <p class="page-description">Data Protection Impact Assessments for high-risk diagnostic processing, informal messaging, and cloud tele-radiology.</p>
     </div>
-    <button class="btn-primary" style="background-color: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+    <button class="btn-primary" onclick="document.getElementById('new-pia-modal').style.display='flex'" style="padding: 10px 20px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
         <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
         New Assessment
     </button>
@@ -43,10 +51,11 @@
     <!-- Table Toolbar -->
     <div class="table-toolbar" style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
         <div class="search-bar" style="width: 300px; background: transparent; padding: 0; border: none;">
-            <input type="text" placeholder="Search assessments..." style="border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 6px; background: transparent; color: var(--text-main); width: 100%;">
+            <input type="text" id="pia-search" placeholder="Search PIA / DPIA records..." onkeyup="filterPias()" style="border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 6px; background: transparent; color: var(--text-main); width: 100%;">
         </div>
         
         <div class="pagination" style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-muted);">
+            <span><%= totalPias %> records</span>
             <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Previous</button>
             <span>Page 1 of 1</span>
             <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Next</button>
@@ -54,108 +63,153 @@
     </div>
 
     <!-- Data Table -->
-    <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+    <table class="data-table" id="pias-table" style="width: 100%; border-collapse: collapse; text-align: left;">
         <thead>
             <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 11px; text-transform: uppercase;">
-                <th style="padding: 12px 24px; font-weight: 600;">ID &#9652;</th>
-                <th style="padding: 12px 16px; font-weight: 600;">Assessment &#8597;</th>
-                <th style="padding: 12px 16px; font-weight: 600;">Type &#8597;</th>
-                <th style="padding: 12px 16px; font-weight: 600;">Status &#8597;</th>
-                <th style="padding: 12px 16px; font-weight: 600;">Organization &#8597;</th>
-                <th style="padding: 12px 16px; font-weight: 600;">Risk &#8597;</th>
-                <th style="padding: 12px 24px; font-weight: 600;">Due &#8597;</th>
+                <th style="padding: 14px 24px; font-weight: 600;">Assessment Activity &#9652;</th>
+                <th style="padding: 14px 16px; font-weight: 600;">Data Categories &#8597;</th>
+                <th style="padding: 14px 16px; font-weight: 600;">Risk Level &#8597;</th>
+                <th style="padding: 14px 16px; font-weight: 600;">Status &#8597;</th>
+                <th style="padding: 14px 16px; font-weight: 600;">Mitigations Configured</th>
+                <th style="padding: 14px 24px; font-weight: 600; text-align: right;">Actions</th>
             </tr>
         </thead>
         <tbody style="font-size: 13px;">
-            <!-- Row 1 -->
-            <tr style="border-bottom: 1px solid var(--border-color);">
-                <td style="padding: 16px 24px; color: var(--text-muted);">#15</td>
-                <td style="padding: 16px 16px; width: 350px;">
-                    <div style="font-weight: 600; color: var(--text-main); margin-bottom: 4px;">Swish's Discovery</div>
-                    <div style="color: var(--text-muted); font-size: 11px;">tenant_admin@dpdpsecure.in</div>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span class="badge" style="background: rgba(255,255,255,0.1); color: var(--text-muted); padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">Readiness</span>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span class="badge" style="background: rgba(255,255,255,0.1); color: var(--text-muted); padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase;">Screening</span>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <button style="background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); padding: 4px 10px; border-radius: 4px; font-size: 11px; display: flex; align-items: center; gap: 8px;">
-                        DPDP_Secure Mumbai HQ
-                        <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                    </button>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted); font-size: 11px;">
-                    57.6% <span class="badge" style="background: rgba(255,255,255,0.1); color: var(--text-muted); padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; margin-left: 6px;">MEDIUM</span>
-                </td>
-                <td style="padding: 16px 24px; color: var(--text-muted);">
-                    &mdash;
-                </td>
-            </tr>
-
-            <!-- Row 2 -->
-            <tr style="border-bottom: 1px solid var(--border-color); background: rgba(255,255,255,0.02);">
-                <td style="padding: 16px 24px; color: var(--text-muted);">#12</td>
-                <td style="padding: 16px 16px; width: 350px;">
-                    <div style="font-weight: 600; color: var(--text-main); margin-bottom: 4px;">DPDP_Secure DPDPA Compliance Readiness Assessment</div>
-                    <div style="color: var(--text-muted); font-size: 11px;">&mdash;</div>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span class="badge" style="background: rgba(255,255,255,0.1); color: var(--text-muted); padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">Readiness</span>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span class="badge" style="background: rgba(255,255,255,0.1); color: var(--text-muted); padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase;">Review</span>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <button style="background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); padding: 4px 10px; border-radius: 4px; font-size: 11px; display: flex; align-items: center; gap: 8px;">
-                        Tenant-wide
-                    </button>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted); font-size: 11px;">
-                    0% <span class="badge" style="background: rgba(255,255,255,0.1); color: var(--text-muted); padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; margin-left: 6px;">MEDIUM</span>
-                </td>
-                <td style="padding: 16px 24px; color: #ef4444;">
-                    2026-08-31
-                </td>
-            </tr>
-
-            <!-- Row 3 -->
-            <tr style="border-bottom: 1px solid var(--border-color);">
-                <td style="padding: 16px 24px; color: var(--text-muted);">#11</td>
-                <td style="padding: 16px 16px; width: 350px;">
-                    <div style="font-weight: 600; color: var(--text-main); margin-bottom: 4px;">BNPL Credit Scoring AI DPIA</div>
-                    <div style="color: var(--text-muted); font-size: 11px;">&mdash;</div>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span class="badge" style="background: rgba(255,255,255,0.1); color: var(--text-muted); padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">DPIA</span>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span class="badge" style="background: rgba(255,255,255,0.1); color: var(--text-muted); padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase;">Review</span>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <button style="background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); padding: 4px 10px; border-radius: 4px; font-size: 11px; display: flex; align-items: center; gap: 8px;">
-                        Tenant-wide
-                    </button>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted); font-size: 11px;">
-                    0% <span class="badge" style="background: rgba(255,255,255,0.1); color: var(--text-muted); padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; margin-left: 6px;">HIGH</span>
-                </td>
-                <td style="padding: 16px 24px; color: #ef4444;">
-                    2026-04-30
-                </td>
-            </tr>
+            <% if (pias.length === 0) { %>
+                <tr>
+                    <td colspan="6" style="padding: 32px; text-align: center; color: var(--text-muted);">No DPIA assessments recorded. Click "New Assessment" to initiate a risk review.</td>
+                </tr>
+            <% } else { %>
+                <% pias.forEach(p => { %>
+                    <tr style="border-bottom: 1px solid var(--border-color);" class="pia-row">
+                        <td style="padding: 16px 24px; font-weight: 600; color: var(--text-main);">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <svg viewBox="0 0 24 24" width="16" height="16" stroke="#3b82f6" stroke-width="2" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                                <span><%= p.assessmentName %></span>
+                            </div>
+                        </td>
+                        <td style="padding: 16px 16px; color: var(--text-muted); font-size: 12px; max-width: 220px;"><%= p.dataCategory %></td>
+                        <td style="padding: 16px 16px;">
+                            <% if (p.riskLevel === 'HIGH') { %>
+                                <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 700;">HIGH RISK</span>
+                            <% } else if (p.riskLevel === 'MEDIUM') { %>
+                                <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 700;">MEDIUM</span>
+                            <% } else { %>
+                                <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 700;">LOW</span>
+                            <% } %>
+                        </td>
+                        <td style="padding: 16px 16px;">
+                            <% if (p.status === 'approved') { %>
+                                <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700;">Approved</span>
+                            <% } else { %>
+                                <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700;"><%= (p.status || 'in_review').toUpperCase() %></span>
+                            <% } %>
+                        </td>
+                        <td style="padding: 16px 16px; color: var(--text-muted); font-size: 12px; max-width: 260px;">
+                            <%= p.mitigations || 'Safeguards documented' %>
+                        </td>
+                        <td style="padding: 16px 24px; text-align: right;">
+                            <button onclick="deletePia('<%= p.id %>')" title="Delete Assessment" style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 4px; border-radius: 4px;">
+                                <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            </button>
+                        </td>
+                    </tr>
+                <% }); %>
+            <% } %>
         </tbody>
     </table>
-    
-    <!-- Table Footer -->
-    <div class="table-toolbar" style="padding: 16px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; align-items: center;">
-        <div class="pagination" style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-muted);">
-            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Previous</button>
-            <span>Page 1 of 1</span>
-            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Next</button>
+</div>
+
+<!-- New PIA Modal Overlay -->
+<div id="new-pia-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+    <div class="card p-0" style="width: 520px; background: #0f172a; border: 1px solid #334155; box-shadow: 0 20px 30px rgba(0,0,0,0.6); border-radius: 12px; overflow: hidden;">
+        <div style="padding: 18px 24px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; background: #1e293b;">
+            <h2 style="font-size: 16px; font-weight: 600; color: #f8fafc; margin: 0;">Initiate DPIA Assessment</h2>
+            <button onclick="document.getElementById('new-pia-modal').style.display='none'" style="background: none; border: none; cursor: pointer; color: #94a3b8; padding: 4px;">
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
         </div>
+
+        <form id="add-pia-form" onsubmit="handleCreatePia(event)" style="padding: 24px;">
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 13px; font-weight: 600; color: #e2e8f0; margin-bottom: 6px;">Assessment Activity Title *</label>
+                <input type="text" id="piaName" required placeholder="e.g. Patient Blood Panel WhatsApp Bot Automated Report Delivery" style="width: 100%; background: #1e293b; border: 1px solid #475569; color: #f8fafc; padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #e2e8f0; margin-bottom: 6px;">Data Category Handled</label>
+                    <input type="text" id="piaCategory" placeholder="e.g. Special Category Health Data" style="width: 100%; background: #1e293b; border: 1px solid #475569; color: #f8fafc; padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #e2e8f0; margin-bottom: 6px;">Risk Level</label>
+                    <select id="piaRisk" style="width: 100%; background: #1e293b; border: 1px solid #475569; color: #f8fafc; padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+                        <option value="HIGH">HIGH (Requires DPO Signoff)</option>
+                        <option value="MEDIUM">MEDIUM</option>
+                        <option value="LOW">LOW</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 24px;">
+                <label style="display: block; font-size: 13px; font-weight: 600; color: #e2e8f0; margin-bottom: 6px;">Technical Safeguards & Mitigations</label>
+                <textarea id="piaMitigations" placeholder="e.g. Verhoeff tokenization, AES-256 encryption at rest, 30-day purge schedule" style="width: 100%; background: #1e293b; border: 1px solid #475569; color: #f8fafc; padding: 10px 12px; border-radius: 6px; font-size: 13px; min-height: 80px; resize: vertical;"></textarea>
+            </div>
+
+            <div style="display: flex; gap: 16px;">
+                <button type="submit" class="btn-primary" style="flex: 1; padding: 12px; font-size: 14px; justify-content: center;">Approve & Save DPIA</button>
+                <button type="button" class="btn-secondary" onclick="document.getElementById('new-pia-modal').style.display='none'" style="flex: 1; padding: 12px; font-size: 14px; justify-content: center; background: #334155; border: 1px solid #475569; color: #f8fafc;">Cancel</button>
+            </div>
+        </form>
     </div>
 </div>
+
+<script>
+function filterPias() {
+    const q = document.getElementById('pia-search').value.toLowerCase();
+    document.querySelectorAll('.pia-row').forEach(row => {
+        row.style.display = row.innerText.toLowerCase().includes(q) ? '' : 'none';
+    });
+}
+
+async function handleCreatePia(e) {
+    e.preventDefault();
+    const assessmentName = document.getElementById('piaName').value.trim();
+    const dataCategory = document.getElementById('piaCategory').value.trim();
+    const riskLevel = document.getElementById('piaRisk').value;
+    const mitigations = document.getElementById('piaMitigations').value.trim();
+
+    try {
+        const res = await fetch('/api/assessment/pia-dpia', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ assessmentName, dataCategory, riskLevel, mitigations, status: 'approved' })
+        });
+        const json = await res.json();
+        if (json.success) {
+            window.location.reload();
+        } else {
+            alert('Error creating DPIA: ' + (json.message || 'Unknown error'));
+        }
+    } catch (err) {
+        alert('Network error submitting DPIA');
+    }
+}
+
+async function deletePia(id) {
+    if (!confirm('Are you sure you want to delete this DPIA record?')) return;
+    try {
+        const res = await fetch(`/api/assessment/pia-dpia/${id}`, { method: 'DELETE' });
+        const json = await res.json();
+        if (json.success) {
+            window.location.reload();
+        } else {
+            alert('Error deleting DPIA: ' + (json.message || 'Unknown error'));
+        }
+    } catch (err) {
+        alert('Network error deleting DPIA');
+    }
+}
+</script>
 
 <%- include('partials/footer') %>

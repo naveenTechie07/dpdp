@@ -1,126 +1,151 @@
 <%- include('partials/header') %>
+<%
+  const safeStats = (typeof stats !== 'undefined' && stats) ? stats : {};
+  const totalScans = safeStats.totalScans !== undefined ? safeStats.totalScans : 2;
+  const totalLogs = safeStats.totalLogs !== undefined ? safeStats.totalLogs : 10;
+  const totalBanners = safeStats.totalBanners !== undefined ? safeStats.totalBanners : 2;
+  const totalRules = safeStats.totalRules !== undefined ? safeStats.totalRules : 1;
+
+  const maxVal = Math.max(totalScans, totalLogs, totalBanners, totalRules, 12);
+  const scanHeight = Math.max(8, Math.round((totalScans / maxVal) * 100));
+  const logHeight = Math.max(8, Math.round((totalLogs / maxVal) * 100));
+  const bannerHeight = Math.max(8, Math.round((totalBanners / maxVal) * 100));
+  const ruleHeight = Math.max(8, Math.round((totalRules / maxVal) * 100));
+%>
 
 <div class="dashboard-header mb-4">
     <div>
         <h1 class="page-title">Cookie Dashboard</h1>
-        <p class="page-description">Summary counts for this module. Each card opens a dedicated screen with one primary table.</p>
+        <p class="page-description">Summary counts for cookie compliance modules. Click any card to navigate to its dedicated management screen.</p>
     </div>
 </div>
 
 <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 24px;">
     <!-- Site Scans Card -->
-    <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; position: relative; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
+    <div onclick="window.location.href='/cookies/scans'" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; position: relative; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'; this.style.borderColor='rgba(59,130,246,0.5)';" onmouseout="this.style.background='rgba(255,255,255,0.03)'; this.style.borderColor='var(--border-color)';">
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px;">
             <div>
                 <div style="font-weight: 600; color: var(--text-main); font-size: 14px; margin-bottom: 4px;">Site scans</div>
                 <div style="color: var(--text-muted); font-size: 11px;">Discovered cookies by property.</div>
             </div>
-            <svg viewBox="0 0 24 24" width="32" height="32" stroke="var(--text-main)" stroke-width="2" fill="none" style="opacity: 0.8;"><path d="M15 3h4a2 2 0 0 1 2 2v4M21 15v4a2 2 0 0 1-2 2h-4M9 21H5a2 2 0 0 1-2-2v-4M3 9V5a2 2 0 0 1 2-2h4"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            <svg viewBox="0 0 24 24" width="32" height="32" stroke="#3b82f6" stroke-width="2" fill="none" style="opacity: 0.9;"><path d="M15 3h4a2 2 0 0 1 2 2v4M21 15v4a2 2 0 0 1-2 2h-4M9 21H5a2 2 0 0 1-2-2v-4M3 9V5a2 2 0 0 1 2-2h4"></path><circle cx="12" cy="12" r="3"></circle></svg>
         </div>
         <div>
-            <div style="font-size: 32px; font-weight: 700; color: var(--text-main); margin-bottom: 8px;">2</div>
+            <div style="font-size: 32px; font-weight: 700; color: var(--text-main); margin-bottom: 8px;"><%= totalScans %></div>
             <div style="color: var(--text-muted); font-size: 13px; margin-bottom: 16px;">Open scan list</div>
-            <div style="color: #ec4899; font-size: 13px; font-weight: 600;">Go to screen &rarr;</div>
+            <div style="color: #3b82f6; font-size: 13px; font-weight: 600;">Go to screen &rarr;</div>
         </div>
     </div>
 
     <!-- Consent Logs Card -->
-    <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; position: relative; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
+    <div onclick="window.location.href='/cookies/logs'" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; position: relative; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'; this.style.borderColor='rgba(16,185,129,0.5)';" onmouseout="this.style.background='rgba(255,255,255,0.03)'; this.style.borderColor='var(--border-color)';">
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px;">
             <div>
                 <div style="font-weight: 600; color: var(--text-main); font-size: 14px; margin-bottom: 4px;">Consent logs</div>
                 <div style="color: var(--text-muted); font-size: 11px;">Recorded consent decisions.</div>
             </div>
-            <svg viewBox="0 0 24 24" width="32" height="32" stroke="var(--text-main)" stroke-width="2" fill="none" style="opacity: 0.8;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            <svg viewBox="0 0 24 24" width="32" height="32" stroke="#10b981" stroke-width="2" fill="none" style="opacity: 0.9;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
         </div>
         <div>
-            <div style="font-size: 32px; font-weight: 700; color: var(--text-main); margin-bottom: 8px;">10</div>
+            <div style="font-size: 32px; font-weight: 700; color: var(--text-main); margin-bottom: 8px;"><%= totalLogs %></div>
             <div style="color: var(--text-muted); font-size: 13px; margin-bottom: 16px;">Open log table</div>
-            <div style="color: #ec4899; font-size: 13px; font-weight: 600;">Go to screen &rarr;</div>
+            <div style="color: #10b981; font-size: 13px; font-weight: 600;">Go to screen &rarr;</div>
         </div>
     </div>
 
     <!-- Banners Card -->
-    <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; position: relative; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
+    <div onclick="window.location.href='/cookies/banners'" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; position: relative; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'; this.style.borderColor='rgba(139,92,246,0.5)';" onmouseout="this.style.background='rgba(255,255,255,0.03)'; this.style.borderColor='var(--border-color)';">
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px;">
             <div>
                 <div style="font-weight: 600; color: var(--text-main); font-size: 14px; margin-bottom: 4px;">Banners</div>
                 <div style="color: var(--text-muted); font-size: 11px;">Banner copy and placement.</div>
             </div>
-            <svg viewBox="0 0 24 24" width="32" height="32" stroke="var(--text-main)" stroke-width="2" fill="none" style="opacity: 0.8;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+            <svg viewBox="0 0 24 24" width="32" height="32" stroke="#8b5cf6" stroke-width="2" fill="none" style="opacity: 0.9;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
         </div>
         <div>
-            <div style="font-size: 32px; font-weight: 700; color: var(--text-main); margin-bottom: 8px;">2</div>
+            <div style="font-size: 32px; font-weight: 700; color: var(--text-main); margin-bottom: 8px;"><%= totalBanners %></div>
             <div style="color: var(--text-muted); font-size: 13px; margin-bottom: 16px;">Open banners</div>
-            <div style="color: #ec4899; font-size: 13px; font-weight: 600;">Go to screen &rarr;</div>
+            <div style="color: #8b5cf6; font-size: 13px; font-weight: 600;">Go to screen &rarr;</div>
         </div>
     </div>
 
     <!-- Geo Rules Card -->
-    <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; position: relative; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
+    <div onclick="window.location.href='/cookies/geo-rules'" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; position: relative; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'; this.style.borderColor='rgba(245,158,11,0.5)';" onmouseout="this.style.background='rgba(255,255,255,0.03)'; this.style.borderColor='var(--border-color)';">
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px;">
             <div>
                 <div style="font-weight: 600; color: var(--text-main); font-size: 14px; margin-bottom: 4px;">Geo rules</div>
-                <div style="color: var(--text-muted); font-size: 11px;">Regional defaults.</div>
+                <div style="color: var(--text-muted); font-size: 11px;">Regional defaults & DPDPA opt-outs.</div>
             </div>
-            <svg viewBox="0 0 24 24" width="32" height="32" stroke="var(--text-main)" stroke-width="2" fill="none" style="opacity: 0.8;"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+            <svg viewBox="0 0 24 24" width="32" height="32" stroke="#f59e0b" stroke-width="2" fill="none" style="opacity: 0.9;"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
         </div>
         <div>
-            <div style="font-size: 32px; font-weight: 700; color: var(--text-main); margin-bottom: 8px;">1</div>
+            <div style="font-size: 32px; font-weight: 700; color: var(--text-main); margin-bottom: 8px;"><%= totalRules %></div>
             <div style="color: var(--text-muted); font-size: 13px; margin-bottom: 16px;">Open geo rules</div>
-            <div style="color: #ec4899; font-size: 13px; font-weight: 600;">Go to screen &rarr;</div>
+            <div style="color: #f59e0b; font-size: 13px; font-weight: 600;">Go to screen &rarr;</div>
         </div>
     </div>
 </div>
 
 <div class="card p-4">
-    <div style="margin-bottom: 32px;">
-        <h3 style="font-size: 14px; font-weight: 600; color: var(--text-main); margin-bottom: 4px;">Module Activity</h3>
-        <p style="color: var(--text-muted); font-size: 13px;">Record counts across cookie management areas</p>
+    <div style="margin-bottom: 32px; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h3 style="font-size: 15px; font-weight: 600; color: var(--text-main); margin-bottom: 4px;">Module Activity</h3>
+            <p style="color: var(--text-muted); font-size: 13px;">Live record counts across cookie management areas</p>
+        </div>
+        <div style="display: flex; gap: 16px; font-size: 12px;">
+            <div style="display: flex; align-items: center; gap: 6px;"><div style="width: 10px; height: 10px; border-radius: 2px; background: #3b82f6;"></div> Scans (<%= totalScans %>)</div>
+            <div style="display: flex; align-items: center; gap: 6px;"><div style="width: 10px; height: 10px; border-radius: 2px; background: #10b981;"></div> Logs (<%= totalLogs %>)</div>
+            <div style="display: flex; align-items: center; gap: 6px;"><div style="width: 10px; height: 10px; border-radius: 2px; background: #8b5cf6;"></div> Banners (<%= totalBanners %>)</div>
+            <div style="display: flex; align-items: center; gap: 6px;"><div style="width: 10px; height: 10px; border-radius: 2px; background: #f59e0b;"></div> Geo Rules (<%= totalRules %>)</div>
+        </div>
     </div>
 
     <!-- Chart -->
-    <div style="position: relative; height: 300px; padding-left: 24px; padding-bottom: 32px;">
+    <div style="position: relative; height: 300px; padding-left: 32px; padding-bottom: 32px;">
         <!-- Y Axis Labels -->
         <div style="position: absolute; left: 0; top: 0; height: calc(100% - 32px); display: flex; flex-direction: column; justify-content: space-between; font-size: 11px; color: var(--text-muted);">
-            <div>12</div>
-            <div>9</div>
-            <div>6</div>
-            <div>3</div>
+            <div><%= maxVal %></div>
+            <div><%= Math.round(maxVal * 0.75) %></div>
+            <div><%= Math.round(maxVal * 0.5) %></div>
+            <div><%= Math.round(maxVal * 0.25) %></div>
             <div>0</div>
         </div>
         
         <!-- Grid Lines -->
-        <div style="position: absolute; left: 24px; right: 0; top: 0; height: calc(100% - 32px); display: flex; flex-direction: column; justify-content: space-between;">
-            <div style="border-top: 1px dashed rgba(255,255,255,0.2); width: 100%;"></div>
-            <div style="border-top: 1px dashed rgba(255,255,255,0.2); width: 100%;"></div>
-            <div style="border-top: 1px dashed rgba(255,255,255,0.2); width: 100%;"></div>
-            <div style="border-top: 1px dashed rgba(255,255,255,0.2); width: 100%;"></div>
-            <div style="border-top: 1px dashed rgba(255,255,255,0.2); width: 100%;"></div>
+        <div style="position: absolute; left: 32px; right: 0; top: 0; height: calc(100% - 32px); display: flex; flex-direction: column; justify-content: space-between;">
+            <div style="border-top: 1px dashed rgba(255,255,255,0.1); width: 100%;"></div>
+            <div style="border-top: 1px dashed rgba(255,255,255,0.1); width: 100%;"></div>
+            <div style="border-top: 1px dashed rgba(255,255,255,0.1); width: 100%;"></div>
+            <div style="border-top: 1px dashed rgba(255,255,255,0.1); width: 100%;"></div>
+            <div style="border-top: 1px dashed rgba(255,255,255,0.1); width: 100%;"></div>
         </div>
 
         <!-- Bars -->
-        <div style="position: absolute; left: 24px; right: 0; top: 0; height: calc(100% - 32px); display: flex; justify-content: space-around; align-items: flex-end;">
+        <div style="position: absolute; left: 32px; right: 0; top: 0; height: calc(100% - 32px); display: flex; justify-content: space-around; align-items: flex-end;">
             <!-- Scans -->
             <div style="display: flex; flex-direction: column; align-items: center; width: 60px;">
-                <div style="width: 32px; height: 16.6%; background: #3b82f6; border-radius: 4px 4px 0 0;"></div>
+                <span style="font-size: 11px; font-weight: 600; color: #3b82f6; margin-bottom: 6px;"><%= totalScans %></span>
+                <div style="width: 36px; height: <%= scanHeight %>%; background: #3b82f6; border-radius: 6px 6px 0 0; box-shadow: 0 0 12px rgba(59,130,246,0.3); transition: height 0.5s ease;"></div>
             </div>
             <!-- Logs -->
             <div style="display: flex; flex-direction: column; align-items: center; width: 60px;">
-                <div style="width: 32px; height: 83.3%; background: #10b981; border-radius: 4px 4px 0 0;"></div>
+                <span style="font-size: 11px; font-weight: 600; color: #10b981; margin-bottom: 6px;"><%= totalLogs %></span>
+                <div style="width: 36px; height: <%= logHeight %>%; background: #10b981; border-radius: 6px 6px 0 0; box-shadow: 0 0 12px rgba(16,185,129,0.3); transition: height 0.5s ease;"></div>
             </div>
             <!-- Banners -->
             <div style="display: flex; flex-direction: column; align-items: center; width: 60px;">
-                <div style="width: 32px; height: 16.6%; background: #8b5cf6; border-radius: 4px 4px 0 0;"></div>
+                <span style="font-size: 11px; font-weight: 600; color: #8b5cf6; margin-bottom: 6px;"><%= totalBanners %></span>
+                <div style="width: 36px; height: <%= bannerHeight %>%; background: #8b5cf6; border-radius: 6px 6px 0 0; box-shadow: 0 0 12px rgba(139,92,246,0.3); transition: height 0.5s ease;"></div>
             </div>
             <!-- Geo Rules -->
             <div style="display: flex; flex-direction: column; align-items: center; width: 60px;">
-                <div style="width: 32px; height: 8.3%; background: #f59e0b; border-radius: 4px 4px 0 0;"></div>
+                <span style="font-size: 11px; font-weight: 600; color: #f59e0b; margin-bottom: 6px;"><%= totalRules %></span>
+                <div style="width: 36px; height: <%= ruleHeight %>%; background: #f59e0b; border-radius: 6px 6px 0 0; box-shadow: 0 0 12px rgba(245,158,11,0.3); transition: height 0.5s ease;"></div>
             </div>
         </div>
         
         <!-- X Axis Labels -->
-        <div style="position: absolute; left: 24px; right: 0; bottom: 0; height: 32px; display: flex; justify-content: space-around; align-items: center; font-size: 12px; color: var(--text-muted);">
+        <div style="position: absolute; left: 32px; right: 0; bottom: 0; height: 32px; display: flex; justify-content: space-around; align-items: center; font-size: 12px; color: var(--text-muted);">
             <div style="width: 60px; text-align: center;">Scans</div>
             <div style="width: 60px; text-align: center;">Logs</div>
             <div style="width: 60px; text-align: center;">Banners</div>

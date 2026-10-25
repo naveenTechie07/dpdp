@@ -1,146 +1,22 @@
 <%- include('partials/header') %>
 
-<style>
-    .donut-chart {
-        width: 180px;
-        height: 180px;
-        border-radius: 50%;
-        background: conic-gradient(
-            #60a5fa 0% 33%,
-            #8b5cf6 33% 100%
-        );
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto;
-    }
-    .donut-inner {
-        width: 130px;
-        height: 130px;
-        background: var(--bg-card);
-        border-radius: 50%;
-    }
-    .progress-ring {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        background: conic-gradient(
-            #f97316 0% 58%,
-            rgba(255,255,255,0.1) 58% 100%
-        );
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto;
-    }
-    .progress-ring-inner {
-        width: 96px;
-        height: 96px;
-        background: var(--bg-main); /* to match the inner card background */
-        border-radius: 50%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    .bar-chart-container {
-        display: flex;
-        align-items: flex-end;
-        justify-content: space-around;
-        height: 200px;
-        padding-bottom: 20px;
-        position: relative;
-        border-bottom: 1px dashed rgba(255,255,255,0.2);
-    }
-    .bar-chart-container::before {
-        content: '';
-        position: absolute;
-        top: 25%;
-        left: 0;
-        right: 0;
-        border-top: 1px dashed rgba(255,255,255,0.2);
-    }
-    .bar-chart-container::after {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 0;
-        right: 0;
-        border-top: 1px dashed rgba(255,255,255,0.2);
-    }
-    .bar-chart-container .y-axis-labels {
-        position: absolute;
-        left: -15px;
-        top: -10px;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        font-size: 10px;
-        color: var(--text-muted);
-    }
-    .bar-col {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        z-index: 1;
-        width: 32px;
-    }
-    .bar-fill {
-        width: 24px;
-        border-radius: 2px 2px 0 0;
-    }
-    .bar-label {
-        position: absolute;
-        bottom: -20px;
-        font-size: 10px;
-        color: var(--text-muted);
-        white-space: nowrap;
-    }
+<% 
+const assList = (typeof assessments !== 'undefined' && Array.isArray(assessments)) ? assessments : [];
+const totalAssessments = assList.length;
+const completedCount = assList.filter(a => a.status === 'completed').length;
+const inProgressCount = assList.filter(a => a.status === 'in_progress' || a.status === 'draft').length;
+const totalScoreSum = assList.reduce((acc, a) => acc + (parseInt(a.score) || 0), 0);
+const avgScore = totalAssessments > 0 ? Math.round(totalScoreSum / totalAssessments) : 84;
+%>
 
-    .horizontal-bar-wrap {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 16px;
-    }
-    .horizontal-bar-label {
-        width: 140px;
-        font-size: 12px;
-        color: var(--text-muted);
-    }
-    .horizontal-bar-track {
-        flex: 1;
-        height: 6px;
-        background: rgba(255,255,255,0.1);
-        border-radius: 3px;
-        overflow: hidden;
-    }
-    .horizontal-bar-fill {
-        height: 100%;
-        border-radius: 3px;
-    }
-    .horizontal-bar-value {
-        width: 40px;
-        text-align: right;
-        font-size: 12px;
-        font-weight: 600;
-        color: var(--text-main);
-    }
-</style>
-
-<div class="dashboard-header mb-4" style="align-items: center;">
+<div class="dashboard-header mb-4" style="align-items: center; justify-content: space-between; display: flex;">
     <div class="title-group">
-        <h1>Assessment Automation</h1>
-        <p>Overview of PIA & DPIA assessments, risk posture, and open mitigations across your organisation.</p>
+        <h1 class="page-title"><%= (typeof title !== 'undefined' ? title : 'Assessment Automation').split(' - ')[0] %></h1>
+        <p class="page-description">Overview of DPDP Readiness assessments, DPIA workflows, and risk scores for Aarogya Diagnostic Center.</p>
     </div>
-    <button class="btn-secondary" style="background-color: transparent; color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-        Dashboard
-        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" style="margin-left: 4px;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    <button class="btn-primary" onclick="document.getElementById('new-assessment-modal').style.display='flex'" style="padding: 10px 20px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        New Assessment
     </button>
 </div>
 
@@ -149,193 +25,191 @@
     <div class="card metric-card">
         <div class="metric-info w-100">
             <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">Total Assessments</span>
-            <h2 class="metric-value" style="margin-top: 8px; color: #3b82f6;">3</h2>
+            <h2 class="metric-value" style="margin-top: 8px; color: #3b82f6;"><%= totalAssessments %></h2>
         </div>
     </div>
     <div class="card metric-card">
         <div class="metric-info w-100">
-            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">High Risk</span>
-            <h2 class="metric-value" style="margin-top: 8px; color: #ef4444;">1</h2>
+            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">Completed Audits</span>
+            <h2 class="metric-value" style="margin-top: 8px; color: #10b981;"><%= completedCount %></h2>
         </div>
     </div>
     <div class="card metric-card">
         <div class="metric-info w-100">
-            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">Open Mitigations</span>
-            <h2 class="metric-value" style="margin-top: 8px; color: #f59e0b;">2</h2>
+            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">In Progress / Draft</span>
+            <h2 class="metric-value" style="margin-top: 8px; color: #f59e0b;"><%= inProgressCount %></h2>
         </div>
     </div>
     <div class="card metric-card">
         <div class="metric-info w-100">
-            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">Overdue</span>
-            <h2 class="metric-value" style="margin-top: 8px; color: #ef4444;">2</h2>
+            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">Average Readiness Score</span>
+            <h2 class="metric-value" style="margin-top: 8px; color: <%= avgScore >= 75 ? '#10b981' : '#f59e0b' %>;"><%= avgScore %>/100</h2>
         </div>
     </div>
 </div>
 
-<!-- Charts Grid -->
-<div class="metrics-grid mb-4" style="grid-template-columns: 1fr 1fr;">
-    <!-- Assessment Status -->
-    <div class="card p-4">
-        <h3 style="font-size: 14px; margin: 0 0 4px 0;">Assessment Status</h3>
-        <p style="font-size: 11px; color: var(--text-muted); margin: 0 0 24px 0;">Breakdown by current lifecycle stage</p>
-        
-        <div class="donut-chart mb-4">
-            <div class="donut-inner"></div>
-        </div>
-        
-        <div style="display: flex; flex-direction: column; gap: 8px; max-width: 200px; margin: 0 auto; margin-top: 24px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px;">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #60a5fa;"></span>
-                    <span style="color: var(--text-muted);">Screening</span>
-                </div>
-                <span style="font-weight: 700;">1</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px;">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #8b5cf6;"></span>
-                    <span style="color: var(--text-muted);">Review</span>
-                </div>
-                <span style="font-weight: 700;">2</span>
-            </div>
-        </div>
+<!-- Active Assessments Table -->
+<div class="card p-0 mb-4" style="overflow: hidden;">
+    <div style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="margin: 0; font-size: 14px; font-weight: 600; color: var(--text-main);">Current Assessment Registers</h3>
+        <span style="font-size: 12px; color: var(--text-muted);"><%= totalAssessments %> active records</span>
     </div>
+    <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+        <thead>
+            <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 11px; text-transform: uppercase;">
+                <th style="padding: 14px 24px; font-weight: 600;">Assessment Name &#9652;</th>
+                <th style="padding: 14px 16px; font-weight: 600;">Framework Type &#8597;</th>
+                <th style="padding: 14px 16px; font-weight: 600;">Status &#8597;</th>
+                <th style="padding: 14px 16px; font-weight: 600;">Readiness Score</th>
+                <th style="padding: 14px 16px; font-weight: 600;">Questions Completed</th>
+                <th style="padding: 14px 24px; font-weight: 600; text-align: right;">Actions</th>
+            </tr>
+        </thead>
+        <tbody style="font-size: 13px;">
+            <% if (assList.length === 0) { %>
+                <tr>
+                    <td colspan="6" style="padding: 32px; text-align: center; color: var(--text-muted);">No assessments logged yet. Click "New Assessment" to initiate an audit.</td>
+                </tr>
+            <% } else { %>
+                <% assList.forEach(a => { %>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 16px 24px; font-weight: 600; color: var(--text-main);">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <svg viewBox="0 0 24 24" width="16" height="16" stroke="#3b82f6" stroke-width="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                <span><%= a.assessmentName %></span>
+                            </div>
+                        </td>
+                        <td style="padding: 16px 16px;">
+                            <span class="badge" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 700;">
+                                <%= a.assessmentType || 'DPDP_READINESS' %>
+                            </span>
+                        </td>
+                        <td style="padding: 16px 16px;">
+                            <% if (a.status === 'completed') { %>
+                                <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700;">Completed</span>
+                            <% } else { %>
+                                <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700;"><%= (a.status || 'draft').toUpperCase() %></span>
+                            <% } %>
+                        </td>
+                        <td style="padding: 16px 16px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 60px; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
+                                    <div style="height: 100%; width: <%= a.score || 0 %>%; background: <%= (a.score || 0) >= 75 ? '#10b981' : '#f59e0b' %>;"></div>
+                                </div>
+                                <span style="font-weight: 700; color: var(--text-main);"><%= a.score || 0 %>/100</span>
+                            </div>
+                        </td>
+                        <td style="padding: 16px 16px; color: var(--text-muted);">
+                            <%= a.answeredQuestions || 0 %> / <%= a.totalQuestions || 20 %>
+                        </td>
+                        <td style="padding: 16px 24px; text-align: right;">
+                            <button onclick="deleteAssessment('<%= a.id %>')" title="Delete Assessment" style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 4px; border-radius: 4px;">
+                                <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            </button>
+                        </td>
+                    </tr>
+                <% }); %>
+            <% } %>
+        </tbody>
+    </table>
+</div>
 
-    <!-- Type & Risk Distribution -->
-    <div class="card p-4">
-        <h3 style="font-size: 14px; margin: 0 0 4px 0;">Type & Risk Distribution</h3>
-        <p style="font-size: 11px; color: var(--text-muted); margin: 0 0 32px 0;">Assessment type split and risk level breakdown</p>
-        
-        <div style="padding-left: 20px; margin-top: 20px; padding-right: 20px;">
-            <div class="bar-chart-container">
-                <div class="y-axis-labels">
-                    <span>4</span>
-                    <span>3</span>
-                    <span>2</span>
-                    <span>1</span>
-                    <span>0</span>
+<!-- New Assessment Modal Overlay -->
+<div id="new-assessment-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+    <div class="card p-0" style="width: 520px; background: #0f172a; border: 1px solid #334155; box-shadow: 0 20px 30px rgba(0,0,0,0.6); border-radius: 12px; overflow: hidden;">
+        <div style="padding: 18px 24px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; background: #1e293b;">
+            <h2 style="font-size: 16px; font-weight: 600; color: #f8fafc; margin: 0;">Initiate Assessment</h2>
+            <button onclick="document.getElementById('new-assessment-modal').style.display='none'" style="background: none; border: none; cursor: pointer; color: #94a3b8; padding: 4px;">
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+
+        <form id="add-ass-form" onsubmit="handleCreateAssessment(event)" style="padding: 24px;">
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 13px; font-weight: 600; color: #e2e8f0; margin-bottom: 6px;">Assessment Name *</label>
+                <input type="text" id="assName" required placeholder="e.g. Q2 2026 WhatsApp Reception Silo Audit" style="width: 100%; background: #1e293b; border: 1px solid #475569; color: #f8fafc; padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #e2e8f0; margin-bottom: 6px;">Assessment Type</label>
+                    <select id="assType" style="width: 100%; background: #1e293b; border: 1px solid #475569; color: #f8fafc; padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+                        <option value="DPDP_READINESS">DPDP Readiness Audit</option>
+                        <option value="INFORMAL_SYSTEMS">Informal Systems / WhatsApp Risk</option>
+                        <option value="VENDOR_RISK">Vendor Diagnostic Lab Risk</option>
+                        <option value="STATUTORY_TAX">CGST Sec 36 Collision Audit</option>
+                    </select>
                 </div>
-                
-                <div class="bar-col" style="position: relative;">
-                    <div class="bar-fill" style="height: 25%; background: #8b5cf6;"></div>
-                    <span class="bar-label">DPIA</span>
-                </div>
-                <div class="bar-col" style="position: relative;">
-                    <div class="bar-fill" style="height: 50%; background: #10b981;"></div>
-                    <span class="bar-label">Readiness</span>
-                </div>
-                <div class="bar-col" style="position: relative;">
-                    <div class="bar-fill" style="height: 50%; background: #f59e0b;"></div>
-                    <span class="bar-label">Med risk</span>
-                </div>
-                <div class="bar-col" style="position: relative;">
-                    <div class="bar-fill" style="height: 25%; background: #ef4444;"></div>
-                    <span class="bar-label">High risk</span>
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #e2e8f0; margin-bottom: 6px;">Initial Status</label>
+                    <select id="assStatus" style="width: 100%; background: #1e293b; border: 1px solid #475569; color: #f8fafc; padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+                        <option value="completed">Completed</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="draft">Draft</option>
+                    </select>
                 </div>
             </div>
-        </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #e2e8f0; margin-bottom: 6px;">Score (0-100)</label>
+                    <input type="number" id="assScore" min="0" max="100" value="85" style="width: 100%; background: #1e293b; border: 1px solid #475569; color: #f8fafc; padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #e2e8f0; margin-bottom: 6px;">Total Questions</label>
+                    <input type="number" id="assTotalQuestions" value="25" style="width: 100%; background: #1e293b; border: 1px solid #475569; color: #f8fafc; padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 16px;">
+                <button type="submit" class="btn-primary" style="flex: 1; padding: 12px; font-size: 14px; justify-content: center;">Save Assessment</button>
+                <button type="button" class="btn-secondary" onclick="document.getElementById('new-assessment-modal').style.display='none'" style="flex: 1; padding: 12px; font-size: 14px; justify-content: center; background: #334155; border: 1px solid #475569; color: #f8fafc;">Cancel</button>
+            </div>
+        </form>
     </div>
 </div>
 
-<!-- DPDPA Compliance Readiness -->
-<div class="section-title" style="display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; margin-bottom: 16px;">
-    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>
-    DPDPA Compliance Readiness
-    <span style="font-weight: 400; color: var(--text-muted);">— derived from your latest Readiness assessment answers</span>
-</div>
+<script>
+async function handleCreateAssessment(e) {
+    e.preventDefault();
+    const assessmentName = document.getElementById('assName').value.trim();
+    const assessmentType = document.getElementById('assType').value;
+    const status = document.getElementById('assStatus').value;
+    const score = parseInt(document.getElementById('assScore').value) || 0;
+    const totalQuestions = parseInt(document.getElementById('assTotalQuestions').value) || 20;
+    const answeredQuestions = totalQuestions;
 
-<div class="card p-0" style="background: var(--bg-main); border: 1px solid var(--border-color); overflow: hidden;">
-    <!-- Top Header -->
-    <div style="background: white; padding: 16px 24px; display: flex; justify-content: space-between; align-items: flex-start;">
-        <div>
-            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 4px;">
-                <svg viewBox="0 0 24 24" width="16" height="16" stroke="#f97316" stroke-width="2" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                <h3 style="margin: 0; font-size: 14px; color: #111827; font-weight: 600;">DPDPA Readiness Score</h3>
-                <span class="badge" style="background: #ffedd5; color: #c2410c; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 700;">HIGH RISK</span>
-            </div>
-            <p style="margin: 0; font-size: 11px; color: #6b7280;">Swish DPDPA GapAssessement &middot; Last updated 9 Sept 2026</p>
-        </div>
-        <a href="#" style="color: #ec4899; font-size: 12px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 4px;">
-            View assessment <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-        </a>
-    </div>
-    
-    <!-- Body -->
-    <div style="display: flex; padding: 24px;">
-        <!-- Circular Score -->
-        <div style="width: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-right: 1px solid var(--border-color); padding-right: 24px;">
-            <div class="progress-ring mb-3">
-                <div class="progress-ring-inner">
-                    <span style="font-size: 24px; font-weight: 700; color: var(--text-main); line-height: 1;">58</span>
-                    <span style="font-size: 10px; color: var(--text-muted);">out of 100</span>
-                </div>
-            </div>
-            <p style="margin: 0; font-size: 11px; color: var(--text-muted); text-align: center; line-height: 1.5;">
-                7 sections &middot; 26 questions<br>answered
-            </p>
-        </div>
-        
-        <!-- Progress Bars Grid -->
-        <div style="flex: 1; padding-left: 32px; display: grid; grid-template-columns: 1fr 1fr; gap: 0 48px;">
-            <div>
-                <div class="horizontal-bar-wrap">
-                    <div class="horizontal-bar-label">Consent Management</div>
-                    <div class="horizontal-bar-track"><div class="horizontal-bar-fill" style="width: 50%; background: #f97316;"></div></div>
-                    <div class="horizontal-bar-value" style="color: #f97316;">50%</div>
-                </div>
-                <div class="horizontal-bar-wrap">
-                    <div class="horizontal-bar-label">Rights Fulfilment</div>
-                    <div class="horizontal-bar-track"><div class="horizontal-bar-fill" style="width: 53%; background: #f97316;"></div></div>
-                    <div class="horizontal-bar-value" style="color: #f97316;">53%</div>
-                </div>
-                <div class="horizontal-bar-wrap">
-                    <div class="horizontal-bar-label">Fiduciary Duties</div>
-                    <div class="horizontal-bar-track"><div class="horizontal-bar-fill" style="width: 63%; background: #eab308;"></div></div>
-                    <div class="horizontal-bar-value" style="color: #eab308;">63%</div>
-                </div>
-                <div class="horizontal-bar-wrap">
-                    <div class="horizontal-bar-label">SDF Compliance</div>
-                    <div class="horizontal-bar-track"><div class="horizontal-bar-fill" style="width: 60%; background: #eab308;"></div></div>
-                    <div class="horizontal-bar-value" style="color: #eab308;">60%</div>
-                </div>
-            </div>
-            <div>
-                <div class="horizontal-bar-wrap">
-                    <div class="horizontal-bar-label">Cross-border</div>
-                    <div class="horizontal-bar-track"><div class="horizontal-bar-fill" style="width: 60%; background: #eab308;"></div></div>
-                    <div class="horizontal-bar-value" style="color: #eab308;">60%</div>
-                </div>
-                <div class="horizontal-bar-wrap">
-                    <div class="horizontal-bar-label">Children's Data</div>
-                    <div class="horizontal-bar-track"><div class="horizontal-bar-fill" style="width: 60%; background: #eab308;"></div></div>
-                    <div class="horizontal-bar-value" style="color: #eab308;">60%</div>
-                </div>
-                <div class="horizontal-bar-wrap">
-                    <div class="horizontal-bar-label">Data Governance</div>
-                    <div class="horizontal-bar-track"><div class="horizontal-bar-fill" style="width: 60%; background: #eab308;"></div></div>
-                    <div class="horizontal-bar-value" style="color: #eab308;">60%</div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Footer -->
-    <div style="padding: 16px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; font-size: 11px; background: rgba(0,0,0,0.1);">
-        <div style="display: flex; gap: 24px;">
-            <div style="display: flex; align-items: center; gap: 6px;">
-                <span style="width: 6px; height: 6px; border-radius: 50%; background: #ef4444;"></span>
-                <span style="color: var(--text-muted);">Lowest: <span style="color: var(--text-main); font-weight: 600;">Consent Management</span> at <span style="color: #f97316; font-weight: 600;">50%</span></span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 6px;">
-                <span style="width: 6px; height: 6px; border-radius: 50%; background: #10b981;"></span>
-                <span style="color: var(--text-muted);">Strongest: <span style="color: var(--text-main); font-weight: 600;">Fiduciary Duties</span> at <span style="color: #f97316; font-weight: 600;">63%</span></span>
-            </div>
-        </div>
-        <div style="color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
-            <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-            Score is based on weighted question answers (1&ndash;5 scale)
-        </div>
-    </div>
-</div>
+    try {
+        const res = await fetch('/api/assessment/dashboard', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ assessmentName, assessmentType, status, score, totalQuestions, answeredQuestions })
+        });
+        const json = await res.json();
+        if (json.success) {
+            window.location.reload();
+        } else {
+            alert('Error creating assessment: ' + (json.message || 'Unknown error'));
+        }
+    } catch (err) {
+        alert('Network error submitting assessment');
+    }
+}
+
+async function deleteAssessment(id) {
+    if (!confirm('Are you sure you want to delete this assessment record?')) return;
+    try {
+        const res = await fetch(`/api/assessment/dashboard/${id}`, { method: 'DELETE' });
+        const json = await res.json();
+        if (json.success) {
+            window.location.reload();
+        } else {
+            alert('Error deleting assessment: ' + (json.message || 'Unknown error'));
+        }
+    } catch (err) {
+        alert('Network error deleting assessment');
+    }
+}
+</script>
 
 <%- include('partials/footer') %>

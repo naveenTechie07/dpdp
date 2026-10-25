@@ -49,6 +49,10 @@ router.get('/consent/purposes', async (req, res) => {
   }
 });
 
+router.get('/consent/notices', (req, res) => {
+  res.redirect('/consent/purposes');
+});
+
 router.get('/consent/preferences', async (req, res) => {
   try {
     const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
@@ -162,6 +166,7 @@ router.get('/cookies/dashboard', async (req, res) => {
     const scans = await models.getCookieScans(tenantId);
     const logs = await models.getCookieConsentLogs(tenantId);
     const banners = await models.getCookieBanners(tenantId);
+    const rules = await models.getCookieGeoRules(tenantId);
 
     res.render('cookies-dashboard', {
       title: 'Cookie Dashboard - DPDP_Secure',
@@ -171,7 +176,8 @@ router.get('/cookies/dashboard', async (req, res) => {
       stats: {
         totalScans: scans ? scans.length : 0,
         totalLogs: logs ? logs.length : 0,
-        totalBanners: banners ? banners.length : 0
+        totalBanners: banners ? banners.length : 0,
+        totalRules: rules ? rules.length : 0
       }
     });
   } catch (err) {
@@ -264,6 +270,17 @@ router.post('/api/consent/record-consent', consentController.recordConsent);
 router.post('/api/consent/withdraw-consent', consentController.withdrawConsent);
 router.get('/api/consent/download-passbook/:id', consentController.downloadPassbook);
 
+// Consent Dashboard API
+router.get('/api/consent/dashboard', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    const metrics = await models.getConsentDashboardMetrics(tenantId);
+    res.json({ success: true, data: metrics });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // Purposes CRUD
 router.get('/api/consent/purposes', async (req, res) => {
   try {
@@ -280,6 +297,26 @@ router.post('/api/consent/purposes', async (req, res) => {
     const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
     const created = await models.createConsentPurpose({ ...req.body, tenantId });
     res.status(201).json({ success: true, purpose: created });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.put('/api/consent/purposes/:id', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    await models.updateConsentPurpose(req.params.id, req.body, tenantId);
+    res.json({ success: true, message: 'Purpose updated' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.delete('/api/consent/purposes/:id', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    await models.deleteConsentPurpose(req.params.id, tenantId);
+    res.json({ success: true, message: 'Purpose deleted' });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
@@ -306,6 +343,26 @@ router.post('/api/consent/preferences', async (req, res) => {
   }
 });
 
+router.put('/api/consent/preferences/:id', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    await models.updateConsentPreference(req.params.id, req.body, tenantId);
+    res.json({ success: true, message: 'Preference updated' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.delete('/api/consent/preferences/:id', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    await models.deleteConsentPreference(req.params.id, tenantId);
+    res.json({ success: true, message: 'Preference deleted' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // Preference Centers CRUD
 router.get('/api/consent/preference-centers', async (req, res) => {
   try {
@@ -322,6 +379,26 @@ router.post('/api/consent/preference-centers', async (req, res) => {
     const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
     const created = await models.createConsentPreferenceCenter({ ...req.body, tenantId });
     res.status(201).json({ success: true, center: created });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.put('/api/consent/preference-centers/:id', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    await models.updatePreferenceCenter(req.params.id, req.body, tenantId);
+    res.json({ success: true, message: 'Preference center updated' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.delete('/api/consent/preference-centers/:id', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    await models.deletePreferenceCenter(req.params.id, tenantId);
+    res.json({ success: true, message: 'Preference center deleted' });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
@@ -348,6 +425,48 @@ router.post('/api/consent/data-elements', async (req, res) => {
   }
 });
 
+router.put('/api/consent/data-elements/:id', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    await models.updateDataElement(req.params.id, req.body, tenantId);
+    res.json({ success: true, message: 'Data element updated' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.delete('/api/consent/data-elements/:id', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    await models.deleteDataElement(req.params.id, tenantId);
+    res.json({ success: true, message: 'Data element deleted' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Consent Transactions
+router.get('/api/consent/transactions', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    const data = await models.getConsentTransactions(tenantId);
+    res.json({ success: true, data });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.get('/api/consent/transactions/:id', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    const data = await models.getConsentTransactionById(req.params.id, tenantId);
+    if (!data) return res.status(404).json({ success: false, error: 'Transaction not found' });
+    res.json({ success: true, data });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // Policies CRUD
 router.get('/api/consent/policies', async (req, res) => {
   try {
@@ -364,6 +483,26 @@ router.post('/api/consent/policies', async (req, res) => {
     const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
     const created = await models.createConsentPolicy({ ...req.body, tenantId });
     res.status(201).json({ success: true, policy: created });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.put('/api/consent/policies/:id', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    await models.updateConsentPolicy(req.params.id, req.body, tenantId);
+    res.json({ success: true, message: 'Policy updated' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.delete('/api/consent/policies/:id', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    await models.deleteConsentPolicy(req.params.id, tenantId);
+    res.json({ success: true, message: 'Policy deleted' });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
@@ -392,7 +531,7 @@ router.post('/api/consent/portal-settings', async (req, res) => {
 });
 
 // Cookie Scans & Logs CRUD
-router.get('/api/cookies/scans', async (req, res) => {
+router.get(['/api/cookies/scans', '/api/cookies/dashboard'], async (req, res) => {
   try {
     const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
     const data = await models.getCookieScans(tenantId);
@@ -402,7 +541,7 @@ router.get('/api/cookies/scans', async (req, res) => {
   }
 });
 
-router.post('/api/cookies/scans', async (req, res) => {
+router.post(['/api/cookies/scans', '/api/cookies/dashboard'], async (req, res) => {
   try {
     const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
     const created = await models.createCookieScan({ ...req.body, tenantId });
@@ -452,6 +591,26 @@ router.post('/api/cookies/banners', async (req, res) => {
   }
 });
 
+router.put('/api/cookies/banners/:id', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    await models.updateCookieBanner(req.params.id, req.body, tenantId);
+    res.json({ success: true, message: 'Banner updated' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.delete('/api/cookies/banners/:id', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    await models.deleteCookieBanner(req.params.id, tenantId);
+    res.json({ success: true, message: 'Banner deleted' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 router.get('/api/cookies/geo-rules', async (req, res) => {
   try {
     const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
@@ -467,6 +626,26 @@ router.post('/api/cookies/geo-rules', async (req, res) => {
     const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
     const created = await models.createCookieGeoRule({ ...req.body, tenantId });
     res.status(201).json({ success: true, rule: created });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.put('/api/cookies/geo-rules/:id', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    await models.updateGeoRule(req.params.id, req.body, tenantId);
+    res.json({ success: true, message: 'Geo rule updated' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.delete('/api/cookies/geo-rules/:id', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    await models.deleteGeoRule(req.params.id, tenantId);
+    res.json({ success: true, message: 'Geo rule deleted' });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }

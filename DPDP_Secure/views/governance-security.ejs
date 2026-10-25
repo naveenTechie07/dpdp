@@ -1,39 +1,46 @@
 <%- include('partials/header') %>
 
+<% 
+const controlsList = (typeof controls !== 'undefined' && Array.isArray(controls)) ? controls : [];
+const totalControls = controlsList.length;
+const implementedCount = controlsList.filter(c => (c.implementationStatus || '').toUpperCase() === 'IMPLEMENTED').length;
+const highEffCount = controlsList.filter(c => (c.effectiveness || '').toUpperCase() === 'HIGH' || (c.effectiveness || '').toUpperCase() === 'CRITICAL').length;
+%>
+
 <!-- Top Metrics -->
 <div class="metrics-grid mb-4" style="grid-template-columns: repeat(4, 1fr);">
     <div class="card metric-card">
         <div class="metric-info w-100">
-            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">Total Controls</span>
-            <h2 class="metric-value" style="margin-top: 8px;">1</h2>
+            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">Total Safeguards</span>
+            <h2 class="metric-value" style="margin-top: 8px;"><%= totalControls %></h2>
         </div>
     </div>
     <div class="card metric-card">
         <div class="metric-info w-100">
-            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">Implemented</span>
-            <h2 class="metric-value" style="margin-top: 8px;">1</h2>
+            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">Implemented Controls</span>
+            <h2 class="metric-value" style="margin-top: 8px; color: #10b981;"><%= implementedCount %></h2>
         </div>
     </div>
     <div class="card metric-card">
         <div class="metric-info w-100">
-            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">Needs Review</span>
-            <h2 class="metric-value" style="margin-top: 8px;">0</h2>
+            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">High / Critical Efficacy</span>
+            <h2 class="metric-value" style="margin-top: 8px; color: #3b82f6;"><%= highEffCount %></h2>
         </div>
     </div>
     <div class="card metric-card">
         <div class="metric-info w-100">
-            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">Overdue Reviews</span>
-            <h2 class="metric-value" style="margin-top: 8px;">0</h2>
+            <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">DPDP Sec 8(5) Status</span>
+            <h2 class="metric-value" style="margin-top: 8px; color: #10b981;">COMPLIANT</h2>
         </div>
     </div>
 </div>
 
-<div class="dashboard-header mb-4" style="align-items: center;">
+<div class="dashboard-header mb-4" style="align-items: center; justify-content: space-between; display: flex;">
     <div class="title-group">
-        <h1>Security Controls</h1>
-        <p>Track security controls across ISO 27001, SOC 2, NIST, and custom frameworks.</p>
+        <h1 class="page-title"><%= (typeof title !== 'undefined' ? title : 'Security Controls').split(' - ')[0] %></h1>
+        <p class="page-description">Reasonable security safeguards under Section 8(5) of DPDP Act 2023 to prevent personal data breaches.</p>
     </div>
-    <button class="btn-primary" style="background-color: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+    <button class="btn-primary" onclick="document.getElementById('add-control-modal').style.display='flex'" style="padding: 10px 20px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
         <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
         Add Control
     </button>
@@ -43,16 +50,11 @@
     <!-- Table Toolbar -->
     <div class="table-toolbar" style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
         <div class="search-bar" style="width: 300px; background: transparent; padding: 0; border: none;">
-            <input type="text" placeholder="Search controls..." style="border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 6px; background: transparent; color: var(--text-main); width: 100%;">
-        </div>
-        
-        <div style="background: rgba(255,255,255,0.05); padding: 4px; border-radius: 6px; display: flex; align-items: center; position: absolute; left: 50%; transform: translateX(-50%);">
-            <div style="padding: 6px 16px; font-size: 12px; font-weight: 600; background: var(--bg-card); color: var(--text-main); border-radius: 4px; cursor: pointer;">Controls (1)</div>
-            <div style="padding: 6px 16px; font-size: 12px; font-weight: 500; color: var(--text-muted); cursor: pointer;">Due Diligence Reviews</div>
+            <input type="text" id="control-search" placeholder="Search security controls..." onkeyup="filterControls()" style="border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 6px; background: transparent; color: var(--text-main); width: 100%;">
         </div>
         
         <div class="pagination" style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-muted);">
-            <span>1 row</span>
+            <span><%= totalControls %> controls</span>
             <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Previous</button>
             <span>Page 1 of 1</span>
             <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Next</button>
@@ -60,51 +62,154 @@
     </div>
 
     <!-- Data Table -->
-    <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+    <table class="data-table" id="controls-table" style="width: 100%; border-collapse: collapse; text-align: left;">
         <thead>
             <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 11px; text-transform: uppercase;">
-                <th style="padding: 12px 24px; font-weight: 600;">Control &#9652;</th>
-                <th style="padding: 12px 16px; font-weight: 600;">Framework &#8597;</th>
-                <th style="padding: 12px 16px; font-weight: 600;">Ref &#8597;</th>
-                <th style="padding: 12px 16px; font-weight: 600;">Category &#8597;</th>
-                <th style="padding: 12px 16px; font-weight: 600;">Status &#8597;</th>
-                <th style="padding: 12px 16px; font-weight: 600;">Next Review &#8597;</th>
-                <th style="padding: 12px 24px; font-weight: 600;"></th>
+                <th style="padding: 14px 24px; font-weight: 600;">Security Control Name &#9652;</th>
+                <th style="padding: 14px 16px; font-weight: 600;">Category &#8597;</th>
+                <th style="padding: 14px 16px; font-weight: 600;">Status &#8597;</th>
+                <th style="padding: 14px 16px; font-weight: 600;">Effectiveness &#8597;</th>
+                <th style="padding: 14px 24px; font-weight: 600; text-align: right;">Actions</th>
             </tr>
         </thead>
         <tbody style="font-size: 13px;">
-            <!-- Row 1 -->
-            <tr style="border-bottom: 1px solid var(--border-color);">
-                <td style="padding: 16px 24px; font-weight: 600; color: var(--text-main); width: 30%;">Envelope Encryption for PII (AES-256-GCM)</td>
-                <td style="padding: 16px 16px;"><span class="badge" style="background: #fef08a; color: #854d0e; padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 700;">CUSTOM</span></td>
-                <td style="padding: 16px 16px; color: var(--text-muted); font-family: monospace;">RBI-IT-8.1</td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">ENCRYPTION</td>
-                <td style="padding: 16px 16px;"><span class="badge" style="background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 700;">IMPLEMENTED</span></td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">2/25/2027</td>
-                <td style="padding: 16px 24px; display: flex; gap: 12px; align-items: center; justify-content: flex-end;">
-                    <svg viewBox="0 0 24 24" width="12" height="12" stroke="var(--text-muted)" stroke-width="2" fill="none" style="cursor: pointer;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                    <div style="display: flex; flex-direction: column; align-items: center; cursor: pointer; color: var(--text-muted);">
-                        <span style="font-size: 14px; line-height: 1;">+</span>
-                        <span style="font-size: 9px;">Assess</span>
-                    </div>
-                    <div style="display: flex; flex-direction: column; align-items: center; cursor: pointer; color: var(--text-muted);">
-                        <span style="font-size: 14px; line-height: 1;">+</span>
-                        <span style="font-size: 9px;">Activity</span>
-                    </div>
-                    <svg viewBox="0 0 24 24" width="12" height="12" stroke="var(--text-muted)" stroke-width="2" fill="none" style="cursor: pointer;"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                </td>
-            </tr>
+            <% if (controlsList.length === 0) { %>
+                <tr>
+                    <td colspan="5" style="padding: 32px; text-align: center; color: var(--text-muted);">No security controls recorded. Click "Add Control" to register safeguards.</td>
+                </tr>
+            <% } else { %>
+                <% controlsList.forEach(c => { %>
+                    <tr style="border-bottom: 1px solid var(--border-color);" class="ctrl-row">
+                        <td style="padding: 16px 24px; font-weight: 600; color: var(--text-main);">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <svg viewBox="0 0 24 24" width="16" height="16" stroke="#10b981" stroke-width="2" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                                <span><%= c.controlName %></span>
+                            </div>
+                        </td>
+                        <td style="padding: 16px 16px; color: var(--text-muted);"><%= c.controlCategory || 'General Safeguard' %></td>
+                        <td style="padding: 16px 16px;">
+                            <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 700;">
+                                <%= (c.implementationStatus || 'IMPLEMENTED').toUpperCase() %>
+                            </span>
+                        </td>
+                        <td style="padding: 16px 16px;">
+                            <% const eff = (c.effectiveness || 'MEDIUM').toUpperCase(); %>
+                            <span class="badge" style="background: <%= eff === 'CRITICAL' ? 'rgba(239, 68, 68, 0.2); color: #ef4444;' : (eff === 'HIGH' ? 'rgba(59, 130, 246, 0.2); color: #3b82f6;' : 'rgba(245, 158, 11, 0.2); color: #f59e0b;') %> padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 700;">
+                                <%= eff %>
+                            </span>
+                        </td>
+                        <td style="padding: 16px 24px; text-align: right;">
+                            <button onclick="deleteControl('<%= c.id %>')" title="Delete Control" style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 4px; border-radius: 4px;">
+                                <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            </button>
+                        </td>
+                    </tr>
+                <% }); %>
+            <% } %>
         </tbody>
     </table>
-    
-    <!-- Table Footer -->
-    <div class="table-toolbar" style="padding: 16px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; align-items: center;">
-        <div class="pagination" style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-muted);">
-            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Previous</button>
-            <span>Page 1 of 1</span>
-            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Next</button>
+</div>
+
+<!-- Add Control Modal Overlay -->
+<div id="add-control-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+    <div class="card p-0" style="width: 520px; background: #0f172a; border: 1px solid #334155; box-shadow: 0 20px 30px rgba(0,0,0,0.6); border-radius: 12px; overflow: hidden;">
+        <div style="padding: 18px 24px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; background: #1e293b;">
+            <h2 style="font-size: 16px; font-weight: 600; color: #f8fafc; margin: 0;">Add Security Control</h2>
+            <button onclick="document.getElementById('add-control-modal').style.display='none'" style="background: none; border: none; cursor: pointer; color: #94a3b8; padding: 4px;">
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
         </div>
+
+        <form id="add-ctrl-form" onsubmit="handleAddControl(event)" style="padding: 24px;">
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 13px; font-weight: 600; color: #e2e8f0; margin-bottom: 6px;">Control Name *</label>
+                <input type="text" id="ctrlName" required placeholder="e.g. Automated Endpoint Disk BitLocker Encryption (XTS-AES 256)" style="width: 100%; background: #1e293b; border: 1px solid #475569; color: #f8fafc; padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 13px; font-weight: 600; color: #e2e8f0; margin-bottom: 6px;">Category *</label>
+                <select id="ctrlCategory" style="width: 100%; background: #1e293b; border: 1px solid #475569; color: #f8fafc; padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+                    <option value="Encryption at Rest">Encryption at Rest</option>
+                    <option value="Access Control">Access Control</option>
+                    <option value="Data Minimization">Data Minimization</option>
+                    <option value="Network Security">Network Security</option>
+                    <option value="Incident Response">Incident Response</option>
+                </select>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #e2e8f0; margin-bottom: 6px;">Implementation Status</label>
+                    <select id="ctrlStatus" style="width: 100%; background: #1e293b; border: 1px solid #475569; color: #f8fafc; padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+                        <option value="IMPLEMENTED">IMPLEMENTED</option>
+                        <option value="TESTED">TESTED</option>
+                        <option value="PLANNED">PLANNED</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #e2e8f0; margin-bottom: 6px;">Effectiveness</label>
+                    <select id="ctrlEff" style="width: 100%; background: #1e293b; border: 1px solid #475569; color: #f8fafc; padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+                        <option value="HIGH">HIGH</option>
+                        <option value="CRITICAL">CRITICAL</option>
+                        <option value="MEDIUM">MEDIUM</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 16px;">
+                <button type="submit" class="btn-primary" style="flex: 1; padding: 12px; font-size: 14px; justify-content: center;">Save Security Control</button>
+                <button type="button" class="btn-secondary" onclick="document.getElementById('add-control-modal').style.display='none'" style="flex: 1; padding: 12px; font-size: 14px; justify-content: center; background: #334155; border: 1px solid #475569; color: #f8fafc;">Cancel</button>
+            </div>
+        </form>
     </div>
 </div>
+
+<script>
+function filterControls() {
+    const q = document.getElementById('control-search').value.toLowerCase();
+    document.querySelectorAll('.ctrl-row').forEach(row => {
+        row.style.display = row.innerText.toLowerCase().includes(q) ? '' : 'none';
+    });
+}
+
+async function handleAddControl(e) {
+    e.preventDefault();
+    const controlName = document.getElementById('ctrlName').value.trim();
+    const controlCategory = document.getElementById('ctrlCategory').value;
+    const implementationStatus = document.getElementById('ctrlStatus').value;
+    const effectiveness = document.getElementById('ctrlEff').value;
+
+    try {
+        const res = await fetch('/api/governance/security-controls', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ controlName, controlCategory, implementationStatus, effectiveness })
+        });
+        const json = await res.json();
+        if (json.success) {
+            window.location.reload();
+        } else {
+            alert('Error creating control: ' + (json.message || 'Unknown error'));
+        }
+    } catch (err) {
+        alert('Network error submitting control');
+    }
+}
+
+async function deleteControl(id) {
+    if (!confirm('Are you sure you want to delete this security control?')) return;
+    try {
+        const res = await fetch(`/api/governance/security-controls/${id}`, { method: 'DELETE' });
+        const json = await res.json();
+        if (json.success) {
+            window.location.reload();
+        } else {
+            alert('Error deleting control: ' + (json.message || 'Unknown error'));
+        }
+    } catch (err) {
+        alert('Network error deleting control');
+    }
+}
+</script>
 
 <%- include('partials/footer') %>

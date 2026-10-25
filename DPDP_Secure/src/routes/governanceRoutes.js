@@ -191,6 +191,17 @@ router.post('/api/governance/processors', async (req, res) => {
   }
 });
 
+router.put('/api/governance/processors/:id', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    await models.updateDataProcessor(req.params.id, req.body, tenantId);
+    await models.logAuditEvent(tenantId, req.session?.user?.name || 'Admin', 'UPDATE_PROCESSOR', req.params.id, req.body);
+    res.json({ success: true, message: 'Processor updated successfully' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 router.delete('/api/governance/processors/:id', async (req, res) => {
   try {
     const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
@@ -224,6 +235,17 @@ router.post('/api/governance/retention', async (req, res) => {
   }
 });
 
+router.put('/api/governance/retention/:id', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    await models.updateRetentionPolicy(req.params.id, req.body, tenantId);
+    await models.logAuditEvent(tenantId, req.session?.user?.name || 'Admin', 'UPDATE_RETENTION_POLICY', req.params.id, req.body);
+    res.json({ success: true, message: 'Retention policy updated successfully' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 router.delete('/api/governance/retention/:id', async (req, res) => {
   try {
     const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
@@ -250,6 +272,17 @@ router.post('/api/governance/cross-border', async (req, res) => {
     const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
     const created = await models.createCrossBorderTransfer({ ...req.body, tenantId });
     res.status(201).json({ success: true, transfer: created });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.put('/api/governance/cross-border/:id', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    await models.updateCrossBorderTransfer(req.params.id, req.body, tenantId);
+    await models.logAuditEvent(tenantId, req.session?.user?.name || 'Admin', 'UPDATE_CROSS_BORDER', req.params.id, req.body);
+    res.json({ success: true, message: 'Cross-border transfer updated successfully' });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
@@ -317,6 +350,17 @@ router.post('/api/governance/security-controls', async (req, res) => {
   }
 });
 
+router.put('/api/governance/security-controls/:id', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    await models.updateSecurityControl(req.params.id, req.body, tenantId);
+    await models.logAuditEvent(tenantId, req.session?.user?.name || 'Admin', 'UPDATE_SECURITY_CONTROL', req.params.id, req.body);
+    res.json({ success: true, message: 'Security control updated successfully' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 router.delete('/api/governance/security-controls/:id', async (req, res) => {
   try {
     const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
@@ -331,7 +375,7 @@ router.delete('/api/governance/security-controls/:id', async (req, res) => {
 // ASSESSMENT AUTOMATION CRUD API ENDPOINTS
 // ==========================================
 
-router.get('/api/assessment/assessments', async (req, res) => {
+router.get(['/api/assessment/assessments', '/api/assessment/dashboard'], async (req, res) => {
   try {
     const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
     const data = await models.getAssessments(tenantId);
@@ -341,7 +385,7 @@ router.get('/api/assessment/assessments', async (req, res) => {
   }
 });
 
-router.post('/api/assessment/assessments', async (req, res) => {
+router.post(['/api/assessment/assessments', '/api/assessment/dashboard'], async (req, res) => {
   try {
     const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
     const created = await models.createAssessment({ ...req.body, tenantId });
@@ -351,7 +395,17 @@ router.post('/api/assessment/assessments', async (req, res) => {
   }
 });
 
-router.delete('/api/assessment/assessments/:id', async (req, res) => {
+router.put(['/api/assessment/assessments/:id', '/api/assessment/dashboard/:id'], async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    await models.updateAssessment(req.params.id, req.body, tenantId);
+    res.json({ success: true, message: 'Assessment updated' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.delete(['/api/assessment/assessments/:id', '/api/assessment/dashboard/:id'], async (req, res) => {
   try {
     const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
     await models.deleteAssessment(req.params.id, tenantId);
@@ -381,6 +435,26 @@ router.post('/api/assessment/templates', async (req, res) => {
   }
 });
 
+router.put('/api/assessment/templates/:id', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    await models.updateAssessmentTemplate(req.params.id, req.body, tenantId);
+    res.json({ success: true, message: 'Assessment template updated' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.delete('/api/assessment/templates/:id', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    await models.deleteAssessmentTemplate(req.params.id, tenantId);
+    res.json({ success: true, message: 'Assessment template deleted' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 router.get('/api/assessment/pia-dpia', async (req, res) => {
   try {
     const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
@@ -396,6 +470,26 @@ router.post('/api/assessment/pia-dpia', async (req, res) => {
     const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
     const created = await models.createPiaDpiaAssessment({ ...req.body, tenantId });
     res.status(201).json({ success: true, assessment: created });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.put('/api/assessment/pia-dpia/:id', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    await models.updatePiaDpiaAssessment(req.params.id, req.body, tenantId);
+    res.json({ success: true, message: 'PIA/DPIA updated' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.delete('/api/assessment/pia-dpia/:id', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    await models.deletePiaDpiaAssessment(req.params.id, tenantId);
+    res.json({ success: true, message: 'PIA/DPIA deleted' });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }

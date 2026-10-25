@@ -1,242 +1,207 @@
 <%- include('partials/header') %>
 
-<style>
-.integration-card {
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-}
-.integration-card.connected {
-    background: #ecfdf5;
-    border-color: #a7f3d0;
-}
-.integration-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    font-weight: 700;
-}
-</style>
+<% 
+const intList = (typeof integrations !== 'undefined' && Array.isArray(integrations)) ? integrations : [];
+const totalInt = intList.length;
+const activeInt = intList.filter(i => (i.status || '').toUpperCase() === 'CONNECTED' || (i.status || '').toUpperCase() === 'ACTIVE').length;
+const pausedInt = intList.filter(i => (i.status || '').toUpperCase() === 'PAUSED').length;
+const errorInt = intList.filter(i => (i.status || '').toUpperCase() === 'ERROR').length;
+%>
 
 <div style="padding: 24px; max-width: 1400px; margin: 0 auto;">
-    <div style="margin-bottom: 32px;">
-        <h1 style="font-size: 24px; font-weight: 700; color: var(--text-main); margin: 0 0 8px 0;">Integrations</h1>
-        <p style="color: var(--text-muted); font-size: 14px; margin: 0;">Connect DPDP_Secure to your MarTech stack. Consent withdrawals, rights requests, and cookie decisions are delivered in real time.</p>
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 28px;">
+        <div>
+            <h1 style="font-size: 24px; font-weight: 700; color: var(--text-main); margin: 0 0 8px 0;">Integrations</h1>
+            <p style="color: var(--text-muted); font-size: 14px; margin: 0;">Connect DPDP_Secure to your SME MarTech and Healthcare stack (WhatsApp Business API, Tally ERP, Ayushman Bharat ABDM).</p>
+        </div>
+        <button class="btn-primary" onclick="document.getElementById('connect-tool-modal').style.display='flex'" style="padding: 10px 20px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Connect a Tool
+        </button>
     </div>
 
     <!-- Top Metrics -->
     <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
-        <div class="card" style="padding: 20px;">
-            <div style="font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">CONNECTED</div>
-            <div style="font-size: 28px; font-weight: 700; color: white;">3</div>
+        <div class="card metric-card" style="padding: 20px;">
+            <div style="font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">CONNECTED TOOLS</div>
+            <div style="font-size: 28px; font-weight: 700; color: white;"><%= totalInt %></div>
         </div>
-        <div class="card" style="padding: 20px;">
-            <div style="font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">ACTIVE</div>
-            <div style="font-size: 28px; font-weight: 700; color: #10b981;">2</div>
+        <div class="card metric-card" style="padding: 20px;">
+            <div style="font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">ACTIVE DISPATCH</div>
+            <div style="font-size: 28px; font-weight: 700; color: #10b981;"><%= activeInt %></div>
         </div>
-        <div class="card" style="padding: 20px;">
-            <div style="font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">PAUSED</div>
-            <div style="font-size: 28px; font-weight: 700; color: #f59e0b;">0</div>
+        <div class="card metric-card" style="padding: 20px;">
+            <div style="font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">PAUSED</div>
+            <div style="font-size: 28px; font-weight: 700; color: #f59e0b;"><%= pausedInt %></div>
         </div>
-        <div class="card" style="padding: 20px;">
-            <div style="font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">ERRORS</div>
-            <div style="font-size: 28px; font-weight: 700; color: #ef4444;">1</div>
-        </div>
-    </div>
-
-    <!-- Alert -->
-    <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-        <div style="display: flex; align-items: flex-start; gap: 12px;">
-            <div style="color: #ef4444;">
-                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-            </div>
-            <div>
-                <div style="color: #991b1b; font-size: 14px; font-weight: 600; margin-bottom: 4px;">Delivery Errors Detected</div>
-                <div style="color: #b91c1c; font-size: 13px;">1 integration is in an error state. Events may not be delivered to connected tools until the configuration is fixed.</div>
-            </div>
-        </div>
-        <button class="btn-primary" style="background: #ef4444; border: 1px solid #dc2626; color: white; padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; white-space: nowrap;">Fix now</button>
-    </div>
-
-    <!-- Charts -->
-    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 24px; margin-bottom: 24px;">
-        <div class="card">
-            <h2 style="font-size: 14px; font-weight: 600; color: var(--text-main); margin: 0 0 4px 0;">Connection Status</h2>
-            <p style="color: var(--text-muted); font-size: 12px; margin: 0 0 32px 0;">Active vs paused vs error</p>
-            
-            <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 32px;">
-                <div style="width: 160px; height: 160px; border-radius: 50%; background: conic-gradient(#10b981 0% 66%, #ef4444 66% 100%); position: relative; display: flex; align-items: center; justify-content: center;">
-                    <div style="width: 110px; height: 110px; border-radius: 50%; background: var(--bg-surface);"></div>
-                </div>
-            </div>
-            
-            <div>
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <div style="width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></div>
-                        <span style="font-size: 13px; color: var(--text-main);">Active</span>
-                    </div>
-                    <span style="font-size: 13px; font-weight: 600; color: white;">2</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0;">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <div style="width: 8px; height: 8px; border-radius: 50%; background: #ef4444;"></div>
-                        <span style="font-size: 13px; color: var(--text-main);">Error</span>
-                    </div>
-                    <span style="font-size: 13px; font-weight: 600; color: white;">1</span>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card">
-            <h2 style="font-size: 14px; font-weight: 600; color: var(--text-main); margin: 0 0 4px 0;">Connected by Category</h2>
-            <p style="color: var(--text-muted); font-size: 12px; margin: 0 0 32px 0;">Number of active connections per tool category</p>
-            
-            <div style="height: 200px; display: flex; flex-direction: column; justify-content: flex-end; position: relative;">
-                <div style="position: absolute; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: space-between; pointer-events: none;">
-                    <div style="border-top: 1px dashed rgba(255,255,255,0.2); width: 100%; height: 0; position: relative;"><span style="position: absolute; left: -16px; top: -8px; font-size: 11px; color: var(--text-muted);">4</span></div>
-                    <div style="border-top: 1px dashed rgba(255,255,255,0.2); width: 100%; height: 0; position: relative;"><span style="position: absolute; left: -16px; top: -8px; font-size: 11px; color: var(--text-muted);">3</span></div>
-                    <div style="border-top: 1px dashed rgba(255,255,255,0.2); width: 100%; height: 0; position: relative;"><span style="position: absolute; left: -16px; top: -8px; font-size: 11px; color: var(--text-muted);">2</span></div>
-                    <div style="border-top: 1px dashed rgba(255,255,255,0.2); width: 100%; height: 0; position: relative;"><span style="position: absolute; left: -16px; top: -8px; font-size: 11px; color: var(--text-muted);">1</span></div>
-                    <div style="border-top: 1px dashed rgba(255,255,255,0.2); width: 100%; height: 0; position: relative;"><span style="position: absolute; left: -16px; top: -8px; font-size: 11px; color: var(--text-muted);">0</span></div>
-                </div>
-                
-                <div style="display: flex; justify-content: space-around; width: 100%; height: 100%; align-items: flex-end; padding-left: 20px; z-index: 1;">
-                    <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-                        <div style="width: 24px; height: 25%; background: #3b82f6; border-radius: 4px 4px 0 0;"></div>
-                        <div style="font-size: 11px; color: var(--text-muted);">sms</div>
-                    </div>
-                    <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-                        <div style="width: 24px; height: 25%; background: #10b981; border-radius: 4px 4px 0 0;"></div>
-                        <div style="font-size: 11px; color: var(--text-muted);">push</div>
-                    </div>
-                    <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-                        <div style="width: 24px; height: 25%; background: #a855f7; border-radius: 4px 4px 0 0;"></div>
-                        <div style="font-size: 11px; color: var(--text-muted);">generic</div>
-                    </div>
-                </div>
-            </div>
+        <div class="card metric-card" style="padding: 20px;">
+            <div style="font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">DELIVERY ERRORS</div>
+            <div style="font-size: 28px; font-weight: 700; color: <%= errorInt > 0 ? '#ef4444' : '#10b981' %>;"><%= errorInt %></div>
         </div>
     </div>
 
-    <!-- Available Tools Grid -->
-    <div class="card" style="margin-bottom: 24px;">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
-            <div>
-                <h3 style="font-size: 14px; font-weight: 600; color: var(--text-main); margin: 0 0 4px 0;">Available Tools</h3>
-                <p style="color: var(--text-muted); font-size: 12px; margin: 0;">14 tools in the catalog ready to connect</p>
-            </div>
-            <button class="btn-primary" style="background: #be185d; border: 1px solid #9d174d; color: white; padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px;">
-                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
-                Connect a tool
-            </button>
+    <!-- Connected Integrations Table -->
+    <div class="card p-0 mb-4" style="overflow: hidden;">
+        <div style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0; font-size: 14px; font-weight: 600; color: var(--text-main);">Configured Gateway Connections</h3>
+            <span style="font-size: 12px; color: var(--text-muted);"><%= totalInt %> active pipelines</span>
         </div>
-
-        <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px;">
-            <div class="integration-card connected">
-                <div class="integration-icon" style="background: #e0e7ff; color: #4f46e5;">W</div>
-                <div style="font-size: 13px; font-weight: 600; color: #064e3b; text-align: center;">Webhook</div>
-                <div style="font-size: 11px; font-weight: 600; color: #059669;">Connected</div>
-            </div>
-            <div class="integration-card connected">
-                <div class="integration-icon" style="background: #ffedd5; color: #ea580c;">C</div>
-                <div style="font-size: 13px; font-weight: 600; color: #064e3b; text-align: center;">CleverTap</div>
-                <div style="font-size: 11px; font-weight: 600; color: #059669;">Connected</div>
-            </div>
-            <div class="integration-card">
-                <div class="integration-icon" style="background: #e0e7ff; color: #4f46e5;">M</div>
-                <div style="font-size: 13px; font-weight: 600; color: var(--text-main); text-align: center;">MoEngage</div>
-            </div>
-            <div class="integration-card">
-                <div class="integration-icon" style="background: #f3e8ff; color: #9333ea;">W</div>
-                <div style="font-size: 13px; font-weight: 600; color: var(--text-main); text-align: center;">WebEngage</div>
-            </div>
-            <div class="integration-card">
-                <div class="integration-icon" style="background: #e0f2fe; color: #0284c7;">N</div>
-                <div style="font-size: 13px; font-weight: 600; color: var(--text-main); text-align: center;">Netcore Cloud</div>
-            </div>
-            <div class="integration-card connected">
-                <div class="integration-icon" style="background: #dcfce7; color: #16a34a;">M</div>
-                <div style="font-size: 13px; font-weight: 600; color: #064e3b; text-align: center;">MSG91</div>
-                <div style="font-size: 11px; font-weight: 600; color: #059669;">Connected</div>
-            </div>
-            <div class="integration-card">
-                <div class="integration-icon" style="background: #ccfbf1; color: #0d9488;">S</div>
-                <div style="font-size: 13px; font-weight: 600; color: var(--text-main); text-align: center;">Segment</div>
-            </div>
-            <div class="integration-card">
-                <div class="integration-icon" style="background: #ffedd5; color: #ea580c;">R</div>
-                <div style="font-size: 13px; font-weight: 600; color: var(--text-main); text-align: center;">RudderStack</div>
-            </div>
-            <div class="integration-card">
-                <div class="integration-icon" style="background: #ffedd5; color: #ea580c;">H</div>
-                <div style="font-size: 13px; font-weight: 600; color: var(--text-main); text-align: center;">HubSpot</div>
-            </div>
-            <div class="integration-card">
-                <div class="integration-icon" style="background: #e0f2fe; color: #0284c7;">S</div>
-                <div style="font-size: 13px; font-weight: 600; color: var(--text-main); text-align: center;">Salesforce Marketing Cloud</div>
-            </div>
-            <div class="integration-card">
-                <div class="integration-icon" style="background: #f1f5f9; color: #475569;">G</div>
-                <div style="font-size: 13px; font-weight: 600; color: var(--text-main); text-align: center;">Google Consent Mode (GA4)</div>
-            </div>
-            <div class="integration-card">
-                <div class="integration-icon" style="background: #e0e7ff; color: #4f46e5;">M</div>
-                <div style="font-size: 13px; font-weight: 600; color: var(--text-main); text-align: center;">Meta Ads (Custom Audiences)</div>
-            </div>
-        </div>
+        <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+                <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 11px; text-transform: uppercase;">
+                    <th style="padding: 14px 24px; font-weight: 600;">Integration Name &#9652;</th>
+                    <th style="padding: 14px 16px; font-weight: 600;">Provider &#8597;</th>
+                    <th style="padding: 14px 16px; font-weight: 600;">Connection Status &#8597;</th>
+                    <th style="padding: 14px 16px; font-weight: 600;">Key Prefix / Token</th>
+                    <th style="padding: 14px 24px; font-weight: 600; text-align: right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody style="font-size: 13px;">
+                <% if (intList.length === 0) { %>
+                    <tr>
+                        <td colspan="5" style="padding: 32px; text-align: center; color: var(--text-muted);">No integrations configured. Click "Connect a Tool" to establish a data bridge.</td>
+                    </tr>
+                <% } else { %>
+                    <% intList.forEach(it => { %>
+                        <tr style="border-bottom: 1px solid var(--border-color);">
+                            <td style="padding: 16px 24px; font-weight: 600; color: var(--text-main);">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="width: 32px; height: 32px; border-radius: 6px; background: rgba(59, 130, 246, 0.15); color: #3b82f6; display: flex; align-items: center; justify-content: center; font-weight: 700;">
+                                        <%= (it.integrationName || 'I').charAt(0).toUpperCase() %>
+                                    </div>
+                                    <span><%= it.integrationName %></span>
+                                </div>
+                            </td>
+                            <td style="padding: 16px 16px; color: var(--text-muted);"><%= it.provider || 'Gateway' %></td>
+                            <td style="padding: 16px 16px;">
+                                <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700;">
+                                    <%= (it.status || 'CONNECTED').toUpperCase() %>
+                                </span>
+                            </td>
+                            <td style="padding: 16px 16px; font-family: monospace; color: var(--text-muted); font-size: 12px;">
+                                <%= it.apiKeyPrefix || 'auth_token_set' %>...
+                            </td>
+                            <td style="padding: 16px 24px; text-align: right;">
+                                <button onclick="deleteIntegration('<%= it.id %>')" title="Disconnect Integration" style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 4px; border-radius: 4px;">
+                                    <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                </button>
+                            </td>
+                        </tr>
+                    <% }); %>
+                <% } %>
+            </tbody>
+        </table>
     </div>
 
-    <!-- Bottom Module Cards -->
+    <!-- Quick Navigation Subsystem Cards -->
     <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px;">
-        <div class="card" style="display: flex; flex-direction: column; height: 100%;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
-                <div>
-                    <h3 style="font-size: 14px; font-weight: 600; color: var(--text-main); margin: 0 0 4px 0;">Integrations Hub</h3>
-                    <p style="color: var(--text-muted); font-size: 12px; margin: 0; line-height: 1.4;">Connect and configure MarTech tools. Manage event delivery for consent and rights.</p>
+        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between; padding: 24px;">
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                    <h3 style="font-size: 15px; font-weight: 600; color: var(--text-main); margin: 0;">Integrations Hub</h3>
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="#3b82f6" stroke-width="2" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                 </div>
-                <div style="color: white; padding: 4px;">
-                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                </div>
+                <p style="color: var(--text-muted); font-size: 13px; margin: 0 0 16px 0; line-height: 1.5;">Connect and configure WhatsApp Business API, Tally Accounting XML, and ABDM health gateways.</p>
             </div>
-            <div style="margin-bottom: auto;">
-                <div style="font-size: 24px; font-weight: 700; color: white;">3</div>
-                <div style="font-size: 13px; color: var(--text-muted);">2 active - 14 tools available</div>
-            </div>
-            <div style="margin-top: 24px;">
-                <a href="/integrations/hub" style="color: #ec4899; text-decoration: none; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px;">Go to screen &rarr;</a>
-            </div>
+            <a href="/integrations/hub" style="color: #3b82f6; text-decoration: none; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">Manage Connectors &rarr;</a>
         </div>
         
-        <div class="card" style="display: flex; flex-direction: column; height: 100%;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
-                <div>
-                    <h3 style="font-size: 14px; font-weight: 600; color: var(--text-main); margin: 0 0 4px 0;">API Keys</h3>
-                    <p style="color: var(--text-muted); font-size: 12px; margin: 0; line-height: 1.4;">Manage programmatic access keys for DPDP_Secure APIs.</p>
+        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between; padding: 24px;">
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                    <h3 style="font-size: 15px; font-weight: 600; color: var(--text-main); margin: 0;">API Keys</h3>
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="#10b981" stroke-width="2" fill="none"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
                 </div>
-                <div style="color: white; padding: 4px;">
-                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
-                </div>
+                <p style="color: var(--text-muted); font-size: 13px; margin: 0 0 16px 0; line-height: 1.5;">Provision and revoke scoped authentication tokens for patient frontdesk and lab webhooks.</p>
             </div>
-            <div style="margin-bottom: auto;">
-                <div style="font-size: 24px; font-weight: 700; color: white;">&mdash;</div>
-                <div style="font-size: 13px; color: var(--text-muted);">Open API key management</div>
-            </div>
-            <div style="margin-top: 24px;">
-                <a href="/integrations/api-keys" style="color: #ec4899; text-decoration: none; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px;">Go to screen &rarr;</a>
-            </div>
+            <a href="/integrations/api-keys" style="color: #10b981; text-decoration: none; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">Manage API Keys &rarr;</a>
         </div>
     </div>
 </div>
+
+<!-- Connect Tool Modal Overlay -->
+<div id="connect-tool-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+    <div class="card p-0" style="width: 520px; background: #0f172a; border: 1px solid #334155; box-shadow: 0 20px 30px rgba(0,0,0,0.6); border-radius: 12px; overflow: hidden;">
+        <div style="padding: 18px 24px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; background: #1e293b;">
+            <h2 style="font-size: 16px; font-weight: 600; color: #f8fafc; margin: 0;">Connect New Integration</h2>
+            <button onclick="document.getElementById('connect-tool-modal').style.display='none'" style="background: none; border: none; cursor: pointer; color: #94a3b8; padding: 4px;">
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+
+        <form id="add-int-form" onsubmit="handleCreateIntegration(event)" style="padding: 24px;">
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 13px; font-weight: 600; color: #e2e8f0; margin-bottom: 6px;">Integration Name *</label>
+                <input type="text" id="intName" required placeholder="e.g. Meta WhatsApp Business Cloud API" style="width: 100%; background: #1e293b; border: 1px solid #475569; color: #f8fafc; padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #e2e8f0; margin-bottom: 6px;">Provider</label>
+                    <input type="text" id="intProvider" value="Meta / WhatsApp" style="width: 100%; background: #1e293b; border: 1px solid #475569; color: #f8fafc; padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #e2e8f0; margin-bottom: 6px;">Status</label>
+                    <select id="intStatus" style="width: 100%; background: #1e293b; border: 1px solid #475569; color: #f8fafc; padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+                        <option value="CONNECTED">CONNECTED</option>
+                        <option value="ACTIVE">ACTIVE</option>
+                        <option value="PAUSED">PAUSED</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 24px;">
+                <label style="display: block; font-size: 13px; font-weight: 600; color: #e2e8f0; margin-bottom: 6px;">API Key Prefix / Client Token</label>
+                <input type="text" id="intPrefix" placeholder="e.g. waba_live_98450" style="width: 100%; background: #1e293b; border: 1px solid #475569; color: #f8fafc; padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+            </div>
+
+            <div style="display: flex; gap: 16px;">
+                <button type="submit" class="btn-primary" style="flex: 1; padding: 12px; font-size: 14px; justify-content: center;">Save & Authorize Pipeline</button>
+                <button type="button" class="btn-secondary" onclick="document.getElementById('connect-tool-modal').style.display='none'" style="flex: 1; padding: 12px; font-size: 14px; justify-content: center; background: #334155; border: 1px solid #475569; color: #f8fafc;">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+async function handleCreateIntegration(e) {
+    e.preventDefault();
+    const integrationName = document.getElementById('intName').value.trim();
+    const provider = document.getElementById('intProvider').value.trim();
+    const status = document.getElementById('intStatus').value;
+    const apiKeyPrefix = document.getElementById('intPrefix').value.trim();
+
+    try {
+        const res = await fetch('/api/integrations/dashboard', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ integrationName, provider, status, apiKeyPrefix })
+        });
+        const json = await res.json();
+        if (json.success) {
+            window.location.reload();
+        } else {
+            alert('Error connecting integration: ' + (json.message || 'Unknown error'));
+        }
+    } catch (err) {
+        alert('Network error submitting integration');
+    }
+}
+
+async function deleteIntegration(id) {
+    if (!confirm('Are you sure you want to disconnect this integration?')) return;
+    try {
+        const res = await fetch(`/api/integrations/dashboard/${id}`, { method: 'DELETE' });
+        const json = await res.json();
+        if (json.success) {
+            window.location.reload();
+        } else {
+            alert('Error disconnecting integration: ' + (json.message || 'Unknown error'));
+        }
+    } catch (err) {
+        alert('Network error disconnecting integration');
+    }
+}
+</script>
 
 <%- include('partials/footer') %>

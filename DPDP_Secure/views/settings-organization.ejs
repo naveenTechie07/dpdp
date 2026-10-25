@@ -1,30 +1,41 @@
 <%- include('partials/header') %>
+<%
+  const safeOrg = (typeof org !== 'undefined' && org) ? org : {};
+  const orgName = safeOrg.organizationName || 'Aarogya Diagnostic Center';
+  const parentOrg = safeOrg.parentOrganization || 'Aarogya Healthcare Trust';
+  const country = safeOrg.country || 'India';
+  const industry = safeOrg.industry || 'Healthcare Diagnostics SME';
+  const empCount = safeOrg.employeeCount || 18;
+  const purpose = safeOrg.dataProcessingPurpose || 'Clinical diagnostics, pathology blood panels, radiology reports, and statutory billing';
+%>
 
 <style>
 .org-card {
     background: var(--bg-surface);
     border: 1px solid var(--border-color);
     border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 24px;
 }
 .org-header {
     padding: 16px 24px;
     border-bottom: 1px solid var(--border-color);
     display: flex;
     align-items: center;
-    gap: 12px;
+    justify-content: space-between;
 }
 .org-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 16px 24px;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
 }
 .org-item:last-child {
     border-bottom: none;
 }
 .pill-active {
-    display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 700; background: rgba(16, 185, 129, 0.1); color: #34d399; margin-left: 16px;
+    display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 700; background: rgba(16, 185, 129, 0.15); color: #34d399; margin-left: 16px;
 }
 .icon-btn {
     color: var(--text-muted);
@@ -34,6 +45,7 @@
     padding: 4px;
     display: inline-flex;
     margin-left: 8px;
+    transition: color 0.2s;
 }
 .icon-btn:hover {
     color: white;
@@ -43,7 +55,7 @@
 .side-panel-overlay {
     position: fixed;
     top: 0; right: 0; bottom: 0; left: 0;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0,0,0,0.65);
     backdrop-filter: blur(2px);
     z-index: 100;
     display: none;
@@ -54,8 +66,8 @@
 .side-panel {
     position: fixed;
     top: 16px; right: -500px; bottom: 16px;
-    width: 450px;
-    background: var(--bg-surface);
+    width: 460px;
+    background: #111827;
     border: 1px solid var(--border-color);
     border-radius: 12px;
     z-index: 101;
@@ -68,21 +80,22 @@
     right: 16px;
 }
 .side-panel-header {
-    background: #e2e8f0; /* Light gray from screenshot */
+    background: rgba(255,255,255,0.05);
     padding: 16px 24px;
+    border-bottom: 1px solid var(--border-color);
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 .side-panel-title {
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 700;
-    color: #0f172a;
+    color: white;
     margin: 0;
 }
 .side-panel-close {
-    width: 24px; height: 24px;
-    background: #475569;
+    width: 28px; height: 28px;
+    background: rgba(255,255,255,0.1);
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     color: white; cursor: pointer; border: none;
@@ -96,7 +109,7 @@
     display: block; font-size: 13px; font-weight: 600; color: white; margin-bottom: 8px;
 }
 .form-input {
-    width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: white; padding: 10px 12px; border-radius: 6px; font-size: 13px; margin-bottom: 20px;
+    width: 100%; background: rgba(0,0,0,0.25); border: 1px solid var(--border-color); color: white; padding: 10px 12px; border-radius: 6px; font-size: 13px; margin-bottom: 20px; box-sizing: border-box;
 }
 </style>
 
@@ -104,57 +117,90 @@
     
     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px;">
         <div>
-            <h1 style="font-size: 20px; font-weight: 700; color: white; margin: 0 0 8px 0;">Organization Hierarchy</h1>
-            <p style="color: var(--text-muted); font-size: 13px; margin: 0;">Define tenant org trees, child-org locale overrides, and inherited settings.</p>
+            <h1 style="font-size: 20px; font-weight: 700; color: white; margin: 0 0 6px 0;">Organization Hierarchy</h1>
+            <p style="color: var(--text-muted); font-size: 13px; margin: 0;">Define tenant entity structure, operating branches, and statutory data processing bounds.</p>
         </div>
-        <button onclick="openPanel('add')" class="btn-primary" style="background: #be185d; border: 1px solid #9d174d; color: white; padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer;">
-            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            Add Org Unit
+        <button onclick="openPanel('edit')" class="btn-primary" style="background: #3b82f6; border: 1px solid #2563eb; color: white; padding: 8px 18px; border-radius: 6px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            Edit Entity Details
         </button>
     </div>
 
+    <!-- Org Details Summary Card -->
+    <div class="org-card" style="padding: 24px; background: var(--bg-surface); margin-bottom: 24px;">
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
+            <div>
+                <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 4px;">Primary Fiduciary</div>
+                <div style="font-size: 15px; font-weight: 700; color: white;"><%= orgName %></div>
+            </div>
+            <div>
+                <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 4px;">Parent Trust / Group</div>
+                <div style="font-size: 15px; font-weight: 700; color: #93c5fd;"><%= parentOrg %></div>
+            </div>
+            <div>
+                <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 4px;">Industry &amp; Headcount</div>
+                <div style="font-size: 15px; font-weight: 700; color: white;"><%= industry %> (<%= empCount %> staff)</div>
+            </div>
+            <div>
+                <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 4px;">Jurisdiction</div>
+                <div style="font-size: 15px; font-weight: 700; color: #34d399;"><%= country %> &bull; Bengaluru, KA</div>
+            </div>
+        </div>
+        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.06); font-size: 12px; color: var(--text-muted);">
+            <strong style="color: white;">Registered Processing Scope:</strong> <%= purpose %>
+        </div>
+    </div>
+
+    <!-- Hierarchy Tree View -->
     <div class="org-card">
         <div class="org-header">
-            <input type="checkbox" style="margin: 0; cursor: pointer;">
-            <span style="font-size: 13px; font-weight: 600; color: white;">Include inactive</span>
+            <span style="font-size: 14px; font-weight: 600; color: white;">Operating Branches &amp; Collection Silos</span>
+            <span style="font-size: 12px; color: var(--text-muted);">3 Operational Units</span>
         </div>
         
+        <!-- Root node -->
         <div class="org-item" style="padding-left: 24px;">
             <div style="display: flex; gap: 16px; align-items: flex-start;">
-                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" style="margin-top: 2px; color: var(--text-muted);"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="#3b82f6" stroke-width="2" fill="none" style="margin-top: 2px;"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 <div>
-                    <div style="font-size: 14px; font-weight: 700; color: white; margin-bottom: 4px;">DPDP_Secure Mumbai HQ</div>
-                    <div style="font-size: 12px; color: var(--text-muted); font-family: monospace;">global &bull; global</div>
+                    <div style="font-size: 14px; font-weight: 700; color: white; margin-bottom: 4px;"><%= orgName %> (Headquarters &amp; Lab)</div>
+                    <div style="font-size: 12px; color: var(--text-muted); font-family: monospace;">Indiranagar 100ft Road &bull; Primary Hub</div>
                 </div>
             </div>
             <div style="display: flex; align-items: center; font-size: 13px; color: var(--text-muted);">
-                en-IN
-                <span class="pill-active">ACTIVE</span>
-                <button onclick="openPanel('edit')" class="icon-btn" style="margin-left: 24px;">
+                en-IN / kn-IN
+                <span class="pill-active">ACTIVE HUB</span>
+                <button onclick="openPanel('edit')" class="icon-btn" title="Edit">
                     <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                </button>
-                <button class="icon-btn">
-                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M1 1l22 22"></path><path d="M16 16v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2m5.66 0H14a2 2 0 0 1 2 2v3.34"></path></svg>
                 </button>
             </div>
         </div>
 
-        <div class="org-item" style="padding-left: 72px;">
+        <!-- Child unit 1 -->
+        <div class="org-item" style="padding-left: 64px;">
             <div style="display: flex; gap: 16px; align-items: flex-start;">
                 <div>
-                    <div style="font-size: 14px; font-weight: 700; color: white; margin-bottom: 4px;">Mumbai Operations</div>
-                    <div style="font-size: 12px; color: var(--text-muted); font-family: monospace;">mumbai &bull; global/mumbai</div>
+                    <div style="font-size: 14px; font-weight: 600; color: white; margin-bottom: 4px;">HAL 2nd Stage Phlebotomy Center</div>
+                    <div style="font-size: 12px; color: var(--text-muted); font-family: monospace;">branch/hal &bull; Sample Intake Silo</div>
                 </div>
             </div>
             <div style="display: flex; align-items: center; font-size: 13px; color: var(--text-muted);">
                 en-IN
-                <span class="pill-active">ACTIVE</span>
-                <button onclick="openPanel('edit')" class="icon-btn" style="margin-left: 24px;">
-                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                </button>
-                <button class="icon-btn">
-                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M1 1l22 22"></path><path d="M16 16v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2m5.66 0H14a2 2 0 0 1 2 2v3.34"></path></svg>
-                </button>
+                <span class="pill-active">ACTIVE BRANCH</span>
+            </div>
+        </div>
+
+        <!-- Child unit 2 -->
+        <div class="org-item" style="padding-left: 64px;">
+            <div style="display: flex; gap: 16px; align-items: flex-start;">
+                <div>
+                    <div style="font-size: 14px; font-weight: 600; color: white; margin-bottom: 4px;">Whitefield Courier &amp; Report Dispatch Silo</div>
+                    <div style="font-size: 12px; color: var(--text-muted); font-family: monospace;">branch/whitefield &bull; Logistics &amp; WhatsApp Reports</div>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; font-size: 13px; color: var(--text-muted);">
+                en-IN
+                <span class="pill-active">ACTIVE BRANCH</span>
             </div>
         </div>
 
@@ -163,36 +209,39 @@
     <!-- Side Panel Overlay -->
     <div class="side-panel-overlay" id="panelOverlay" onclick="closePanel()"></div>
     
-    <!-- Edit/Add Panel -->
+    <!-- Edit Panel -->
     <div class="side-panel" id="orgPanel">
         <div class="side-panel-header">
-            <h2 class="side-panel-title" id="panelTitle">Add Org Unit</h2>
+            <h2 class="side-panel-title">Edit Organization Details</h2>
             <button class="side-panel-close" onclick="closePanel()">
                 <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </button>
         </div>
         <div class="side-panel-body">
-            <label class="form-label">Organization Code</label>
-            <input type="text" class="form-input" id="orgCode" placeholder="e.g. india-ops">
-            
-            <label class="form-label">Organization Name</label>
-            <input type="text" class="form-input" id="orgName" placeholder="e.g. India Operations">
-            
-            <label class="form-label">Parent Organization</label>
-            <select class="form-input" style="appearance: none;">
-                <option>No parent (root)</option>
-                <option>DPDP_Secure Mumbai HQ</option>
-            </select>
-            
-            <label class="form-label">Default Locale</label>
-            <select class="form-input" style="appearance: none;">
-                <option>en-IN - English</option>
-            </select>
-            
-            <div style="display: flex; gap: 12px; margin-top: 8px;">
-                <button class="btn-primary" id="saveBtn" style="background: #be185d; border: 1px solid #9d174d; color: white; padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 600; flex: 1; cursor: pointer;">Save Org Unit</button>
-                <button onclick="closePanel()" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 600; flex: 1; cursor: pointer;">Cancel</button>
-            </div>
+            <form id="orgForm" onsubmit="handleSaveOrg(event)">
+                <label class="form-label">Organization / Fiduciary Name <span style="color: #ef4444;">*</span></label>
+                <input type="text" class="form-input" id="inputOrgName" value="<%= orgName %>" required>
+                
+                <label class="form-label">Parent Entity / Trust</label>
+                <input type="text" class="form-input" id="inputParentOrg" value="<%= parentOrg %>">
+                
+                <label class="form-label">Industry Classification</label>
+                <input type="text" class="form-input" id="inputIndustry" value="<%= industry %>">
+                
+                <label class="form-label">Total Employee Count</label>
+                <input type="number" class="form-input" id="inputEmpCount" value="<%= empCount %>">
+                
+                <label class="form-label">Country Jurisdiction</label>
+                <input type="text" class="form-input" id="inputCountry" value="<%= country %>">
+                
+                <label class="form-label">Data Processing Purpose</label>
+                <textarea class="form-input" id="inputPurpose" style="height: 80px; resize: none;"><%= purpose %></textarea>
+                
+                <div style="display: flex; gap: 12px; margin-top: 10px;">
+                    <button type="submit" class="btn-primary" id="btnSaveOrg" style="background: #3b82f6; border: 1px solid #2563eb; color: white; padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 600; flex: 1; cursor: pointer;">Save Changes</button>
+                    <button type="button" onclick="closePanel()" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 600; flex: 1; cursor: pointer;">Cancel</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -202,23 +251,52 @@
 function openPanel(type) {
     document.getElementById('panelOverlay').classList.add('active');
     document.getElementById('orgPanel').classList.add('active');
-    
-    if (type === 'edit') {
-        document.getElementById('panelTitle').innerText = 'Edit Org Unit';
-        document.getElementById('orgCode').value = 'global';
-        document.getElementById('orgName').value = 'DPDP_Secure Mumbai HQ';
-        document.getElementById('saveBtn').innerText = 'Update Org Unit';
-    } else {
-        document.getElementById('panelTitle').innerText = 'Add Org Unit';
-        document.getElementById('orgCode').value = '';
-        document.getElementById('orgName').value = '';
-        document.getElementById('saveBtn').innerText = 'Save Org Unit';
-    }
 }
 
 function closePanel() {
     document.getElementById('panelOverlay').classList.remove('active');
     document.getElementById('orgPanel').classList.remove('active');
+}
+
+async function handleSaveOrg(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btnSaveOrg');
+    btn.disabled = true;
+    btn.innerText = 'Saving...';
+
+    const organizationName = document.getElementById('inputOrgName').value.trim();
+    const parentOrganization = document.getElementById('inputParentOrg').value.trim();
+    const industry = document.getElementById('inputIndustry').value.trim();
+    const employeeCount = parseInt(document.getElementById('inputEmpCount').value, 10) || 18;
+    const country = document.getElementById('inputCountry').value.trim();
+    const dataProcessingPurpose = document.getElementById('inputPurpose').value.trim();
+
+    try {
+        const res = await fetch('/api/settings/organization', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                organizationName,
+                parentOrganization,
+                industry,
+                employeeCount,
+                country,
+                dataProcessingPurpose
+            })
+        });
+        const data = await res.json();
+        if (data.success) {
+            closePanel();
+            window.location.reload();
+        } else {
+            alert('Failed to update organization: ' + (data.error || 'Unknown error'));
+        }
+    } catch (err) {
+        alert('Error: ' + err.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerText = 'Save Changes';
+    }
 }
 </script>
 

@@ -1,61 +1,176 @@
 <%- include('partials/header') %>
+<%
+  const rawSettings = (typeof settings !== 'undefined' && settings) ? settings : [];
+  const settingsMap = Array.isArray(rawSettings) 
+    ? rawSettings.reduce((acc, curr) => { if(curr && curr.settingKey) acc[curr.settingKey] = curr.settingValue; return acc; }, {})
+    : rawSettings;
+  const getSetting = (k, def) => (settingsMap[k] !== undefined && settingsMap[k] !== null ? settingsMap[k] : def);
+  const isPortalEnabled = getSetting('enable_portal', 'true') === 'true';
+  const isOtpRequired = getSetting('require_phone_otp', 'true') === 'true';
+%>
 
-<div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #f87171; padding: 12px 24px; border-radius: 8px; margin: -12px 0 24px 0; max-width: 600px; margin-left: auto; margin-right: auto; text-align: center; font-weight: 500; font-size: 14px;">
-    Something went wrong. Please try again.
-</div>
+<style>
+.form-input {
+    background: rgba(0,0,0,0.25);
+    border: 1px solid var(--border-color);
+    color: white;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    box-sizing: border-box;
+}
+.toggle-switch-ui {
+    width: 44px;
+    height: 24px;
+    background: #374151;
+    border-radius: 12px;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.toggle-switch-ui.active {
+    background: #3b82f6;
+}
+.toggle-switch-ui::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    transition: left 0.2s;
+}
+.toggle-switch-ui.active::after {
+    left: 22px;
+}
+.toast-msg {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: #10b981;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.4);
+    display: none;
+    z-index: 1000;
+}
+</style>
 
-<div style="max-width: 700px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px;">
+<div style="padding: 24px; max-width: 900px; margin: 0 auto;">
+    
+    <div style="margin-bottom: 32px;">
+        <h1 style="font-size: 20px; font-weight: 700; color: white; margin: 0 0 6px 0;">Privacy Portal Access Settings</h1>
+        <p style="color: var(--text-muted); font-size: 13px; margin: 0;">Configure self-service authentication, OTP verification, and magic link rules for patient consent management.</p>
+    </div>
 
-    <!-- Access -->
-    <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px;">
-        <h3 style="font-size: 16px; font-weight: 600; color: var(--text-main); margin-bottom: 16px;">Access</h3>
-        
-        <div style="display: flex; gap: 16px; align-items: flex-start;">
-            <div style="margin-top: 4px;">
-                <div style="width: 40px; height: 24px; background: #8b5cf6; border-radius: 12px; position: relative; cursor: pointer;">
-                    <div style="width: 18px; height: 18px; background: white; border-radius: 50%; position: absolute; right: 3px; top: 3px;"></div>
+    <div style="display: flex; flex-direction: column; gap: 24px;">
+
+        <!-- Portal Master Toggle -->
+        <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; gap: 16px; align-items: center;">
+                    <div style="background: rgba(59, 130, 246, 0.15); padding: 10px; border-radius: 8px; color: #60a5fa;">
+                        <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    </div>
+                    <div>
+                        <div style="font-size: 15px; font-weight: 700; color: white; margin-bottom: 2px;">Patient Privacy Portal Master Switch</div>
+                        <div style="color: var(--text-muted); font-size: 12px;">Allow data principals to access self-service consent reviews and DSR intake via verified magic link.</div>
+                    </div>
+                </div>
+                <div class="toggle-switch-ui <%= isPortalEnabled ? 'active' : '' %>" id="togglePortal" onclick="this.classList.toggle('active')"></div>
+            </div>
+        </div>
+
+        <!-- Verification & Security -->
+        <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px;">
+            <h3 style="font-size: 15px; font-weight: 700; color: white; margin: 0 0 16px 0;">Authentication &amp; Security Controls</h3>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.06); margin-bottom: 16px;">
+                <div>
+                    <div style="font-size: 13px; font-weight: 600; color: white; margin-bottom: 2px;">Require Indian Mobile Phone OTP</div>
+                    <div style="color: var(--text-muted); font-size: 11px;">Sends a 6-digit verification code to the patient's registered WhatsApp/SMS number before exposing health records.</div>
+                </div>
+                <div class="toggle-switch-ui <%= isOtpRequired ? 'active' : '' %>" id="toggleOtp" onclick="this.classList.toggle('active')"></div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 600; color: white; margin-bottom: 6px;">Magic Link Validity (days)</label>
+                    <input type="number" id="magicExpiry" class="form-input" value="<%= getSetting('magic_link_expiry_days', '30') %>" style="width: 100%;">
+                    <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Link expires after specified days.</div>
+                </div>
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 600; color: white; margin-bottom: 6px;">Re-access Cooldown (minutes)</label>
+                    <input type="number" id="cooldownMins" class="form-input" value="<%= getSetting('reaccess_cooldown_mins', '15') %>" style="width: 100%;">
+                    <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Anti-spam delay between OTP requests.</div>
                 </div>
             </div>
-            <div>
-                <div style="font-weight: 600; color: var(--text-main); margin-bottom: 4px;">Enable Privacy Portal</div>
-                <div style="color: var(--text-muted); font-size: 13px;">Allow data principals to access the self-service privacy portal via magic link.</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Magic Link Expiry -->
-    <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px;">
-        <h3 style="font-size: 16px; font-weight: 600; color: var(--text-main); margin-bottom: 16px;">Magic Link Expiry</h3>
-        <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 24px;">Controls how long a portal access link remains valid after it is issued to a data principal.</p>
-        
-        <div style="margin-bottom: 24px;">
-            <div style="font-weight: 600; color: var(--text-main); margin-bottom: 4px; font-size: 13px;">Link validity (days)</div>
-            <div style="color: var(--text-muted); font-size: 11px; margin-bottom: 8px;">Number of days a magic link stays active. After expiry the principal must request a new link.</div>
-            <input type="text" value="30" style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px; width: 100px;">
         </div>
 
-        <div>
-            <div style="font-weight: 600; color: var(--text-main); margin-bottom: 4px; font-size: 13px;">Re-access cooldown (minutes)</div>
-            <div style="color: var(--text-muted); font-size: 11px; margin-bottom: 8px;">Minimum time that must pass before a principal can request a new magic link after one was already sent.</div>
-            <input type="text" value="15" style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px; width: 100px;">
+        <!-- Portal Domain URL -->
+        <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px;">
+            <h3 style="font-size: 15px; font-weight: 700; color: white; margin: 0 0 8px 0;">Portal Canonical URL</h3>
+            <p style="color: var(--text-muted); font-size: 12px; margin: 0 0 16px 0;">Base URL used to construct magic links sent to patients via WhatsApp bot and diagnostic receipts.</p>
+            
+            <label style="display: block; font-size: 12px; font-weight: 600; color: white; margin-bottom: 6px;">Base URL</label>
+            <input type="text" id="portalBaseUrl" class="form-input" value="<%= getSetting('portal_base_url', 'https://aarogyaclinic.in/privacy') %>" style="width: 100%;">
         </div>
-    </div>
 
-    <!-- Portal URL -->
-    <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px;">
-        <h3 style="font-size: 16px; font-weight: 600; color: var(--text-main); margin-bottom: 16px;">Portal URL</h3>
-        <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 24px;">The base URL where the privacy portal is hosted. Used to construct magic links sent to data principals. Leave blank to use the default (<code>http://localhost:4002</code>).</p>
-        
-        <div>
-            <div style="font-weight: 600; color: var(--text-main); margin-bottom: 4px; font-size: 13px;">Base URL</div>
-            <input type="text" value="https://privacy.yourcompany.com" style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px; width: 100%;">
+        <div style="display: flex; justify-content: flex-end;">
+            <button onclick="savePortalSettings()" id="btnSavePortal" class="btn-primary" style="background: #3b82f6; border: 1px solid #2563eb; color: white; padding: 12px 28px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer;">
+                Save Portal Settings
+            </button>
         </div>
-    </div>
 
-    <div>
-        <button class="btn-primary" style="padding: 10px 24px; font-size: 14px;">Save Settings</button>
     </div>
 
 </div>
+
+<div id="toastSuccess" class="toast-msg">
+    Portal settings saved successfully!
+</div>
+
+<script>
+async function savePortalSetting(key, val) {
+    return fetch('/api/consent/portal-settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ settingKey: key, settingValue: val })
+    });
+}
+
+async function savePortalSettings() {
+    const btn = document.getElementById('btnSavePortal');
+    btn.disabled = true;
+    btn.innerText = 'Saving...';
+
+    const payload = [
+        { key: 'enable_portal', val: document.getElementById('togglePortal').classList.contains('active') ? 'true' : 'false' },
+        { key: 'require_phone_otp', val: document.getElementById('toggleOtp').classList.contains('active') ? 'true' : 'false' },
+        { key: 'magic_link_expiry_days', val: document.getElementById('magicExpiry').value.trim() },
+        { key: 'reaccess_cooldown_mins', val: document.getElementById('cooldownMins').value.trim() },
+        { key: 'portal_base_url', val: document.getElementById('portalBaseUrl').value.trim() }
+    ];
+
+    try {
+        for (const item of payload) {
+            await savePortalSetting(item.key, item.val);
+        }
+        const toast = document.getElementById('toastSuccess');
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 3000);
+    } catch (err) {
+        alert('Failed to save portal settings: ' + err.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerText = 'Save Portal Settings';
+    }
+}
+</script>
 
 <%- include('partials/footer') %>

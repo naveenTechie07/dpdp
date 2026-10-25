@@ -58,7 +58,7 @@ router.get('/integrations/api-keys', async (req, res) => {
 // INTEGRATIONS & API KEY CRUD APIS
 // ==========================================
 
-router.get('/api/integrations', async (req, res) => {
+router.get(['/api/integrations', '/api/integrations/dashboard'], async (req, res) => {
   try {
     const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
     const data = await models.getIntegrations(tenantId);
@@ -68,7 +68,7 @@ router.get('/api/integrations', async (req, res) => {
   }
 });
 
-router.post('/api/integrations', async (req, res) => {
+router.post(['/api/integrations', '/api/integrations/dashboard'], async (req, res) => {
   try {
     const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
     const created = await models.createIntegration({ ...req.body, tenantId });
@@ -78,7 +78,17 @@ router.post('/api/integrations', async (req, res) => {
   }
 });
 
-router.delete('/api/integrations/:id', async (req, res) => {
+router.put(['/api/integrations/:id', '/api/integrations/dashboard/:id'], async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    await models.updateIntegration(req.params.id, req.body, tenantId);
+    res.json({ success: true, message: 'Integration updated' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.delete(['/api/integrations/:id', '/api/integrations/dashboard/:id'], async (req, res) => {
   try {
     const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
     await models.deleteIntegration(req.params.id, tenantId);
@@ -103,6 +113,26 @@ router.post('/api/integrations/hub', async (req, res) => {
     const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
     const created = await models.createIntegrationHubItem({ ...req.body, tenantId });
     res.status(201).json({ success: true, connector: created });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.put('/api/integrations/hub/:id', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    await models.updateIntegrationHub(req.params.id, req.body, tenantId);
+    res.json({ success: true, message: 'Connector updated' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.delete('/api/integrations/hub/:id', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    await models.deleteIntegrationHub(req.params.id, tenantId);
+    res.json({ success: true, message: 'Connector deleted' });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
@@ -148,6 +178,17 @@ router.post('/api/integrations/api-keys', async (req, res) => {
       secretKey: rawSecret,
       warning: 'Store this key safely; it will never be displayed in plain text again.'
     });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.put('/api/integrations/api-keys/:id', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    await models.updateApiKey(req.params.id, req.body, tenantId);
+    await models.logAuditEvent(tenantId, req.session?.user?.name || 'Admin', 'UPDATE_API_KEY_SCOPES', req.params.id, req.body);
+    res.json({ success: true, message: 'API key updated' });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }

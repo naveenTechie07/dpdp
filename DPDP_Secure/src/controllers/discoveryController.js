@@ -325,6 +325,133 @@ const discoveryController = {
   },
 
   /**
+   * Get single RoPA record by ID
+   * Triggered by GET /api/ropa/:id
+   */
+  getRoPARecordById: async (req, res) => {
+    try {
+      const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+      const record = await models.getRoPARecordById(req.params.id, tenantId);
+      if (!record) {
+        return res.status(404).json({ success: false, error: 'RoPA record not found' });
+      }
+      res.json({ success: true, data: record });
+    } catch (err) {
+      console.error('[DISCOVERY] getRoPARecordById error:', err);
+      res.status(500).json({ success: false, error: err.message });
+    }
+  },
+
+  /**
+   * Create a new RoPA record
+   * Triggered by POST /api/ropa/create
+   */
+  createRoPARecord: async (req, res) => {
+    try {
+      const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+      const {
+        activityName, dataCategories, purpose, legalBasis,
+        retentionPeriod, storageLocation, securitySafeguards
+      } = req.body;
+
+      if (!activityName || !purpose) {
+        return res.status(400).json({ success: false, error: 'Activity name and purpose are required' });
+      }
+
+      const id = await models.createRoPARecord({
+        tenantId,
+        activityName,
+        dataCategories: dataCategories || '',
+        purpose,
+        legalBasis: legalBasis || 'Section 6 - Consent',
+        retentionPeriod: retentionPeriod || '3 Years',
+        storageLocation: storageLocation || 'Local Storage',
+        securitySafeguards: securitySafeguards || 'Local Storage'
+      });
+
+      await models.logAuditEvent(
+        tenantId,
+        req.session?.user?.name || 'Admin',
+        'CREATE_ROPA_RECORD',
+        id,
+        JSON.stringify({
+          details: `Created new RoPA record: ${activityName}`,
+          activityName,
+          legalBasis
+        })
+      );
+
+      res.status(201).json({ success: true, id, message: 'RoPA record created successfully' });
+    } catch (err) {
+      console.error('[DISCOVERY] createRoPARecord error:', err);
+      res.status(500).json({ success: false, error: 'Failed to create RoPA record: ' + err.message });
+    }
+  },
+
+  /**
+   * Update an existing RoPA record
+   * Triggered by PUT /api/ropa/:id
+   */
+  updateRoPARecord: async (req, res) => {
+    try {
+      const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+      const {
+        activityName, dataCategories, purpose, legalBasis,
+        retentionPeriod, storageLocation, securitySafeguards
+      } = req.body;
+
+      if (!activityName || !purpose) {
+        return res.status(400).json({ success: false, error: 'Activity name and purpose are required' });
+      }
+
+      await models.updateRoPARecord(req.params.id, {
+        activityName,
+        dataCategories: dataCategories || '',
+        purpose,
+        legalBasis: legalBasis || 'Section 6 - Consent',
+        retentionPeriod: retentionPeriod || '3 Years',
+        storageLocation: storageLocation || 'Local Storage',
+        securitySafeguards: securitySafeguards || 'Local Storage'
+      }, tenantId);
+
+      await models.logAuditEvent(
+        tenantId,
+        req.session?.user?.name || 'Admin',
+        'UPDATE_ROPA_RECORD',
+        req.params.id,
+        JSON.stringify({ details: `Updated RoPA record: ${activityName}` })
+      );
+
+      res.json({ success: true, message: 'RoPA record updated successfully' });
+    } catch (err) {
+      console.error('[DISCOVERY] updateRoPARecord error:', err);
+      res.status(500).json({ success: false, error: 'Failed to update RoPA record: ' + err.message });
+    }
+  },
+
+  /**
+   * Delete a RoPA record
+   * Triggered by DELETE /api/ropa/:id
+   */
+  deleteRoPARecord: async (req, res) => {
+    try {
+      const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+      await models.deleteRoPARecord(req.params.id, tenantId);
+      await models.logAuditEvent(
+        tenantId,
+        req.session?.user?.name || 'Admin',
+        'DELETE_ROPA_RECORD',
+        req.params.id,
+        {}
+      );
+      res.json({ success: true, message: 'RoPA record deleted successfully' });
+    } catch (err) {
+      console.error('[DISCOVERY] deleteRoPARecord error:', err);
+      res.status(500).json({ success: false, error: 'Failed to delete RoPA record: ' + err.message });
+    }
+  },
+
+  /**
    * Renders the SME PII Sanitizer & Masking Playground
    * Triggered by GET /discovery/sanitizer
    */

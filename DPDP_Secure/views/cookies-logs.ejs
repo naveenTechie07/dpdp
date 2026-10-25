@@ -1,167 +1,183 @@
 <%- include('partials/header') %>
+<%
+  const safeLogs = (typeof logs !== 'undefined' && Array.isArray(logs)) ? logs : [];
+%>
 
 <div class="dashboard-header mb-4">
     <div>
         <h1 class="page-title">Consent logs</h1>
-        <p class="page-description">One table of consent events. Log a new event with the form above the grid.</p>
+        <p class="page-description">Tamper-evident audit log of cookie and tracker consent decisions recorded across patient portal endpoints.</p>
     </div>
 </div>
 
 <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 8px; padding: 24px; margin-bottom: 24px;">
-    <div style="display: flex; gap: 24px; align-items: flex-end;">
-        <div style="flex: 2;">
-            <input type="text" value="user@example.com" style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px;">
-        </div>
-        <div style="flex: 1; position: relative;">
-            <select style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px; appearance: none;">
-                <option value="ANALYTICS" selected>ANALYTICS</option>
-                <option value="NECESSARY">NECESSARY</option>
-                <option value="MARKETING">MARKETING</option>
-                <option value="FUNCTIONAL">FUNCTIONAL</option>
-            </select>
-            <div style="position: absolute; right: 12px; top: 0; bottom: 0; display: flex; align-items: center; pointer-events: none; color: var(--text-muted);">
-                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    <form id="logEventForm" onsubmit="handleLogEvent(event)">
+        <div style="display: flex; gap: 20px; align-items: flex-end; flex-wrap: wrap;">
+            <div style="flex: 2; min-width: 240px;">
+                <label for="userIdentifierInput" style="display: block; font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">User / Session Identifier</label>
+                <input type="text" id="userIdentifierInput" required value="patient.kumar@aarogyaclinic.in" style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px;" placeholder="user@domain.in or SES-xxxxx">
+            </div>
+            <div style="flex: 1; min-width: 160px; position: relative;">
+                <label for="categorySelect" style="display: block; font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">Cookie Category</label>
+                <select id="categorySelect" style="width: 100%; background: #1e293b; border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+                    <option value="ANALYTICS" selected>ANALYTICS</option>
+                    <option value="NECESSARY">NECESSARY</option>
+                    <option value="MARKETING">MARKETING</option>
+                    <option value="FUNCTIONAL">FUNCTIONAL</option>
+                </select>
+            </div>
+            <div style="flex: 1; min-width: 160px; position: relative;">
+                <label for="actionSelect" style="display: block; font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">Consent Decision</label>
+                <select id="actionSelect" style="width: 100%; background: #1e293b; border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+                    <option value="ACCEPTED" selected>ACCEPTED</option>
+                    <option value="REJECTED">REJECTED</option>
+                </select>
+            </div>
+            <div>
+                <button type="submit" id="logEventBtn" class="btn-primary" style="padding: 10px 24px; font-size: 14px; display: flex; align-items: center; gap: 8px;">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    Log event
+                </button>
             </div>
         </div>
-        <div style="flex: 1; position: relative;">
-            <select style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px; appearance: none;">
-                <option value="ACCEPTED" selected>ACCEPTED</option>
-                <option value="REJECTED">REJECTED</option>
-            </select>
-            <div style="position: absolute; right: 12px; top: 0; bottom: 0; display: flex; align-items: center; pointer-events: none; color: var(--text-muted);">
-                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </div>
-        </div>
-        <div>
-            <button class="btn-primary" style="padding: 10px 24px; font-size: 14px;">Log event</button>
-        </div>
-    </div>
+    </form>
 </div>
 
 <div class="card p-0" style="overflow: hidden; display: flex; flex-direction: column;">
     <!-- Table Toolbar -->
-    <div class="table-toolbar" style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
-        <div class="search-bar" style="width: 350px; background: transparent; padding: 0; border: none;">
-            <input type="text" placeholder="Search logs..." style="border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 6px; background: transparent; color: var(--text-main); width: 100%;">
+    <div class="table-toolbar" style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+        <div class="search-bar" style="width: 320px; background: transparent; padding: 0; border: none;">
+            <input type="text" id="logSearch" onkeyup="filterLogs()" placeholder="Search consent logs..." style="border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 6px; background: transparent; color: var(--text-main); width: 100%; font-size: 13px;">
         </div>
         
         <div class="pagination" style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-muted);">
+            <span id="logCountLabel"><%= safeLogs.length %> records</span>
             <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Previous</button>
+            <span>Page 1 of 1</span>
             <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Next</button>
         </div>
     </div>
 
     <!-- Data Table -->
-    <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left; flex-grow: 1;">
-        <thead>
-            <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-main); font-size: 11px; font-weight: 700; text-transform: uppercase;">
-                <th style="padding: 16px 24px;">ID</th>
-                <th style="padding: 16px 16px;">USER</th>
-                <th style="padding: 16px 16px;">CATEGORY</th>
-                <th style="padding: 16px 16px;">CONSENT</th>
-                <th style="padding: 16px 16px;">POLICY</th>
-                <th style="padding: 16px 24px;">TIME</th>
-            </tr>
-        </thead>
-        <tbody style="font-size: 13px;">
-            <!-- Row 1 -->
-            <tr style="border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
-                <td style="padding: 16px 24px; color: var(--text-muted);">#70</td>
-                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">user@example.com</td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">ANALYTICS</td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">Accepted</span>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">v1</td>
-                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">10 Sept 2026, 04:14 am</td>
-            </tr>
-            
-            <!-- Row 2 -->
-            <tr style="border-bottom: 1px solid var(--border-color); background: rgba(59, 130, 246, 0.1);">
-                <td style="padding: 16px 24px; color: var(--text-muted);">#69</td>
-                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">test.user@dpdpsecure.in</td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">MARKETING</td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">Accepted</span>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">v1</td>
-                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">08 Sept 2026, 10:52 am</td>
-            </tr>
-
-            <!-- Row 3 -->
-            <tr style="border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
-                <td style="padding: 16px 24px; color: var(--text-muted);">#68</td>
-                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">user@example.com</td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">ANALYTICS</td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">Accepted</span>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">v1</td>
-                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">08 Sept 2026, 07:20 am</td>
-            </tr>
-
-            <!-- Row 4 -->
-            <tr style="border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
-                <td style="padding: 16px 24px; color: var(--text-muted);">#67</td>
-                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">user@example.com</td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">ANALYTICS</td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">Accepted</span>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">v1</td>
-                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">08 Sept 2026, 07:20 am</td>
-            </tr>
-
-            <!-- Row 5 -->
-            <tr style="border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
-                <td style="padding: 16px 24px; color: var(--text-muted);">#6</td>
-                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">priya.shah@gmail.com</td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">MARKETING</td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">Accepted</span>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">1.2</td>
-                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">29 Aug 2026, 03:03 pm</td>
-            </tr>
-
-            <!-- Row 6 -->
-            <tr style="border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
-                <td style="padding: 16px 24px; color: var(--text-muted);">#5</td>
-                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">priya.shah@gmail.com</td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">ANALYTICS</td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">Accepted</span>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">1.2</td>
-                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">29 Aug 2026, 03:03 pm</td>
-            </tr>
-
-            <!-- Row 7 -->
-            <tr style="border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
-                <td style="padding: 16px 24px; color: var(--text-muted);">#4</td>
-                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">priya.shah@gmail.com</td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">NECESSARY</td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">Accepted</span>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">1.2</td>
-                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">29 Aug 2026, 03:03 pm</td>
-            </tr>
-            
-            <!-- Row 8 -->
-            <tr style="border-bottom: 1px solid transparent; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
-                <td style="padding: 16px 24px; color: var(--text-muted);">#3</td>
-                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">raj.kumar@gmail.com</td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">MARKETING</td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">Rejected</span>
-                </td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">1.2</td>
-                <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">29 Aug 2026, 03:03 pm</td>
-            </tr>
-        </tbody>
-    </table>
-    
+    <div style="overflow-x: auto;">
+        <table class="data-table" id="logsTable" style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+                <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-main); font-size: 11px; font-weight: 700; text-transform: uppercase;">
+                    <th style="padding: 16px 24px;">ID</th>
+                    <th style="padding: 16px 16px;">User / Session</th>
+                    <th style="padding: 16px 16px;">Category</th>
+                    <th style="padding: 16px 16px;">Consent</th>
+                    <th style="padding: 16px 16px;">Policy</th>
+                    <th style="padding: 16px 24px;">Timestamp</th>
+                </tr>
+            </thead>
+            <tbody style="font-size: 13px;">
+                <% if (safeLogs.length === 0) { %>
+                    <tr id="emptyLogsRow">
+                        <td colspan="6" style="text-align: center; padding: 48px; color: var(--text-muted);">
+                            <div style="margin-bottom: 8px;">No cookie consent events logged yet.</div>
+                            <div style="font-size: 12px;">Events recorded by web visitors or test users will appear here automatically.</div>
+                        </td>
+                    </tr>
+                <% } else { %>
+                    <% safeLogs.forEach(function(log) {
+                        const user = log.sessionId || log.userIdentifier || 'anonymous';
+                        const cat = log.cookieCategories || log.category || 'NECESSARY';
+                        const action = (log.action || 'ACCEPTED').toUpperCase();
+                        const isAccepted = action.includes('ACCEPT');
+                        const policy = log.policyVersion ? ('v' + log.policyVersion) : 'v1.0';
+                        const dateStr = log.timestamp || log.createdAt || new Date().toISOString();
+                        const formattedDate = new Date(dateStr).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+                    %>
+                    <tr class="log-row" style="border-bottom: 1px solid var(--border-color); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+                        <td style="padding: 16px 24px; color: var(--text-muted); font-family: monospace; font-size: 12px;">#<%= log.id %></td>
+                        <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);"><%= user %></td>
+                        <td style="padding: 16px 16px;">
+                            <span style="font-size: 11px; font-weight: 600; color: #94a3b8; background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 4px; border: 1px solid var(--border-color);"><%= cat %></span>
+                        </td>
+                        <td style="padding: 16px 16px;">
+                            <% if (isAccepted) { %>
+                                <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
+                                    <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="3" fill="none"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                    Accepted
+                                </span>
+                            <% } else { %>
+                                <span style="background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
+                                    <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="3" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                    Rejected
+                                </span>
+                            <% } %>
+                        </td>
+                        <td style="padding: 16px 16px; color: var(--text-muted); font-size: 12px;"><%= policy %></td>
+                        <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;"><%= formattedDate %></td>
+                    </tr>
+                    <% }); %>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
 </div>
+
+<script>
+function filterLogs() {
+    const q = document.getElementById('logSearch').value.toLowerCase();
+    const rows = document.querySelectorAll('.log-row');
+    let visible = 0;
+    rows.forEach(r => {
+        const text = r.innerText.toLowerCase();
+        if (text.includes(q)) {
+            r.style.display = '';
+            visible++;
+        } else {
+            r.style.display = 'none';
+        }
+    });
+    document.getElementById('logCountLabel').innerText = visible + ' records';
+}
+
+async function handleLogEvent(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const btn = document.getElementById('logEventBtn');
+    const user = document.getElementById('userIdentifierInput').value.trim();
+    const category = document.getElementById('categorySelect').value;
+    const action = document.getElementById('actionSelect').value;
+
+    if (!user) {
+        alert('Please enter a user or session identifier.');
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = 'Logging...';
+
+    try {
+        const res = await fetch('/api/cookies/logs', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                sessionId: user,
+                userIdentifier: user,
+                category: category,
+                cookieCategories: category,
+                action: action,
+                policyVersion: '1.0'
+            })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+            window.location.reload();
+        } else {
+            alert('Logging failed: ' + (data.error || 'Server error'));
+            btn.disabled = false;
+            btn.innerHTML = 'Log event';
+        }
+    } catch (err) {
+        alert('Request failed: ' + err.message);
+        btn.disabled = false;
+        btn.innerHTML = 'Log event';
+    }
+}
+</script>
 
 <%- include('partials/footer') %>

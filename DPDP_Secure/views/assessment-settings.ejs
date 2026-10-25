@@ -1,58 +1,92 @@
 <%- include('partials/header') %>
 
+<% 
+const settingsList = (typeof settings !== 'undefined' && Array.isArray(settings)) ? settings : [];
+const settingsMap = {};
+settingsList.forEach(s => { settingsMap[s.settingKey] = s.settingValue; });
+%>
+
 <div class="dashboard-header mb-4" style="align-items: center;">
     <div class="title-group">
-        <h1>Assessment Settings</h1>
+        <h1 class="page-title"><%= (typeof title !== 'undefined' ? title : 'Assessment Settings').split(' - ')[0] %></h1>
+        <p class="page-description">Configure automation triggers, risk thresholds, and DPO notifications for PIA & DPIA lifecycle.</p>
     </div>
 </div>
 
-<div class="card" style="padding: 40px; max-width: 800px;">
-    <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; margin-bottom: 24px;">
-        <h3 style="margin: 0 0 16px 0; font-size: 16px;">Notifications</h3>
-        <p style="color: var(--text-muted); font-size: 13px; line-height: 1.5; margin: 0 0 24px 0;">
-            Control which events trigger an email to the relevant party. Email delivery requires a configured SMTP provider under <strong style="color: var(--text-main);">Notification Center &rarr; Settings</strong>.
-        </p>
-        
-        <div style="display: flex; flex-direction: column; gap: 24px;">
-            <!-- Toggle 1 -->
-            <div style="display: flex; gap: 16px;">
-                <div style="margin-top: 2px;">
-                    <label class="switch" style="position: relative; display: inline-block; width: 36px; height: 20px;">
-                        <input type="checkbox" checked style="opacity: 0; width: 0; height: 0;">
-                        <span class="slider round" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #4f46e5; transition: .4s; border-radius: 20px;">
-                            <span style="position: absolute; content: ''; height: 16px; width: 16px; left: 2px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; transform: translateX(16px);"></span>
-                        </span>
-                    </label>
-                </div>
+<div class="card" style="padding: 32px; max-width: 800px; background: #0f172a; border: 1px solid #334155;">
+    <form id="assessment-settings-form" onsubmit="handleSaveSettings(event)">
+        <div style="background: rgba(255,255,255,0.02); border: 1px solid #334155; border-radius: 12px; padding: 24px; margin-bottom: 24px;">
+            <h3 style="margin: 0 0 16px 0; font-size: 16px; color: #f8fafc;">Automation & Notification Configuration</h3>
+            <p style="color: var(--text-muted); font-size: 13px; line-height: 1.5; margin: 0 0 24px 0;">
+                Configure automated statutory thresholds under Section 9 & 10 of DPDP Act 2023 for Significant Data Fiduciaries and high-risk processing.
+            </p>
+            
+            <div style="display: flex; flex-direction: column; gap: 20px;">
                 <div>
-                    <div style="font-weight: 600; font-size: 14px; margin-bottom: 4px;">Notify assignee on assignment</div>
-                    <div style="color: var(--text-muted); font-size: 12px;">Send an email to the assignee when they are added to a DPIA or PIA section.</div>
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #e2e8f0; margin-bottom: 6px;">DPO Alert Notification Email</label>
+                    <input type="email" id="notification_email" value="<%= settingsMap['notification_email'] || 'privacy@aarogyaclinic.in' %>" required style="width: 100%; background: #1e293b; border: 1px solid #475569; color: #f8fafc; padding: 10px 12px; border-radius: 6px; font-size: 13px;">
                 </div>
-            </div>
 
-            <!-- Toggle 2 -->
-            <div style="display: flex; gap: 16px;">
-                <div style="margin-top: 2px;">
-                    <label class="switch" style="position: relative; display: inline-block; width: 36px; height: 20px;">
-                        <input type="checkbox" style="opacity: 0; width: 0; height: 0;">
-                        <span class="slider round" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.2); transition: .4s; border-radius: 20px;">
-                            <span style="position: absolute; content: ''; height: 16px; width: 16px; left: 2px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%;"></span>
-                        </span>
-                    </label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: 600; color: #e2e8f0; margin-bottom: 6px;">High Risk Score Threshold (0-100)</label>
+                        <input type="number" id="high_risk_threshold" min="1" max="100" value="<%= settingsMap['high_risk_threshold'] || '75' %>" required style="width: 100%; background: #1e293b; border: 1px solid #475569; color: #f8fafc; padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 13px; font-weight: 600; color: #e2e8f0; margin-bottom: 6px;">DPIA Audit Retention (Days)</label>
+                        <input type="number" id="audit_retention_days" min="30" max="3650" value="<%= settingsMap['audit_retention_days'] || '1095' %>" required style="width: 100%; background: #1e293b; border: 1px solid #475569; color: #f8fafc; padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+                    </div>
                 </div>
+
                 <div>
-                    <div style="font-weight: 600; font-size: 14px; margin-bottom: 4px;">Notify reviewer on status change</div>
-                    <div style="color: var(--text-muted); font-size: 12px;">Send an email to the current reviewer whenever the assessment status is updated.</div>
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #e2e8f0; margin-bottom: 6px;">Automated DPIA Triggers for Informal Silos</label>
+                    <select id="auto_trigger_dpias" style="width: 100%; background: #1e293b; border: 1px solid #475569; color: #f8fafc; padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+                        <option value="true" <%= settingsMap['auto_trigger_dpias'] !== 'false' ? 'selected' : '' %>>Enabled (Auto-trigger DPIA when Special Category health data exceeds 50 items)</option>
+                        <option value="false" <%= settingsMap['auto_trigger_dpias'] === 'false' ? 'selected' : '' %>>Disabled (Manual initiation only)</option>
+                    </select>
                 </div>
             </div>
         </div>
-    </div>
-    
-    <div style="color: var(--text-muted); font-size: 11px; margin-bottom: 24px;">Last updated &middot; 8 Sept 2026</div>
-    
-    <button class="btn-primary" style="background-color: var(--primary); color: white; border: none; padding: 10px 24px; border-radius: 6px; font-weight: 600; cursor: pointer;">
-        Save Settings
-    </button>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div id="save-status" style="font-size: 12px; color: #10b981; display: none;">Settings saved successfully!</div>
+            <button type="submit" class="btn-primary" style="padding: 10px 24px; font-size: 14px; font-weight: 600; cursor: pointer;">
+                Save Settings
+            </button>
+        </div>
+    </form>
 </div>
+
+<script>
+async function handleSaveSettings(e) {
+    e.preventDefault();
+    const notification_email = document.getElementById('notification_email').value.trim();
+    const high_risk_threshold = document.getElementById('high_risk_threshold').value.trim();
+    const audit_retention_days = document.getElementById('audit_retention_days').value.trim();
+    const auto_trigger_dpias = document.getElementById('auto_trigger_dpias').value;
+
+    const pairs = [
+        { settingKey: 'notification_email', settingValue: notification_email },
+        { settingKey: 'high_risk_threshold', settingValue: high_risk_threshold },
+        { settingKey: 'audit_retention_days', settingValue: audit_retention_days },
+        { settingKey: 'auto_trigger_dpias', settingValue: auto_trigger_dpias }
+    ];
+
+    try {
+        for (const p of pairs) {
+            await fetch('/api/assessment/settings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(p)
+            });
+        }
+        const status = document.getElementById('save-status');
+        status.style.display = 'block';
+        setTimeout(() => { status.style.display = 'none'; }, 3000);
+    } catch (err) {
+        alert('Network error saving assessment settings');
+    }
+}
+</script>
 
 <%- include('partials/footer') %>

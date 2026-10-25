@@ -1,4 +1,11 @@
 <%- include('partials/header') %>
+<%
+  const safeBranding = (typeof branding !== 'undefined' && branding) ? branding : {};
+  const compName = safeBranding.companyName || 'Aarogya Diagnostic Center';
+  const logo = safeBranding.logoUrl || '/images/aarogya-logo.svg';
+  const primary = safeBranding.primaryColor || '#3b82f6';
+  const secondary = safeBranding.secondaryColor || '#10b981';
+%>
 
 <style>
 .settings-card {
@@ -16,28 +23,31 @@
 }
 .form-input {
     width: 100%;
-    background: rgba(0,0,0,0.2);
+    background: rgba(0,0,0,0.25);
     border: 1px solid var(--border-color);
     color: white;
     padding: 10px 12px;
     border-radius: 6px;
     font-size: 13px;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
+    box-sizing: border-box;
 }
 .color-input-container {
     display: flex;
     gap: 12px;
     align-items: center;
-    background: rgba(0,0,0,0.2);
+    background: rgba(0,0,0,0.25);
     border: 1px solid var(--border-color);
-    padding: 6px 12px;
+    padding: 8px 12px;
     border-radius: 6px;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
 }
 .color-box {
-    width: 20px;
-    height: 20px;
-    border-radius: 4px;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.2);
+    cursor: pointer;
 }
 .color-text {
     background: transparent;
@@ -46,100 +56,161 @@
     font-size: 13px;
     width: 100%;
     outline: none;
+    font-family: monospace;
+}
+.btn-brand {
+    background: #3b82f6;
+    border: 1px solid #2563eb;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.btn-brand:hover {
+    background: #2563eb;
 }
 </style>
 
 <div style="padding: 24px; max-width: 1400px; margin: 0 auto;">
     
     <div style="margin-bottom: 32px;">
-        <h1 style="font-size: 20px; font-weight: 700; color: white; margin: 0 0 8px 0;">Branding & Theme</h1>
-        <p style="color: var(--text-muted); font-size: 13px; margin: 0;">Customize logo and tenant theme colors for all portal pages.</p>
+        <h1 style="font-size: 20px; font-weight: 700; color: white; margin: 0 0 6px 0;">Branding &amp; Portal Theme</h1>
+        <p style="color: var(--text-muted); font-size: 13px; margin: 0;">Customize clinic brand assets, color palette, and logo rendered across patient consent portals and DSR receipts.</p>
     </div>
 
-    <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 32px;">
-        <!-- Left: Configuration -->
+    <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 32px;">
+        <!-- Left: Configuration Form -->
         <div class="settings-card">
-            <h2 style="font-size: 16px; font-weight: 700; color: white; margin: 0 0 24px 0;">Brand Configuration</h2>
+            <h2 style="font-size: 16px; font-weight: 700; color: white; margin: 0 0 20px 0;">Clinic Identity Configuration</h2>
             
-            <label class="form-label">Brand Name</label>
-            <input type="text" class="form-input" value="DPDP_Secure">
-            
-            <label class="form-label">Logo URL</label>
-            <input type="text" class="form-input" placeholder="https://.../logo.png">
-            
-            <label class="form-label">Or Upload Logo</label>
-            <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 24px;">
-                <button style="background: rgba(255,255,255,0.1); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 12px; border-radius: 6px; font-size: 13px;">Choose File</button>
-                <span style="font-size: 13px; color: var(--text-muted);">No file chosen</span>
-            </div>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-                <div>
-                    <label class="form-label">Primary Color</label>
-                    <div class="color-input-container">
-                        <div class="color-box" style="background: #0b57d0;"></div>
-                        <input type="text" class="color-text" value="#0b57d0">
+            <form id="brandForm" onsubmit="handleSaveBranding(event)">
+                <label class="form-label">Clinic / Brand Name <span style="color: #ef4444;">*</span></label>
+                <input type="text" id="brandCompanyName" class="form-input" value="<%= compName %>" oninput="updatePreview()" required>
+                
+                <label class="form-label">Logo Image Path or URL</label>
+                <input type="text" id="brandLogoUrl" class="form-input" value="<%= logo %>" placeholder="/images/aarogya-logo.svg" oninput="updatePreview()">
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <label class="form-label">Primary Brand Color</label>
+                        <div class="color-input-container">
+                            <input type="color" id="primaryColorPicker" value="<%= primary %>" oninput="syncColor('primary', this.value)" style="opacity:0; position:absolute; width:1px; height:1px;">
+                            <div class="color-box" id="primaryBox" style="background: <%= primary %>;" onclick="document.getElementById('primaryColorPicker').click()"></div>
+                            <input type="text" class="color-text" id="brandPrimaryColor" value="<%= primary %>" oninput="syncColor('primary', this.value)">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="form-label">Accent / Secondary Color</label>
+                        <div class="color-input-container">
+                            <input type="color" id="secondaryColorPicker" value="<%= secondary %>" oninput="syncColor('secondary', this.value)" style="opacity:0; position:absolute; width:1px; height:1px;">
+                            <div class="color-box" id="secondaryBox" style="background: <%= secondary %>;" onclick="document.getElementById('secondaryColorPicker').click()"></div>
+                            <input type="text" class="color-text" id="brandSecondaryColor" value="<%= secondary %>" oninput="syncColor('secondary', this.value)">
+                        </div>
                     </div>
                 </div>
-                <div>
-                    <label class="form-label">Accent Soft Color</label>
-                    <div class="color-input-container">
-                        <div class="color-box" style="background: #e8f0ff;"></div>
-                        <input type="text" class="color-text" value="#e8f0ff">
-                    </div>
+
+                <div style="margin-top: 10px; display: flex; justify-content: flex-end;">
+                    <button type="submit" id="btnSubmitBrand" class="btn-brand">
+                        Save Theme &amp; Branding
+                    </button>
                 </div>
-            </div>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-                <div>
-                    <label class="form-label">Background Top</label>
-                    <div class="color-input-container">
-                        <div class="color-box" style="background: #f4f9ff;"></div>
-                        <input type="text" class="color-text" value="#f4f9ff">
-                    </div>
-                </div>
-                <div>
-                    <label class="form-label">Background Middle</label>
-                    <div class="color-input-container">
-                        <div class="color-box" style="background: #eff5fb;"></div>
-                        <input type="text" class="color-text" value="#eff5fb">
-                    </div>
-                </div>
-            </div>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-                <div>
-                    <label class="form-label">Background Bottom</label>
-                    <div class="color-input-container">
-                        <div class="color-box" style="background: #f8fafc;"></div>
-                        <input type="text" class="color-text" value="#f8fafc">
-                    </div>
-                </div>
-            </div>
+            </form>
         </div>
         
-        <!-- Right: Preview -->
+        <!-- Right: Real-time Live Preview -->
         <div>
-            <h2 style="font-size: 16px; font-weight: 700; color: white; margin: 0 0 16px 0;">Preview</h2>
+            <h2 style="font-size: 16px; font-weight: 700; color: white; margin: 0 0 16px 0;">Live Patient Portal Preview</h2>
             
-            <div style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
-                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
-                    <div style="width: 32px; height: 32px; background: #e2e8f0; border-radius: 6px;"></div>
-                    <div>
-                        <div style="font-size: 14px; font-weight: 600; color: #0f172a; font-family: sans-serif;">DPDP_Secure</div>
-                        <div style="font-size: 12px; color: #64748b; font-family: sans-serif;">Customer Administration Portal</div>
+            <div style="background: #0f172a; border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);">
+                <!-- Header preview -->
+                <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div id="previewLogoContainer" style="width: 36px; height: 36px; border-radius: 8px; background: rgba(59, 130, 246, 0.2); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                            A
+                        </div>
+                        <div>
+                            <div id="previewTitle" style="font-size: 15px; font-weight: 700; color: white;"><%= compName %></div>
+                            <div style="font-size: 11px; color: var(--text-muted);">DPDP Section 5 Consent Notice Portal</div>
+                        </div>
+                    </div>
+                    <span id="previewBadge" style="display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; background: rgba(16, 185, 129, 0.2); color: <%= secondary %>; border: 1px solid <%= secondary %>44;">
+                        NABL Certified
+                    </span>
+                </div>
+                
+                <!-- Notice card preview -->
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+                    <div style="font-size: 13px; font-weight: 600; color: white; margin-bottom: 6px;">Consent for Blood Chemistry Panel</div>
+                    <div style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">
+                        Your personal health information will be processed solely for specimen evaluation, diagnostic reporting, and statutory billing under GST regulations.
                     </div>
                 </div>
                 
-                <div style="border: 1px solid #e8f0ff; border-radius: 6px; padding: 12px; margin-bottom: 16px;">
-                    <span style="color: #cbd5e1; font-size: 12px;">Accent Preview</span>
-                </div>
-                
-                <button style="width: 100%; background: #0b57d0; color: white; border: none; padding: 12px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer;">Primary Action Preview</button>
+                <button id="previewBtn" style="width: 100%; background: <%= primary %>; color: white; border: none; padding: 12px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s;">
+                    Grant Verified Consent
+                </button>
             </div>
         </div>
     </div>
 
 </div>
+
+<script>
+function syncColor(type, val) {
+    if (type === 'primary') {
+        document.getElementById('brandPrimaryColor').value = val;
+        document.getElementById('primaryBox').style.background = val;
+        document.getElementById('primaryColorPicker').value = val;
+        document.getElementById('previewBtn').style.background = val;
+    } else {
+        document.getElementById('brandSecondaryColor').value = val;
+        document.getElementById('secondaryBox').style.background = val;
+        document.getElementById('secondaryColorPicker').value = val;
+        document.getElementById('previewBadge').style.color = val;
+        document.getElementById('previewBadge').style.borderColor = val + '44';
+    }
+}
+
+function updatePreview() {
+    const name = document.getElementById('brandCompanyName').value.trim() || 'Aarogya Diagnostic Center';
+    document.getElementById('previewTitle').innerText = name;
+    document.getElementById('previewLogoContainer').innerText = name.charAt(0);
+}
+
+async function handleSaveBranding(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btnSubmitBrand');
+    btn.disabled = true;
+    btn.innerText = 'Saving...';
+
+    const companyName = document.getElementById('brandCompanyName').value.trim();
+    const logoUrl = document.getElementById('brandLogoUrl').value.trim();
+    const primaryColor = document.getElementById('brandPrimaryColor').value.trim();
+    const secondaryColor = document.getElementById('brandSecondaryColor').value.trim();
+
+    try {
+        const res = await fetch('/api/settings/branding', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ companyName, logoUrl, primaryColor, secondaryColor })
+        });
+        const data = await res.json();
+        if (data.success) {
+            alert('Branding and theme saved successfully!');
+            window.location.reload();
+        } else {
+            alert('Failed to save branding: ' + (data.error || 'Unknown error'));
+        }
+    } catch (err) {
+        alert('Error: ' + err.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerText = 'Save Theme & Branding';
+    }
+}
+</script>
 
 <%- include('partials/footer') %>

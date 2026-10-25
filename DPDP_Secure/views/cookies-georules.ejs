@@ -1,54 +1,69 @@
 <%- include('partials/header') %>
+<%
+  const safeRules = (typeof rules !== 'undefined' && Array.isArray(rules)) ? rules : [];
+  const pageTitle = (typeof title !== 'undefined' && title) ? title.split(' - ')[0] : 'Geo rules';
+  const pageDesc = (typeof description !== 'undefined' && description) ? description : 'Regional cookie compliance defaults and jurisdiction-specific DPDPA consent rules.';
+%>
 
 <div class="dashboard-header mb-4">
     <div>
-        <h1 class="page-title"><%= title.split(' - ')[0] %></h1>
-        <p class="page-description"><%= description %></p>
+        <h1 class="page-title"><%= pageTitle %></h1>
+        <p class="page-description"><%= pageDesc %></p>
     </div>
 </div>
 
 <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 8px; padding: 24px; margin-bottom: 24px;">
-    <div style="display: flex; gap: 24px; margin-bottom: 20px;">
-        <div style="flex: 1;">
-            <input type="text" value="EU" style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+    <form id="geoRuleForm" onsubmit="handleAddGeoRule(event)">
+        <div style="display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 140px;">
+                <label for="regionCodeInput" style="display: block; font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 6px;">Country / Region Code</label>
+                <input type="text" id="regionCodeInput" required maxlength="5" value="IN" style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px; text-transform: uppercase;" placeholder="IN, EU, US">
+            </div>
+            <div style="flex: 2; min-width: 240px;">
+                <label for="ruleNameInput" style="display: block; font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 6px;">Rule Name / Description</label>
+                <input type="text" id="ruleNameInput" required value="India DPDPA Strict Opt-In Rule" style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px;" placeholder="e.g. India Healthcare Rule">
+            </div>
         </div>
-        <div style="flex: 2;">
-            <input type="text" value="GDPR Rule" style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+        
+        <div style="margin-bottom: 20px;">
+            <label for="ruleTypeSelect" style="display: block; font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 6px;">Default Consent Mode</label>
+            <div style="position: relative;">
+                <select id="ruleTypeSelect" style="width: 100%; background: #1e293b; border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px;">
+                    <option value="OPT_IN" selected>OPT_IN (Requires prior affirmative consent under DPDPA)</option>
+                    <option value="OPT_OUT">OPT_OUT (Permits immediate analytics with opt-out link)</option>
+                </select>
+            </div>
         </div>
-    </div>
-    <div style="margin-bottom: 20px; position: relative;">
-        <select style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px; appearance: none;">
-            <option value="OPT_IN" selected>OPT_IN</option>
-            <option value="OPT_OUT">OPT_OUT</option>
-        </select>
-        <div style="position: absolute; right: 12px; top: 0; bottom: 0; display: flex; align-items: center; pointer-events: none; color: var(--text-muted);">
-            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
+
+        <div style="display: flex; gap: 32px; margin-bottom: 24px; flex-wrap: wrap;">
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-main); cursor: pointer;">
+                <input type="checkbox" id="analyticsDefaultCheck" checked style="width: 16px; height: 16px; accent-color: var(--primary-color);">
+                Analytics category enabled by default
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-main); cursor: pointer;">
+                <input type="checkbox" id="marketingDefaultCheck" style="width: 16px; height: 16px; accent-color: var(--primary-color);">
+                Marketing category enabled by default
+            </label>
         </div>
-    </div>
-    <div style="display: flex; gap: 32px; margin-bottom: 24px;">
-        <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-main); cursor: pointer;">
-            <input type="checkbox" style="width: 16px; height: 16px; accent-color: var(--primary-color);">
-            Analytics default
-        </label>
-        <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-main); cursor: pointer;">
-            <input type="checkbox" style="width: 16px; height: 16px; accent-color: var(--primary-color);">
-            Marketing default
-        </label>
-    </div>
-    <div>
-        <button class="btn-primary" style="padding: 10px 24px; font-size: 14px;">Add geo rule</button>
-    </div>
+
+        <div>
+            <button type="submit" id="addGeoRuleBtn" class="btn-primary" style="padding: 10px 24px; font-size: 14px; display: inline-flex; align-items: center; gap: 8px;">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                Add geo rule
+            </button>
+        </div>
+    </form>
 </div>
 
 <div class="card p-0" style="overflow: hidden; display: flex; flex-direction: column;">
     <!-- Table Toolbar -->
-    <div class="table-toolbar" style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
-        <div class="search-bar" style="width: 350px; background: transparent; padding: 0; border: none;">
-            <input type="text" placeholder="Search geo rules..." style="border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 6px; background: transparent; color: var(--text-main); width: 100%;">
+    <div class="table-toolbar" style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+        <div class="search-bar" style="width: 320px; background: transparent; padding: 0; border: none;">
+            <input type="text" id="geoRuleSearch" onkeyup="filterGeoRules()" placeholder="Search geo rules..." style="border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 6px; background: transparent; color: var(--text-main); width: 100%; font-size: 13px;">
         </div>
         
         <div class="pagination" style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-muted);">
-            <span>1 row</span>
+            <span id="geoRuleCountLabel"><%= safeRules.length %> <%= safeRules.length === 1 ? 'rule' : 'rules' %></span>
             <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Previous</button>
             <span>Page 1 of 1</span>
             <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Next</button>
@@ -56,50 +71,149 @@
     </div>
 
     <!-- Data Table -->
-    <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left;">
-        <thead>
-            <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-main); font-size: 11px; font-weight: 700; text-transform: uppercase;">
-                <th style="padding: 16px 24px;">ID &uarr;</th>
-                <th style="padding: 16px 16px;">Region &uarr;</th>
-                <th style="padding: 16px 16px;">Rule &uarr;</th>
-                <th style="padding: 16px 16px;">Mode &uarr;</th>
-                <th style="padding: 16px 16px;">Analytics &uarr;</th>
-                <th style="padding: 16px 16px;">Marketing &uarr;</th>
-                <th style="padding: 16px 24px;">Created &uarr;</th>
-            </tr>
-        </thead>
-        <tbody style="font-size: 13px;">
-            <tr style="border-bottom: 1px solid transparent; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
-                <td style="padding: 16px 24px; color: var(--text-muted);">#1</td>
-                <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);">IN</td>
-                <td style="padding: 16px 16px; color: var(--text-muted);">India DPDPA OPT_OUT</td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">OPT OUT</span>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">Yes</span>
-                </td>
-                <td style="padding: 16px 16px;">
-                    <span style="background: rgba(255, 255, 255, 0.05); color: var(--text-main); border: 1px solid var(--border-color); padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">No</span>
-                </td>
-                <td style="padding: 16px 24px; color: var(--text-muted);">
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
-                        29 Aug 2026, 03:03 pm
-                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    
-    <!-- Table Footer (Bottom Pagination bar for exact visual match) -->
-    <div style="padding: 16px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; align-items: center;">
-        <div class="pagination" style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-muted);">
-            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Previous</button>
-            <span>Page 1 of 1</span>
-            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Next</button>
-        </div>
+    <div style="overflow-x: auto;">
+        <table class="data-table" id="geoRulesTable" style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+                <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-main); font-size: 11px; font-weight: 700; text-transform: uppercase;">
+                    <th style="padding: 16px 24px;">ID</th>
+                    <th style="padding: 16px 16px;">Region</th>
+                    <th style="padding: 16px 16px;">Rule Name</th>
+                    <th style="padding: 16px 16px;">Mode</th>
+                    <th style="padding: 16px 16px;">Analytics</th>
+                    <th style="padding: 16px 16px;">Marketing</th>
+                    <th style="padding: 16px 16px;">Created</th>
+                    <th style="padding: 16px 24px; text-align: right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody style="font-size: 13px;">
+                <% if (safeRules.length === 0) { %>
+                    <tr id="emptyGeoRulesRow">
+                        <td colspan="8" style="text-align: center; padding: 48px; color: var(--text-muted);">
+                            <div style="margin-bottom: 8px;">No regional cookie rules created yet.</div>
+                            <div style="font-size: 12px;">Add your first jurisdiction-specific rule above to enforce DPDP Act compliance.</div>
+                        </td>
+                    </tr>
+                <% } else { %>
+                    <% safeRules.forEach(function(r) { 
+                        const region = (r.countryCode || r.regionCode || 'IN').toUpperCase();
+                        const ruleName = r.ruleValue || r.ruleName || 'Standard Region Rule';
+                        const mode = (r.ruleType || r.defaultAction || 'OPT_IN').toUpperCase();
+                        const isOptIn = mode.includes('OPT_IN') || mode.includes('IN');
+                        const dateStr = r.createdAt || new Date().toISOString();
+                        const formattedDate = new Date(dateStr).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+                    %>
+                    <tr class="georule-row" style="border-bottom: 1px solid var(--border-color); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+                        <td style="padding: 16px 24px; color: var(--text-muted); font-family: monospace; font-size: 12px;">#<%= r.id %></td>
+                        <td style="padding: 16px 16px; font-weight: 700; color: var(--text-main);">
+                            <span style="background: rgba(59, 130, 246, 0.15); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); padding: 4px 10px; border-radius: 6px; font-size: 11px;"><%= region %></span>
+                        </td>
+                        <td style="padding: 16px 16px; font-weight: 600; color: var(--text-main);"><%= ruleName %></td>
+                        <td style="padding: 16px 16px;">
+                            <% if (isOptIn) { %>
+                                <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">OPT IN</span>
+                            <% } else { %>
+                                <span style="background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;">OPT OUT</span>
+                            <% } %>
+                        </td>
+                        <td style="padding: 16px 16px;">
+                            <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 3px 10px; border-radius: 10px; font-size: 11px; font-weight: 700;">Yes</span>
+                        </td>
+                        <td style="padding: 16px 16px;">
+                            <span style="background: rgba(255, 255, 255, 0.05); color: var(--text-muted); border: 1px solid var(--border-color); padding: 3px 10px; border-radius: 10px; font-size: 11px; font-weight: 600;">No</span>
+                        </td>
+                        <td style="padding: 16px 16px; color: var(--text-muted); font-size: 12px;"><%= formattedDate %></td>
+                        <td style="padding: 16px 24px; text-align: right;">
+                            <button onclick="deleteGeoRule('<%= r.id %>')" title="Delete Rule" style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 4px; border-radius: 4px;" onmouseover="this.style.background='rgba(239,68,68,0.1)'" onmouseout="this.style.background='none'">
+                                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            </button>
+                        </td>
+                    </tr>
+                    <% }); %>
+                <% } %>
+            </tbody>
+        </table>
     </div>
 </div>
+
+<script>
+function filterGeoRules() {
+    const q = document.getElementById('geoRuleSearch').value.toLowerCase();
+    const rows = document.querySelectorAll('.georule-row');
+    let visible = 0;
+    rows.forEach(r => {
+        const text = r.innerText.toLowerCase();
+        if (text.includes(q)) {
+            r.style.display = '';
+            visible++;
+        } else {
+            r.style.display = 'none';
+        }
+    });
+    document.getElementById('geoRuleCountLabel').innerText = visible + ' rules';
+}
+
+async function handleAddGeoRule(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const btn = document.getElementById('addGeoRuleBtn');
+    const countryCode = document.getElementById('regionCodeInput').value.trim().toUpperCase();
+    const ruleValue = document.getElementById('ruleNameInput').value.trim();
+    const ruleType = document.getElementById('ruleTypeSelect').value;
+
+    if (!countryCode || !ruleValue) {
+        alert('Please fill out region code and rule name.');
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = 'Adding...';
+
+    try {
+        const res = await fetch('/api/cookies/geo-rules', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                countryCode: countryCode,
+                regionCode: countryCode,
+                ruleValue: ruleValue,
+                ruleName: ruleValue,
+                ruleType: ruleType,
+                defaultAction: ruleType,
+                isActive: 1
+            })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+            window.location.reload();
+        } else {
+            alert('Failed to add rule: ' + (data.error || 'Server error'));
+            btn.disabled = false;
+            btn.innerHTML = 'Add geo rule';
+        }
+    } catch (err) {
+        alert('Request error: ' + err.message);
+        btn.disabled = false;
+        btn.innerHTML = 'Add geo rule';
+    }
+}
+
+async function deleteGeoRule(id) {
+    if (!confirm('Are you sure you want to delete this geo rule?')) return;
+
+    try {
+        const res = await fetch('/api/cookies/geo-rules/' + id, {
+            method: 'DELETE'
+        });
+        const data = await res.json();
+        if (data.success) {
+            window.location.reload();
+        } else {
+            alert('Delete failed: ' + (data.error || 'Server error'));
+        }
+    } catch (err) {
+        alert('Delete failed: ' + err.message);
+    }
+}
+</script>
 
 <%- include('partials/footer') %>
