@@ -7,3 +7,9 @@
 .risk-low { background: #dcfce7; color: #166534; font-weight: 700; }
 .risk-med { background: #fef3c7; color: #92400e; font-weight: 700; }
 .risk-high { background: #fee2e2; color: #991b1b; font-weight: 700; }
+
+
+@media (max-width: 600px) {
+  .dpia-container { padding: 1rem; }
+  .dpia-card { padding: 1.25rem; }
+}
