@@ -208,18 +208,160 @@
         <div class="main-wrapper">
             <!-- Topbar Header -->
             <header class="topbar">
-                <div class="breadcrumb">
-                    <% if (typeof breadcrumbs !== 'undefined' && Array.isArray(breadcrumbs)) { %>
-                        <% breadcrumbs.forEach((crumb, index) => { %>
-                            <% if (index === breadcrumbs.length - 1) { %>
-                                <strong><%= crumb %></strong>
+                <!-- Breadcrumbs & History Navigation -->
+                <div class="breadcrumb-container">
+                    <!-- Browser History Back / Forward Controls -->
+                    <div class="history-nav-controls">
+                        <button type="button" class="history-nav-btn" onclick="window.history.back()" title="Go Back (Alt + Left Arrow)" aria-label="Go Back">
+                            <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="none"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        </button>
+                        <button type="button" class="history-nav-btn" onclick="window.history.forward()" title="Go Forward (Alt + Right Arrow)" aria-label="Go Forward">
+                            <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="none"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </button>
+                    </div>
+
+                    <nav class="breadcrumb" aria-label="Breadcrumb Navigation">
+                        <%
+                            const BREADCRUMB_MAP = {
+                                'workspace': '/',
+                                'dashboard': '/',
+                                'executive dashboard': '/',
+                                'profile': '/profile',
+                                'user profile': '/profile',
+                                'about': '/about',
+                                'about platform': '/about',
+                                
+                                // Pillar 1: Data Discovery & RoPA
+                                'data discovery': '/discovery/connectors',
+                                'discovery': '/discovery/connectors',
+                                'connectors': '/discovery/connectors',
+                                'data discovery & connectors': '/discovery/connectors',
+                                'data mapping': '/inventory/assets',
+                                'data assets': '/inventory/assets',
+                                'classification': '/inventory/tags',
+                                'classification tags': '/inventory/tags',
+                                'tags': '/inventory/tags',
+                                'lineage': '/inventory/lineage',
+                                'data lineage': '/inventory/lineage',
+                                'ropa': '/inventory/ropa',
+                                'ropa register': '/inventory/ropa',
+                                'field mappings': '/inventory/assessment-enrichment',
+                                'new asset': '/inventory/assets/create',
+                                'new tag': '/inventory/tags/create',
+
+                                // Pillar 2: Consent & Notices
+                                'consent': '/consent/collection-points',
+                                'consent & notices': '/consent/collection-points',
+                                'notices': '/consent/collection-points',
+                                'multilingual section 5 notices': '/consent/collection-points',
+                                'section 5 notices': '/consent/collection-points',
+                                'collection points': '/consent/collection-points',
+                                'data elements': '/consent/collection-points',
+                                'ledger': '/consent/ledger',
+                                'consent event ledger': '/consent/ledger',
+                                'transactions': '/consent/ledger',
+                                'purposes': '/consent/purposes',
+                                'specified purpose library': '/consent/purposes',
+                                'preferences': '/consent/preferences',
+                                'preference library': '/consent/preferences',
+                                'preference centers': '/consent/preference-centers',
+                                'policies': '/consent/policies',
+                                'portal settings': '/consent/portal-settings',
+                                'cookies': '/cookies/dashboard',
+                                'cookie governance': '/cookies/dashboard',
+                                'site scans': '/cookies/scans',
+                                'consent logs': '/cookies/logs',
+                                'banners': '/cookies/banners',
+                                'geo rules': '/cookies/geo-rules',
+
+                                // Pillar 3: Citizen Rights (DSR)
+                                'privacy': '/privacy/requests',
+                                'citizen rights': '/privacy/requests',
+                                'citizen rights (dsr)': '/privacy/requests',
+                                'requests': '/privacy/requests',
+                                'section 11/12 requests': '/privacy/requests',
+                                'section 11/12 requests queue': '/privacy/requests',
+                                'workflows': '/privacy/workflows',
+                                'tax-lock collision workflows': '/privacy/workflows',
+                                'form designer': '/privacy/forms',
+                                'dsr': '/dsr',
+
+                                // Pillar 4: Breach & DPBI
+                                'incidents': '/incidents/dashboard',
+                                'incidents & breaches': '/incidents/dashboard',
+                                'incident management': '/incidents/management',
+                                'incident command & triage': '/incidents/management',
+                                'breach': '/incidents/dashboard',
+                                'breach posture dashboard': '/incidents/dashboard',
+                                'form dpbi-ir1 dossier': '/incidents/dashboard',
+                                'notifications': '/notifications/center',
+                                '72h dpbi & citizen dispatch': '/notifications/center',
+
+                                // Administration & Governance
+                                'administration': '/settings/general',
+                                'governance': '/governance/processors',
+                                'processors': '/governance/processors',
+                                'data processors': '/governance/processors',
+                                'retention': '/governance/retention',
+                                'cross border': '/governance/cross-border',
+                                'evidence': '/governance/evidence',
+                                'security': '/governance/security-controls',
+                                'security controls': '/governance/security-controls',
+                                'assessment automation': '/assessment/dashboard',
+                                'assessments': '/assessment/dashboard',
+                                'templates': '/assessment/templates',
+                                'integrations': '/integrations/dashboard',
+                                'integrations hub': '/integrations/hub',
+                                'api keys': '/integrations/api-keys',
+                                'settings': '/settings/general',
+                                'general': '/settings/general',
+                                'general settings': '/settings/general',
+                                'sso': '/settings/sso',
+                                'branding': '/settings/branding',
+                                'organization': '/settings/branding',
+                                'roles': '/settings/roles',
+                                'audit log': '/settings/audit-log',
+                                'localization': '/settings/localization',
+                                'sign in': '/auth/login',
+                                'login': '/auth/login'
+                            };
+
+                            const items = (typeof breadcrumbs !== 'undefined' && Array.isArray(breadcrumbs) && breadcrumbs.length > 0)
+                                ? breadcrumbs
+                                : ['Workspace', 'Dashboard'];
+                        %>
+                        <% items.forEach((crumb, index) => { 
+                            const isLast = (index === items.length - 1);
+                            const name = (typeof crumb === 'object' && crumb !== null) 
+                                ? (crumb.name || crumb.title || crumb.label || '') 
+                                : String(crumb || '');
+                            const rawKey = name.toLowerCase().trim().replace(/&amp;/g, '&');
+                            let targetUrl = (typeof crumb === 'object' && crumb !== null && crumb.url) 
+                                ? crumb.url 
+                                : BREADCRUMB_MAP[rawKey];
+                            
+                            if (!targetUrl && rawKey.includes('scan #')) targetUrl = '/cookies/scans';
+                            if (!targetUrl && rawKey.includes('incident')) targetUrl = '/incidents/dashboard';
+                            if (!targetUrl && rawKey.includes('workflow')) targetUrl = '/privacy/workflows';
+                            if (!targetUrl && rawKey.includes('form designer')) targetUrl = '/privacy/forms';
+                            if (!targetUrl && rawKey.includes('asset')) targetUrl = '/inventory/assets';
+                            if (!targetUrl && rawKey.includes('tag')) targetUrl = '/inventory/tags';
+                            if (!targetUrl && rawKey.includes('consent')) targetUrl = '/consent/collection-points';
+                            if (!targetUrl && rawKey.includes('notice')) targetUrl = '/consent/collection-points';
+                            if (!targetUrl && index === 0) targetUrl = '/';
+                        %>
+                            <% if (isLast) { %>
+                                <span class="breadcrumb-item current" aria-current="page">
+                                    <strong><%= name %></strong>
+                                </span>
                             <% } else { %>
-                                <%= crumb %> <span class="divider">&gt;</span>
+                                <a href="<%= targetUrl || '/' %>" class="breadcrumb-item link" title="Navigate to <%= name %>">
+                                    <%= name %>
+                                </a>
+                                <span class="divider">&gt;</span>
                             <% } %>
-                        <% }) %>
-                    <% } else { %>
-                        Workspace <span class="divider">&gt;</span> <strong>Dashboard</strong>
-                    <% } %>
+                        <% }); %>
+                    </nav>
                 </div>
 
                 <!-- SME Tenant & Real-Time Statutory Health Status -->
