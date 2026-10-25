@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title || 'Sign In | DPDP_Secure' %></title>
+    <title><%= typeof title !== 'undefined' ? title : 'Sign In | DPDP_Secure' %></title>
     <link rel="stylesheet" href="/css/style.css">
     <style>
         body {
@@ -22,11 +22,11 @@
             background: rgba(17, 24, 39, 0.85);
             border: 1px solid rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(16px);
-            border-radius: 12px;
-            padding: 40px;
-            max-width: 440px;
+            border-radius: 14px;
+            padding: 36px;
+            max-width: 480px;
             width: 100%;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 20px 35px -5px rgba(0, 0, 0, 0.6);
             text-align: center;
         }
         .brand-badge {
@@ -48,24 +48,25 @@
             color: #ffffff;
             font-size: 24px;
             font-weight: 700;
-            margin: 0 0 8px 0;
+            margin: 0 0 6px 0;
+            letter-spacing: -0.5px;
         }
         p.subtitle {
             color: #9ca3af;
             font-size: 13px;
-            margin: 0 0 24px 0;
+            margin: 0 0 20px 0;
             line-height: 1.5;
         }
         .btn-google {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 12px;
             width: 100%;
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.15);
             color: #ffffff;
-            padding: 12px;
+            padding: 12px 16px;
             border-radius: 8px;
             font-size: 14px;
             font-weight: 600;
@@ -73,11 +74,12 @@
             text-decoration: none;
             transition: all 0.2s;
             box-sizing: border-box;
-            margin-bottom: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
         .btn-google:hover {
             background: rgba(255, 255, 255, 0.15);
             border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
         }
         .divider {
             display: flex;
@@ -100,9 +102,9 @@
         }
         .fast-track-box {
             background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(16, 185, 129, 0.25);
-            border-radius: 8px;
-            padding: 16px;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 10px;
+            padding: 18px;
             text-align: left;
         }
         .fast-track-title {
@@ -114,7 +116,7 @@
             margin-bottom: 12px;
             display: flex;
             align-items: center;
-            gap: 6px;
+            justify-content: space-between;
         }
         .btn-role {
             display: flex;
@@ -125,13 +127,14 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: #f3f4f6;
             padding: 10px 14px;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 13px;
             font-weight: 500;
             cursor: pointer;
             margin-bottom: 8px;
             transition: all 0.2s;
             box-sizing: border-box;
+            text-align: left;
         }
         .btn-role:last-child {
             margin-bottom: 0;
@@ -140,14 +143,42 @@
             background: rgba(59, 130, 246, 0.15);
             border-color: #3b82f6;
             color: #ffffff;
+            transform: translateX(2px);
         }
-        .role-tag {
-            font-size: 10px;
-            font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            color: #9ca3af;
+        .role-name {
+            font-weight: 600;
+            color: #ffffff;
+            font-size: 13px;
+        }
+        .role-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        .notice-banner {
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #93c5fd;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            margin-bottom: 16px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .error-banner {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            margin-bottom: 16px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
     </style>
 </head>
@@ -160,32 +191,64 @@
         <h1>Compliance Portal</h1>
         <p class="subtitle">Aarogya Diagnostic Center • Indiranagar, Bengaluru<br>DPDP Act, 2023 Statutory Console</p>
 
+        <% if (typeof notice !== 'undefined' && notice) { %>
+            <div class="notice-banner">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                <span><%= notice %></span>
+            </div>
+        <% } %>
+
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="error-banner">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                <span><%= error %></span>
+            </div>
+        <% } %>
+
+        <!-- Official Google OAuth Sign-In Button -->
         <a href="/auth/google" class="btn-google">
             <svg viewBox="0 0 24 24" width="18" height="18"><path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"/><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.7-.2-2.3H12v4.6h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.9z"/><path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12.3 0 15.2c0 2.8.7 5.4 1.9 7.8l3.7-2.9z"/><path fill="#34A853" d="M12 23.5c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2-6.4-4.8L1.9 17C3.7 20.7 7.5 23.5 12 23.5z"/></svg>
             Sign in with Google
         </a>
 
         <div class="divider">
-            <span>Or Evaluator Fast-Track</span>
+            <span>⚡ Evaluator Fast-Track</span>
         </div>
 
+        <!-- Evaluator Fast-Track 1-Click Role Login Box -->
         <div class="fast-track-box">
             <div class="fast-track-title">
-                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-                1-Click Role Login
+                <span>1-Click Role Login</span>
+                <span style="font-size: 10px; color: #34d399; font-weight: 600;">HACKATHON MODE</span>
             </div>
             <form action="/auth/demo-login" method="POST">
                 <button type="submit" name="role" value="owner" class="btn-role">
-                    <span>Ramesh Kumar</span>
-                    <span class="role-tag" style="color: #60a5fa;">SME_OWNER</span>
+                    <div>
+                        <div class="role-name">Ramesh Kumar</div>
+                        <div class="role-desc">Fiduciary Admin &bull; Full Control</div>
+                    </div>
+                    <span class="badge-pill info">SME_OWNER</span>
+                </button>
+                <button type="submit" name="role" value="compliance" class="btn-role">
+                    <div>
+                        <div class="role-name">Dr. Ananya Sen</div>
+                        <div class="role-desc">Data Protection Officer &bull; RoPA &amp; DSR</div>
+                    </div>
+                    <span class="badge-pill purple">COMPLIANCE</span>
                 </button>
                 <button type="submit" name="role" value="reception" class="btn-role">
-                    <span>Priya Sharma</span>
-                    <span class="role-tag" style="color: #34d399;">RECEPTION</span>
+                    <div>
+                        <div class="role-name">Priya Sharma</div>
+                        <div class="role-desc">Front-Desk Staff &bull; Scans &amp; Notices</div>
+                    </div>
+                    <span class="badge-pill success">RECEPTION</span>
                 </button>
                 <button type="submit" name="role" value="auditor" class="btn-role">
-                    <span>Rajesh Iyer</span>
-                    <span class="role-tag" style="color: #fbbf24;">AUDITOR</span>
+                    <div>
+                        <div class="role-name">Rajesh Iyer</div>
+                        <div class="role-desc">Independent Auditor &bull; Read-Only</div>
+                    </div>
+                    <span class="badge-pill warning">AUDITOR</span>
                 </button>
             </form>
         </div>

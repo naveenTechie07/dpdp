@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const crypto = require('crypto');
+const { requireRole } = require('../middlewares/authMiddleware');
 
 // Privacy Views
 router.get('/privacy/dashboard', (req, res) => {
@@ -133,7 +134,7 @@ router.get('/api/privacy/dsr/:id/summary', (req, res) => {
   });
 });
 
-router.post('/api/privacy/execute-erasure', (req, res) => {
+router.post('/api/privacy/execute-erasure', requireRole(['SME_OWNER', 'COMPLIANCE_OFFICER']), (req, res) => {
   const { ticketId, principalPhone } = req.body || {};
   const certId = `CERT-ERASURE-2026-${Math.floor(1000 + Math.random() * 9000)}`;
   const timestamp = new Date().toISOString();

@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { requireRole } = require('../middlewares/authMiddleware');
 
 // Incident Views
 router.get('/incidents/dashboard', (req, res) => {
@@ -88,7 +89,7 @@ router.get('/notifications/center', (req, res) => {
 });
 
 // Incident API Routes
-router.post('/api/incidents/create', (req, res) => {
+router.post('/api/incidents/create', requireRole(['SME_OWNER', 'COMPLIANCE_OFFICER']), (req, res) => {
   const { incidentTitle, scenarioType, impactedSilos, estimatedCount, dataCategories } = req.body || {};
   const incidentId = `INC-2026-${Math.floor(1000 + Math.random() * 9000)}`;
 
@@ -108,14 +109,14 @@ router.post('/api/incidents/create', (req, res) => {
   });
 });
 
-router.post('/api/incidents/triage', (req, res) => {
+router.post('/api/incidents/triage', requireRole(['SME_OWNER', 'COMPLIANCE_OFFICER']), (req, res) => {
   res.json({
     success: true,
     message: 'Containment actions updated in incident log.'
   });
 });
 
-router.post('/api/incidents/dispatch-alerts', (req, res) => {
+router.post('/api/incidents/dispatch-alerts', requireRole(['SME_OWNER', 'COMPLIANCE_OFFICER']), (req, res) => {
   res.json({
     success: true,
     deliveredCount: 250,
