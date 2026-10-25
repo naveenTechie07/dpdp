@@ -531,6 +531,114 @@ document.addEventListener('DOMContentLoaded', () => {
       riskColor: '#3b82f6',
       inspectTarget: 'tbl-claims',
       scanTarget: 'ALL'
+    },
+    'LIFECYCLE_ROOT': {
+      title: 'Data Discovery Orchestrator',
+      desc: 'Central autonomous discovery control plane. Coordinates multi-connector cataloging and air-gapped detection workers across informal & enterprise data.',
+      icon: '&#127760;',
+      risk: 'AUTONOMOUS DISCOVERY',
+      riskColor: '#818cf8',
+      inspectTarget: 'tbl-claims',
+      scanTarget: 'ALL'
+    },
+    'LIFECYCLE_CONNECTORS': {
+      title: 'Data Connectors ("WHERE?")',
+      desc: 'Heterogeneous data source bridges: Claims DB (PostgreSQL), Policy Admin DB (MySQL), Excel spreadsheets, Diagnostic PDFs, Documents, S3 buckets, and WhatsApp chat exports.',
+      icon: '&#128268;',
+      risk: '7 CONNECTED SOURCES',
+      riskColor: '#3b82f6',
+      inspectTarget: 'tbl-claims',
+      scanTarget: 'ALL'
+    },
+    'LIFECYCLE_AGENTS': {
+      title: 'Discovery Agents ("WHERE SCAN?")',
+      desc: 'Local air-gapped workers and daemon processes executing on-premise without cloud egress. Crawls active directories, databases, and network shares.',
+      icon: '&#129302;',
+      risk: 'AIR-GAPPED AGENTS',
+      riskColor: '#10b981',
+      inspectTarget: 'file-invoices-billing',
+      scanTarget: 'ALL'
+    },
+    'LIFECYCLE_SCAN': {
+      title: 'Deep Scan ("LOOK INSIDE")',
+      desc: 'Deconstructs raw container contents: PDF OCR text extraction, Word docx token parsing, CSV formula injection defense (=, +, -, @ stripping), and SQL row batch reading.',
+      icon: '&#128269;',
+      risk: 'DEEP INSPECTION',
+      riskColor: '#f59e0b',
+      inspectTarget: 'file-blood-report',
+      scanTarget: 'ALL'
+    },
+    'LIFECYCLE_DETECTION': {
+      title: 'Deterministic Indian PII Engine',
+      desc: 'Rule-based high-speed detection: Verhoeff Dihedral D5 algorithm for 12-digit Aadhaar, 4th-character PAN entity matching, Section 2(t) Clinical Health lexicon, and Indian mobile numbers (+91).',
+      icon: '&#9881;',
+      risk: 'ZERO FALSE POSITIVES',
+      riskColor: '#f43f5e',
+      inspectTarget: 'tbl-medical-histories',
+      scanTarget: 'ALL'
+    },
+    'LIFECYCLE_ASSETS': {
+      title: 'Discovered Assets ("container")',
+      desc: 'Coarse-grained logical containers: Relational database tables (claims, policyholders), spreadsheets (agent_commissions.xlsx), clinical PDF files, and cloud buckets.',
+      icon: '&#128230;',
+      risk: '17 CONTAINERS CATALOGED',
+      riskColor: '#06b6d4',
+      inspectTarget: 'tbl-policyholders',
+      scanTarget: 'ALL'
+    },
+    'LIFECYCLE_ELEMENTS': {
+      title: 'Discovered Elements ("field")',
+      desc: 'Fine-grained data attributes: Column names (aadhaar_token, diagnosis_code, mobile_number), cell values, table rows, and document paragraphs.',
+      icon: '&#128196;',
+      risk: '64 ELEMENT FIELDS',
+      riskColor: '#a855f7',
+      inspectTarget: 'tbl-claims',
+      scanTarget: 'ALL'
+    },
+    'LIFECYCLE_FINDINGS': {
+      title: 'Candidate Findings ("candidate data")',
+      desc: 'Candidate PII instances flagged by the detection engine. Each candidate features a confidence rating, pattern rule match, masked preview, and source file lineage.',
+      icon: '&#127919;',
+      risk: 'CANDIDATE PII FOUND',
+      riskColor: '#ec4899',
+      inspectTarget: 'tbl-medical-histories',
+      scanTarget: 'ALL'
+    },
+    'LIFECYCLE_REVIEW': {
+      title: 'Human Review & DPO Oversight',
+      desc: 'Statutory compliance safeguard: Data Protection Officer (DPO) and SME review candidate findings. Genuine personal data is confirmed, while false positive anomalies are discarded.',
+      icon: '&#128100;',
+      risk: 'HUMAN-IN-THE-LOOP',
+      riskColor: '#9ca3af',
+      inspectTarget: 'tbl-claims',
+      scanTarget: 'ALL'
+    },
+    'LIFECYCLE_INVENTORY': {
+      title: 'Verified Personal Data Inventory',
+      desc: 'Authoritative enterprise inventory of validated personal and sensitive health data. Tagged with storage location, data custodian, category, and volume.',
+      icon: '&#128450;',
+      risk: 'VERIFIED INVENTORY',
+      riskColor: '#10b981',
+      inspectTarget: 'tbl-policyholders',
+      scanTarget: 'ALL'
+    },
+    'LIFECYCLE_REJECT': {
+      title: 'Rejected Candidates / False Positive Suppression',
+      desc: 'Discarded anomalies are excluded from the personal data inventory. The rejection decision and timestamp are cryptographically hashed to prove statutory due diligence.',
+      icon: '&#128683;',
+      risk: 'SUPPRESSED & AUDITED',
+      riskColor: '#ef4444',
+      inspectTarget: 'file-invoices-billing',
+      scanTarget: 'ALL'
+    },
+    'LIFECYCLE_GOVERNANCE': {
+      title: 'Classification, RoPA & Lineage Governance',
+      desc: 'Statutory downstream synthesis: Section 8(4) Automated RoPA records, Section 5 multilingual consent notices, CGST Section 36 72-month tax locks, and SHA-256 Merkle audit chains.',
+      icon: '&#128737;',
+      risk: 'FULL STATUTORY COMPLIANCE',
+      riskColor: '#6366f1',
+      inspectTarget: 'tbl-claims',
+      scanTarget: 'ALL'
     }
   };
 
