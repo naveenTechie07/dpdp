@@ -79,3 +79,6 @@ body.modal-open { overflow: hidden; }
 .diff-add { color: green; } .diff-del { color: red; }
 
 input[type=radio]:checked + label { border-color: var(--color-primary); }
+
+
+.radio-card:focus-within { box-shadow: 0 0 0 2px var(--color-primary); }
