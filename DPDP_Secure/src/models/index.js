@@ -233,6 +233,7 @@ createDataAsset: async (assetData) => {
   },
 
   deleteRoPARecord: async (id, tenantId = 'TENANT-AAROGYA-01') => {
+    await run('DELETE FROM ropa_silo_mapping WHERE ropaRecordId = ? AND tenantId = ?', [id, tenantId]);
     return await run('DELETE FROM ropa_records WHERE id = ? AND tenantId = ?', [id, tenantId]);
   },
 

@@ -41,8 +41,8 @@ async function seedDemoData() {
   await run('DELETE FROM incidents WHERE tenantId = ?', [TENANT_ID]);
   await run('DELETE FROM consent_events WHERE tenantId = ?', [TENANT_ID]);
   await run('DELETE FROM consent_notices WHERE tenantId = ?', [TENANT_ID]);
-  await run('DELETE FROM ropa_records WHERE tenantId = ?', [TENANT_ID]);
   await run('DELETE FROM ropa_silo_mapping WHERE tenantId = ?', [TENANT_ID]);
+  await run('DELETE FROM ropa_records WHERE tenantId = ?', [TENANT_ID]);
   await run('DELETE FROM pii_findings WHERE siloId IN (SELECT id FROM data_silos WHERE tenantId = ?)', [TENANT_ID]);
   await run('DELETE FROM data_silos WHERE tenantId = ?', [TENANT_ID]);
   await run('DELETE FROM data_assets WHERE tenantId = ?', [TENANT_ID]);
