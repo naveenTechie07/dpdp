@@ -239,6 +239,8 @@ router.post(['/api/connectors/scan', '/api/connectors/scan/:connectorId'], disco
 router.get('/inventory/ropa/print', discoveryController.renderRoPAPrint);
 router.get('/api/ropa/export-csv', discoveryController.exportRoPaCsv);
 router.get('/api/ropa/data', discoveryController.getRoPaData);
+router.get('/api/ropa/graph', discoveryController.getRoPaGraph);
+router.all('/api/ropa/retention-recommendation', discoveryController.getRetentionRecommendation);
 router.post('/api/ropa/generate', discoveryController.generateRoPA);
 
 // RoPA CRUD endpoints

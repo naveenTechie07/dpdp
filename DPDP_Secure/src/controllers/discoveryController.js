@@ -470,6 +470,65 @@ const discoveryController = {
   },
 
   /**
+   * Returns nodes and edges for the Lineage & Flow Architecture relationship graph
+   * Triggered by GET /api/ropa/graph
+   */
+  getRoPaGraph: async (req, res) => {
+    try {
+      const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+      const { getRelationshipGraph } = require('../services/ropaService');
+      const graphData = await getRelationshipGraph(tenantId);
+      res.json({
+        success: true,
+        ...graphData
+      });
+    } catch (err) {
+      console.error('[DISCOVERY] getRoPaGraph error:', err);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to build RoPA graph: ' + err.message
+      });
+    }
+  },
+
+  /**
+   * Returns DPDP statutory data retention recommendation based on Section 8(7) engine
+   * Triggered by GET/POST /api/ropa/retention-recommendation
+   */
+  getRetentionRecommendation: async (req, res) => {
+    try {
+      const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+      const { getRetentionRecommendation } = require('../services/dpdpRetentionService');
+      const sourceId = req.query.sourceId || req.body?.sourceId;
+      const businessFunction = req.query.businessFunction || req.body?.businessFunction;
+      const purpose = req.query.purpose || req.body?.purpose;
+      let piiCategories = req.query.piiCategories || req.body?.piiCategories;
+      if (typeof piiCategories === 'string') {
+        piiCategories = piiCategories.split(/[,&/]/).map((s) => s.trim()).filter(Boolean);
+      }
+
+      const rec = await getRetentionRecommendation(tenantId, {
+        sourceId,
+        businessFunction,
+        purpose,
+        piiCategories
+      });
+
+      res.json({
+        success: true,
+        data: rec
+      });
+    } catch (err) {
+      console.error('[DISCOVERY] getRetentionRecommendation error:', err);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to calculate retention recommendation: ' + err.message
+      });
+    }
+  },
+
+
+  /**
    * Triggers automated RoPA re-synthesis from current pii_findings
    * Triggered by POST /api/ropa/generate
    */

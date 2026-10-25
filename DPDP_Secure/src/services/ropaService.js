@@ -162,7 +162,324 @@ async function generateRoPaCsv(tenantId = 'TENANT-AAROGYA-01') {
   return csvHeaders + csvRows;
 }
 
+/**
+ * Builds nodes and edges for the Interactive Data Lineage & Flow Architecture
+ * Connecting:
+ * [Data Source] ──► [Discovered PII Element] ──► [Processing Activity (Purpose & DPDP Retention)] ──► [Storage Flow / 3rd Party Recipient]
+ *
+ * @param {string} tenantId - Tenant identifier
+ * @returns {Promise<object>} Nodes, edges, and lineage summary statistics
+ */
+async function getRelationshipGraph(tenantId = 'TENANT-AAROGYA-01') {
+  const { calculateDpdpRetention } = require('./dpdpRetentionService');
+  let [silos, ropaRecords, allFindings, privacyRequests] = await Promise.all([
+    models.getSilos(tenantId),
+    models.getRoPARecords(tenantId),
+    models.getAllFindings(tenantId),
+    models.all('SELECT * FROM privacy_requests WHERE tenantId = ?', [tenantId])
+  ]);
+
+  if (!ropaRecords || ropaRecords.length === 0) {
+    const syn = await synthesizeRoPA(tenantId);
+    ropaRecords = syn.records;
+  }
+
+  // Map silos for each activity
+  for (const r of ropaRecords) {
+    r.mappedSilos = await models.getSilosForRopa(r.id, tenantId);
+  }
+
+  // Pending DSR requests for alert indicators
+  const pendingDsrs = (privacyRequests || []).filter(
+    (p) => !p.status.includes('COMPLETED') || p.statutoryLockReason
+  );
+
+  // Group findings by siloId
+  const findingsBySilo = {};
+  for (const f of allFindings) {
+    if (!findingsBySilo[f.siloId]) findingsBySilo[f.siloId] = [];
+    findingsBySilo[f.siloId].push(f);
+  }
+
+  const nodes = [];
+  const edges = [];
+  const addedNodeIds = new Set();
+  const addedEdgeIds = new Set();
+
+  function addNode(node) {
+    if (!addedNodeIds.has(node.id)) {
+      addedNodeIds.add(node.id);
+      nodes.push(node);
+    }
+  }
+
+  function addEdge(edge) {
+    if (!addedEdgeIds.has(edge.id)) {
+      addedEdgeIds.add(edge.id);
+      edges.push(edge);
+    }
+  }
+
+  let currentY = 40;
+
+  ropaRecords.forEach((act) => {
+    const actMappedSilos = act.mappedSilos && act.mappedSilos.length > 0
+      ? act.mappedSilos
+      : silos.slice(0, 1);
+
+    // Compute DPDP Statutory retention
+    const piiCategories = [];
+    if (act.dataCategories) {
+      act.dataCategories.split(/[,&/]/).forEach((c) => {
+        const trimmed = c.trim();
+        if (trimmed) piiCategories.push(trimmed);
+      });
+    }
+
+    const statutoryRetention = calculateDpdpRetention(
+      piiCategories,
+      act.activityName,
+      act.purpose
+    );
+
+    // Parse retention months from r.retentionPeriod or fallback to statutory retention
+    let retentionMonths = statutoryRetention.retentionPeriodMonths;
+    if (act.retentionPeriod) {
+      const matchMonths = act.retentionPeriod.match(/(\d+)\s*(?:months|mo)/i);
+      const matchYears = act.retentionPeriod.match(/(\d+)\s*(?:years|yr|y)/i);
+      if (matchMonths) {
+        retentionMonths = parseInt(matchMonths[1], 10);
+      } else if (matchYears) {
+        retentionMonths = parseInt(matchYears[1], 10) * 12;
+      }
+    }
+
+    // Check if DSR request applies to this activity
+    const isDsrRelevant = pendingDsrs.some((d) => {
+      const reason = (d.statutoryLockReason || '').toLowerCase();
+      const actTitle = act.activityName.toLowerCase();
+      return (
+        reason.includes(actTitle) ||
+        (actTitle.includes('invoic') && reason.includes('cgst')) ||
+        (actTitle.includes('whatsapp') && reason.includes('whatsapp')) ||
+        (actTitle.includes('lead') && reason.includes('lead'))
+      );
+    });
+
+    const actNodeId = `activity-${act.id}`;
+    const actSourceNames = actMappedSilos.map((s) => s.siloName.split('(')[0].trim()).join(', ');
+
+    // Collect elements for this activity across mapped silos
+    const elementsForAct = [];
+    actMappedSilos.forEach((s) => {
+      const siloFindings = findingsBySilo[s.id] || [];
+      const types = new Set();
+      siloFindings.forEach((f) => types.add(f.piiType));
+      if (types.size === 0) {
+        if (s.siloType.includes('CHAT') || s.siloType.includes('MESSAGING')) {
+          types.add('FULL_NAME');
+          types.add('PHONE_NUMBER');
+        } else if (s.siloType.includes('BILLING') || s.siloType.includes('SPREADSHEET')) {
+          types.add('PAN');
+          types.add('FINANCIAL_INVOICE');
+        } else if (s.siloType.includes('PDF') || s.siloType.includes('DOCUMENTS')) {
+          types.add('AADHAAR_UID');
+          types.add('HEALTH_DIAGNOSTIC');
+        } else {
+          types.add('CUSTOMER_ID');
+        }
+      }
+      types.forEach((t) => {
+        elementsForAct.push({
+          silo: s,
+          piiType: t,
+          count: siloFindings.filter((f) => f.piiType === t).length || 5
+        });
+      });
+    });
+
+    // Storage flows and recipients from storageLocation
+    const flowsAndRecipients = [];
+    const rawStorage = act.storageLocation || 'Internal Lab Server';
+    const parts = rawStorage.split(/&|and/i);
+    parts.forEach((p) => {
+      const name = p.trim();
+      if (!name) return;
+      const isRecipient = /meta|whatsapp business api|tpa|cloud|partner|external|portal|disbursement|excel/i.test(name);
+      flowsAndRecipients.push({
+        name,
+        isRecipient,
+        type: isRecipient ? 'THIRD_PARTY_PROCESSOR' : 'INTERNAL_SYSTEM',
+        stage: isRecipient ? 'SHARING' : 'STORAGE'
+      });
+    });
+    if (flowsAndRecipients.length === 0) {
+      flowsAndRecipients.push({
+        name: 'Internal Storage Vault',
+        isRecipient: false,
+        type: 'INTERNAL_SYSTEM',
+        stage: 'STORAGE'
+      });
+    }
+
+    // Determine vertical span for this block
+    const elementCount = Math.min(elementsForAct.length, 3);
+    const flowCount = flowsAndRecipients.length;
+    const blockRows = Math.max(actMappedSilos.length, elementCount, flowCount, 1);
+    const blockHeight = Math.max(blockRows * 75, 175);
+    const midY = currentY + (blockHeight / 2) - 45;
+
+    // 1. Data Source Node(s) (Left Column)
+    actMappedSilos.forEach((s, sIdx) => {
+      const sourceNodeId = `source-${s.id}`;
+      const srcY = currentY + sIdx * 80;
+      const siloFindings = findingsBySilo[s.id] || [];
+
+      let cleanLabel = s.siloName;
+      if (cleanLabel.includes('(')) {
+        const inParen = cleanLabel.match(/\((.*?)\)/);
+        if (inParen && inParen[1]) {
+          const firstFile = inParen[1].split(',')[0].trim();
+          if (firstFile) cleanLabel = firstFile;
+        }
+      }
+      cleanLabel = cleanLabel.split(' ')[0] || s.siloName;
+      if (!cleanLabel.includes('.')) {
+        cleanLabel += s.siloType.includes('CSV') ? '.csv' : s.siloType.includes('PDF') ? '.pdf' : '.db';
+      }
+
+      addNode({
+        id: sourceNodeId,
+        type: 'dataSourceNode',
+        data: {
+          id: sourceNodeId,
+          label: cleanLabel,
+          fullName: s.siloName,
+          sourceType: s.siloType.replace(/_/g, ' '),
+          findingsCount: siloFindings.length || s.itemCount || 5,
+          status: 'ACTIVE',
+          dsrAlert: isDsrRelevant ? {
+            hasPending: true,
+            message: 'Active DSR Action pending on this data repository'
+          } : null
+        },
+        position: { x: 50, y: srcY }
+      });
+    });
+
+    // 2. Data Element Nodes (Second Column)
+    elementsForAct.slice(0, 3).forEach((elem, eIdx) => {
+      const elemNodeId = `elem-${elem.silo.id}-${elem.piiType}`;
+      const elemY = currentY + eIdx * 65;
+
+      addNode({
+        id: elemNodeId,
+        type: 'dataElementNode',
+        data: {
+          id: elemNodeId,
+          label: elem.piiType,
+          dataSubjects: 'Patients / Customers',
+          volume: `${elem.count} records detected`,
+          siloName: elem.silo.siloName
+        },
+        position: { x: 320, y: elemY }
+      });
+
+      // Edge: Source -> Data Element
+      const sourceNodeId = `source-${elem.silo.id}`;
+      addEdge({
+        id: `edge-${sourceNodeId}-${elemNodeId}`,
+        source: sourceNodeId,
+        target: elemNodeId,
+        animated: true,
+        style: { stroke: '#3b82f6', strokeWidth: 1.5 }
+      });
+
+      // Edge: Data Element -> Processing Activity
+      addEdge({
+        id: `edge-${elemNodeId}-${actNodeId}`,
+        source: elemNodeId,
+        target: actNodeId,
+        animated: true,
+        style: { stroke: '#8b5cf6', strokeWidth: 1.5 }
+      });
+    });
+
+    // 3. Processing Activity Node (Third Column)
+    addNode({
+      id: actNodeId,
+      type: 'activityNode',
+      data: {
+        id: actNodeId,
+        label: act.activityName,
+        legalBasis: act.legalBasis.includes('Consent') ? 'CONSENT' : act.legalBasis.includes('Legal') ? 'STATUTORY' : 'LEGITIMATE',
+        fullLegalBasis: act.legalBasis,
+        purpose: act.purpose || 'General business processing',
+        retentionMonths,
+        retentionTrigger: statutoryRetention.triggerEvent,
+        statutoryReference: statutoryRetention.statutoryReference,
+        sourceName: actSourceNames,
+        safeguards: act.securitySafeguards,
+        dsrAlert: isDsrRelevant ? {
+          hasPending: true,
+          primaryType: 'ERASURE_LOCKED',
+          label: '⭐ Statutory Tax Locked',
+          details: 'Section 8(7) Tax Lock active on this activity'
+        } : null
+      },
+      position: { x: 600, y: midY }
+    });
+
+    // 4. Storage Flow / Recipient Nodes (Fourth Column)
+    flowsAndRecipients.forEach((flow, fIdx) => {
+      const flowNodeId = `flow-${act.id}-${fIdx}`;
+      const flowY = currentY + fIdx * 70;
+
+      addNode({
+        id: flowNodeId,
+        type: flow.isRecipient ? 'recipientNode' : 'systemNode',
+        data: {
+          id: flowNodeId,
+          label: flow.name,
+          isRecipient: flow.isRecipient,
+          type: flow.type,
+          stage: flow.stage,
+          recipientLabel: flow.isRecipient ? 'RECIPIENT' : 'STORAGE / FLOW'
+        },
+        position: { x: 920, y: flowY }
+      });
+
+      // Edge: Activity -> Flow / Recipient
+      addEdge({
+        id: `edge-${actNodeId}-${flowNodeId}`,
+        source: actNodeId,
+        target: flowNodeId,
+        style: {
+          stroke: flow.isRecipient ? '#f43f5e' : '#10b981',
+          strokeWidth: 1.5
+        }
+      });
+    });
+
+    currentY += blockHeight + 35;
+  });
+
+  return {
+    nodes,
+    edges,
+    stats: {
+      totalSources: nodes.filter((n) => n.type === 'dataSourceNode').length,
+      totalElements: nodes.filter((n) => n.type === 'dataElementNode').length,
+      totalActivities: nodes.filter((n) => n.type === 'activityNode').length,
+      totalFlows: nodes.filter((n) => n.type === 'systemNode').length,
+      totalRecipients: nodes.filter((n) => n.type === 'recipientNode').length
+    }
+  };
+}
+
 module.exports = {
   synthesizeRoPA,
-  generateRoPaCsv
+  generateRoPaCsv,
+  getRelationshipGraph
 };
+
