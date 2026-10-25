@@ -271,13 +271,110 @@ router.all([
 
 router.get('/inventory/ropa', discoveryController.renderRoPA);
 
-router.get('/inventory/lineage', (req, res) => {
-  res.render('inventory-lineage', {
-    title: 'Data Lineage - DPDP_Secure',
-    description: 'Track how data flows between informal systems.',
-    breadcrumbs: ['Workspace', 'Data Mapping', 'Lineage'],
-    path: '/inventory/lineage'
-  });
+router.get('/inventory/lineage', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    const [edges, assets] = await Promise.all([
+      models.getLineageEdges(tenantId),
+      models.getDataAssets(tenantId)
+    ]);
+
+    const connectedAssetNames = new Set();
+    edges.forEach(e => {
+      if (e.source) connectedAssetNames.add(e.source.trim());
+      if (e.target) connectedAssetNames.add(e.target.trim());
+    });
+    assets.forEach(a => {
+      if (a.assetName) connectedAssetNames.add(a.assetName.trim());
+    });
+
+    const totalEdges = edges.length;
+    const staleEdges = edges.filter(e => e.isStale === 1 || e.isStale === true || e.stale === 1).length;
+    const connectedAssets = connectedAssetNames.size;
+
+    res.render('inventory-lineage', {
+      title: 'Data Lineage - DPDP_Secure',
+      description: 'Track how data flows between informal systems.',
+      breadcrumbs: ['Workspace', 'Data Mapping', 'Lineage'],
+      path: '/inventory/lineage',
+      edges,
+      assets,
+      totalEdges,
+      staleEdges,
+      connectedAssets
+    });
+  } catch (err) {
+    console.error('[DISCOVERY] /inventory/lineage render error:', err);
+    res.status(500).render('error', {
+      title: 'Lineage Error',
+      message: 'Failed to load lineage graph: ' + err.message
+    });
+  }
+});
+
+// Lineage Edge CRUD APIs
+router.post(['/api/lineage/edges/create', '/api/lineage/edges', '/inventory/lineage/create'], async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    const { source, target, flowType, notes, isStale, lastConfirmed } = req.body;
+
+    if (!source || !target) {
+      if (!req.xhr && !req.is('json') && req.headers.accept?.includes('text/html')) {
+        return res.redirect('/inventory/lineage?error=' + encodeURIComponent('Source and Target are required'));
+      }
+      return res.status(400).json({ success: false, error: 'Source and Target are required' });
+    }
+
+    const newEdge = await models.createLineageEdge({
+      source: source.trim(),
+      target: target.trim(),
+      flowType: flowType || 'etl',
+      notes: notes ? notes.trim() : '',
+      isStale: isStale === '1' || isStale === 1 || isStale === true,
+      lastConfirmed: lastConfirmed || undefined
+    }, tenantId);
+
+    await models.logAuditEvent(tenantId, req.session?.user?.name || 'Admin', 'CREATE_LINEAGE_EDGE', newEdge.id, newEdge);
+
+    if (!req.xhr && !req.is('json') && req.headers.accept?.includes('text/html')) {
+      return res.redirect('/inventory/lineage?created=1');
+    }
+
+    res.status(201).json({ success: true, edge: newEdge });
+  } catch (err) {
+    console.error('[DISCOVERY] createLineageEdge error:', err);
+    if (!req.xhr && !req.is('json') && req.headers.accept?.includes('text/html')) {
+      return res.redirect('/inventory/lineage?error=' + encodeURIComponent(err.message));
+    }
+    res.status(500).json({ success: false, error: 'Failed to create lineage edge: ' + err.message });
+  }
+});
+
+router.all([
+  '/api/lineage/edges/:id/delete',
+  '/api/lineage/edges/delete/:id',
+  '/inventory/lineage/edges/:id/delete',
+  '/api/lineage/edges/:id'
+], async (req, res) => {
+  if (req.method !== 'DELETE' && req.method !== 'POST' && req.method !== 'GET') {
+    return res.status(405).json({ success: false, error: 'Method not allowed' });
+  }
+  try {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    await models.deleteLineageEdge(req.params.id, tenantId);
+    await models.logAuditEvent(tenantId, req.session?.user?.name || 'Admin', 'DELETE_LINEAGE_EDGE', req.params.id, {});
+
+    if (req.method === 'GET' || (!req.xhr && !req.is('json') && req.headers.accept?.includes('text/html') && req.method !== 'DELETE')) {
+      return res.redirect('/inventory/lineage');
+    }
+    res.json({ success: true, message: 'Lineage edge deleted successfully' });
+  } catch (err) {
+    console.error('[DISCOVERY] deleteLineageEdge error:', err);
+    if (!req.xhr && !req.is('json') && req.headers.accept?.includes('text/html') && req.method !== 'DELETE') {
+      return res.redirect('/inventory/lineage?error=' + encodeURIComponent(err.message));
+    }
+    res.status(500).json({ success: false, error: err.message });
+  }
 });
 
 router.get('/inventory/assessment-enrichment', (req, res) => {

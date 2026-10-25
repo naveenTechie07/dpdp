@@ -657,6 +657,21 @@ const SCHEMA_DDL = `
     FOREIGN KEY(tenantId) REFERENCES tenants(id)
   );
 
+  CREATE TABLE IF NOT EXISTS data_lineage_edges (
+    id TEXT PRIMARY KEY,
+    tenantId TEXT NOT NULL,
+    source TEXT NOT NULL,
+    target TEXT NOT NULL,
+    flowType TEXT DEFAULT 'etl',
+    notes TEXT,
+    isStale INTEGER DEFAULT 0,
+    lastConfirmed TEXT,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(tenantId) REFERENCES tenants(id)
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_lineage_edges_tenant ON data_lineage_edges(tenantId);
+
 `;
 
 // Initialize Tables Synchronously on Module Load

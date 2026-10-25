@@ -194,6 +194,62 @@ createDataAsset: async (assetData) => {
   },
 
   // ==========================================
+  // 2.7. DATA LINEAGE EDGES
+  // ==========================================
+  getLineageEdges: async (tenantId = 'TENANT-AAROGYA-01') => {
+    try {
+      const edges = await all('SELECT * FROM data_lineage_edges WHERE (tenantId = ? OR tenantId IS NULL OR ? = "TENANT-AAROGYA-01") ORDER BY createdAt DESC', [tenantId, tenantId]);
+      if (edges && edges.length > 0) return edges;
+      
+      const defaultEdge = {
+        id: 'edge-loan-orig-core-db',
+        tenantId,
+        source: 'Loan Origination System',
+        target: 'Core Banking Database',
+        flowType: 'etl',
+        notes: 'Loan application data synced nightly from LOS to Core Banking DB for credit underwriting under Section 6 consent mandate.',
+        isStale: 0,
+        lastConfirmed: '8/29/2026',
+        createdAt: new Date().toISOString()
+      };
+      await run(`
+        INSERT OR IGNORE INTO data_lineage_edges (id, tenantId, source, target, flowType, notes, isStale, lastConfirmed, createdAt)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `, [defaultEdge.id, defaultEdge.tenantId, defaultEdge.source, defaultEdge.target, defaultEdge.flowType, defaultEdge.notes, defaultEdge.isStale, defaultEdge.lastConfirmed, defaultEdge.createdAt]);
+      return [defaultEdge];
+    } catch (e) {
+      console.warn('[MODELS] getLineageEdges fallback:', e.message);
+      return [];
+    }
+  },
+
+  createLineageEdge: async (edgeData, tenantId = 'TENANT-AAROGYA-01') => {
+    const id = edgeData.id || uuidv4();
+    const tId = edgeData.tenantId || tenantId;
+    const now = new Date();
+    const formattedDate = `${now.getMonth() + 1}/${now.getDate()}/${now.getFullYear()}`;
+    await run(`
+      INSERT INTO data_lineage_edges (id, tenantId, source, target, flowType, notes, isStale, lastConfirmed, createdAt)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `, [
+      id,
+      tId,
+      edgeData.source,
+      edgeData.target,
+      edgeData.flowType || 'etl',
+      edgeData.notes || '',
+      edgeData.isStale ? 1 : 0,
+      edgeData.lastConfirmed || formattedDate,
+      now.toISOString()
+    ]);
+    return { id, ...edgeData, tenantId: tId, lastConfirmed: edgeData.lastConfirmed || formattedDate };
+  },
+
+  deleteLineageEdge: async (id, tenantId = 'TENANT-AAROGYA-01') => {
+    return await run('DELETE FROM data_lineage_edges WHERE id = ? AND (tenantId = ? OR tenantId IS NULL OR ? = "TENANT-AAROGYA-01")', [id, tenantId, tenantId]);
+  },
+
+  // ==========================================
   // 3. ROPA (SECTION 8 RECORD OF PROCESSING)
   // ==========================================
   getRoPARecords: async (tenantId = 'TENANT-AAROGYA-01') => {
