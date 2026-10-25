@@ -8,11 +8,14 @@
             <strong style="color: #60a5fa;"><%= (typeof tenant !== 'undefined' && tenant && tenant.name) ? tenant.name : 'Aarogya Diagnostic Center' %></strong> &bull; Indiranagar, Bengaluru &bull; Real-Time DPDP Act, 2023 Posture
         </p>
     </div>
-    <div style="display: flex; gap: 10px; align-items: center;">
+    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
         <span class="badge-pill success">
             <span class="status-dot-active"></span>
             DPDP Status: Verified Compliant
         </span>
+        <button id="btnInstantDemo" class="btn-demo" onclick="triggerDemoReset()" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #0f172a; font-weight: 800; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);">
+            <span>⚡ Instant Hackathon Demo Mode</span>
+        </button>
         <button class="btn-primary" onclick="window.location.href='/discovery/connectors'">
             <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path><polyline points="9 11 12 14 22 4"></polyline></svg>
             Trigger New Scan
@@ -315,5 +318,42 @@
         <% } %>
     </div>
 </div>
+
+<script>
+async function triggerDemoReset() {
+    const btn = document.getElementById('btnInstantDemo');
+    if (!btn) return;
+    const origHtml = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span>⏳ Resetting Demo Environment...</span>';
+    btn.style.opacity = '0.7';
+
+    try {
+        const res = await fetch('/api/demo/reset', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await res.json();
+        if (data.success) {
+            btn.innerHTML = '<span>✓ Demo Reset Complete!</span>';
+            btn.style.background = '#10b981';
+            btn.style.color = '#ffffff';
+            setTimeout(() => {
+                window.location.reload();
+            }, 600);
+        } else {
+            alert('Demo Reset Error: ' + (data.error || 'Unknown error'));
+            btn.disabled = false;
+            btn.innerHTML = origHtml;
+            btn.style.opacity = '1';
+        }
+    } catch (err) {
+        alert('Network error connecting to /api/demo/reset: ' + err.message);
+        btn.disabled = false;
+        btn.innerHTML = origHtml;
+        btn.style.opacity = '1';
+    }
+}
+</script>
 
 <%- include('partials/footer') %>

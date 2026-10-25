@@ -233,6 +233,22 @@ const SCHEMA_DDL = `
   CREATE INDEX IF NOT EXISTS idx_privacy_ticket ON privacy_requests(ticketNumber);
   CREATE INDEX IF NOT EXISTS idx_audit_time ON audit_logs(timestamp);
   CREATE INDEX IF NOT EXISTS idx_silos_tenant ON data_silos(tenantId);
+
+  CREATE TABLE IF NOT EXISTS data_assets (
+    id TEXT PRIMARY KEY,
+    tenantId TEXT NOT NULL,
+    assetName TEXT NOT NULL,
+    assetType TEXT NOT NULL,
+    sourceSystem TEXT,
+    sensitivity TEXT DEFAULT 'UNCLASSIFIED',
+    elements TEXT DEFAULT '0',
+    status TEXT DEFAULT 'active',
+    description TEXT,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(tenantId) REFERENCES tenants(id)
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_assets_tenant ON data_assets(tenantId);
 `;
 
 // Initialize Tables Synchronously on Module Load

@@ -53,6 +53,7 @@ function classifyPanEntity(pan) {
   if (fourthChar === 'P') {
     return {
       type: 'INDIVIDUAL_PAN',
+      entityType: 'INDIVIDUAL',
       isIndividual: true,
       sensitivity: 'HIGH',
       description: 'Individual Citizen PAN (Personal Data - DPDP Act 2023)'
@@ -75,6 +76,7 @@ function classifyPanEntity(pan) {
     };
     return {
       type: 'ENTITY_PAN',
+      entityType: fourthChar === 'C' ? 'COMPANY' : (labels[fourthChar] || 'ENTITY'),
       isIndividual: false,
       sensitivity: 'LOW',
       description: `${labels[fourthChar] || 'Corporate'} PAN (Non-Personal Data)`
@@ -83,6 +85,7 @@ function classifyPanEntity(pan) {
 
   return {
     type: 'INDIVIDUAL_PAN',
+    entityType: 'INDIVIDUAL',
     isIndividual: true,
     sensitivity: 'HIGH',
     description: 'Individual Citizen PAN'

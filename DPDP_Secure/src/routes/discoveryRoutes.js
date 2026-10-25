@@ -19,6 +19,7 @@ const upload = multer({
 });
 
 const discoveryController = require('../controllers/discoveryController');
+const models = require('../models');
 
 // GET View Routes
 router.get('/discovery/connectors', discoveryController.renderConnectors);
@@ -30,6 +31,56 @@ router.get('/inventory/assets', (req, res) => {
     breadcrumbs: ['Workspace', 'Data Mapping', 'Data Assets'],
     path: '/inventory/assets'
   });
+});
+
+router.get('/inventory/assets/create', (req, res) => {
+  res.render('inventory-asset-create', {
+    title: 'Create New Asset - DPDP_Secure',
+    description: 'Register a new data system or container.',
+    breadcrumbs: ['Workspace', 'Data Mapping', 'Data Assets', 'New Asset'],
+    path: '/inventory/assets/create'
+  });
+});
+
+router.post('/api/assets/create', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    const { assetName, assetType, sourceSystem, sensitivity, elements, status, description } = req.body;
+
+    if (!assetName) {
+      return res.status(400).json({ success: false, error: 'Asset name is required' });
+    }
+
+    const id = await models.createDataAsset({
+      tenantId,
+      assetName,
+      assetType,
+      sourceSystem,
+      sensitivity,
+      elements: elements || '0',
+      status: status || 'active',
+      description
+    });
+
+    await models.logAuditEvent(
+      tenantId,
+      req.session?.user?.name || 'Reception Staff',
+      'CREATE_DATA_ASSET',
+      id,
+      JSON.stringify({
+        details: `Created new data asset: ${assetName} (${assetType})`,
+        assetName,
+        assetType,
+        sourceSystem,
+        sensitivity
+      })
+    );
+
+    res.json({ success: true, id, message: 'Asset created successfully' });
+  } catch (err) {
+    console.error('[DISCOVERY] createAsset error:', err);
+    res.status(500).json({ success: false, error: 'Failed to create asset: ' + err.message });
+  }
 });
 
 router.get('/inventory/tags', (req, res) => {

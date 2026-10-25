@@ -1,0 +1,147 @@
+<%- include('partials/header') %>
+
+<div class="dashboard-header mb-6">
+    <div class="title-group">
+        <h1>Create New Data Asset</h1>
+        <p>Register a new data system or container under Section 8(4) RoPA.</p>
+    </div>
+    <a href="/inventory/assets" class="btn-secondary" style="padding: 8px 16px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 6px;">
+        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        Back to Inventory
+    </a>
+</div>
+
+<div class="card p-0">
+    <div style="padding: 20px 24px; border-bottom: 1px solid var(--border-color); background: rgba(0,0,0,0.2);">
+        <h2 style="margin: 0; font-size: 18px; color: var(--text-main); font-weight: 600;">Asset Registration Form</h2>
+        <p style="margin: 4px 0 0; color: var(--text-muted); font-size: 13px;">Register any data system, spreadsheet, database, or informal file store holding personal data.</p>
+    </div>
+
+    <div style="padding: 24px;">
+        <form id="assetForm" method="POST" action="/api/assets/create">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+
+                <!-- Asset Name -->
+                <div class="form-group">
+                    <label class="form-label">Asset Name <span style="color: var(--red);">*</span></label>
+                    <input type="text" name="assetName" id="assetName" class="form-input"
+                           placeholder="e.g., Customer Billing Ledger"
+                           required autocomplete="off">
+                    <p class="form-hint">The name of the data system or file store.</p>
+                </div>
+
+                <!-- Asset Type -->
+                <div class="form-group">
+                    <label class="form-label">Asset Type</label>
+                    <select name="assetType" id="assetType" class="form-select">
+                        <option value="database">Database</option>
+                        <option value="spreadsheet">Spreadsheet (Excel/CSV)</option>
+                        <option value="saas_app">SaaS Application</option>
+                        <option value="messaging">Messaging Platform (WhatsApp/Telegram)</option>
+                        <option value="file_store">File Store</option>
+                        <option value="other">Other</option>
+                    </select>
+                    <p class="form-hint">The type of system holding personal data.</p>
+                </div>
+
+                <!-- Source System -->
+                <div class="form-group">
+                    <label class="form-label">Source System / Host</label>
+                    <input type="text" name="sourceSystem" id="sourceSystem" class="form-input"
+                           placeholder="e.g., coredb.dpdpsecure.internal"
+                           autocomplete="off">
+                    <p class="form-hint">Hostname, file path, or system identifier.</p>
+                </div>
+
+                <!-- Sensitivity -->
+                <div class="form-group">
+                    <label class="form-label">Sensitivity Classification</label>
+                    <select name="sensitivity" id="sensitivity" class="form-select">
+                        <option value="UNCLASSIFIED">Unclassified</option>
+                        <option value="INTERNAL">Internal Use</option>
+                        <option value="CONFIDENTIAL">Confidential</option>
+                        <option value="RESTRICTED">Restricted (PII/Aadhaar/PAN)</option>
+                    </select>
+                    <p class="form-hint">Data sensitivity tier under DPDP Act.</p>
+                </div>
+
+                <!-- Elements Count -->
+                <div class="form-group">
+                    <label class="form-label">Estimated Data Elements</label>
+                    <input type="number" name="elements" id="elements" class="form-input"
+                           placeholder="0" min="0" value="0" autocomplete="off">
+                    <p class="form-hint">Approximate number of records or data fields.</p>
+                </div>
+
+                <!-- Status -->
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <select name="status" id="status" class="form-select">
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                        <option value="retired">Retired</option>
+                    </select>
+                    <p class="form-hint">Current operational status of the asset.</p>
+                </div>
+
+                <!-- Description -->
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">Description</label>
+                    <textarea name="description" id="description" class="form-textarea"
+                              rows="3" placeholder="Brief description of what data this asset holds and why..."></textarea>
+                    <p class="form-hint">Optional description for documentation purposes.</p>
+                </div>
+            </div>
+
+            <div style="margin-top: 28px; display: flex; gap: 12px; justify-content: flex-end;">
+                <button type="button" class="btn-secondary" onclick="window.location.href='/inventory/assets'" style="padding: 10px 20px;">
+                    Cancel
+                </button>
+                <button type="submit" class="btn-primary" id="submitBtn" style="padding: 10px 24px; font-weight: 600;">
+                    Create Asset
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('assetForm');
+    const submitBtn = document.getElementById('submitBtn');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Creating...';
+
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        try {
+            const resp = await fetch('/api/assets/create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const result = await resp.json();
+
+            if (result.success) {
+                // Show success and redirect back
+                alert('Asset created successfully!');
+                window.location.href = '/inventory/assets';
+            } else {
+                alert('Failed to create asset: ' + (result.error || 'Unknown error'));
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Create Asset';
+            }
+        } catch (err) {
+            alert('Request failed: ' + err.message);
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Create Asset';
+        }
+    });
+});
+</script>
+
+<%- include('partials/footer') %>

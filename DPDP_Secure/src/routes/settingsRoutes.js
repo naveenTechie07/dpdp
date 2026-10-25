@@ -51,13 +51,34 @@ router.get('/settings/roles', (req, res) => {
   });
 });
 
-router.get('/settings/audit-log', (req, res) => {
-  res.render('settings-audit-log', {
-    title: 'Audit Log - DPDP_Secure',
-    description: 'Review tamper-evident security and configuration changes with cryptographic SHA-256 hash chaining.',
-    breadcrumbs: ['Workspace', 'Settings', 'Audit Log'],
-    path: '/settings/audit-log'
-  });
+const auditLogger = require('../models/auditLogger');
+const demoController = require('../controllers/demoController');
+
+router.get('/settings/audit-log', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    const chainStatus = await auditLogger.verifyAuditChain(tenantId);
+    const logs = await auditLogger.getAuditLogs(tenantId, { limit: 100 });
+
+    res.render('settings-audit-log', {
+      title: 'Audit Log - DPDP_Secure',
+      description: 'Review tamper-evident security and configuration changes with cryptographic SHA-256 hash chaining.',
+      breadcrumbs: ['Workspace', 'Settings', 'Audit Log'],
+      path: '/settings/audit-log',
+      logs,
+      chainStatus
+    });
+  } catch (error) {
+    console.error('Error rendering audit log:', error);
+    res.render('settings-audit-log', {
+      title: 'Audit Log - DPDP_Secure',
+      description: 'Review tamper-evident security and configuration changes with cryptographic SHA-256 hash chaining.',
+      breadcrumbs: ['Workspace', 'Settings', 'Audit Log'],
+      path: '/settings/audit-log',
+      logs: [],
+      chainStatus: { verified: false, message: error.message }
+    });
+  }
 });
 
 router.get('/settings/localization', (req, res) => {
@@ -70,11 +91,6 @@ router.get('/settings/localization', (req, res) => {
 });
 
 // Demo Seeder Reset API
-router.post('/api/demo/reset', (req, res) => {
-  res.json({
-    success: true,
-    message: 'Demo environment reset to Aarogya Diagnostic Center (Indiranagar, Bengaluru).'
-  });
-});
+router.post('/api/demo/reset', demoController.resetDemoEnvironment);
 
 module.exports = router;

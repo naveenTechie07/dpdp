@@ -311,9 +311,18 @@ function processTaxInvoices(filePath, principalIdentifier) {
  * @param {Object} [options]
  * @returns {Promise<Object>} Execution summary with certificate and audit details
  */
-async function executeSmartErasure(ticketId = 'DSR-2026-8819', principalIdentifier = '+91 9988776655', options = {}) {
-  const tenantId = options.tenantId || 'TENANT-AAROGYA-01';
-  const actor = options.actor || 'Ramesh Kumar (DPO)';
+async function executeSmartErasure(ticketIdOrOptions = 'DSR-2026-8819', principalIdentifier = '+91 9988776655', options = {}) {
+  let ticketId = ticketIdOrOptions;
+  let opts = options;
+
+  if (ticketIdOrOptions && typeof ticketIdOrOptions === 'object') {
+    opts = ticketIdOrOptions;
+    ticketId = opts.ticketId || 'DSR-2026-8819';
+    principalIdentifier = opts.principalPhone || opts.phone || '+91 9988776655';
+  }
+
+  const tenantId = opts.tenantId || 'TENANT-AAROGYA-01';
+  const actor = opts.actor || 'Ramesh Kumar (DPO)';
 
   // 1. Fetch ticket details from SQLite if present
   let existingTicket = null;
@@ -323,9 +332,9 @@ async function executeSmartErasure(ticketId = 'DSR-2026-8819', principalIdentifi
     console.warn(`Could not fetch ticket ${ticketId} from DB: ${err.message}`);
   }
 
-  const principalName = existingTicket?.principalName || 'Deepa Nair';
-  const principalPhone = existingTicket?.principalPhone || principalIdentifier || '+91 9988776655';
-  const principalEmail = existingTicket?.principalEmail || 'deepa.nair@corp.com';
+  const principalName = opts.principalName || existingTicket?.principalName || 'Deepa Nair';
+  const principalPhone = opts.principalPhone || opts.phone || existingTicket?.principalPhone || principalIdentifier || '+91 9988776655';
+  const principalEmail = opts.principalEmail || opts.email || existingTicket?.principalEmail || 'deepa.nair@corp.com';
 
   // ==========================================
   // Track A: Informal Silos (WhatsApp & Leads)
@@ -405,6 +414,26 @@ async function executeSmartErasure(ticketId = 'DSR-2026-8819', principalIdentifi
     console.warn(`Could not log audit event: ${err.message}`);
   }
 
+  const tracks = {
+    trackA: {
+      redactedCount: informalRedactionsCount,
+      files: informalFiles
+    },
+    trackB: {
+      invoiceLocked: taxLockedCount > 0,
+      invoiceId: 'INV-2024-309',
+      retentionUntil: '2030-12-31',
+      statutoryCitation: 'CGST Act Section 36'
+    }
+  };
+
+  const complianceCertificate = {
+    certificateId: certResult.certificateId,
+    certificateSha256: certResult.sha256Fingerprint,
+    filePath: certResult.filePath,
+    url: `/api/privacy/download-cert/${certResult.certificateId}`
+  };
+
   return {
     success: true,
     ticketId,
@@ -421,7 +450,9 @@ async function executeSmartErasure(ticketId = 'DSR-2026-8819', principalIdentifi
       'INV-2024-309 (Protected under CGST Act 2017 Section 36 until 2030-12-31)'
     ],
     certUrl: `/api/privacy/download-cert/${certResult.certificateId}`,
-    auditLog
+    auditLog,
+    tracks,
+    complianceCertificate
   };
 }
 

@@ -315,6 +315,7 @@ function compute72HourCountdown(discoveredAt, referenceTime = new Date()) {
 module.exports = {
   SME_THREAT_SCENARIOS,
   calculateRisk,
+  calculateBreachRiskScore: calculateRisk,
   compute72HourCountdown,
   sanitizeIncidentText
 };

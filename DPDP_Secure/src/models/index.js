@@ -112,6 +112,33 @@ const models = {
     `, [tenantId]);
   },
 
+// ==========================================
+// 2.5. DATA ASSETS INVENTORY
+// ==========================================
+getDataAssets: async (tenantId = 'TENANT-AAROGYA-01') => {
+    return await all('SELECT * FROM data_assets WHERE tenantId = ? ORDER BY createdAt DESC', [tenantId]);
+},
+
+createDataAsset: async (assetData) => {
+    const id = assetData.id || uuidv4();
+    await run(`
+      INSERT INTO data_assets (id, tenantId, assetName, assetType, sourceSystem, sensitivity, elements, status, description, createdAt)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `, [
+      id,
+      assetData.tenantId || 'TENANT-AAROGYA-01',
+      assetData.assetName,
+      assetData.assetType,
+      assetData.sourceSystem,
+      assetData.sensitivity,
+      assetData.elements || '0',
+      assetData.status || 'active',
+      assetData.description || '',
+      new Date().toISOString()
+    ]);
+    return id;
+  },
+
   // ==========================================
   // 3. ROPA (SECTION 8 RECORD OF PROCESSING)
   // ==========================================
@@ -139,6 +166,10 @@ const models = {
   // 4. CONSENT & MULTILINGUAL NOTICES (SEC 5)
   // ==========================================
   getActiveNotices: async (tenantId = 'TENANT-AAROGYA-01') => {
+    return await all('SELECT * FROM consent_notices WHERE tenantId = ? AND isActive = 1 ORDER BY language ASC', [tenantId]);
+  },
+
+  getConsentNotices: async (tenantId = 'TENANT-AAROGYA-01') => {
     return await all('SELECT * FROM consent_notices WHERE tenantId = ? AND isActive = 1 ORDER BY language ASC', [tenantId]);
   },
 
@@ -344,34 +375,24 @@ const models = {
   // 7. AUDIT TRAIL WITH SHA-256 HASH CHAINING
   // ==========================================
   getLatestAuditLog: async (tenantId = 'TENANT-AAROGYA-01') => {
-    return await get('SELECT * FROM audit_logs WHERE tenantId = ? ORDER BY timestamp DESC LIMIT 1', [tenantId]);
+    return await get('SELECT * FROM audit_logs WHERE tenantId = ? ORDER BY timestamp DESC, rowid DESC LIMIT 1', [tenantId]);
   },
 
   logAuditEvent: async (tenantId = 'TENANT-AAROGYA-01', actor, action, resource, details) => {
-    const id = uuidv4();
-    const timestamp = new Date().toISOString();
-    const detailsJson = typeof details === 'object' ? JSON.stringify(details) : String(details);
-
-    // Fetch previous hash for cryptographic hash chaining
-    const latestLog = await get('SELECT hash FROM audit_logs WHERE tenantId = ? ORDER BY timestamp DESC LIMIT 1', [tenantId]);
-    const prevHash = latestLog?.hash || 'GENESIS_HASH_DPDP_SECURE_2026_SRUJANA';
-
-    // SHA-256 Chained Hash
-    const hash = crypto.createHash('sha256')
-      .update(prevHash + timestamp + actor + action + resource + detailsJson)
-      .digest('hex');
-
-    await run(`
-      INSERT INTO audit_logs (id, tenantId, actor, action, resource, detailsJson, timestamp, prevHash, hash)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `, [id, tenantId, actor, action, resource, detailsJson, timestamp, prevHash, hash]);
-
-    return { id, prevHash, hash };
+    const auditLogger = require('./auditLogger');
+    return await auditLogger.logEvent(tenantId, actor, action, resource, details);
   },
 
-  getAuditLogs: async (tenantId = 'TENANT-AAROGYA-01', limit = 20) => {
-    return await all('SELECT * FROM audit_logs WHERE tenantId = ? ORDER BY timestamp DESC LIMIT ?', [tenantId, limit]);
+  verifyAuditChain: async (tenantId = 'TENANT-AAROGYA-01') => {
+    const auditLogger = require('./auditLogger');
+    return await auditLogger.verifyAuditChain(tenantId);
+  },
+
+  getAuditLogs: async (tenantId = 'TENANT-AAROGYA-01', limit = 50) => {
+    const auditLogger = require('./auditLogger');
+    return await auditLogger.getAuditLogs(tenantId, { limit });
   }
 };
 
 module.exports = models;
+
