@@ -4,3 +4,7 @@
 
 
 .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+
+.data-table tr { transition: background-color 0.15s ease; }
+.data-table tr:hover { background-color: rgba(2, 132, 199, 0.05); }
