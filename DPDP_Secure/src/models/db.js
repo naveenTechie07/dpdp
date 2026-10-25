@@ -657,6 +657,33 @@ const SCHEMA_DDL = `
     FOREIGN KEY(tenantId) REFERENCES tenants(id)
   );
 
+  CREATE INDEX IF NOT EXISTS idx_cookie_geo_rules_tenant ON cookie_geo_rules(tenantId);
+
+  CREATE TABLE IF NOT EXISTS cookie_inventory (
+    id TEXT PRIMARY KEY,
+    tenantId TEXT NOT NULL,
+    cookieName TEXT NOT NULL,
+    domain TEXT NOT NULL,
+    provider TEXT NOT NULL,
+    category TEXT NOT NULL DEFAULT 'NECESSARY',
+    purpose TEXT,
+    legalBasis TEXT DEFAULT 'Section 6 - Consent',
+    cookieType TEXT DEFAULT 'FIRST_PARTY',
+    isSecure INTEGER DEFAULT 0,
+    isHttpOnly INTEGER DEFAULT 0,
+    isSameSite INTEGER DEFAULT 0,
+    expiresDays INTEGER DEFAULT 0,
+    currentStatus TEXT DEFAULT 'active',
+    consentRequired INTEGER DEFAULT 1,
+    discoveredAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    lastScannedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(tenantId) REFERENCES tenants(id)
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_cookie_inv_tenant ON cookie_inventory(tenantId);
+  CREATE INDEX IF NOT EXISTS idx_cookie_inv_domain ON cookie_inventory(domain);
+  CREATE INDEX IF NOT EXISTS idx_cookie_inv_category ON cookie_inventory(category);
+
   CREATE TABLE IF NOT EXISTS data_lineage_edges (
     id TEXT PRIMARY KEY,
     tenantId TEXT NOT NULL,

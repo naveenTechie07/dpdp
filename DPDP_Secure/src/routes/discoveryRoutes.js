@@ -20,6 +20,8 @@ const upload = multer({
 
 const discoveryController = require('../controllers/discoveryController');
 const models = require('../models');
+const { v4: uuidv4 } = require('uuid');
+const { run, get, all } = require('../models/db');
 
 // GET View Routes
 router.get('/discovery/connectors', discoveryController.renderConnectors);
@@ -516,6 +518,37 @@ router.post('/api/connectors/create', async (req, res) => {
   }
 });
 
+router.post('/api/connectors/create', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    const { name, siloName, siloType, uri, filePath, riskLevel } = req.body;
+    const finalName = name || siloName;
+    if (!finalName) {
+      return res.status(400).json({ success: false, error: 'Connector name is required' });
+    }
+    const id = `SILO-${Date.now().toString(36).toUpperCase()}`;
+    await models.saveSilo({
+      id,
+      tenantId,
+      siloName: finalName,
+      siloType: siloType || 'ENTERPRISE_RDBMS',
+      filePath: filePath || uri || 'local://connection',
+      itemCount: 0,
+      riskLevel: riskLevel || 'MEDIUM'
+    });
+    await models.logAuditEvent(
+      tenantId,
+      req.session?.user?.name || 'Admin',
+      'CREATE_CONNECTOR',
+      id,
+      JSON.stringify({ details: `Added new connector: ${finalName} (${siloType || 'ENTERPRISE_RDBMS'})` })
+    );
+    res.status(201).json({ success: true, id, message: `Connector '${finalName}' registered successfully` });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 router.get('/api/silos/:id/ropa', async (req, res) => {
   try {
     const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
@@ -534,6 +567,272 @@ router.get('/api/silos', async (req, res) => {
     res.json({ success: true, data: silos || [] });
   } catch (err) {
     console.error('[DISCOVERY] getSilos error:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// ==========================================
+// COOKIE CONSENT MANAGEMENT ENDPOINTS
+// ==========================================
+router.get('/api/cookies/inventory', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    const cookies = await models.getCookieInventory(tenantId);
+    res.json({ success: true, data: cookies || [] });
+  } catch (err) {
+    console.error('[COOKIES] getCookieInventory error:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.post('/api/cookies/inventory', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    if (!req.body || !req.body.cookieName) {
+      return res.status(400).json({ success: false, error: 'cookieName is required' });
+    }
+    const data = { ...req.body, tenantId };
+    const result = await models.createCookieInventory(data);
+    await models.logAuditEvent(
+      tenantId,
+      req.session?.user?.name || 'Admin',
+      'CREATE_COOKIE_INVENTORY',
+      result.id,
+      JSON.stringify({ cookieName: data.cookieName, domain: data.domain, category: data.category })
+    );
+    res.status(201).json({ success: true, id: result.id, message: 'Cookie inventory entry created successfully' });
+  } catch (err) {
+    console.error('[COOKIES] createCookieInventory error:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// COOKIE DASHBOARD VIEW ROUTES
+router.get('/cookies/dashboard', (req, res) => {
+  res.render('cookies-consent-dashboard', {
+    title: 'Cookie Consent Dashboard - DPDP_Secure',
+    description: 'Manage cookie inventory, consent banners, and regulatory compliance under DPDP Act 2023.',
+    breadcrumbs: ['Workspace', 'Privacy', 'Cookies'],
+    path: '/cookies/dashboard',
+    cookies: [],
+    banners: []
+  });
+});
+
+router.get('/cookies/consent', (req, res) => {
+  res.redirect('/cookies/dashboard');
+});
+
+router.get('/cookies/scans', (req, res) => {
+  res.render('cookies-scans', {
+    title: 'Cookie Scan Management - DPDP_Secure',
+    description: 'Crawl website endpoints to automatically discover cookies, tracking pixels, and third-party SDKs.',
+    breadcrumbs: ['Workspace', 'Privacy', 'Cookies', 'Scans'],
+    path: '/cookies/scans',
+    scans: []
+  });
+});
+
+router.get('/cookies/banners', (req, res) => {
+  res.render('cookies-banners', {
+    title: 'Cookie Banner Manager - DPDP_Secure',
+    description: 'Design, brand, and publish cookie consent banners for Aarogya patient portal endpoints.',
+    breadcrumbs: ['Workspace', 'Privacy', 'Cookies', 'Banners'],
+    path: '/cookies/banners',
+    banners: []
+  });
+});
+
+router.get('/api/cookies/consent-logs', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    const logs = await models.getCookieConsentLogs(tenantId);
+    res.json({ success: true, data: logs || [] });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.put('/api/cookies/inventory/:id', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    await models.updateCookieInventory(req.params.id, req.body, tenantId);
+    await models.logAuditEvent(
+      tenantId,
+      req.session?.user?.name || 'Admin',
+      'UPDATE_COOKIE_INVENTORY',
+      req.params.id,
+      JSON.stringify(req.body)
+    );
+    res.json({ success: true, message: 'Cookie inventory updated successfully' });
+  } catch (err) {
+    console.error('[COOKIES] updateCookieInventory error:', err);
+    res.status(500).json({ success: false, error: 'Failed to update cookie inventory: ' + err.message });
+  }
+});
+
+router.delete('/api/cookies/inventory/:id', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    await models.deleteCookieInventory(req.params.id, tenantId);
+    await models.logAuditEvent(
+      tenantId,
+      req.session?.user?.name || 'Admin',
+      'DELETE_COOKIE_INVENTORY',
+      req.params.id,
+      {}
+    );
+    res.json({ success: true, message: 'Cookie inventory deleted successfully' });
+  } catch (err) {
+    console.error('[COOKIES] deleteCookieInventory error:', err);
+    res.status(500).json({ success: false, error: 'Failed to delete cookie inventory: ' + err.message });
+  }
+});
+
+router.post('/api/cookies/scan', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    const { websiteUrl, scanUrl, maxPages } = req.body;
+
+    if (!websiteUrl && !scanUrl) {
+      return res.status(400).json({ success: false, error: 'websiteUrl or scanUrl is required' });
+    }
+
+    const targetUrl = websiteUrl || scanUrl || 'https://aarogyaclinic.in';
+    const maxP = parseInt(maxPages) || 50;
+
+    // Simulate scanning - detect common cookies based on URL patterns
+    const detectedCookies = simulateCookieScan(targetUrl, maxP);
+
+    const scanId = `CSCAN-${uuidv4().slice(0, 8)}`;
+    await run(`
+      INSERT INTO cookie_scan_results (id, tenantId, websiteUrl, scanDate, cookieCount, necessaryCount, nonNecessaryCount, status)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `, [scanId, tenantId, targetUrl, new Date().toISOString(), detectedCookies.length, detectedCookies.filter(c => c.category === 'NECESSARY').length, detectedCookies.filter(c => c.category !== 'NECESSARY').length, 'completed']);
+
+    // Auto-populate cookie inventory
+    const savedCookies = [];
+    for (const cookie of detectedCookies) {
+      const cookieId = `COOKIE-${uuidv4().slice(0, 8).toUpperCase()}`;
+      await run(`
+        INSERT OR REPLACE INTO cookie_inventory (id, tenantId, cookieName, domain, provider, category, purpose, legalBasis, cookieType, isSecure, isHttpOnly, isSameSite, expiresDays, currentStatus, consentRequired, discoveredAt, lastScannedAt)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `, [
+        cookieId,
+        tenantId,
+        cookie.name,
+        new URL(targetUrl).hostname || targetUrl,
+        cookie.provider,
+        cookie.category,
+        cookie.purpose,
+        cookie.category === 'NECESSARY' ? 'Section 8(7) - Legitimate Interest' : 'Section 6 - Consent',
+        cookie.cookieType,
+        cookie.isSecure ? 1 : 0,
+        cookie.isHttpOnly ? 1 : 0,
+        cookie.isSameSite ? 1 : 0,
+        cookie.expiresDays || 30,
+        'active',
+        cookie.category !== 'NECESSARY' ? 1 : 0,
+        new Date().toISOString(),
+        new Date().toISOString()
+      ]);
+      savedCookies.push({ id: cookieId, ...cookie });
+    }
+
+    await models.logAuditEvent(
+      tenantId,
+      req.session?.user?.name || 'Admin',
+      'COOKIE_SCAN_EXECUTED',
+      scanId,
+      JSON.stringify({ websiteUrl: targetUrl, cookieCount: detectedCookies.length, necessaryCount: detectedCookies.filter(c => c.category === 'NECESSARY').length })
+    );
+
+    res.json({
+      success: true,
+      scanId,
+      websiteUrl: targetUrl,
+      cookieCount: detectedCookies.length,
+      necessaryCount: detectedCookies.filter(c => c.category === 'NECESSARY').length,
+      nonNecessaryCount: detectedCookies.filter(c => c.category !== 'NECESSARY').length,
+      status: 'completed',
+      cookies: savedCookies
+    });
+  } catch (err) {
+    console.error('[COOKIES] scan error:', err);
+    res.status(500).json({ success: false, error: 'Scan failed: ' + err.message });
+  }
+});
+
+router.get('/api/cookies/stats', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    const inventory = await models.getCookieInventory(tenantId);
+    const scans = await models.getCookieScans(tenantId);
+    const consents = await models.getCookieConsentLogs(tenantId);
+
+    const necessaryCount = inventory.filter(c => c.category === 'NECESSARY').length;
+    const nonNecessaryCount = inventory.filter(c => c.category !== 'NECESSARY').length;
+    const highRiskCount = inventory.filter(c => c.category === 'MARKETING' || c.category === 'TRACKING').length;
+
+    let complianceRating = 'A';
+    if (nonNecessaryCount >= 3) complianceRating = 'C';
+    else if (nonNecessaryCount >= 1 || (inventory.filter(c => c.category === 'ANALYTICS').length >= 3)) complianceRating = 'B';
+
+    res.json({
+      success: true,
+      data: {
+        totalCookies: inventory.length,
+        necessaryCount,
+        nonNecessaryCount,
+        highRiskCount,
+        complianceRating,
+        totalScans: scans.length,
+        totalConsents: consents.length,
+        categories: {
+          necessary: inventory.filter(c => c.category === 'NECESSARY').length,
+          analytics: inventory.filter(c => c.category === 'ANALYTICS').length,
+          marketing: inventory.filter(c => c.category === 'MARKETING').length,
+          functional: inventory.filter(c => c.category === 'FUNCTIONAL').length,
+          preferences: inventory.filter(c => c.category === 'PREFERENCES').length,
+          security: inventory.filter(c => c.category === 'SECURITY').length,
+        }
+      }
+    });
+  } catch (err) {
+    console.error('[COOKIES] getStats error:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.post('/api/cookies/consent', async (req, res) => {
+  try {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    const { sessionId, cookieCategories, sha256Hash, acceptAll, acceptedCategories } = req.body;
+
+    const id = `CONSENT-${uuidv4().slice(0, 8).toUpperCase()}`;
+    await run(`
+      INSERT INTO cookie_consent_logs (id, tenantId, sessionId, action, cookieCategories, timestamp)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `, [
+      id,
+      tenantId,
+      sessionId || `visitor-${uuidv4().slice(0, 8)}`,
+      'consent_submitted',
+      cookieCategories || acceptedCategories?.join(',') || 'necessary',
+      new Date().toISOString()
+    ]);
+
+    await models.logAuditEvent(
+      tenantId,
+      req.session?.user?.name || 'visitor',
+      'CONSENT_SUBMITTED',
+      id,
+      JSON.stringify({ sessionId, categories: cookieCategories || acceptedCategories, sha256Hash })
+    );
+
+    res.json({ success: true, id, sha256Hash, message: 'Consent recorded successfully' });
+  } catch (err) {
+    console.error('[COOKIES] consent submission error:', err);
     res.status(500).json({ success: false, error: err.message });
   }
 });

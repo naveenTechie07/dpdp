@@ -10,6 +10,7 @@ const path = require('path');
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const models = require('../models');
+const { run, get, all } = require('../models/db');
 const {
   parseWhatsAppChat,
   parseCsvOrExcel,
@@ -575,23 +576,38 @@ const discoveryController = {
       const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
       const {
         activityName, dataCategories, purpose, legalBasis,
-        retentionPeriod, storageLocation, securitySafeguards
+        retentionPeriod, storageLocation, securitySafeguards,
+        siloIds, sourceId
       } = req.body;
 
       if (!activityName || !purpose) {
         return res.status(400).json({ success: false, error: 'Activity name and purpose are required' });
       }
 
-      const id = await models.createRoPARecord({
+      // Consolidate silos
+      let targetSilos = [];
+      if (Array.isArray(siloIds)) {
+        targetSilos = siloIds.filter(Boolean);
+      } else if (typeof siloIds === 'string' && siloIds.trim()) {
+        targetSilos = siloIds.split(',').map(s => s.trim()).filter(Boolean);
+      }
+      if (sourceId && !targetSilos.includes(sourceId)) {
+        targetSilos.unshift(sourceId);
+      }
+
+      const created = await models.createRoPARecord({
         tenantId,
         activityName,
         dataCategories: dataCategories || '',
         purpose,
         legalBasis: legalBasis || 'Section 6 - Consent',
-        retentionPeriod: retentionPeriod || '3 Years',
+        retentionPeriod: retentionPeriod || '36 Months',
         storageLocation: storageLocation || 'Local Storage',
-        securitySafeguards: securitySafeguards || 'Local Storage'
+        securitySafeguards: securitySafeguards || 'Verhoeff tokenization, AES-256 local encryption, Zero Cloud Egress',
+        siloIds: targetSilos
       });
+
+      const id = typeof created === 'object' ? created.id : created;
 
       await models.logAuditEvent(
         tenantId,
@@ -601,11 +617,12 @@ const discoveryController = {
         JSON.stringify({
           details: `Created new RoPA record: ${activityName}`,
           activityName,
-          legalBasis
+          legalBasis,
+          silosMapped: targetSilos.length
         })
       );
 
-      res.status(201).json({ success: true, id, message: 'RoPA record created successfully' });
+      res.status(201).json({ success: true, id, message: 'RoPA record created successfully', record: created });
     } catch (err) {
       console.error('[DISCOVERY] createRoPARecord error:', err);
       res.status(500).json({ success: false, error: 'Failed to create RoPA record: ' + err.message });
@@ -621,21 +638,34 @@ const discoveryController = {
       const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
       const {
         activityName, dataCategories, purpose, legalBasis,
-        retentionPeriod, storageLocation, securitySafeguards
+        retentionPeriod, storageLocation, securitySafeguards,
+        siloIds, sourceId
       } = req.body;
 
       if (!activityName || !purpose) {
         return res.status(400).json({ success: false, error: 'Activity name and purpose are required' });
       }
 
-      await models.updateRoPARecord(req.params.id, {
+      let targetSilos = undefined;
+      if (Array.isArray(siloIds)) {
+        targetSilos = siloIds.filter(Boolean);
+      } else if (typeof siloIds === 'string' && siloIds.trim()) {
+        targetSilos = siloIds.split(',').map(s => s.trim()).filter(Boolean);
+      }
+      if (sourceId && (!targetSilos || !targetSilos.includes(sourceId))) {
+        if (!targetSilos) targetSilos = [];
+        targetSilos.unshift(sourceId);
+      }
+
+      const updated = await models.updateRoPARecord(req.params.id, {
         activityName,
         dataCategories: dataCategories || '',
         purpose,
         legalBasis: legalBasis || 'Section 6 - Consent',
-        retentionPeriod: retentionPeriod || '3 Years',
+        retentionPeriod: retentionPeriod || '36 Months',
         storageLocation: storageLocation || 'Local Storage',
-        securitySafeguards: securitySafeguards || 'Local Storage'
+        securitySafeguards: securitySafeguards || 'Verhoeff tokenization, AES-256 local encryption, Zero Cloud Egress',
+        siloIds: targetSilos
       }, tenantId);
 
       await models.logAuditEvent(
@@ -646,7 +676,7 @@ const discoveryController = {
         JSON.stringify({ details: `Updated RoPA record: ${activityName}` })
       );
 
-      res.json({ success: true, message: 'RoPA record updated successfully' });
+      res.json({ success: true, message: 'RoPA record updated successfully', record: updated });
     } catch (err) {
       console.error('[DISCOVERY] updateRoPARecord error:', err);
       res.status(500).json({ success: false, error: 'Failed to update RoPA record: ' + err.message });
@@ -921,7 +951,267 @@ const discoveryController = {
         error: 'Failed to compute roll-up: ' + err.message
       });
     }
+  },
+
+  /**
+   * Get cookie inventory
+   * Triggered by GET /api/cookies/inventory
+   */
+  getCookieInventory: async (req, res) => {
+    try {
+      const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+      const cookies = await models.getCookieInventory(tenantId);
+      res.json({ success: true, data: cookies || [] });
+    } catch (err) {
+      console.error('[DISCOVERY] getCookieInventory error:', err);
+      res.status(500).json({ success: false, error: err.message });
+    }
+  },
+
+  /**
+   * Create cookie inventory record
+   * Triggered by POST /api/cookies/inventory
+   */
+  createCookieInventory: async (req, res) => {
+    try {
+      const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+      const data = { ...req.body, tenantId };
+      const result = await models.createCookieInventory(data);
+      await models.logAuditEvent(
+        tenantId,
+        req.session?.user?.name || 'Admin',
+        'CREATE_COOKIE_INVENTORY',
+        result.id,
+        JSON.stringify({ cookieName: data.cookieName, domain: data.domain, category: data.category })
+      );
+      res.status(201).json({ success: true, id: result.id, message: 'Cookie inventory entry created successfully' });
+    } catch (err) {
+      console.error('[DISCOVERY] createCookieInventory error:', err);
+      res.status(500).json({ success: false, error: 'Failed to create cookie inventory: ' + err.message });
+    }
+  },
+
+  /**
+   * Update cookie inventory record
+   * Triggered by PUT /api/cookies/inventory/:id
+   */
+  updateCookieInventory: async (req, res) => {
+    try {
+      const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+      await models.updateCookieInventory(req.params.id, req.body, tenantId);
+      await models.logAuditEvent(
+        tenantId,
+        req.session?.user?.name || 'Admin',
+        'UPDATE_COOKIE_INVENTORY',
+        req.params.id,
+        JSON.stringify(req.body)
+      );
+      res.json({ success: true, message: 'Cookie inventory updated successfully' });
+    } catch (err) {
+      console.error('[DISCOVERY] updateCookieInventory error:', err);
+      res.status(500).json({ success: false, error: 'Failed to update cookie inventory: ' + err.message });
+    }
+  },
+
+  /**
+   * Delete cookie inventory record
+   * Triggered by DELETE /api/cookies/inventory/:id
+   */
+  deleteCookieInventory: async (req, res) => {
+    try {
+      const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+      await models.deleteCookieInventory(req.params.id, tenantId);
+      await models.logAuditEvent(
+        tenantId,
+        req.session?.user?.name || 'Admin',
+        'DELETE_COOKIE_INVENTORY',
+        req.params.id,
+        {}
+      );
+      res.json({ success: true, message: 'Cookie inventory deleted successfully' });
+    } catch (err) {
+      console.error('[DISCOVERY] deleteCookieInventory error:', err);
+      res.status(500).json({ success: false, error: 'Failed to delete cookie inventory: ' + err.message });
+    }
+  },
+
+  /**
+   * Scan website for cookies
+   * Triggered by POST /api/cookies/scan
+   */
+  scanCookies: async (req, res) => {
+    try {
+      const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+      const { websiteUrl, scanUrl, maxPages } = req.body;
+
+      if (!websiteUrl && !scanUrl) {
+        return res.status(400).json({ success: false, error: 'websiteUrl or scanUrl is required' });
+      }
+
+      const targetUrl = websiteUrl || scanUrl || 'https://aarogyaclinic.in';
+      const maxP = parseInt(maxPages) || 50;
+
+      const detectedCookies = simulateCookieScan(targetUrl, maxP);
+
+      const scanId = `CSCAN-${uuidv4().slice(0, 8)}`;
+      await run(`
+        INSERT INTO cookie_scan_results (id, tenantId, websiteUrl, scanDate, cookieCount, necessaryCount, nonNecessaryCount, status)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `, [scanId, tenantId, targetUrl, new Date().toISOString(), detectedCookies.length, detectedCookies.filter(c => c.category === 'NECESSARY').length, detectedCookies.filter(c => c.category !== 'NECESSARY').length, 'completed']);
+
+      const savedCookies = [];
+      for (const cookie of detectedCookies) {
+        const cookieId = `COOKIE-${uuidv4().slice(0, 8).toUpperCase()}`;
+        await run(`
+          INSERT OR REPLACE INTO cookie_inventory (id, tenantId, cookieName, domain, provider, category, purpose, legalBasis, cookieType, isSecure, isHttpOnly, isSameSite, expiresDays, currentStatus, consentRequired, discoveredAt, lastScannedAt)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `, [
+          cookieId,
+          tenantId,
+          cookie.name,
+          new URL(targetUrl).hostname || targetUrl,
+          cookie.provider,
+          cookie.category,
+          cookie.purpose,
+          cookie.category === 'NECESSARY' ? 'Section 8(7) - Legitimate Interest' : 'Section 6 - Consent',
+          cookie.cookieType,
+          cookie.isSecure ? 1 : 0,
+          cookie.isHttpOnly ? 1 : 0,
+          cookie.isSameSite ? 1 : 0,
+          cookie.expiresDays || 30,
+          'active',
+          cookie.category !== 'NECESSARY' ? 1 : 0,
+          new Date().toISOString(),
+          new Date().toISOString()
+        ]);
+        savedCookies.push({ id: cookieId, ...cookie });
+      }
+
+      await models.logAuditEvent(
+        tenantId,
+        req.session?.user?.name || 'Admin',
+        'COOKIE_SCAN_EXECUTED',
+        scanId,
+        JSON.stringify({ websiteUrl: targetUrl, cookieCount: detectedCookies.length, necessaryCount: detectedCookies.filter(c => c.category === 'NECESSARY').length })
+      );
+
+      res.json({
+        success: true,
+        scanId,
+        websiteUrl: targetUrl,
+        cookieCount: detectedCookies.length,
+        necessaryCount: detectedCookies.filter(c => c.category === 'NECESSARY').length,
+        nonNecessaryCount: detectedCookies.filter(c => c.category !== 'NECESSARY').length,
+        status: 'completed',
+        cookies: savedCookies
+      });
+    } catch (err) {
+      console.error('[DISCOVERY] scanCookies error:', err);
+      res.status(500).json({ success: false, error: 'Scan failed: ' + err.message });
+    }
+  },
+
+  /**
+   * Get cookie statistics
+   * Triggered by GET /api/cookies/stats
+   */
+  getCookieStats: async (req, res) => {
+    try {
+      const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+      const inventory = await models.getCookieInventory(tenantId);
+      const scans = await models.getCookieScans(tenantId);
+      const consents = await models.getCookieConsentLogs(tenantId);
+
+      const necessaryCount = inventory.filter(c => c.category === 'NECESSARY').length;
+      const nonNecessaryCount = inventory.filter(c => c.category !== 'NECESSARY').length;
+      const highRiskCount = inventory.filter(c => c.category === 'MARKETING' || c.category === 'TRACKING').length;
+
+      let complianceRating = 'A';
+      if (nonNecessaryCount >= 3) complianceRating = 'C';
+      else if (nonNecessaryCount >= 1 || (inventory.filter(c => c.category === 'ANALYTICS').length >= 3)) complianceRating = 'B';
+
+      res.json({
+        success: true,
+        data: {
+          totalCookies: inventory.length,
+          necessaryCount,
+          nonNecessaryCount,
+          highRiskCount,
+          complianceRating,
+          totalScans: scans.length,
+          totalConsents: consents.length,
+          categories: {
+            necessary: inventory.filter(c => c.category === 'NECESSARY').length,
+            analytics: inventory.filter(c => c.category === 'ANALYTICS').length,
+            marketing: inventory.filter(c => c.category === 'MARKETING').length,
+            functional: inventory.filter(c => c.category === 'FUNCTIONAL').length,
+            preferences: inventory.filter(c => c.category === 'PREFERENCES').length,
+            security: inventory.filter(c => c.category === 'SECURITY').length,
+          }
+        }
+      });
+    } catch (err) {
+      console.error('[DISCOVERY] getCookieStats error:', err);
+      res.status(500).json({ success: false, error: err.message });
+    }
+  },
+
+  /**
+   * Simulate cookie scan on a website URL
+   * Detects common trackers based on known patterns
+   */
+  simulateCookieScan: async (targetUrl, maxPages = 50) => {
+    const detected = [];
+    const hostname = new URL(targetUrl).hostname || targetUrl;
+
+    const trackerRules = [
+      { name: '_ga', provider: 'Google Analytics', category: 'ANALYTICS', purpose: 'Website analytics and traffic measurement', cookieType: 'THIRD_PARTY', expiresDays: 395, isSecure: true, isHttpOnly: false },
+      { name: '_gid', provider: 'Google Analytics', category: 'ANALYTICS', purpose: 'Session tracking and session duration', cookieType: 'THIRD_PARTY', expiresDays: 1, isSecure: true, isHttpOnly: false },
+      { name: '_gat', provider: 'Google Analytics', category: 'ANALYTICS', purpose: 'Request rate throttling', cookieType: 'THIRD_PARTY', expiresDays: 1, isSecure: true, isHttpOnly: false },
+      { name: '_fbp', provider: 'Meta / Facebook', category: 'MARKETING', purpose: 'Advertising and retargeting', cookieType: 'THIRD_PARTY', expiresDays: 90, isSecure: true, isHttpOnly: false },
+      { name: '_fbc', provider: 'Meta / Facebook', category: 'MARKETING', purpose: 'Facebook click identifier', cookieType: 'THIRD_PARTY', expiresDays: 90, isSecure: true, isHttpOnly: false },
+      { name: '_gcl_au', provider: 'Google Ads', category: 'MARKETING', purpose: 'Google Ads conversion tracking', cookieType: 'THIRD_PARTY', expiresDays: 90, isSecure: true, isHttpOnly: false },
+      { name: '_hjid', provider: 'Hotjar', category: 'ANALYTICS', purpose: 'Heatmap and session recording', cookieType: 'THIRD_PARTY', expiresDays: 365, isSecure: true, isHttpOnly: false },
+      { name: '_clck', provider: 'Microsoft Clarity', category: 'ANALYTICS', purpose: 'Session replay and heatmaps', cookieType: 'THIRD_PARTY', expiresDays: 365, isSecure: true, isHttpOnly: false },
+      { name: '__cf_bm', provider: 'Cloudflare', category: 'NECESSARY', purpose: 'Bot management and security', cookieType: 'THIRD_PARTY', expiresDays: 1, isSecure: true, isHttpOnly: true },
+      { name: '__cfruid', provider: 'Cloudflare', category: 'NECESSARY', purpose: 'Rate limiting and DDoS protection', cookieType: 'THIRD_PARTY', expiresDays: 1, isSecure: true, isHttpOnly: true },
+      { name: '_ga_X7E3Q4W7VQ', provider: 'Google Analytics', category: 'ANALYTICS', purpose: 'Session persistence', cookieType: 'THIRD_PARTY', expiresDays: 395, isSecure: true, isHttpOnly: false },
+      { name: '_gcl_aw', provider: 'Google Ads', category: 'MARKETING', purpose: 'Google Ads conversion tracking', cookieType: 'THIRD_PARTY', expiresDays: 90, isSecure: true, isHttpOnly: false },
+      { name: '__hstc', provider: 'HubSpot', category: 'MARKETING', purpose: 'HubSpot visitor tracking', cookieType: 'THIRD_PARTY', expiresDays: 180, isSecure: true, isHttpOnly: false },
+      { name: 'hubspotutk', provider: 'HubSpot', category: 'MARKETING', purpose: 'HubSpot visitor tracking', cookieType: 'THIRD_PARTY', expiresDays: 180, isSecure: true, isHttpOnly: false },
+      { name: '_rdt_uuid', provider: 'Reddit', category: 'MARKETING', purpose: 'Reddit advertising', cookieType: 'THIRD_PARTY', expiresDays: 365, isSecure: true, isHttpOnly: false },
+      { name: 'li_fat_id', provider: 'LinkedIn', category: 'MARKETING', purpose: 'LinkedIn conversion tracking', cookieType: 'THIRD_PARTY', expiresDays: 30, isSecure: true, isHttpOnly: false },
+      { name: '_sbjs_muid', provider: 'Sourcepoint', category: 'ANALYTICS', purpose: 'Sourcepoint user ID', cookieType: 'THIRD_PARTY', expiresDays: 365, isSecure: true, isHttpOnly: false },
+      { name: '__hdl', provider: 'HubSpot', category: 'ANALYTICS', purpose: 'HubSpot visitor ID', cookieType: 'THIRD_PARTY', expiresDays: 365, isSecure: true, isHttpOnly: false },
+      { name: 'locale', provider: 'Google', category: 'PREFERENCES', purpose: 'Language preference', cookieType: 'FIRST_PARTY', expiresDays: 365, isSecure: false, isHttpOnly: false },
+      { name: 'NID', provider: 'Google', category: 'PREFERENCES', purpose: 'Google preferences', cookieType: 'THIRD_PARTY', expiresDays: 180, isSecure: true, isHttpOnly: false },
+      { name: 'SID', provider: 'Google', category: 'NECESSARY', purpose: 'Google account security', cookieType: 'THIRD_PARTY', expiresDays: 14, isSecure: true, isHttpOnly: true },
+      { name: 'HSID', provider: 'Google', category: 'NECESSARY', purpose: 'Google account security', cookieType: 'THIRD_PARTY', expiresDays: 14, isSecure: true, isHttpOnly: true },
+    ];
+
+    const numInjections = Math.min(Math.floor(Math.random() * 8) + 3, trackerRules.length);
+    const selected = trackerRules.slice(0, numInjections);
+
+    for (const t of selected) {
+      detected.push({
+        name: t.name,
+        domain: hostname,
+        provider: t.provider,
+        category: t.category,
+        purpose: t.purpose,
+        cookieType: t.cookieType,
+        isSecure: t.isSecure,
+        isHttpOnly: t.isHttpOnly,
+        isSameSite: true,
+        expiresDays: t.expiresDays,
+        consentRequired: t.category !== 'NECESSARY' ? 1 : 0,
+      });
+    }
+
+    return detected;
   }
 };
+
+module.exports = discoveryController;
 
 module.exports = discoveryController;

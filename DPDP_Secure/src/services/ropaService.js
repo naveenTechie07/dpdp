@@ -98,11 +98,63 @@ async function synthesizeRoPA(tenantId = 'TENANT-AAROGYA-01') {
     }
   ];
 
+  // Dynamically synthesize activities for any newly discovered informal silos
+  const coveredSiloIds = new Set();
+  standardActivities.forEach(act => {
+    (act.defaultSilos || []).forEach(s => coveredSiloIds.add(s));
+  });
+
+  const allActivities = [...standardActivities];
+  for (const s of silos) {
+    if (!coveredSiloIds.has(s.id)) {
+      let actName = `Processing Operation & Data Flow (${s.siloName.split('(')[0].trim()})`;
+      let purpose = 'Operational data processing, customer inquiry handling, and record management';
+      let categories = 'Personal Data (Name, Contact Number, Customer Identifiers)';
+      let legalBasis = 'Explicit Consent (DPDP Section 6)';
+      let retention = '36 Months';
+      let safeguards = 'Verhoeff tokenization, AES-256 local encryption, Zero Cloud Egress';
+
+      if (s.siloType.includes('CHAT') || s.siloType.includes('WHATSAPP')) {
+        actName = `Tele-Messaging & Communication Flow (${s.siloName.split('(')[0].trim()})`;
+        purpose = 'Delivering diagnostic test notifications, tele-consultation alerts, and health report dispatches';
+        categories = 'Identity (Aadhaar), Contact (Mobile, Address), Health Notifications';
+        retention = '36 Months (NMC Regulations)';
+      } else if (s.siloType.includes('BILLING') || s.siloType.includes('FINANCIAL')) {
+        actName = `Commercial Billing & Tax Compliance (${s.siloName.split('(')[0].trim()})`;
+        purpose = 'Statutory financial accounting, commercial GST invoices, and mandatory audit records';
+        categories = 'Financial (GSTIN, PAN, Invoice Amount, Payment Mode, UPI ID)';
+        legalBasis = 'Legal Obligation (CGST Act 2017 Section 36 read with DPDP Section 8(7))';
+        retention = '72 Months (6 Years CGST Tax Lock)';
+      } else if (s.siloType.includes('PDF') || s.siloType.includes('DOCUMENT')) {
+        actName = `Diagnostic Medical Records Management (${s.siloName.split('(')[0].trim()})`;
+        purpose = 'Preservation of clinical patient test findings and longitudinal pathology records';
+        categories = 'Identity (Aadhaar), Clinical Health Diagnostics, Doctor Observations';
+        retention = '36 Months (NMC Code of Medical Ethics)';
+      }
+
+      const dynamicAct = {
+        id: `ROPA-ACT-${s.id.replace(/[^A-Za-z0-9]/g, '').slice(0, 16)}`,
+        tenantId,
+        activityName: actName,
+        dataCategories: categories,
+        purpose,
+        legalBasis,
+        retentionPeriod: retention,
+        storageLocation: s.siloName,
+        securitySafeguards: safeguards,
+        defaultSilos: [s.id]
+      };
+
+      allActivities.push(dynamicAct);
+      coveredSiloIds.add(s.id);
+    }
+  }
+
   // 3. Persist to SQLite ropa_records table
-  await models.saveRoPARecords(standardActivities);
+  await models.saveRoPARecords(allActivities);
 
   // 4. Automatically establish RoPA-Silo mappings
-  for (const act of standardActivities) {
+  for (const act of allActivities) {
     if (act.defaultSilos && act.defaultSilos.length > 0) {
       await models.setRopaSiloMappings(act.id, act.defaultSilos, tenantId);
     }
@@ -115,18 +167,18 @@ async function synthesizeRoPA(tenantId = 'TENANT-AAROGYA-01') {
     'ROPA_SYNTHESIS',
     'Section 8(4) Register',
     JSON.stringify({
-      details: 'Automated synthesis of 6 lawful processing activities across informal & enterprise connectors under Section 8(4)',
-      activitiesCount: standardActivities.length,
-      connectorsCovered: ['Claims DB', 'Policy Admin DB', 'Excel', 'PDFs', 'Documents', 'Cloud Storage', 'WhatsApp'],
+      details: `Automated synthesis of ${allActivities.length} lawful processing activities across informal & enterprise connectors under Section 8(4)`,
+      activitiesCount: allActivities.length,
+      connectorsCovered: silos.map(s => s.siloName.split('(')[0].trim()),
       statutoryReference: 'DPDP Act 2023 Section 8(4) read with Rule 6'
     })
   );
 
   return {
     success: true,
-    message: 'RoPA synthesized under Section 8(4) covering all 7 informal & enterprise connectors.',
-    count: standardActivities.length,
-    records: standardActivities
+    message: `RoPA synchronized under Section 8(4) covering ${allActivities.length} processing activities across all informal & enterprise connectors.`,
+    count: allActivities.length,
+    records: allActivities
   };
 }
 
@@ -467,6 +519,10 @@ async function getRelationshipGraph(tenantId = 'TENANT-AAROGYA-01') {
   return {
     nodes,
     edges,
+    canvasDimensions: {
+      width: 1400,
+      height: Math.max(currentY + 120, 900)
+    },
     stats: {
       totalSources: nodes.filter((n) => n.type === 'dataSourceNode').length,
       totalElements: nodes.filter((n) => n.type === 'dataElementNode').length,

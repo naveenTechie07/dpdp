@@ -194,6 +194,32 @@ async function syncRopaRecord(record) {
   return syncEntity('ropa_records', mapped);
 }
 
+// 4B. RoPA Silo Mappings
+async function syncRopaSiloMapping(mapping) {
+  if (!mapping) return { success: false };
+  const arr = Array.isArray(mapping) ? mapping : [mapping];
+  if (arr.length === 0) return { success: true, count: 0 };
+  const mapped = arr.map(m => ({
+    id: m.id,
+    tenant_id: m.tenantId || m.tenant_id || appConfig.tenantDefaults.id,
+    ropa_record_id: m.ropaRecordId || m.ropa_record_id,
+    silo_id: m.siloId || m.silo_id,
+    mapping_type: m.mappingType || m.mapping_type || 'primary'
+  }));
+  return syncEntity('ropa_silo_mapping', mapped);
+}
+
+// 4C. RoPA Deletion from Cloud
+async function deleteRopaRecord(id, tenantId = appConfig.tenantDefaults.id) {
+  if (!isSupabaseAvailable() || !supabaseAdmin) return { success: false };
+  try {
+    const { error } = await supabaseAdmin.from('ropa_records').delete().match({ id, tenant_id: tenantId });
+    return { success: !error, error };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+}
+
 // 5. Consent Notices
 async function syncConsentNotice(notice) {
   if (!notice) return { success: false };
@@ -346,6 +372,8 @@ module.exports = {
   syncDataSilo,
   syncPiiFindings,
   syncRopaRecord,
+  syncRopaSiloMapping,
+  deleteRopaRecord,
   syncConsentNotice,
   syncConsentEvent,
   syncPrivacyRequest,

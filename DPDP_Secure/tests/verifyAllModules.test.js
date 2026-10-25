@@ -239,9 +239,10 @@ async function runAllModuleApiTests() {
     // 6. EXTENDED CONSENT
     console.log('\n--- 6. Extended Consent Module APIs ---');
     // Purposes
+    const testPurpCode = `PURP_PATH_${Date.now().toString(36)}`;
     const purpRes = await api('/api/consent/purposes', 'POST', {
       purposeName: 'Pathology Reports Dispatch',
-      purposeCode: 'PURP_PATH_01',
+      purposeCode: testPurpCode,
       description: 'Dispatching blood sample results to registered WhatsApp number'
     });
     test('Create Purpose POST /api/consent/purposes', purpRes.status === 201 && purpRes.data.success);
@@ -253,8 +254,9 @@ async function runAllModuleApiTests() {
     }
 
     // Preferences
+    const testPrefKey = `WHATSAPP_ALERTS_${Date.now().toString(36)}`;
     const prefRes = await api('/api/consent/preferences', 'POST', {
-      preferenceKey: 'WHATSAPP_ALERTS',
+      preferenceKey: testPrefKey,
       preferenceLabel: 'Receive WhatsApp diagnostic alerts',
       category: 'COMMUNICATION'
     });

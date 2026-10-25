@@ -6,6 +6,8 @@ const {
   syncDataSilo,
   syncPiiFindings,
   syncRopaRecord,
+  syncRopaSiloMapping,
+  deleteRopaRecord,
   syncConsentNotice,
   syncConsentEvent,
   syncPrivacyRequest,
@@ -323,35 +325,41 @@ createDataAsset: async (assetData) => {
 
   createRoPARecord: async (ropaData) => {
     const id = ropaData.id || `ROPA-${uuidv4().slice(0, 8).toUpperCase()}`;
+    const tId = ropaData.tenantId || 'TENANT-AAROGYA-01';
     await run(`
       INSERT INTO ropa_records (id, tenantId, activityName, dataCategories, purpose, legalBasis, retentionPeriod, storageLocation, securitySafeguards)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `, [
       id,
-      ropaData.tenantId || 'TENANT-AAROGYA-01',
+      tId,
       ropaData.activityName,
-      ropaData.dataCategories,
+      ropaData.dataCategories || '',
       ropaData.purpose,
-      ropaData.legalBasis,
-      ropaData.retentionPeriod,
-      ropaData.storageLocation,
-      ropaData.securitySafeguards
+      ropaData.legalBasis || 'Section 6 - Consent',
+      ropaData.retentionPeriod || '36 Months',
+      ropaData.storageLocation || 'Local Vault',
+      ropaData.securitySafeguards || 'Verhoeff tokenization, AES-256 local encryption, Zero Cloud Egress'
     ]);
+
+    // Handle mapped silos if passed
+    if (Array.isArray(ropaData.siloIds) && ropaData.siloIds.length > 0) {
+      await models.setRopaSiloMappings(id, ropaData.siloIds, tId);
+    }
 
     // Auto-sync to Supabase Cloud
     syncRopaRecord({
       id,
-      tenantId: ropaData.tenantId || 'TENANT-AAROGYA-01',
+      tenantId: tId,
       activityName: ropaData.activityName,
-      dataCategories: ropaData.dataCategories,
+      dataCategories: ropaData.dataCategories || '',
       purpose: ropaData.purpose,
-      legalBasis: ropaData.legalBasis,
-      retentionPeriod: ropaData.retentionPeriod,
-      storageLocation: ropaData.storageLocation,
-      securitySafeguards: ropaData.securitySafeguards
+      legalBasis: ropaData.legalBasis || 'Section 6 - Consent',
+      retentionPeriod: ropaData.retentionPeriod || '36 Months',
+      storageLocation: ropaData.storageLocation || 'Local Vault',
+      securitySafeguards: ropaData.securitySafeguards || 'Verhoeff tokenization, AES-256 local encryption, Zero Cloud Egress'
     }).catch(() => {});
 
-    return { id, ...ropaData };
+    return { id, ...ropaData, tenantId: tId };
   },
 
   updateRoPARecord: async (id, data, tenantId = 'TENANT-AAROGYA-01') => {
@@ -359,12 +367,47 @@ createDataAsset: async (assetData) => {
       UPDATE ropa_records
       SET activityName = ?, dataCategories = ?, purpose = ?, legalBasis = ?, retentionPeriod = ?, storageLocation = ?, securitySafeguards = ?
       WHERE id = ? AND tenantId = ?
-    `, [data.activityName, data.dataCategories, data.purpose, data.legalBasis, data.retentionPeriod, data.storageLocation, data.securitySafeguards, id, tenantId]);
-    return { id, ...data };
+    `, [
+      data.activityName,
+      data.dataCategories || '',
+      data.purpose,
+      data.legalBasis || 'Section 6 - Consent',
+      data.retentionPeriod || '36 Months',
+      data.storageLocation || 'Local Vault',
+      data.securitySafeguards || 'Verhoeff tokenization, AES-256 local encryption, Zero Cloud Egress',
+      id,
+      tenantId
+    ]);
+
+    // Update mapped silos if passed
+    if (Array.isArray(data.siloIds)) {
+      await models.setRopaSiloMappings(id, data.siloIds, tenantId);
+    }
+
+    // Auto-sync to Supabase Cloud
+    syncRopaRecord({
+      id,
+      tenantId,
+      activityName: data.activityName,
+      dataCategories: data.dataCategories || '',
+      purpose: data.purpose,
+      legalBasis: data.legalBasis || 'Section 6 - Consent',
+      retentionPeriod: data.retentionPeriod || '36 Months',
+      storageLocation: data.storageLocation || 'Local Vault',
+      securitySafeguards: data.securitySafeguards || 'Verhoeff tokenization, AES-256 local encryption, Zero Cloud Egress'
+    }).catch(() => {});
+
+    return { id, ...data, tenantId };
   },
 
   deleteRoPARecord: async (id, tenantId = 'TENANT-AAROGYA-01') => {
+    // Delete mappings & lineage edges
     await run('DELETE FROM ropa_silo_mapping WHERE ropaRecordId = ? AND tenantId = ?', [id, tenantId]);
+    await run('DELETE FROM data_lineage_edges WHERE (target = ? OR source = ?) AND tenantId = ?', [`activity-${id}`, `activity-${id}`, tenantId]);
+
+    // Delete from Supabase Cloud
+    deleteRopaRecord(id, tenantId).catch(() => {});
+
     return await run('DELETE FROM ropa_records WHERE id = ? AND tenantId = ?', [id, tenantId]);
   },
 
@@ -430,20 +473,44 @@ createDataAsset: async (assetData) => {
   },
 
   setRopaSiloMappings: async (ropaRecordId, siloIds = [], tenantId = 'TENANT-AAROGYA-01') => {
-    return await runTransaction(async ({ run }) => {
+    const formattedDate = new Date().toISOString().split('T')[0];
+    const mappingsToSync = [];
+    const existingSilos = await all('SELECT id FROM data_silos WHERE tenantId = ?', [tenantId]);
+    const validSiloIds = new Set(existingSilos.map(s => s.id));
+
+    const count = await runTransaction(async ({ run }) => {
       await run('DELETE FROM ropa_silo_mapping WHERE ropaRecordId = ? AND tenantId = ?', [ropaRecordId, tenantId]);
-      let count = 0;
+      await run('DELETE FROM data_lineage_edges WHERE target = ? AND tenantId = ?', [`activity-${ropaRecordId}`, tenantId]);
+      let c = 0;
       for (const siloId of siloIds) {
         if (!siloId) continue;
+        if (!validSiloIds.has(siloId)) {
+          console.warn(`[ROPA] Silo ${siloId} not found in data_silos for tenant ${tenantId}, skipping foreign key insertion`);
+          continue;
+        }
         const id = `RSM-${uuidv4().slice(0, 8).toUpperCase()}`;
         await run(`
           INSERT INTO ropa_silo_mapping (id, tenantId, ropaRecordId, siloId, mappingType)
           VALUES (?, ?, ?, ?, ?)
         `, [id, tenantId, ropaRecordId, siloId, 'primary']);
-        count++;
+
+        const edgeId = `EDGE-${uuidv4().slice(0, 8).toUpperCase()}`;
+        await run(`
+          INSERT OR REPLACE INTO data_lineage_edges (id, tenantId, source, target, flowType, notes, isStale, lastConfirmed)
+          VALUES (?, ?, ?, ?, ?, ?, 0, ?)
+        `, [edgeId, tenantId, `source-${siloId}`, `activity-${ropaRecordId}`, 'etl', `Processing activity flow from silo ${siloId} to ${ropaRecordId}`, formattedDate]);
+
+        mappingsToSync.push({ id, tenantId, ropaRecordId, siloId, mappingType: 'primary' });
+        c++;
       }
-      return count;
+      return c;
     });
+
+    if (mappingsToSync.length > 0) {
+      syncRopaSiloMapping(mappingsToSync).catch(() => {});
+    }
+
+    return count;
   },
 
   // ==========================================
@@ -1591,6 +1658,75 @@ createDataAsset: async (assetData) => {
     return await run('DELETE FROM cookie_geo_rules WHERE id = ? AND tenantId = ?', [id, tenantId]);
   },
 
+  // ==========================================
+  // COOKIE INVENTORY MANAGEMENT
+  // ==========================================
+  getCookieInventory: async (tenantId = 'TENANT-AAROGYA-01') => {
+    return await all('SELECT * FROM cookie_inventory WHERE tenantId = ? ORDER BY category ASC, cookieName ASC', [tenantId]);
+  },
+
+  getCookieInventoryById: async (id, tenantId = 'TENANT-AAROGYA-01') => {
+    return await get('SELECT * FROM cookie_inventory WHERE id = ? AND tenantId = ?', [id, tenantId]);
+  },
+
+  createCookieInventory: async (data) => {
+    const id = data.id || `COOKIE-${uuidv4().slice(0, 8).toUpperCase()}`;
+    await run(`
+      INSERT INTO cookie_inventory (id, tenantId, cookieName, domain, provider, category, purpose, legalBasis, cookieType, isSecure, isHttpOnly, isSameSite, expiresDays, currentStatus, consentRequired, discoveredAt, lastScannedAt)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `, [
+      id,
+      data.tenantId || 'TENANT-AAROGYA-01',
+      data.cookieName,
+      data.domain,
+      data.provider,
+      data.category || 'NECESSARY',
+      data.purpose || '',
+      data.legalBasis || 'Section 6 - Consent',
+      data.cookieType || 'FIRST_PARTY',
+      data.isSecure ? 1 : 0,
+      data.isHttpOnly ? 1 : 0,
+      data.isSameSite ? 1 : 0,
+      data.expiresDays || 0,
+      data.currentStatus || 'active',
+      data.consentRequired !== undefined ? (data.consentRequired ? 1 : 0) : 1,
+      new Date().toISOString(),
+      new Date().toISOString()
+    ]);
+    return { id, ...data };
+  },
+
+  updateCookieInventory: async (id, data, tenantId = 'TENANT-AAROGYA-01') => {
+    await run(`
+      UPDATE cookie_inventory
+      SET cookieName = ?, domain = ?, provider = ?, category = ?, purpose = ?, legalBasis = ?, cookieType = ?, isSecure = ?, isHttpOnly = ?, isSameSite = ?, expiresDays = ?, currentStatus = ?, consentRequired = ?, lastScannedAt = ?
+      WHERE id = ? AND tenantId = ?
+    `, [
+      data.cookieName,
+      data.domain,
+      data.provider,
+      data.category,
+      data.purpose,
+      data.legalBasis,
+      data.cookieType,
+      data.isSecure ? 1 : 0,
+      data.isHttpOnly ? 1 : 0,
+      data.isSameSite ? 1 : 0,
+      data.expiresDays,
+      data.currentStatus,
+      data.consentRequired !== undefined ? (data.consentRequired ? 1 : 0) : 1,
+      new Date().toISOString(),
+      id,
+      tenantId
+    ]);
+    return { id, ...data };
+  },
+
+  deleteCookieInventory: async (id, tenantId = 'TENANT-AAROGYA-01') => {
+    return await run('DELETE FROM cookie_inventory WHERE id = ? AND tenantId = ?', [id, tenantId]);
+  },
+
+  // ==========================================
   // Aliases for route handlers
   getConsentPreferenceCenters: async function(tenantId = 'TENANT-AAROGYA-01') {
     return await this.getPreferenceCenters(tenantId);

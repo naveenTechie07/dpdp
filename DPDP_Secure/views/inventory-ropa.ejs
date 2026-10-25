@@ -368,20 +368,33 @@
             <button class="btn-close" onclick="closeRoPAModal()" style="background: none; border: none; font-size: 24px; color: var(--text-muted); cursor: pointer; line-height: 1;">&times;</button>
         </div>
         <form id="ropaForm" style="padding: 24px;">
-            <!-- Linked Data Source -->
+            <!-- Linked Connectors & Informal Silos -->
             <div class="form-group" style="margin-bottom: 14px;">
                 <label class="form-label" style="font-size: 12px; font-weight: 600; color: #cbd5e1; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                    <span>Linked Informal Silo / Connector</span>
-                    <span style="font-size: 11px; color: #818cf8; font-weight: 500;">⚡ Auto-imports scanned PII</span>
+                    <span>Linked Connectors & Informal Silos</span>
+                    <span style="font-size: 11px; color: #818cf8; font-weight: 500;">⚡ Multi-select informal repositories</span>
                 </label>
-                <select id="ropaSourceId" class="form-select" onchange="handleSourceChange(this.value)" style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(15,23,42,0.95); color: #ffffff; font-size: 13px;">
-                    <option value="">-- No Source Linked (Manual Specification) --</option>
+                <div id="modalSiloCheckboxGrid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; max-height: 140px; overflow-y: auto; padding: 10px; background: rgba(0,0,0,0.25); border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 8px;">
                     <% if (typeof silos !== 'undefined' && silos && silos.length > 0) { %>
                         <% silos.forEach(function(s) { %>
-                            <option value="<%= s.id %>"><%= s.siloName %> (<%= s.siloType %>)</option>
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 11px; color: #e2e8f0; cursor: pointer; background: rgba(255,255,255,0.03); padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.05); transition: background 0.15s ease;">
+                                <input type="checkbox" name="modalSiloCheckbox" value="<%= s.id %>" onchange="handleModalSiloToggle()" style="accent-color: #6366f1; width: 14px; height: 14px;">
+                                <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="<%= s.siloName %> (<%= s.siloType %>)"><%= s.siloName.split('(')[0].trim() %></span>
+                            </label>
                         <% }); %>
                     <% } %>
-                </select>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 11px; color: var(--text-muted); white-space: nowrap;">Quick Auto-Fill:</span>
+                    <select id="ropaSourceId" class="form-select" onchange="handleSourceChange(this.value)" style="flex: 1; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(15,23,42,0.95); color: #ffffff; font-size: 12px;">
+                        <option value="">-- Choose Connector to Pre-Fill PII & Purpose --</option>
+                        <% if (typeof silos !== 'undefined' && silos && silos.length > 0) { %>
+                            <% silos.forEach(function(s) { %>
+                                <option value="<%= s.id %>"><%= s.siloName %> (<%= s.siloType %>)</option>
+                            <% }); %>
+                        <% } %>
+                    </select>
+                </div>
             </div>
 
             <div class="form-group" style="margin-bottom: 14px;">
@@ -564,12 +577,23 @@ async function loadAndRenderGraph() {
 function renderGraphNodes(nodes, edges) {
     const container = document.getElementById('lineageNodesContainer');
     const edgesGroup = document.getElementById('lineageEdgesGroup');
+    const svgLines = document.getElementById('lineageSvgLines');
     container.innerHTML = '';
     edgesGroup.innerHTML = '';
 
     if (!nodes || nodes.length === 0) {
         container.innerHTML = '<div style="padding: 40px; text-align: center; color: #64748b; font-size: 13px;">No data lineage nodes detected. Click Sync Connectors above.</div>';
         return;
+    }
+
+    // Dynamic stage dimensions to accommodate any volume of processing activities
+    const cWidth = (graphDataCache?.canvasDimensions?.width) || 1400;
+    const cHeight = (graphDataCache?.canvasDimensions?.height) || 1400;
+    container.style.width = `${cWidth}px`;
+    container.style.height = `${cHeight}px`;
+    if (svgLines) {
+        svgLines.style.width = `${cWidth}px`;
+        svgLines.style.height = `${cHeight}px`;
     }
 
     const nodeRects = {};
@@ -880,6 +904,15 @@ function openNodeInspector(node) {
                 <span style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Technical Safeguards</span>
                 <p style="margin: 4px 0 0 0; color: #ffffff; font-size: 12px;">${node.data.safeguards || 'Verhoeff tokenization, AES-256 local encryption, Zero Cloud Egress'}</p>
             </div>
+
+            <div style="display: flex; gap: 8px; margin-top: 6px;">
+                <button type="button" onclick="handleInspectorEdit('${node.data.id}')" style="flex: 1; padding: 9px 12px; border-radius: 6px; background: #3b82f6; color: #ffffff; border: none; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 2px 6px rgba(59,130,246,0.3);">
+                    ✏️ Edit Activity
+                </button>
+                <button type="button" onclick="handleInspectorMap('${node.data.id}', '${(node.data.label || '').replace(/'/g, "\\'")}')" style="flex: 1; padding: 9px 12px; border-radius: 6px; background: rgba(99, 102, 241, 0.2); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.4); font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    🔗 Map Connectors
+                </button>
+            </div>
         `;
     } else if (node.type === 'dataSourceNode') {
         html = `
@@ -975,19 +1008,62 @@ function triggerRetentionCalc() {
     }, 250);
 }
 
-function handleSourceChange(siloId) {
-    if (!siloId) return;
+function handleModalSiloToggle() {
+    const checkedBoxes = Array.from(document.querySelectorAll('#modalSiloCheckboxGrid input[name="modalSiloCheckbox"]:checked'));
+    const checkedIds = checkedBoxes.map(cb => cb.value);
+
+    const locInput = document.getElementById('ropaStorageLocation');
     const catInput = document.getElementById('ropaDataCategories');
-    if (siloId.includes('WHATSAPP')) {
-        catInput.value = 'Identity (Aadhaar), Contact (Mobile, Bengaluru Address), Clinical Health Diagnostics';
-    } else if (siloId.includes('BILLING') || siloId.includes('EXCEL')) {
-        catInput.value = 'Financial (GSTIN, PAN, Invoice Amount, Payment Mode, UPI ID), Contact (Phone)';
-    } else if (siloId.includes('CLAIMS')) {
-        catInput.value = 'Aadhaar UID, Policy Number, Claim Amount, ICD-10 Diagnosis, Doctor Prescriptions';
-    } else if (siloId.includes('PDF')) {
-        catInput.value = 'Aadhaar UID, Clinical Lab Reports, Blood Investigation Summary';
+
+    if (checkedIds.length > 0 && availableSilosCache && availableSilosCache.length > 0) {
+        const selectedSilos = availableSilosCache.filter(s => checkedIds.includes(s.id));
+        const names = selectedSilos.map(s => s.siloName.split('(')[0].trim());
+
+        if (locInput && (!locInput.value || locInput.dataset.autofilled === 'true')) {
+            locInput.value = names.join(' & ');
+            locInput.dataset.autofilled = 'true';
+        }
+
+        if (catInput && (!catInput.value || catInput.dataset.autofilled === 'true')) {
+            const categories = new Set();
+            selectedSilos.forEach(s => {
+                const sType = (s.siloType || '').toUpperCase();
+                const sId = (s.id || '').toUpperCase();
+                if (sType.includes('CHAT') || sId.includes('WHATSAPP')) {
+                    categories.add('Identity (Aadhaar)');
+                    categories.add('Contact (Mobile, Bengaluru Address)');
+                    categories.add('Clinical Health Diagnostics');
+                } else if (sType.includes('SPREADSHEET') || sId.includes('BILLING') || sId.includes('EXCEL')) {
+                    categories.add('Financial (GSTIN, PAN, Invoice Amount, Payment Mode, UPI ID)');
+                    categories.add('Contact (Phone)');
+                } else if (sId.includes('CLAIMS')) {
+                    categories.add('Aadhaar UID');
+                    categories.add('Policy Number');
+                    categories.add('Claim Amount');
+                    categories.add('ICD-10 Diagnosis');
+                } else if (sType.includes('PDF') || sId.includes('LAB')) {
+                    categories.add('Aadhaar UID');
+                    categories.add('Clinical Lab Reports');
+                    categories.add('Blood Investigation Summary');
+                } else {
+                    categories.add('Patient Personal Data');
+                    categories.add('Diagnostic Findings');
+                }
+            });
+            catInput.value = Array.from(categories).join(', ');
+            catInput.dataset.autofilled = 'true';
+        }
     }
     triggerRetentionCalc();
+}
+
+function handleSourceChange(siloId) {
+    if (!siloId) return;
+    const cb = document.querySelector(`#modalSiloCheckboxGrid input[value="${siloId}"]`);
+    if (cb) {
+        cb.checked = true;
+    }
+    handleModalSiloToggle();
 }
 
 // Initial Graph Load
@@ -1044,6 +1120,9 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.disabled = true;
             btn.textContent = 'Saving...';
 
+            const checkedBoxes = Array.from(document.querySelectorAll('#modalSiloCheckboxGrid input[name="modalSiloCheckbox"]:checked'));
+            const siloIds = checkedBoxes.map(cb => cb.value);
+
             const payload = {
                 activityName: document.getElementById('ropaActivityName').value.trim(),
                 dataCategories: document.getElementById('ropaDataCategories').value.trim(),
@@ -1051,7 +1130,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 legalBasis: document.getElementById('ropaLegalBasis').value,
                 retentionPeriod: document.getElementById('ropaRetentionPeriod').value.trim(),
                 storageLocation: document.getElementById('ropaStorageLocation').value.trim(),
-                securitySafeguards: document.getElementById('ropaSecuritySafeguards').value.trim()
+                securitySafeguards: document.getElementById('ropaSecuritySafeguards').value.trim(),
+                siloIds: siloIds,
+                sourceId: document.getElementById('ropaSourceId')?.value || (siloIds[0] || null)
             };
 
             try {
@@ -1091,7 +1172,7 @@ function showToast(msg) {
     }
 }
 
-function openRoPAModal(activityName = '', dataCategories = '', purpose = '', legalBasis = 'Section 6 - Consent', retentionPeriod = '36 Months', storageLocation = '', securitySafeguards = '', id = '') {
+function openRoPAModal(activityName = '', dataCategories = '', purpose = '', legalBasis = 'Section 6 - Consent', retentionPeriod = '36 Months', storageLocation = '', securitySafeguards = '', id = '', selectedSilos = []) {
     if (typeof activityName === 'object' && activityName !== null) {
         if (activityName.preventDefault) activityName.preventDefault();
         activityName = '';
@@ -1111,8 +1192,25 @@ function openRoPAModal(activityName = '', dataCategories = '', purpose = '', leg
     const secInput = document.getElementById('ropaSecuritySafeguards');
     if (secInput) secInput.value = securitySafeguards || 'Verhoeff tokenization, AES-256 local encryption, Zero Cloud Egress';
     currentEditId = id;
+
+    // Reset autofill markers
+    if (catInput) delete catInput.dataset.autofilled;
+    if (locInput) delete locInput.dataset.autofilled;
+
+    // Pre-check multi-connector checkboxes
+    const silosToCheck = (selectedSilos && selectedSilos.length > 0) ? selectedSilos : (id && currentRoPASiloMap[id] ? currentRoPASiloMap[id] : []);
+    const checkboxes = document.querySelectorAll('#modalSiloCheckboxGrid input[type="checkbox"]');
+    checkboxes.forEach(cb => {
+        cb.checked = silosToCheck.includes(cb.value);
+    });
+
+    const sourceSelect = document.getElementById('ropaSourceId');
+    if (sourceSelect) {
+        sourceSelect.value = silosToCheck.length > 0 ? silosToCheck[0] : '';
+    }
+
     const titleEl = document.getElementById('modalTitle');
-    if (titleEl) titleEl.textContent = currentEditId ? 'Edit Processing Activity' : 'Create New Processing Activity';
+    if (titleEl) titleEl.textContent = currentEditId ? 'Edit Processing Activity' : 'Register Processing Activity';
     const modal = document.getElementById('ropaModal');
     if (modal) {
         modal.style.display = 'flex';
@@ -1127,10 +1225,46 @@ function closeRoPAModal() {
     currentEditId = null;
     const form = document.getElementById('ropaForm');
     if (form) form.reset();
+    const checkboxes = document.querySelectorAll('#modalSiloCheckboxGrid input[type="checkbox"]');
+    checkboxes.forEach(cb => cb.checked = false);
+    const catInput = document.getElementById('ropaDataCategories');
+    if (catInput) delete catInput.dataset.autofilled;
+    const locInput = document.getElementById('ropaStorageLocation');
+    if (locInput) delete locInput.dataset.autofilled;
 }
 
 function editRoPA(id, activityName, dataCategories, purpose, legalBasis, retentionPeriod, storageLocation, securitySafeguards) {
-    openRoPAModal(activityName, dataCategories, purpose, legalBasis, retentionPeriod, storageLocation, securitySafeguards, id);
+    const selectedSilos = currentRoPASiloMap[id] || [];
+    openRoPAModal(activityName, dataCategories, purpose, legalBasis, retentionPeriod, storageLocation, securitySafeguards, id, selectedSilos);
+}
+
+function handleInspectorEdit(nodeId) {
+    closeNodeInspector();
+    if (!nodeId) return;
+    const cleanId = nodeId.startsWith('act-') ? nodeId.replace('act-', '') : nodeId;
+    const node = (graphDataCache && graphDataCache.nodes) ? graphDataCache.nodes.find(n => n.id === nodeId || n.data?.id === cleanId) : null;
+    if (node && node.data) {
+        editRoPA(
+            node.data.id || cleanId,
+            node.data.label || '',
+            node.data.dataCategories || '',
+            node.data.purpose || '',
+            node.data.legalBasis || 'Section 6 - Consent',
+            node.data.retention || '36 Months',
+            node.data.storage || '',
+            node.data.safeguards || 'Verhoeff tokenization, AES-256 local encryption, Zero Cloud Egress'
+        );
+    } else {
+        const silos = currentRoPASiloMap[cleanId] || [];
+        openRoPAModal('', '', '', 'Section 6 - Consent', '36 Months', '', '', cleanId, silos);
+    }
+}
+
+function handleInspectorMap(nodeId, label) {
+    closeNodeInspector();
+    if (!nodeId) return;
+    const cleanId = nodeId.startsWith('act-') ? nodeId.replace('act-', '') : nodeId;
+    mapSilosToRoPA(cleanId, label || 'Processing Activity');
 }
 
 function deleteRoPA(id, name) {
