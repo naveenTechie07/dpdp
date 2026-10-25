@@ -14,3 +14,7 @@
 - Section 8(4): Duty to inform Data Principals upon significant modifications.
 - Section 8(6): Mandatory reporting of personal data breach.
 - Section 8(9): Establish grievance redressal mechanisms with local contact points.
+
+
+## Section 8(2): Data Processors
+Fiduciaries must only engage processors under written contract and remain strictly liable for processor non-compliance.
