@@ -249,6 +249,21 @@ const SCHEMA_DDL = `
   );
 
   CREATE INDEX IF NOT EXISTS idx_assets_tenant ON data_assets(tenantId);
+
+  CREATE TABLE IF NOT EXISTS data_tags (
+    id TEXT PRIMARY KEY,
+    tenantId TEXT NOT NULL,
+    tagName TEXT NOT NULL,
+    category TEXT NOT NULL,
+    subCategory TEXT,
+    sensitivityWeight INTEGER DEFAULT 50,
+    colorTag TEXT DEFAULT '#8b5cf6',
+    description TEXT,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(tenantId) REFERENCES tenants(id)
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_tags_tenant ON data_tags(tenantId);
 `;
 
 // Initialize Tables Synchronously on Module Load

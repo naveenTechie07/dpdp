@@ -140,6 +140,32 @@ createDataAsset: async (assetData) => {
   },
 
   // ==========================================
+  // 2.6. DATA TAGS (CLASSIFICATION TAGS)
+  // ==========================================
+  getDataTags: async (tenantId = 'TENANT-AAROGYA-01') => {
+    return await all('SELECT * FROM data_tags WHERE tenantId = ? ORDER BY createdAt DESC', [tenantId]);
+  },
+
+  createDataTag: async (tagData) => {
+    const id = tagData.id || uuidv4();
+    await run(`
+      INSERT INTO data_tags (id, tenantId, tagName, category, subCategory, sensitivityWeight, colorTag, description, createdAt)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `, [
+      id,
+      tagData.tenantId || 'TENANT-AAROGYA-01',
+      tagData.tagName,
+      tagData.category,
+      tagData.subCategory || '',
+      tagData.sensitivityWeight || 50,
+      tagData.colorTag || '#8b5cf6',
+      tagData.description || '',
+      new Date().toISOString()
+    ]);
+    return id;
+  },
+
+  // ==========================================
   // 3. ROPA (SECTION 8 RECORD OF PROCESSING)
   // ==========================================
   getRoPARecords: async (tenantId = 'TENANT-AAROGYA-01') => {
