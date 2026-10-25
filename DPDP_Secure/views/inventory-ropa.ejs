@@ -326,16 +326,27 @@
 <!-- ========================================================================= -->
 <!-- 3. SLIDE-IN INSPECTOR DRAWER FOR LINEAGE NODE CLICKS                     -->
 <!-- ========================================================================= -->
-<div id="nodeInspectorDrawer" style="display: none; position: fixed; top: 0; right: 0; bottom: 0; width: 440px; max-width: 90vw; background: #0f172a; border-left: 1px solid var(--border-color); box-shadow: -8px 0 30px rgba(0,0,0,0.6); z-index: 1090; flex-direction: column; animation: slideInRight 0.25s ease-out;">
-    <div style="padding: 18px 24px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.2);">
+<!-- Fullscreen Backdrop to close drawer when clicking anywhere outside -->
+<div id="nodeInspectorBackdrop" onclick="closeNodeInspector(event)" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); z-index: 1085; cursor: pointer;" title="Click anywhere to close"></div>
+
+<div id="nodeInspectorDrawer" style="display: none; position: fixed; top: 0; right: 0; bottom: 0; width: 440px; max-width: 90vw; background: #0f172a; border-left: 1px solid var(--border-color); box-shadow: -10px 0 40px rgba(0,0,0,0.7); z-index: 1090; flex-direction: column; animation: slideInRight 0.2s ease-out; pointer-events: auto;">
+    <div style="padding: 18px 24px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.25);">
         <div style="display: flex; align-items: center; gap: 8px;">
-            <span id="inspectorBadge" style="font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 4px; text-transform: uppercase;">NODE</span>
+            <span id="inspectorBadge" style="font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 4px; text-transform: uppercase;">NODE</span>
             <h3 id="inspectorTitle" style="margin: 0; font-size: 15px; font-weight: 700; color: #ffffff;">Node Inspector</h3>
         </div>
-        <button onclick="closeNodeInspector()" style="background: none; border: none; color: var(--text-muted); font-size: 24px; cursor: pointer; line-height: 1;">&times;</button>
+        <!-- High-contrast Red-hover Close Button -->
+        <button id="btnCloseNodeInspector" type="button" onclick="closeNodeInspector(event)" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #ffffff; width: 34px; height: 34px; border-radius: 8px; font-size: 20px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1; transition: all 0.15s ease; pointer-events: auto;" onmouseover="this.style.background='#ef4444'; this.style.borderColor='#ef4444'; this.style.color='#ffffff';" onmouseout="this.style.background='rgba(255,255,255,0.1)'; this.style.borderColor='rgba(255,255,255,0.2)'; this.style.color='#ffffff';" title="Close Inspector (Esc)">&times;</button>
     </div>
     <div id="inspectorContent" style="padding: 24px; overflow-y: auto; flex: 1; font-size: 13px; line-height: 1.6; color: #cbd5e1; display: flex; flex-direction: column; gap: 16px;">
         <!-- Populated dynamically upon clicking node -->
+    </div>
+    <!-- Sticky Footer with Explicit Close Button -->
+    <div style="padding: 14px 24px; border-top: 1px solid var(--border-color); background: rgba(0,0,0,0.25); display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 11px; color: var(--text-muted);">Press <kbd style="background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; color: #ffffff;">Esc</kbd> or click outside to dismiss</span>
+        <button type="button" onclick="closeNodeInspector(event)" style="padding: 8px 18px; border-radius: 6px; background: rgba(255,255,255,0.08); border: 1px solid var(--border-color); color: #ffffff; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.background='#ef4444'; this.style.borderColor='#ef4444';" onmouseout="this.style.background='rgba(255,255,255,0.08)'; this.style.borderColor='var(--border-color)';">
+            Close Inspector
+        </button>
     </div>
 </div>
 
@@ -685,7 +696,10 @@ function renderGraphNodes(nodes, edges) {
         });
 
         // Click to Open Inspector
-        card.addEventListener('click', () => openNodeInspector(node));
+        card.addEventListener('click', (e) => {
+            if (e && e.stopPropagation) e.stopPropagation();
+            openNodeInspector(node);
+        });
 
         container.appendChild(card);
 
@@ -897,12 +911,20 @@ function openNodeInspector(node) {
     }
 
     content.innerHTML = html;
+    const backdrop = document.getElementById('nodeInspectorBackdrop');
+    if (backdrop) backdrop.style.display = 'block';
     drawer.style.display = 'flex';
 }
 
-function closeNodeInspector() {
+function closeNodeInspector(e) {
+    if (e) {
+        if (typeof e.stopPropagation === 'function') e.stopPropagation();
+        if (typeof e.preventDefault === 'function') e.preventDefault();
+    }
     const drawer = document.getElementById('nodeInspectorDrawer');
+    const backdrop = document.getElementById('nodeInspectorBackdrop');
     if (drawer) drawer.style.display = 'none';
+    if (backdrop) backdrop.style.display = 'none';
 }
 
 // ==========================================
@@ -1298,12 +1320,35 @@ function saveSiloMappings() {
     });
 }
 
-// Close modals when clicking outside
+// Close modals and inspector when clicking outside ("every where")
 window.addEventListener('click', (e) => {
+    const backdrop = document.getElementById('nodeInspectorBackdrop');
+    if (e.target === backdrop) closeNodeInspector(e);
+
     const ropaModal = document.getElementById('ropaModal');
     if (e.target === ropaModal) closeRoPAModal();
+
     const siloModal = document.getElementById('siloMappingModal');
     if (e.target === siloModal) closeSiloModal();
+});
+
+// Click outside drawer dismisser
+document.addEventListener('mousedown', (e) => {
+    const drawer = document.getElementById('nodeInspectorDrawer');
+    if (drawer && drawer.style.display === 'flex') {
+        if (!drawer.contains(e.target) && !e.target.closest('.lineage-card')) {
+            closeNodeInspector(e);
+        }
+    }
+});
+
+// Global Escape Key to close any open modal or drawer
+window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' || e.keyCode === 27) {
+        closeNodeInspector(e);
+        closeRoPAModal();
+        closeSiloModal();
+    }
 });
 </script>
 
