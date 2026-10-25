@@ -286,6 +286,20 @@ db.serialize(() => {
       console.error('[DATABASE] Schema initialization error:', err);
     } else {
       console.log('[DATABASE] All 9 tables and performance indices initialized successfully.');
+      if (process.env.VERCEL) {
+        setTimeout(async () => {
+          try {
+            const row = await get('SELECT COUNT(*) as count FROM tenants');
+            if (!row || row.count === 0) {
+              console.log('[DATABASE] Serverless cold start: running demo seeder for Aarogya Clinic...');
+              const { seedDemoData } = require('./demoSeeder');
+              await seedDemoData();
+            }
+          } catch (e) {
+            console.warn('[DATABASE] Serverless auto-seed notice:', e.message);
+          }
+        }, 50);
+      }
     }
   });
 });

@@ -41,6 +41,15 @@ app.use(
         frameAncestors: ["'self'"]
       }
     },
+    hsts: {
+      maxAge: 31536000,
+      includeSubDomains: true,
+      preload: true
+    },
+    xContentTypeOptions: true,
+    frameguard: {
+      action: 'sameorigin'
+    },
     crossOriginEmbedderPolicy: false
   })
 );
