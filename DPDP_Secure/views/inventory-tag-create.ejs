@@ -1,0 +1,206 @@
+<%- include('partials/header') %>
+
+<div class="dashboard-header mb-6">
+    <div class="title-group">
+        <h1>Create Classification Tag</h1>
+        <p>Define a new PII classification tag, taxonomy category, and statutory sensitivity weight.</p>
+    </div>
+    <a href="/inventory/tags" class="btn-secondary" style="padding: 8px 16px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 6px;">
+        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        Back to Tags
+    </a>
+</div>
+
+<div class="card p-0" style="max-width: 900px; margin: 0 auto; overflow: hidden;">
+    <div style="padding: 20px 24px; border-bottom: 1px solid var(--border-color); background: rgba(0,0,0,0.2);">
+        <h2 style="margin: 0; font-size: 18px; color: var(--text-main); font-weight: 600;">Classification Tag Specification</h2>
+        <p style="margin: 4px 0 0; color: var(--text-muted); font-size: 13px;">This tag will be applied to discovered PII fields and will drive statutory Retention, RoPA safeguards, and Breach severity calculations.</p>
+    </div>
+
+    <!-- Notification Banner -->
+    <div id="formAlert" style="display: none; margin: 20px 24px 0 24px; padding: 12px 16px; border-radius: 8px; font-size: 13px;"></div>
+
+    <div style="padding: 24px;">
+        <form id="tagForm" method="POST" action="/api/tags/create">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+
+                <!-- Tag Name -->
+                <div class="form-group">
+                    <label class="form-label" style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Tag Name <span style="color: #ef4444;">*</span></label>
+                    <input type="text" name="tagName" id="tagName" class="form-input"
+                           placeholder="e.g., Biometric Iris Scan or Aadhaar Token"
+                           required autocomplete="off"
+                           style="width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: var(--text-main); font-size: 13px;">
+                    <p class="form-hint" style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Human-readable label for this data classification tag.</p>
+                </div>
+
+                <!-- Category -->
+                <div class="form-group">
+                    <label class="form-label" style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Primary Category <span style="color: #ef4444;">*</span></label>
+                    <select name="category" id="category" class="form-select" style="width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); font-size: 13px;">
+                        <option value="IDENTIFIER">IDENTIFIER (UID, Barcode, National IDs)</option>
+                        <option value="HEALTH" selected>HEALTH (Diagnostic, Pathology, Clinical Records)</option>
+                        <option value="FINANCIAL">FINANCIAL (Bank Account, GSTIN, Invoicing, Tax)</option>
+                        <option value="CONTACT">CONTACT (Mobile, WhatsApp, Email, Address)</option>
+                        <option value="BIOMETRIC">BIOMETRIC (Fingerprint, Facial Scan, DNA)</option>
+                        <option value="SYSTEM">SYSTEM (Log IDs, Tokens, Internal Hash)</option>
+                        <option value="GENERAL">GENERAL (Demographic, Operational)</option>
+                    </select>
+                    <p class="form-hint" style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Statutory data category under DPDP Act 2023.</p>
+                </div>
+
+                <!-- Sub-Category -->
+                <div class="form-group">
+                    <label class="form-label" style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Sub-Category / Scope</label>
+                    <input type="text" name="subCategory" id="subCategory" class="form-input"
+                           placeholder="e.g., Special Category Data or Government Identity"
+                           autocomplete="off"
+                           style="width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: var(--text-main); font-size: 13px;">
+                    <p class="form-hint" style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Specific domain or sub-classification.</p>
+                </div>
+
+                <!-- Color Tag -->
+                <div class="form-group">
+                    <label class="form-label" style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Badge Color</label>
+                    <div style="display: flex; gap: 10px; align-items: center; margin-top: 4px;">
+                        <input type="color" name="colorTag" id="colorTag" value="#ef4444" style="width: 44px; height: 38px; border-radius: 6px; border: 1px solid var(--border-color); background: transparent; cursor: pointer;">
+                        <div style="display: flex; gap: 6px;">
+                            <span class="color-swatch" onclick="selectColor('#ef4444')" style="width: 24px; height: 24px; border-radius: 50%; background: #ef4444; cursor: pointer; display: inline-block;"></span>
+                            <span class="color-swatch" onclick="selectColor('#f59e0b')" style="width: 24px; height: 24px; border-radius: 50%; background: #f59e0b; cursor: pointer; display: inline-block;"></span>
+                            <span class="color-swatch" onclick="selectColor('#ec4899')" style="width: 24px; height: 24px; border-radius: 50%; background: #ec4899; cursor: pointer; display: inline-block;"></span>
+                            <span class="color-swatch" onclick="selectColor('#3b82f6')" style="width: 24px; height: 24px; border-radius: 50%; background: #3b82f6; cursor: pointer; display: inline-block;"></span>
+                            <span class="color-swatch" onclick="selectColor('#8b5cf6')" style="width: 24px; height: 24px; border-radius: 50%; background: #8b5cf6; cursor: pointer; display: inline-block;"></span>
+                            <span class="color-swatch" onclick="selectColor('#10b981')" style="width: 24px; height: 24px; border-radius: 50%; background: #10b981; cursor: pointer; display: inline-block;"></span>
+                        </div>
+                    </div>
+                    <p class="form-hint" style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Color identifier shown in inventory tables and lineage graphs.</p>
+                </div>
+
+                <!-- Sensitivity Weight & Tier Live Preview -->
+                <div class="form-group" style="grid-column: span 2;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <label class="form-label" style="font-size: 12px; font-weight: 600; color: var(--text-muted); margin: 0;">Sensitivity Weight (0 - 100)</label>
+                        <div id="tierPreviewBadge" style="padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800; background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4);">
+                            TIER: CRITICAL (90%)
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 16px; align-items: center;">
+                        <input type="range" id="weightSlider" min="0" max="100" value="90" oninput="syncWeight(this.value)" style="flex: 1; cursor: pointer;">
+                        <input type="number" name="sensitivityWeight" id="sensitivityWeight" min="0" max="100" value="90" oninput="syncWeight(this.value)" style="width: 80px; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: var(--text-main); font-weight: 700; font-size: 14px; text-align: center;">
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); margin-top: 6px;">
+                        <span>0 - 39: LOW (Demographic)</span>
+                        <span>40 - 69: MEDIUM (Contact/Phone)</span>
+                        <span>70 - 84: HIGH (PAN/Financial)</span>
+                        <span>85 - 100: CRITICAL (Aadhaar/Health)</span>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label" style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Description / Regulatory Ground</label>
+                    <textarea name="description" id="description" class="form-textarea" rows="3"
+                              placeholder="Describe data elements matched by this tag, statutory citations, and specific handling instructions..."
+                              style="width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: var(--text-main); font-size: 13px;"></textarea>
+                </div>
+            </div>
+
+            <div style="margin-top: 28px; display: flex; gap: 12px; justify-content: flex-end; border-top: 1px solid var(--border-color); padding-top: 20px;">
+                <button type="button" class="btn-secondary" onclick="window.location.href='/inventory/tags'" style="padding: 10px 20px; background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 6px; cursor: pointer; font-weight: 600;">
+                    Cancel
+                </button>
+                <button type="submit" class="btn-primary" id="btnSubmitTag" style="padding: 10px 24px; font-weight: 700; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer;">
+                    Create Classification Tag
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function selectColor(color) {
+    document.getElementById('colorTag').value = color;
+}
+
+function syncWeight(val) {
+    const w = Math.max(0, Math.min(100, parseInt(val, 10) || 0));
+    document.getElementById('weightSlider').value = w;
+    document.getElementById('sensitivityWeight').value = w;
+
+    const badge = document.getElementById('tierPreviewBadge');
+    if (w >= 85) {
+        badge.innerText = `TIER: CRITICAL (${w}%)`;
+        badge.style.background = 'rgba(239, 68, 68, 0.2)';
+        badge.style.color = '#ef4444';
+        badge.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+    } else if (w >= 70) {
+        badge.innerText = `TIER: HIGH (${w}%)`;
+        badge.style.background = 'rgba(245, 158, 11, 0.2)';
+        badge.style.color = '#f59e0b';
+        badge.style.borderColor = 'rgba(245, 158, 11, 0.4)';
+    } else if (w >= 40) {
+        badge.innerText = `TIER: MEDIUM (${w}%)`;
+        badge.style.background = 'rgba(59, 130, 246, 0.2)';
+        badge.style.color = '#3b82f6';
+        badge.style.borderColor = 'rgba(59, 130, 246, 0.4)';
+    } else {
+        badge.innerText = `TIER: LOW (${w}%)`;
+        badge.style.background = 'rgba(16, 185, 129, 0.2)';
+        badge.style.color = '#10b981';
+        badge.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('tagForm');
+    const submitBtn = document.getElementById('btnSubmitTag');
+    const alertBox = document.getElementById('formAlert');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Saving Tag...';
+
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        try {
+            const resp = await fetch('/api/tags/create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const result = await resp.json();
+
+            if (result.success) {
+                alertBox.style.display = 'block';
+                alertBox.style.background = 'rgba(16, 185, 129, 0.2)';
+                alertBox.style.color = '#10b981';
+                alertBox.style.border = '1px solid rgba(16, 185, 129, 0.4)';
+                alertBox.innerText = 'Tag created successfully! Redirecting to Classification register...';
+                setTimeout(() => {
+                    window.location.href = '/inventory/tags';
+                }, 800);
+            } else {
+                alertBox.style.display = 'block';
+                alertBox.style.background = 'rgba(239, 68, 68, 0.2)';
+                alertBox.style.color = '#ef4444';
+                alertBox.style.border = '1px solid rgba(239, 68, 68, 0.4)';
+                alertBox.innerText = 'Failed to create tag: ' + (result.error || 'Unknown error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Create Classification Tag';
+            }
+        } catch (err) {
+            alertBox.style.display = 'block';
+            alertBox.style.background = 'rgba(239, 68, 68, 0.2)';
+            alertBox.style.color = '#ef4444';
+            alertBox.style.border = '1px solid rgba(239, 68, 68, 0.4)';
+            alertBox.innerText = 'Network error: ' + err.message;
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Create Classification Tag';
+        }
+    });
+});
+</script>
+
+<%- include('partials/footer') %>

@@ -9,6 +9,56 @@ const highSensAssets = assetsList.filter(a => a.sensitivity === 'HIGH' || a.sens
 %>
 
 <style>
+/* Toast Notification */
+.app-toast {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    padding: 14px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    z-index: 99999;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(8px);
+}
+.toast-success { background: rgba(16, 185, 129, 0.95); color: #ffffff; border: 1px solid #34d399; }
+.toast-error { background: rgba(239, 68, 68, 0.95); color: #ffffff; border: 1px solid #f87171; }
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.modal-box {
+    background: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    width: 100%;
+    max-width: 620px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+    animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes modalPop {
+    from { opacity: 0; transform: scale(0.96) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
 /* View Switcher */
 .view-toggle-container {
     display: inline-flex;
@@ -208,58 +258,58 @@ const highSensAssets = assetsList.filter(a => a.sensitivity === 'HIGH' || a.sens
     <div class="card metric-card">
         <div class="metric-info w-100">
             <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px;">TOTAL ASSETS</span>
-            <h2 class="metric-value" style="margin-top: 8px;"><%= totalAssets %></h2>
+            <h2 class="metric-value" id="valTotalAssets" style="margin-top: 8px;"><%= totalAssets %></h2>
         </div>
     </div>
     <div class="card metric-card">
         <div class="metric-info w-100">
             <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px;">SYSTEM ASSETS</span>
-            <h2 class="metric-value" style="margin-top: 8px;"><%= systemAssets %></h2>
+            <h2 class="metric-value" id="valSystemAssets" style="margin-top: 8px;"><%= systemAssets %></h2>
         </div>
     </div>
     <div class="card metric-card">
         <div class="metric-info w-100">
             <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px;">DATA ELEMENTS</span>
-            <h2 class="metric-value" style="margin-top: 8px;"><%= totalElements %></h2>
+            <h2 class="metric-value" id="valTotalElements" style="margin-top: 8px;"><%= totalElements %></h2>
         </div>
     </div>
     <div class="card metric-card">
         <div class="metric-info w-100">
             <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px;">HIGH SENSITIVITY</span>
-            <h2 class="metric-value" style="margin-top: 8px;"><%= highSensAssets %></h2>
+            <h2 class="metric-value" id="valHighSensAssets" style="margin-top: 8px;"><%= highSensAssets %></h2>
         </div>
     </div>
 </div>
 
-<div class="dashboard-header mb-3" style="align-items: center;">
+<div class="dashboard-header mb-4" style="align-items: center; justify-content: space-between;">
     <div class="title-group">
-        <h1>Data Assets & Sensitivity Hierarchy</h1>
-        <p>Interactive classification roll-up pipeline connecting customer databases, containers, and elements to statutory Retention, RoPA, and Breach Severity.</p>
+        <h1>Data Assets</h1>
+        <p>Inventory of all data systems and containers with classified elements and sensitivity tiers.</p>
     </div>
     <div style="display: flex; gap: 10px;">
-        <button class="btn-primary" style="background-color: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="window.location.href='/inventory/assets/create'">
+        <button class="btn-primary" id="btnOpenNewAssetModal" style="background-color: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="openNewAssetModal()">
             <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            New Asset
+            + New Asset
         </button>
     </div>
 </div>
 
 <!-- View Switcher -->
 <div class="view-toggle-container">
-    <button id="tabBtnHierarchy" class="view-toggle-btn active" onclick="switchAssetTab('hierarchy')">
-        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-        Sensitivity Hierarchy & Roll-Up Engine
-    </button>
-    <button id="tabBtnRegister" class="view-toggle-btn inactive" onclick="switchAssetTab('register')">
+    <button id="tabBtnRegister" class="view-toggle-btn active" onclick="switchAssetTab('register')">
         <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
         Data Assets Catalog
+    </button>
+    <button id="tabBtnHierarchy" class="view-toggle-btn inactive" onclick="switchAssetTab('hierarchy')">
+        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        Sensitivity Hierarchy & Roll-Up Engine
     </button>
 </div>
 
 <!-- ========================================================================= -->
 <!-- VIEW 1: SENSITIVITY HIERARCHY & BOTTOM-UP ROLL-UP ENGINE                   -->
 <!-- ========================================================================= -->
-<div id="viewHierarchy">
+<div id="viewHierarchy" style="display: none;">
 
     <!-- ARCHITECTURAL PIPELINE CANVAS -->
     <div class="pipeline-canvas">
@@ -554,7 +604,7 @@ const highSensAssets = assetsList.filter(a => a.sensitivity === 'HIGH' || a.sens
 <!-- ========================================================================= -->
 <!-- VIEW 2: CLASSIC DATA ASSETS CATALOG REGISTER                              -->
 <!-- ========================================================================= -->
-<div id="viewRegister" style="display: none;">
+<div id="viewRegister" style="display: block;">
     <div class="card p-0" style="overflow: hidden;">
         <!-- Table Toolbar -->
         <div class="table-toolbar" style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
@@ -563,12 +613,12 @@ const highSensAssets = assetsList.filter(a => a.sensitivity === 'HIGH' || a.sens
             </div>
             
             <div style="background: rgba(255,255,255,0.05); padding: 4px; border-radius: 6px; display: flex; align-items: center;">
-                <div style="padding: 6px 16px; font-size: 12px; font-weight: 600; background: var(--bg-card); color: var(--text-main); border-radius: 4px;">Systems (<%= systemAssets %>)</div>
-                <div style="padding: 6px 16px; font-size: 12px; font-weight: 500; color: var(--text-muted);">Total (<%= totalAssets %>)</div>
+                <div style="padding: 6px 16px; font-size: 12px; font-weight: 600; background: var(--bg-card); color: var(--text-main); border-radius: 4px;">Systems (<span id="chipSystemAssets"><%= systemAssets %></span>)</div>
+                <div style="padding: 6px 16px; font-size: 12px; font-weight: 500; color: var(--text-muted);">Total (<span id="chipTotalAssets"><%= totalAssets %></span>)</div>
             </div>
             
             <div class="pagination" style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-muted);">
-                <span><%= totalAssets %> rows</span>
+                <span id="assetRowsCountLabel"><%= totalAssets %> rows</span>
                 <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Previous</button>
                 <span>Page 1 of 1</span>
                 <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Next</button>
@@ -588,14 +638,14 @@ const highSensAssets = assetsList.filter(a => a.sensitivity === 'HIGH' || a.sens
                     <th style="padding: 12px 24px; font-weight: 600; text-align: right;">Actions</th>
                 </tr>
             </thead>
-            <tbody style="font-size: 13px;">
+            <tbody id="assetsTableBody" style="font-size: 13px;">
                 <% if (assetsList.length === 0) { %>
-                    <tr>
-                        <td colspan="7" style="padding: 32px; text-align: center; color: var(--text-muted);">No data assets found. Click "New Asset" to register a system.</td>
+                    <tr id="emptyAssetsRow">
+                        <td colspan="7" style="padding: 32px; text-align: center; color: var(--text-muted);">No data assets found. Click "+ New Asset" to register a system.</td>
                     </tr>
                 <% } else { %>
                     <% assetsList.forEach(asset => { %>
-                        <tr style="border-bottom: 1px solid var(--border-color);" class="asset-row">
+                        <tr style="border-bottom: 1px solid var(--border-color); transition: all 0.3s ease;" class="asset-row" id="asset-row-<%= asset.id %>">
                             <td style="padding: 16px 24px; font-weight: 600; color: var(--text-main);">
                                 <div><%= asset.assetName %></div>
                                 <% if (asset.description) { %>
@@ -603,18 +653,18 @@ const highSensAssets = assetsList.filter(a => a.sensitivity === 'HIGH' || a.sens
                                 <% } %>
                             </td>
                             <td style="padding: 16px 24px;">
-                                <span class="badge" style="background: #bfdbfe; color: #1e3a8a; padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: 700;"><%= asset.assetType %></span>
+                                <span class="badge" style="background: rgba(59, 130, 246, 0.2); color: #60a5fa; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 700; border: 1px solid rgba(59, 130, 246, 0.3);"><%= asset.assetType %></span>
                             </td>
                             <td style="padding: 16px 24px; font-family: monospace; color: var(--text-muted);"><%= asset.sourceSystem || 'Local' %></td>
                             <td style="padding: 16px 24px;">
-                                <span style="background: <%= (asset.sensitivity === 'RESTRICTED' || asset.sensitivity === 'HIGH_RISK') ? 'rgba(239, 68, 68, 0.2); color: #ef4444;' : (asset.sensitivity === 'CONFIDENTIAL' ? 'rgba(245, 158, 11, 0.2); color: #f59e0b;' : 'rgba(255,255,255,0.1); color: var(--text-muted);') %> padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 700;"><%= asset.sensitivity %></span>
+                                <span style="background: <%= (asset.sensitivity === 'RESTRICTED' || asset.sensitivity === 'HIGH_RISK') ? 'rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3);' : (asset.sensitivity === 'CONFIDENTIAL' ? 'rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3);' : 'rgba(255,255,255,0.06); color: var(--text-muted); border: 1px solid rgba(255,255,255,0.1);') %> padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 700;"><%= asset.sensitivity %></span>
                             </td>
                             <td style="padding: 16px 24px; color: var(--text-main); font-weight: 500;"><%= asset.elements %></td>
                             <td style="padding: 16px 24px;">
                                 <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;"><%= asset.status %></span>
                             </td>
                             <td style="padding: 16px 24px; text-align: right;">
-                                <button onclick="deleteAsset('<%= asset.id %>')" title="Delete Asset" style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 4px; border-radius: 4px;">
+                                <button data-id="<%= asset.id %>" data-name="<%= asset.assetName %>" onclick="confirmDeleteAsset(this.getAttribute('data-id'), this.getAttribute('data-name'))" title="Delete Asset" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #ef4444; cursor: pointer; padding: 6px 8px; border-radius: 6px; transition: all 0.2s;" onmouseover="this.style.background='rgba(239, 68, 68, 0.25)'" onmouseout="this.style.background='rgba(239, 68, 68, 0.1)'">
                                     <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                                 </button>
                             </td>
@@ -623,12 +673,342 @@ const highSensAssets = assetsList.filter(a => a.sensitivity === 'HIGH' || a.sens
                 <% } %>
             </tbody>
         </table>
+</div>
+
+<!-- ========================================================================= -->
+<!-- MODAL: REGISTER NEW DATA ASSET                                            -->
+<!-- ========================================================================= -->
+<div id="newAssetModal" class="modal-overlay">
+    <div class="modal-box">
+        <div style="padding: 18px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2);">
+            <div>
+                <h3 style="margin: 0; font-size: 16px; color: var(--text-main); font-weight: 700;">+ Register New Data Asset</h3>
+                <p style="margin: 3px 0 0 0; font-size: 12px; color: var(--text-muted);">Register a data system, repository, or informal device holding personal data.</p>
+            </div>
+            <button onclick="closeNewAssetModal()" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 20px; line-height: 1; padding: 4px;">&times;</button>
+        </div>
+
+        <form id="modalAssetForm" onsubmit="handleAssetFormSubmit(event)" style="padding: 24px;">
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+                <!-- Asset Name -->
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Asset Name <span style="color: #ef4444;">*</span></label>
+                    <input type="text" id="modalAssetName" required placeholder="e.g., Clinic Reception Frontdesk Smartphone, PACS DICOM Imaging Vault" style="width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.3); color: var(--text-main); font-size: 13px;">
+                </div>
+
+                <!-- Asset Type & Source System Grid -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div>
+                        <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Asset Type</label>
+                        <select id="modalAssetType" style="width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); font-size: 13px;">
+                            <option value="database">Database</option>
+                            <option value="MOBILE_DEVICE" selected>Mobile Device</option>
+                            <option value="spreadsheet">Spreadsheet (Excel/CSV)</option>
+                            <option value="saas_app">SaaS Application</option>
+                            <option value="IMAGING_SERVER">Imaging Server</option>
+                            <option value="messaging">Messaging Platform (WhatsApp)</option>
+                            <option value="file_store">File Store</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Source System / Host</label>
+                        <input type="text" id="modalSourceSystem" placeholder="e.g., Reception Counter 1, Radiology Dept" style="width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.3); color: var(--text-main); font-size: 13px;">
+                    </div>
+                </div>
+
+                <!-- Sensitivity & Status Grid -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div>
+                        <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Sensitivity Classification</label>
+                        <select id="modalSensitivity" style="width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); font-size: 13px;">
+                            <option value="RESTRICTED">Restricted (Aadhaar / PII)</option>
+                            <option value="HIGH_RISK" selected>High Risk (Clinical / WhatsApp)</option>
+                            <option value="CONFIDENTIAL">Confidential (Imaging / DICOM)</option>
+                            <option value="INTERNAL">Internal Use</option>
+                            <option value="UNCLASSIFIED">Unclassified</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Operational Status</label>
+                        <select id="modalStatus" style="width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); font-size: 13px;">
+                            <option value="active" selected>Active</option>
+                            <option value="inactive">Inactive</option>
+                            <option value="retired">Retired</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Classified Elements -->
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Data Elements Summary / Count</label>
+                    <input type="text" id="modalElements" placeholder="e.g., WhatsApp Chat Transcripts, Phone Numbers, Doctor Notes" style="width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.3); color: var(--text-main); font-size: 13px;">
+                    <p style="margin: 4px 0 0 0; font-size: 11px; color: var(--text-muted);">List key elements or estimated record count stored in this asset.</p>
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Description</label>
+                    <textarea id="modalDescription" rows="2" placeholder="Brief description of data assets purpose and business context..." style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.3); color: var(--text-main); font-size: 12px;"></textarea>
+                </div>
+            </div>
+
+            <div style="margin-top: 24px; display: flex; gap: 10px; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 16px;">
+                <a href="/inventory/assets/create" style="font-size: 12px; color: #60a5fa; text-decoration: none; display: flex; align-items: center; gap: 4px;">
+                    Open Full Form Page &rarr;
+                </a>
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" onclick="closeNewAssetModal()" style="padding: 8px 16px; border-radius: 6px; background: rgba(255,255,255,0.06); color: var(--text-muted); border: 1px solid var(--border-color); font-weight: 600; cursor: pointer;">Cancel</button>
+                    <button type="submit" id="btnSaveModalAsset" style="padding: 8px 20px; border-radius: 6px; background: var(--primary); color: white; border: none; font-weight: 700; cursor: pointer;">Register Asset</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- MODAL: CONFIRM DELETE DATA ASSET                                          -->
+<!-- ========================================================================= -->
+<div id="deleteAssetModal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 440px;">
+        <div style="padding: 20px 24px; text-align: center;">
+            <div style="width: 48px; height: 48px; border-radius: 50%; background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto; color: #ef4444; font-size: 22px;">
+                🗑️
+            </div>
+            <h3 style="margin: 0 0 8px 0; font-size: 17px; color: var(--text-main);">Delete Data Asset?</h3>
+            <p style="margin: 0; font-size: 13px; color: var(--text-muted); line-height: 1.5;">
+                Are you sure you want to delete <strong id="deleteAssetTargetName" style="color: var(--text-main);">this asset</strong>? This will remove it from Section 8 RoPA and sensitivity hierarchy.
+            </p>
+        </div>
+        <div style="padding: 16px 24px; background: rgba(0,0,0,0.2); border-top: 1px solid var(--border-color); display: flex; gap: 10px; justify-content: flex-end;">
+            <button onclick="closeDeleteAssetModal()" style="padding: 8px 16px; border-radius: 6px; background: rgba(255,255,255,0.06); color: var(--text-muted); border: 1px solid var(--border-color); font-weight: 600; cursor: pointer;">Cancel</button>
+            <button id="btnConfirmDeleteAsset" onclick="executeAssetDelete()" style="padding: 8px 18px; border-radius: 6px; background: #ef4444; color: white; border: none; font-weight: 700; cursor: pointer;">Delete Asset</button>
+        </div>
     </div>
 </div>
 
 <script>
 let globalHierarchy = null;
 let currentContainerIndex = 0;
+let pendingDeleteAssetId = null;
+
+// Toast helper
+function showToast(msg, isSuccess = true) {
+    const existing = document.querySelector('.app-toast');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.className = 'app-toast ' + (isSuccess ? 'toast-success' : 'toast-error');
+    toast.innerHTML = (isSuccess ? '✓ ' : '✕ ') + msg;
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(-10px)';
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
+}
+
+// Modal open/close
+function openNewAssetModal() {
+    document.getElementById('newAssetModal').style.display = 'flex';
+    document.getElementById('modalAssetName').focus();
+}
+
+function closeNewAssetModal() {
+    document.getElementById('newAssetModal').style.display = 'none';
+}
+
+function confirmDeleteAsset(id, name) {
+    pendingDeleteAssetId = id;
+    document.getElementById('deleteAssetTargetName').innerText = name || 'this asset';
+    document.getElementById('deleteAssetModal').style.display = 'flex';
+}
+
+function closeDeleteAssetModal() {
+    pendingDeleteAssetId = null;
+    document.getElementById('deleteAssetModal').style.display = 'none';
+}
+
+// Close modals on clicking overlay or pressing ESC
+window.addEventListener('click', (e) => {
+    if (e.target.id === 'newAssetModal') closeNewAssetModal();
+    if (e.target.id === 'deleteAssetModal') closeDeleteAssetModal();
+});
+
+window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeNewAssetModal();
+        closeDeleteAssetModal();
+    }
+});
+
+// Handle New Asset Form Submit
+async function handleAssetFormSubmit(e) {
+    e.preventDefault();
+    const saveBtn = document.getElementById('btnSaveModalAsset');
+    saveBtn.disabled = true;
+    saveBtn.innerText = 'Registering...';
+
+    const payload = {
+        assetName: document.getElementById('modalAssetName').value.trim(),
+        assetType: document.getElementById('modalAssetType').value,
+        sourceSystem: document.getElementById('modalSourceSystem').value.trim() || 'Local',
+        sensitivity: document.getElementById('modalSensitivity').value,
+        elements: document.getElementById('modalElements').value.trim() || '0',
+        status: document.getElementById('modalStatus').value,
+        description: document.getElementById('modalDescription').value.trim()
+    };
+
+    try {
+        const res = await fetch('/api/assets/create', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        const json = await res.json();
+
+        if (json.success) {
+            showToast('Asset registered successfully: ' + payload.assetName, true);
+            closeNewAssetModal();
+            document.getElementById('modalAssetForm').reset();
+
+            // Increment metrics
+            const valTotal = document.getElementById('valTotalAssets');
+            if (valTotal) valTotal.innerText = parseInt(valTotal.innerText || '0') + 1;
+            const chipTotal = document.getElementById('chipTotalAssets');
+            if (chipTotal) chipTotal.innerText = parseInt(chipTotal.innerText || '0') + 1;
+            const valSys = document.getElementById('valSystemAssets');
+            if (valSys) valSys.innerText = parseInt(valSys.innerText || '0') + 1;
+            const chipSys = document.getElementById('chipSystemAssets');
+            if (chipSys) chipSys.innerText = parseInt(chipSys.innerText || '0') + 1;
+
+            if (payload.sensitivity === 'HIGH_RISK' || payload.sensitivity === 'RESTRICTED' || payload.sensitivity === 'CONFIDENTIAL') {
+                const valHigh = document.getElementById('valHighSensAssets');
+                if (valHigh) valHigh.innerText = parseInt(valHigh.innerText || '0') + 1;
+            }
+
+            // Remove empty row if present
+            const emptyRow = document.getElementById('emptyAssetsRow');
+            if (emptyRow) emptyRow.remove();
+
+            // Insert new row into table
+            const tbody = document.getElementById('assetsTableBody');
+            const newRow = document.createElement('tr');
+            newRow.style.borderBottom = '1px solid var(--border-color)';
+            newRow.style.background = 'rgba(16, 185, 129, 0.1)';
+            newRow.style.transition = 'all 0.5s ease';
+            newRow.className = 'asset-row';
+            newRow.id = `asset-row-${json.id}`;
+
+            const sensStyle = (payload.sensitivity === 'RESTRICTED' || payload.sensitivity === 'HIGH_RISK') 
+                ? 'background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3);' 
+                : (payload.sensitivity === 'CONFIDENTIAL' 
+                    ? 'background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3);' 
+                    : 'background: rgba(255,255,255,0.06); color: var(--text-muted); border: 1px solid rgba(255,255,255,0.1);');
+
+            newRow.innerHTML = `
+                <td style="padding: 16px 24px; font-weight: 600; color: var(--text-main);">
+                    <div>${payload.assetName}</div>
+                    ${payload.description ? `<div style="font-size: 11px; color: var(--text-muted); font-weight: normal; margin-top: 2px;">${payload.description}</div>` : ''}
+                </td>
+                <td style="padding: 16px 24px;">
+                    <span class="badge" style="background: rgba(59, 130, 246, 0.2); color: #60a5fa; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 700; border: 1px solid rgba(59, 130, 246, 0.3);">${payload.assetType}</span>
+                </td>
+                <td style="padding: 16px 24px; font-family: monospace; color: var(--text-muted);">${payload.sourceSystem}</td>
+                <td style="padding: 16px 24px;">
+                    <span style="${sensStyle} padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 700;">${payload.sensitivity}</span>
+                </td>
+                <td style="padding: 16px 24px; color: var(--text-main); font-weight: 500;">${payload.elements}</td>
+                <td style="padding: 16px 24px;">
+                    <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">${payload.status}</span>
+                </td>
+                <td style="padding: 16px 24px; text-align: right;">
+                    <button onclick="confirmDeleteAsset('${json.id}', '${payload.assetName.replace(/'/g, "\\'")}')" title="Delete Asset" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #ef4444; cursor: pointer; padding: 6px 8px; border-radius: 6px; transition: all 0.2s;">
+                        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    </button>
+                </td>
+            `;
+            tbody.prepend(newRow);
+
+            setTimeout(() => {
+                newRow.style.background = 'transparent';
+            }, 1200);
+
+            // Update rows label
+            const rowsLabel = document.getElementById('assetRowsCountLabel');
+            if (rowsLabel) {
+                const count = document.querySelectorAll('.asset-row').length;
+                rowsLabel.innerText = `${count} rows`;
+            }
+        } else {
+            showToast(json.error || 'Failed to create asset', false);
+        }
+    } catch (err) {
+        showToast('Network error: ' + err.message, false);
+    } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerText = 'Register Asset';
+    }
+}
+
+// Execute Asset Delete
+async function executeAssetDelete() {
+    if (!pendingDeleteAssetId) return;
+
+    const delBtn = document.getElementById('btnConfirmDeleteAsset');
+    delBtn.disabled = true;
+    delBtn.innerText = 'Deleting...';
+
+    const id = pendingDeleteAssetId;
+
+    try {
+        let res = await fetch(`/api/assets/${id}`, { method: 'DELETE' });
+        if (!res.ok) {
+            res = await fetch(`/api/assets/${id}/delete`, { method: 'POST' });
+        }
+        const json = await res.json();
+
+        if (json.success) {
+            showToast('Data asset deleted successfully', true);
+            closeDeleteAssetModal();
+
+            // Animate and remove row
+            const row = document.getElementById(`asset-row-${id}`);
+            if (row) {
+                row.style.opacity = '0';
+                row.style.transform = 'translateX(20px)';
+                setTimeout(() => {
+                    row.remove();
+                    const remaining = document.querySelectorAll('.asset-row').length;
+                    const rowsLabel = document.getElementById('assetRowsCountLabel');
+                    if (rowsLabel) rowsLabel.innerText = `${remaining} rows`;
+
+                    const valTotal = document.getElementById('valTotalAssets');
+                    if (valTotal) valTotal.innerText = Math.max(0, parseInt(valTotal.innerText || '1') - 1);
+                    const chipTotal = document.getElementById('chipTotalAssets');
+                    if (chipTotal) chipTotal.innerText = Math.max(0, parseInt(chipTotal.innerText || '1') - 1);
+                    const valSys = document.getElementById('valSystemAssets');
+                    if (valSys) valSys.innerText = Math.max(0, parseInt(valSys.innerText || '1') - 1);
+                    const chipSys = document.getElementById('chipSystemAssets');
+                    if (chipSys) chipSys.innerText = Math.max(0, parseInt(chipSys.innerText || '1') - 1);
+
+                    if (remaining === 0) {
+                        const tbody = document.getElementById('assetsTableBody');
+                        tbody.innerHTML = '<tr id="emptyAssetsRow"><td colspan="7" style="padding: 32px; text-align: center; color: var(--text-muted);">No data assets found. Click "+ New Asset" to register a system.</td></tr>';
+                    }
+                }, 300);
+            }
+        } else {
+            showToast(json.error || 'Failed to delete asset', false);
+        }
+    } catch (err) {
+        showToast('Network error deleting asset', false);
+    } finally {
+        delBtn.disabled = false;
+        delBtn.innerText = 'Delete Asset';
+    }
+}
 
 // Tab Switching
 function switchAssetTab(tab) {
@@ -721,7 +1101,6 @@ function selectContainer(idx) {
     if (globalHierarchy && globalHierarchy.systemRollup && globalHierarchy.systemRollup.containers) {
         const c = globalHierarchy.systemRollup.containers[idx];
         renderContainerDetails(c);
-        // Also recalculate container-specific downstream impacts!
         fetchContainerDownstream(c);
     }
 }
@@ -852,25 +1231,15 @@ function filterAssets() {
     });
 }
 
-// Delete Asset
-async function deleteAsset(id) {
-    if (!confirm('Are you sure you want to delete this data asset?')) return;
-    try {
-        const res = await fetch(`/api/assets/${id}`, { method: 'DELETE' });
-        const json = await res.json();
-        if (json.success) {
-            window.location.reload();
-        } else {
-            alert('Error deleting asset: ' + (json.message || 'Unknown error'));
-        }
-    } catch (err) {
-        alert('Network error deleting asset');
-    }
-}
-
-// Auto-initialize hierarchy on load
+// Auto-check URL query on load
 document.addEventListener('DOMContentLoaded', () => {
-    loadHierarchyData();
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('tab') === 'hierarchy') {
+        switchAssetTab('hierarchy');
+    }
+    if (params.get('created') === '1') {
+        showToast('Asset registered successfully!', true);
+    }
 });
 </script>
 

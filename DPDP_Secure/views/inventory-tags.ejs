@@ -7,37 +7,104 @@ const systemTags = tagsList.filter(t => t.category === 'SYSTEM' || t.category ==
 const highSensTags = tagsList.filter(t => (parseInt(t.sensitivityWeight) || 0) >= 75).length;
 %>
 
+<style>
+/* Toast Notification */
+.app-toast {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    padding: 14px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    z-index: 99999;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(8px);
+}
+.toast-success { background: rgba(16, 185, 129, 0.95); color: #ffffff; border: 1px solid #34d399; }
+.toast-error { background: rgba(239, 68, 68, 0.95); color: #ffffff; border: 1px solid #f87171; }
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.modal-box {
+    background: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    width: 100%;
+    max-width: 600px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+    animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes modalPop {
+    from { opacity: 0; transform: scale(0.96) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.tier-pill {
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+.tier-critical { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4); }
+.tier-high { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.4); }
+.tier-medium { background: rgba(59, 130, 246, 0.2); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.4); }
+.tier-low { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4); }
+</style>
+
 <!-- Top Metrics -->
 <div class="metrics-grid mb-4" style="grid-template-columns: repeat(3, 1fr);">
     <div class="card metric-card">
         <div class="metric-info w-100">
             <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px;">TOTAL TAGS</span>
-            <h2 class="metric-value" style="margin-top: 8px;"><%= totalTags %></h2>
+            <h2 class="metric-value" id="valTotalTags" style="margin-top: 8px;"><%= totalTags %></h2>
         </div>
     </div>
     <div class="card metric-card">
         <div class="metric-info w-100">
             <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px;">SYSTEM & IDENTIFIERS</span>
-            <h2 class="metric-value" style="margin-top: 8px;"><%= systemTags %></h2>
+            <h2 class="metric-value" id="valSystemTags" style="margin-top: 8px;"><%= systemTags %></h2>
         </div>
     </div>
     <div class="card metric-card">
         <div class="metric-info w-100">
             <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px;">HIGH SENSITIVITY (&ge;75%)</span>
-            <h2 class="metric-value" style="margin-top: 8px;"><%= highSensTags %></h2>
+            <h2 class="metric-value" id="valHighSensTags" style="margin-top: 8px;"><%= highSensTags %></h2>
         </div>
     </div>
 </div>
 
-<div class="dashboard-header mb-4" style="align-items: center;">
+<div class="dashboard-header mb-4" style="align-items: center; justify-content: space-between;">
     <div class="title-group">
         <h1>Classification Tags</h1>
-        <p>Define PII/sensitivity categories that classify data elements across your inventory.</p>
+        <p>Define PII/sensitivity categories and statutory weights that classify data elements across your inventory.</p>
     </div>
-    <button class="btn-primary" style="background-color: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="window.location.href='/inventory/tags/create'">
-        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-        New Tag
-    </button>
+    <div style="display: flex; gap: 10px;">
+        <button class="btn-primary" id="btnOpenNewTagModal" style="background-color: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="openNewTagModal()">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            + New Tag
+        </button>
+    </div>
 </div>
 
 <div class="card p-0" style="overflow: hidden;">
@@ -48,7 +115,7 @@ const highSensTags = tagsList.filter(t => (parseInt(t.sensitivityWeight) || 0) >
         </div>
         
         <div class="pagination" style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-muted);">
-            <span><%= totalTags %> rows</span>
+            <span id="rowsCountLabel"><%= totalTags %> rows</span>
             <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Previous</button>
             <span>Page 1 of 1</span>
             <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Next</button>
@@ -67,20 +134,20 @@ const highSensTags = tagsList.filter(t => (parseInt(t.sensitivityWeight) || 0) >
                 <th style="padding: 12px 24px; font-weight: 600; text-align: right;">Actions</th>
             </tr>
         </thead>
-        <tbody style="font-size: 13px;">
+        <tbody id="tagsTableBody" style="font-size: 13px;">
             <% if (tagsList.length === 0) { %>
-                <tr>
-                    <td colspan="6" style="padding: 32px; text-align: center; color: var(--text-muted);">No tags defined yet. Click "New Tag" to create a classification.</td>
+                <tr id="emptyTagsRow">
+                    <td colspan="6" style="padding: 32px; text-align: center; color: var(--text-muted);">No tags defined yet. Click "+ New Tag" to create a classification.</td>
                 </tr>
             <% } else { %>
                 <% tagsList.forEach(tag => { 
                     const weight = parseInt(tag.sensitivityWeight) || 50;
-                    const barColor = weight >= 80 ? '#ef4444' : (weight >= 60 ? '#f59e0b' : '#3b82f6');
+                    const barColor = weight >= 85 ? '#ef4444' : (weight >= 70 ? '#f59e0b' : '#3b82f6');
                 %>
-                    <tr style="border-bottom: 1px solid var(--border-color);" class="tag-row">
+                    <tr style="border-bottom: 1px solid var(--border-color); transition: all 0.3s ease;" class="tag-row" id="tag-row-<%= tag.id %>">
                         <td style="padding: 16px 24px; font-weight: 600; color: var(--text-main);">
                             <div style="display: flex; align-items: center; gap: 8px;">
-                                <span style="width: 10px; height: 10px; border-radius: 50%; background: <%= tag.colorTag || '#8b5cf6' %>;"></span>
+                                <span style="width: 10px; height: 10px; border-radius: 50%; background: <%= tag.colorTag || '#8b5cf6' %>; display: inline-block;"></span>
                                 <span><%= tag.tagName %></span>
                             </div>
                             <% if (tag.description) { %>
@@ -96,14 +163,14 @@ const highSensTags = tagsList.filter(t => (parseInt(t.sensitivityWeight) || 0) >
                                 <div style="width: 70px; height: 5px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
                                     <div style="height: 100%; width: <%= weight %>%; background: <%= barColor %>;"></div>
                                 </div>
-                                <span style="font-size: 12px; font-weight: 600; color: var(--text-main); width: 35px;"><%= weight %>%</span>
+                                <span style="font-size: 12px; font-weight: 700; color: var(--text-main); width: 35px;"><%= weight %>%</span>
                             </div>
                         </td>
                         <td style="padding: 16px 24px; color: var(--text-muted); font-size: 12px;">
                             <%= tag.createdAt ? new Date(tag.createdAt).toLocaleDateString() : 'Active' %>
                         </td>
                         <td style="padding: 16px 24px; text-align: right;">
-                            <button onclick="deleteTag('<%= tag.id %>')" title="Delete Tag" style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 4px; border-radius: 4px;">
+                            <button data-id="<%= tag.id %>" data-name="<%= tag.tagName %>" onclick="confirmDeleteTag(this.getAttribute('data-id'), this.getAttribute('data-name'))" title="Delete Tag" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #ef4444; cursor: pointer; padding: 6px 8px; border-radius: 6px; transition: all 0.2s;" onmouseover="this.style.background='rgba(239, 68, 68, 0.25)'" onmouseout="this.style.background='rgba(239, 68, 68, 0.1)'">
                                 <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                             </button>
                         </td>
@@ -112,18 +179,267 @@ const highSensTags = tagsList.filter(t => (parseInt(t.sensitivityWeight) || 0) >
             <% } %>
         </tbody>
     </table>
-    
-    <!-- Table Footer -->
-    <div class="table-toolbar" style="padding: 16px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; align-items: center;">
-        <div class="pagination" style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-muted);">
-            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Previous</button>
-            <span>Page 1 of 1</span>
-            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Next</button>
+</div>
+
+<!-- ========================================================================= -->
+<!-- MODAL: CREATE NEW CLASSIFICATION TAG                                      -->
+<!-- ========================================================================= -->
+<div id="newTagModal" class="modal-overlay">
+    <div class="modal-box">
+        <div style="padding: 18px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2);">
+            <div>
+                <h3 style="margin: 0; font-size: 16px; color: var(--text-main); font-weight: 700;">+ New Classification Tag</h3>
+                <p style="margin: 3px 0 0 0; font-size: 12px; color: var(--text-muted);">Define a new PII classification tag and statutory sensitivity weight.</p>
+            </div>
+            <button onclick="closeNewTagModal()" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 20px; line-height: 1; padding: 4px;">&times;</button>
+        </div>
+
+        <form id="modalTagForm" onsubmit="handleTagFormSubmit(event)" style="padding: 24px;">
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+                <!-- Tag Name -->
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Tag Name <span style="color: #ef4444;">*</span></label>
+                    <input type="text" id="modalTagName" required placeholder="e.g., Biometric Iris Scan, Lab Blood Panel" style="width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.3); color: var(--text-main); font-size: 13px;">
+                </div>
+
+                <!-- Category & Subcategory Grid -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div>
+                        <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Primary Category</label>
+                        <select id="modalCategory" style="width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); font-size: 13px;">
+                            <option value="IDENTIFIER">IDENTIFIER</option>
+                            <option value="HEALTH" selected>HEALTH</option>
+                            <option value="FINANCIAL">FINANCIAL</option>
+                            <option value="CONTACT">CONTACT</option>
+                            <option value="BIOMETRIC">BIOMETRIC</option>
+                            <option value="SYSTEM">SYSTEM</option>
+                            <option value="GENERAL">GENERAL</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Sub-Category</label>
+                        <input type="text" id="modalSubCategory" placeholder="e.g., Clinical Notes" style="width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.3); color: var(--text-main); font-size: 13px;">
+                    </div>
+                </div>
+
+                <!-- Sensitivity Weight & Tier Preview -->
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); margin: 0;">Sensitivity Weight (0 - 100)</label>
+                        <span id="modalTierBadge" class="tier-pill tier-critical">CRITICAL (90%)</span>
+                    </div>
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <input type="range" id="modalWeightSlider" min="0" max="100" value="90" oninput="syncModalWeight(this.value)" style="flex: 1; cursor: pointer;">
+                        <input type="number" id="modalSensitivityWeight" min="0" max="100" value="90" oninput="syncModalWeight(this.value)" style="width: 70px; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.3); color: var(--text-main); font-weight: 700; text-align: center; font-size: 13px;">
+                    </div>
+                </div>
+
+                <!-- Color Swatch -->
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Badge Color</label>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <input type="color" id="modalColorTag" value="#ef4444" style="width: 40px; height: 34px; border-radius: 6px; border: 1px solid var(--border-color); background: transparent; cursor: pointer;">
+                        <div style="display: flex; gap: 6px;">
+                            <span onclick="setModalColor('#ef4444')" style="width: 20px; height: 20px; border-radius: 50%; background: #ef4444; cursor: pointer; display: inline-block;"></span>
+                            <span onclick="setModalColor('#f59e0b')" style="width: 20px; height: 20px; border-radius: 50%; background: #f59e0b; cursor: pointer; display: inline-block;"></span>
+                            <span onclick="setModalColor('#ec4899')" style="width: 20px; height: 20px; border-radius: 50%; background: #ec4899; cursor: pointer; display: inline-block;"></span>
+                            <span onclick="setModalColor('#3b82f6')" style="width: 20px; height: 20px; border-radius: 50%; background: #3b82f6; cursor: pointer; display: inline-block;"></span>
+                            <span onclick="setModalColor('#8b5cf6')" style="width: 20px; height: 20px; border-radius: 50%; background: #8b5cf6; cursor: pointer; display: inline-block;"></span>
+                            <span onclick="setModalColor('#10b981')" style="width: 20px; height: 20px; border-radius: 50%; background: #10b981; cursor: pointer; display: inline-block;"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Description</label>
+                    <textarea id="modalDescription" rows="2" placeholder="Brief note on what PII data this tag classifies..." style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.3); color: var(--text-main); font-size: 12px;"></textarea>
+                </div>
+            </div>
+
+            <div style="margin-top: 24px; display: flex; gap: 10px; justify-content: flex-end; border-top: 1px solid var(--border-color); padding-top: 16px;">
+                <button type="button" onclick="closeNewTagModal()" style="padding: 8px 16px; border-radius: 6px; background: rgba(255,255,255,0.06); color: var(--text-muted); border: 1px solid var(--border-color); font-weight: 600; cursor: pointer;">Cancel</button>
+                <button type="submit" id="btnSaveModalTag" style="padding: 8px 20px; border-radius: 6px; background: var(--primary); color: white; border: none; font-weight: 700; cursor: pointer;">Save Classification Tag</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- MODAL: CONFIRM DELETE TAG                                                 -->
+<!-- ========================================================================= -->
+<div id="deleteTagModal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 440px;">
+        <div style="padding: 20px 24px; text-align: center;">
+            <div style="width: 48px; height: 48px; border-radius: 50%; background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto; color: #ef4444; font-size: 22px;">
+                🗑️
+            </div>
+            <h3 style="margin: 0 0 8px 0; font-size: 17px; color: var(--text-main);">Delete Classification Tag?</h3>
+            <p style="margin: 0; font-size: 13px; color: var(--text-muted); line-height: 1.5;">
+                Are you sure you want to delete <strong id="deleteTagTargetName" style="color: var(--text-main);">this tag</strong>? This action cannot be undone.
+            </p>
+        </div>
+        <div style="padding: 16px 24px; background: rgba(0,0,0,0.2); border-top: 1px solid var(--border-color); display: flex; gap: 10px; justify-content: flex-end;">
+            <button onclick="closeDeleteModal()" style="padding: 8px 16px; border-radius: 6px; background: rgba(255,255,255,0.06); color: var(--text-muted); border: 1px solid var(--border-color); font-weight: 600; cursor: pointer;">Cancel</button>
+            <button id="btnConfirmDeleteTag" onclick="executeTagDelete()" style="padding: 8px 18px; border-radius: 6px; background: #ef4444; color: white; border: none; font-weight: 700; cursor: pointer;">Delete Tag</button>
         </div>
     </div>
 </div>
 
 <script>
+let pendingDeleteTagId = null;
+
+function showToast(msg, isSuccess = true) {
+    const existing = document.querySelector('.app-toast');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.className = 'app-toast ' + (isSuccess ? 'toast-success' : 'toast-error');
+    toast.innerHTML = (isSuccess ? '✓ ' : '✕ ') + msg;
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(-10px)';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+// Modal open/close
+function openNewTagModal() {
+    document.getElementById('newTagModal').style.display = 'flex';
+    document.getElementById('modalTagName').focus();
+}
+function closeNewTagModal() {
+    document.getElementById('newTagModal').style.display = 'none';
+}
+function setModalColor(color) {
+    document.getElementById('modalColorTag').value = color;
+}
+function syncModalWeight(val) {
+    const w = Math.max(0, Math.min(100, parseInt(val, 10) || 0));
+    document.getElementById('modalWeightSlider').value = w;
+    document.getElementById('modalSensitivityWeight').value = w;
+
+    const badge = document.getElementById('modalTierBadge');
+    if (w >= 85) {
+        badge.innerText = `CRITICAL (${w}%)`;
+        badge.className = 'tier-pill tier-critical';
+    } else if (w >= 70) {
+        badge.innerText = `HIGH (${w}%)`;
+        badge.className = 'tier-pill tier-high';
+    } else if (w >= 40) {
+        badge.innerText = `MEDIUM (${w}%)`;
+        badge.className = 'tier-pill tier-medium';
+    } else {
+        badge.innerText = `LOW (${w}%)`;
+        badge.className = 'tier-pill tier-low';
+    }
+}
+
+// Submit Tag Form
+async function handleTagFormSubmit(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btnSaveModalTag');
+    btn.disabled = true;
+    btn.textContent = 'Saving...';
+
+    const payload = {
+        tagName: document.getElementById('modalTagName').value.trim(),
+        category: document.getElementById('modalCategory').value,
+        subCategory: document.getElementById('modalSubCategory').value.trim(),
+        sensitivityWeight: parseInt(document.getElementById('modalSensitivityWeight').value, 10) || 50,
+        colorTag: document.getElementById('modalColorTag').value,
+        description: document.getElementById('modalDescription').value.trim()
+    };
+
+    if (!payload.tagName) {
+        showToast('Tag name is required', false);
+        btn.disabled = false;
+        btn.textContent = 'Save Classification Tag';
+        return;
+    }
+
+    try {
+        const res = await fetch('/api/tags/create', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        const json = await res.json();
+        if (json.success) {
+            closeNewTagModal();
+            showToast('Classification tag created successfully!');
+            setTimeout(() => {
+                window.location.reload();
+            }, 600);
+        } else {
+            showToast(json.error || 'Failed to save tag', false);
+            btn.disabled = false;
+            btn.textContent = 'Save Classification Tag';
+        }
+    } catch (err) {
+        showToast('Network error: ' + err.message, false);
+        btn.disabled = false;
+        btn.textContent = 'Save Classification Tag';
+    }
+}
+
+// Delete Tag handling
+function confirmDeleteTag(id, name) {
+    pendingDeleteTagId = id;
+    document.getElementById('deleteTagTargetName').innerText = name || 'this tag';
+    document.getElementById('deleteTagModal').style.display = 'flex';
+}
+function closeDeleteModal() {
+    pendingDeleteTagId = null;
+    document.getElementById('deleteTagModal').style.display = 'none';
+}
+
+async function executeTagDelete() {
+    if (!pendingDeleteTagId) return;
+    const btn = document.getElementById('btnConfirmDeleteTag');
+    btn.disabled = true;
+    btn.textContent = 'Deleting...';
+
+    const id = pendingDeleteTagId;
+    try {
+        // Try DELETE first, then POST fallback
+        let res = await fetch(`/api/tags/${id}`, { method: 'DELETE' });
+        if (!res.ok) {
+            res = await fetch(`/api/tags/${id}/delete`, { method: 'POST' });
+        }
+        const json = await res.json();
+
+        if (json.success) {
+            closeDeleteModal();
+            showToast('Tag deleted successfully!');
+            // Visual row removal
+            const row = document.getElementById(`tag-row-${id}`);
+            if (row) {
+                row.style.opacity = '0';
+                row.style.transform = 'translateX(20px)';
+                setTimeout(() => row.remove(), 300);
+            }
+            // Update metric count
+            const totalEl = document.getElementById('valTotalTags');
+            if (totalEl) {
+                const current = parseInt(totalEl.innerText, 10) || 1;
+                totalEl.innerText = Math.max(0, current - 1);
+            }
+        } else {
+            showToast(json.error || json.message || 'Error deleting tag', false);
+            btn.disabled = false;
+            btn.textContent = 'Delete Tag';
+        }
+    } catch (err) {
+        showToast('Network error: ' + err.message, false);
+        btn.disabled = false;
+        btn.textContent = 'Delete Tag';
+    }
+}
+
+// Filter tags
 function filterTags() {
     const q = document.getElementById('tag-search').value.toLowerCase();
     document.querySelectorAll('.tag-row').forEach(row => {
@@ -131,20 +447,19 @@ function filterTags() {
     });
 }
 
-async function deleteTag(id) {
-    if (!confirm('Are you sure you want to delete this classification tag?')) return;
-    try {
-        const res = await fetch(`/api/tags/${id}`, { method: 'DELETE' });
-        const json = await res.json();
-        if (json.success) {
-            window.location.reload();
-        } else {
-            alert('Error deleting tag: ' + (json.message || 'Unknown error'));
-        }
-    } catch (err) {
-        alert('Network error deleting tag');
+// Close modals on Esc or backdrop click
+window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeNewTagModal();
+        closeDeleteModal();
     }
-}
+});
+document.getElementById('newTagModal').addEventListener('click', (e) => {
+    if (e.target.id === 'newTagModal') closeNewTagModal();
+});
+document.getElementById('deleteTagModal').addEventListener('click', (e) => {
+    if (e.target.id === 'deleteTagModal') closeDeleteModal();
+});
 </script>
 
 <%- include('partials/footer') %>

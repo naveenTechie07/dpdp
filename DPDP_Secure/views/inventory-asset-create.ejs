@@ -105,7 +105,29 @@
     </div>
 </div>
 
+<!-- Toast container -->
+<div id="toastContainer" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>
+
 <script>
+function showToast(msg, isSuccess = true) {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.style.background = isSuccess ? '#10b981' : '#ef4444';
+    toast.style.color = '#ffffff';
+    toast.style.padding = '12px 20px';
+    toast.style.borderRadius = '8px';
+    toast.style.marginTop = '10px';
+    toast.style.fontWeight = '600';
+    toast.style.fontSize = '14px';
+    toast.style.boxShadow = '0 8px 24px rgba(0,0,0,0.4)';
+    toast.style.display = 'flex';
+    toast.style.alignItems = 'center';
+    toast.style.gap = '8px';
+    toast.innerHTML = (isSuccess ? '✓ ' : '✕ ') + msg;
+    container.appendChild(toast);
+    setTimeout(() => toast.remove(), 4000);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('assetForm');
     const submitBtn = document.getElementById('submitBtn');
@@ -113,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         submitBtn.disabled = true;
-        submitBtn.textContent = 'Creating...';
+        submitBtn.innerHTML = '<span style="display:inline-block; animation: spin 1s infinite linear;">⟳</span> Creating Asset...';
 
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
@@ -127,16 +149,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await resp.json();
 
             if (result.success) {
-                // Show success and redirect back
-                alert('Asset created successfully!');
-                window.location.href = '/inventory/assets';
+                showToast('Asset registered successfully! Redirecting...', true);
+                setTimeout(() => {
+                    window.location.href = '/inventory/assets';
+                }, 700);
             } else {
-                alert('Failed to create asset: ' + (result.error || 'Unknown error'));
+                showToast('Failed to create asset: ' + (result.error || 'Unknown error'), false);
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Create Asset';
             }
         } catch (err) {
-            alert('Request failed: ' + err.message);
+            showToast('Request failed: ' + err.message, false);
             submitBtn.disabled = false;
             submitBtn.textContent = 'Create Asset';
         }

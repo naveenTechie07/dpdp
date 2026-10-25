@@ -61,24 +61,27 @@ router.get('/api/assets', async (req, res) => {
   }
 });
 
-router.post('/api/assets/create', async (req, res) => {
+router.post(['/api/assets/create', '/inventory/assets/create'], async (req, res) => {
   try {
     const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
     const { assetName, assetType, sourceSystem, sensitivity, elements, status, description } = req.body;
 
     if (!assetName) {
+      if (!req.xhr && !req.is('json') && req.headers.accept?.includes('text/html')) {
+        return res.redirect('/inventory/assets?error=Asset+name+is+required');
+      }
       return res.status(400).json({ success: false, error: 'Asset name is required' });
     }
 
     const id = await models.createDataAsset({
       tenantId,
       assetName,
-      assetType,
-      sourceSystem,
-      sensitivity,
+      assetType: assetType || 'database',
+      sourceSystem: sourceSystem || 'Local',
+      sensitivity: sensitivity || 'INTERNAL',
       elements: elements || '0',
       status: status || 'active',
-      description
+      description: description || ''
     });
 
     await models.logAuditEvent(
@@ -95,9 +98,16 @@ router.post('/api/assets/create', async (req, res) => {
       })
     );
 
+    if (!req.xhr && !req.is('json') && req.headers.accept?.includes('text/html')) {
+      return res.redirect('/inventory/assets?created=1');
+    }
+
     res.status(201).json({ success: true, id, message: 'Asset created successfully' });
   } catch (err) {
     console.error('[DISCOVERY] createAsset error:', err);
+    if (!req.xhr && !req.is('json') && req.headers.accept?.includes('text/html')) {
+      return res.redirect('/inventory/assets?error=' + encodeURIComponent(err.message));
+    }
     res.status(500).json({ success: false, error: 'Failed to create asset: ' + err.message });
   }
 });
@@ -113,13 +123,30 @@ router.put('/api/assets/:id', async (req, res) => {
   }
 });
 
-router.delete('/api/assets/:id', async (req, res) => {
+router.all([
+  '/api/assets/:id/delete',
+  '/api/assets/delete/:id',
+  '/inventory/assets/:id/delete',
+  '/inventory/assets/delete/:id',
+  '/api/assets/:id'
+], async (req, res) => {
+  if (req.method !== 'DELETE' && req.method !== 'POST' && req.method !== 'GET') {
+    return res.status(405).json({ success: false, error: 'Method not allowed' });
+  }
   try {
     const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
     await models.deleteDataAsset(req.params.id, tenantId);
     await models.logAuditEvent(tenantId, req.session?.user?.name || 'Admin', 'DELETE_DATA_ASSET', req.params.id, {});
+    
+    if (req.method === 'GET' || (!req.xhr && !req.is('json') && req.headers.accept?.includes('text/html') && req.method !== 'DELETE')) {
+      return res.redirect('/inventory/assets');
+    }
     res.json({ success: true, message: 'Asset deleted successfully' });
   } catch (err) {
+    console.error('[DISCOVERY] deleteAsset error:', err);
+    if (!req.xhr && !req.is('json') && req.headers.accept?.includes('text/html') && req.method !== 'DELETE') {
+      return res.redirect('/inventory/assets?error=' + encodeURIComponent(err.message));
+    }
     res.status(500).json({ success: false, error: err.message });
   }
 });
@@ -147,7 +174,12 @@ router.get('/inventory/tags', async (req, res) => {
 });
 
 router.get('/inventory/tags/create', (req, res) => {
-  res.redirect('/inventory/tags');
+  res.render('inventory-tag-create', {
+    title: 'Create Classification Tag - DPDP_Secure',
+    description: 'Define Indian PII and sensitivity categories.',
+    breadcrumbs: ['Workspace', 'Data Mapping', 'Classification', 'New Tag'],
+    path: '/inventory/tags/create'
+  });
 });
 
 router.get('/api/tags', async (req, res) => {
@@ -166,13 +198,16 @@ router.post(['/api/tags/create', '/inventory/tags/create'], async (req, res) => 
     const { tagName, category, subCategory, sensitivityWeight, colorTag, description } = req.body;
 
     if (!tagName) {
+      if (!req.xhr && !req.is('json') && req.headers.accept?.includes('text/html')) {
+        return res.redirect('/inventory/tags?error=Tag+name+is+required');
+      }
       return res.status(400).json({ success: false, error: 'Tag name is required' });
     }
 
     const id = await models.createDataTag({
       tenantId,
       tagName,
-      category: category || 'identifier',
+      category: category || 'IDENTIFIER',
       subCategory: subCategory || '',
       sensitivityWeight: sensitivityWeight ? parseInt(sensitivityWeight, 10) : 50,
       colorTag: colorTag || '#8b5cf6',
@@ -180,8 +215,17 @@ router.post(['/api/tags/create', '/inventory/tags/create'], async (req, res) => 
     });
 
     await models.logAuditEvent(tenantId, req.session?.user?.name || 'Admin', 'CREATE_DATA_TAG', id, req.body);
+
+    if (!req.xhr && !req.is('json') && req.headers.accept?.includes('text/html')) {
+      return res.redirect('/inventory/tags?created=1');
+    }
+
     res.status(201).json({ success: true, id, message: 'Tag created successfully' });
   } catch (err) {
+    console.error('[DISCOVERY] createTag error:', err);
+    if (!req.xhr && !req.is('json') && req.headers.accept?.includes('text/html')) {
+      return res.redirect('/inventory/tags?error=' + encodeURIComponent(err.message));
+    }
     res.status(500).json({ success: false, error: err.message });
   }
 });
@@ -197,13 +241,30 @@ router.put('/api/tags/:id', async (req, res) => {
   }
 });
 
-router.delete('/api/tags/:id', async (req, res) => {
+router.all([
+  '/api/tags/:id/delete',
+  '/api/tags/delete/:id',
+  '/inventory/tags/:id/delete',
+  '/inventory/tags/delete/:id',
+  '/api/tags/:id'
+], async (req, res) => {
+  if (req.method !== 'DELETE' && req.method !== 'POST' && req.method !== 'GET') {
+    return res.status(405).json({ success: false, error: 'Method not allowed' });
+  }
   try {
     const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
     await models.deleteDataTag(req.params.id, tenantId);
     await models.logAuditEvent(tenantId, req.session?.user?.name || 'Admin', 'DELETE_DATA_TAG', req.params.id, {});
+
+    if (req.method === 'GET' || (!req.xhr && !req.is('json') && req.headers.accept?.includes('text/html') && req.method !== 'DELETE')) {
+      return res.redirect('/inventory/tags');
+    }
     res.json({ success: true, message: 'Tag deleted successfully' });
   } catch (err) {
+    console.error('[DISCOVERY] deleteTag error:', err);
+    if (!req.xhr && !req.is('json') && req.headers.accept?.includes('text/html') && req.method !== 'DELETE') {
+      return res.redirect('/inventory/tags?error=' + encodeURIComponent(err.message));
+    }
     res.status(500).json({ success: false, error: err.message });
   }
 });
