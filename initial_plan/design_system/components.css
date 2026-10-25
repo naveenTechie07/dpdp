@@ -85,3 +85,6 @@ input[type=radio]:checked + label { border-color: var(--color-primary); }
 
 
 .alert-dismiss { width: 44px; height: 44px; }
+
+
+.data-table th { letter-spacing: 0.025em; font-size: 0.8125rem; }
