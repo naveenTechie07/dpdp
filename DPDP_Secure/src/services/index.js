@@ -12,6 +12,7 @@ const aiService = require('./aiService');
 const dsrSearchEngine = require('./dsrSearchEngine');
 const statutoryCollisionResolver = require('./statutoryCollisionResolver');
 const certificateGenerator = require('./certificateGenerator');
+const breachRiskCalculator = require('./breachRiskCalculator');
 
 module.exports = {
   ...verhoeffAlgorithm,
@@ -22,6 +23,7 @@ module.exports = {
   ...dsrSearchEngine,
   ...statutoryCollisionResolver,
   ...certificateGenerator,
+  ...breachRiskCalculator,
   verhoeffAlgorithm,
   indianPiiEngine,
   fileParsers,
@@ -29,6 +31,7 @@ module.exports = {
   aiService,
   dsrSearchEngine,
   statutoryCollisionResolver,
-  certificateGenerator
+  certificateGenerator,
+  breachRiskCalculator
 };
 

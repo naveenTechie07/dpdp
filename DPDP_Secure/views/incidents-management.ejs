@@ -1,102 +1,564 @@
 <%- include('partials/header') %>
 
-<div style="padding: 24px; max-width: 1400px; margin: 0 auto;">
-    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px;">
+<div class="space-y-6">
+  <!-- Page Header & 72-Hour Statutory Countdown Banner -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-800 pb-5">
+    <div>
+      <div class="flex items-center gap-2">
+        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20">
+          DPDP Act Section 8(6) & Rule 7
+        </span>
+        <span class="text-xs text-slate-400">Pillar 4: Breach Threat Modeling & Incident Triage</span>
+      </div>
+      <h1 class="text-2xl font-bold text-white tracking-tight mt-1">Incident Management & Regulatory Triage</h1>
+      <p class="text-sm text-slate-400 mt-1">
+        Track informal SME threat vectors, arm the mandatory 72-hour DPBI notification countdown, and execute rapid containment.
+      </p>
+    </div>
+    <div class="flex items-center gap-3">
+      <a href="/incidents/dashboard" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-colors">
+        <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+        <span>Breach Dashboard</span>
+      </a>
+      <button
+        type="button"
+        id="btnOpenIncidentWizard"
+        class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-sm font-bold transition-all shadow-lg shadow-rose-900/30"
+      >
+        <span>🚨</span>
+        <span>Declare New Security Incident</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Primary 72-Hour Statutory Countdown Card -->
+  <div class="p-5 rounded-2xl bg-gradient-to-r from-rose-950/50 via-slate-900 to-amber-950/40 border border-rose-500/40 shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
+    <div class="flex items-center gap-4">
+      <div class="w-12 h-12 rounded-xl bg-rose-600/20 border border-rose-500/40 flex items-center justify-center text-rose-400 text-2xl flex-shrink-0 animate-pulse">
+        ⏱️
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold text-rose-400 uppercase tracking-wider">Statutory Reporting Clock Active</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-950 text-rose-300 border border-rose-500/30">DPDP RULES, 2025 (RULE 7)</span>
+        </div>
+        <h2 class="text-lg font-bold text-white mt-0.5" id="countdownClockDisplay">
+          72-Hour DPBI Statutory Notification Countdown: <span class="text-rose-400 font-mono"><%= activeCountdown ? activeCountdown.formattedCountdown : '68h 14m Remaining' %></span>
+        </h2>
+        <p class="text-xs text-slate-300 mt-1">
+          Mandatory intimation required to the Data Protection Board of India and impacted patients within 72 hours of discovery.
+        </p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2 flex-shrink-0">
+      <a
+        href="/incidents/dossier/INC-2026-9921"
+        target="_blank"
+        class="px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 transition-colors shadow flex items-center gap-1.5"
+      >
+        <span>📄</span>
+        <span>View Form DPBI-IR1 Dossier</span>
+      </a>
+      <button
+        type="button"
+        id="btnQuickCitizenAlerts"
+        class="px-3.5 py-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition-colors shadow-lg shadow-rose-900/40 flex items-center gap-1.5"
+      >
+        <span>📢</span>
+        <span>Dispatch Patient Alerts</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Operational Metric Cards -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+      <span class="text-xs font-medium text-slate-400">Total Incidents Logged</span>
+      <div class="text-2xl font-bold text-white mt-1"><%= stats ? stats.totalOpen : 2 %></div>
+      <div class="text-[11px] text-slate-400 mt-1">Recorded in immutable ledger</div>
+    </div>
+    <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+      <span class="text-xs font-medium text-slate-400">Critical / High Severity</span>
+      <div class="text-2xl font-bold text-rose-400 mt-1"><%= stats ? stats.criticalHigh : 1 %></div>
+      <div class="text-[11px] text-rose-400 mt-1">Mandatory DPBI filing active</div>
+    </div>
+    <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+      <span class="text-xs font-medium text-slate-400">Pending DPBI Notice</span>
+      <div class="text-2xl font-bold text-amber-400 mt-1"><%= stats ? stats.pendingDpbi : 1 %></div>
+      <div class="text-[11px] text-amber-400 mt-1">Within 72-hour window</div>
+    </div>
+    <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+      <span class="text-xs font-medium text-slate-400">Overdue Filings</span>
+      <div class="text-2xl font-bold text-emerald-400 mt-1"><%= stats ? stats.overdueDpbi : 0 %></div>
+      <div class="text-[11px] text-emerald-400 mt-1">100% SLA compliant</div>
+    </div>
+  </div>
+
+  <!-- Active Incidents Table -->
+  <div class="bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+    <div class="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/40">
+      <div>
+        <h3 class="text-sm font-bold text-white uppercase tracking-wider">Active Security Incidents & Threat Triage</h3>
+        <p class="text-xs text-slate-400 mt-0.5">Chronology is permanently locked upon initial discovery to maintain regulatory integrity.</p>
+      </div>
+      <span class="text-xs text-slate-400 font-mono">
+        Filter: <strong class="text-white">All Records</strong>
+      </span>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse text-xs">
+        <thead>
+          <tr class="border-b border-slate-800 text-[11px] font-semibold text-slate-400 uppercase tracking-wider bg-slate-950/60">
+            <th class="py-3.5 px-4">Incident ID</th>
+            <th class="py-3.5 px-4">Title & Threat Vector</th>
+            <th class="py-3.5 px-4">Severity & Risk</th>
+            <th class="py-3.5 px-4">Discovered (Locked)</th>
+            <th class="py-3.5 px-4">72-Hour DPBI Clock</th>
+            <th class="py-3.5 px-4">Containment Checklist</th>
+            <th class="py-3.5 px-4 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-800/60 font-mono text-slate-300">
+          <% if (incidents && incidents.length > 0) { %>
+            <% incidents.forEach(function(inc) { %>
+              <tr class="hover:bg-slate-800/20 transition-colors" id="incident-row-<%= inc.id %>">
+                <td class="py-3.5 px-4 font-bold text-rose-400 whitespace-nowrap">
+                  <%= inc.id %>
+                </td>
+                <td class="py-3.5 px-4 font-sans max-w-xs">
+                  <div class="font-bold text-white"><%= inc.incidentTitle %></div>
+                  <div class="text-[11px] text-slate-400 mt-0.5">
+                    Impacted: <%= inc.dataCategories || 'Identity & Health Data' %>
+                  </div>
+                </td>
+                <td class="py-3.5 px-4 font-sans whitespace-nowrap">
+                  <% if (inc.severity === 'CRITICAL') { %>
+                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-rose-950/90 text-rose-300 border border-rose-500/50 flex items-center gap-1 w-max">
+                      <span class="w-1.5 h-1.5 rounded-full bg-rose-400 animate-ping"></span>
+                      <span>CRITICAL (Score: 88)</span>
+                    </span>
+                  <% } else if (inc.severity === 'HIGH') { %>
+                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-950/90 text-amber-300 border border-amber-500/50 flex items-center gap-1 w-max">
+                      <span>HIGH (Score: 72)</span>
+                    </span>
+                  <% } else { %>
+                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-slate-800 text-slate-300 border border-slate-700">
+                      MEDIUM (Score: 45)
+                    </span>
+                  <% } %>
+                </td>
+                <td class="py-3.5 px-4 text-slate-400 whitespace-nowrap font-mono text-[11px]">
+                  <%= new Date(inc.discoveredAt).toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' }) %>
+                  <span class="block text-[10px] text-slate-400">🔒 Immutable</span>
+                </td>
+                <td class="py-3.5 px-4 whitespace-nowrap font-sans">
+                  <% if (inc.reportedToDpbi) { %>
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-500/40">
+                      ✓ REPORTED TO DPBI
+                    </span>
+                  <% } else if (inc.countdown && inc.countdown.isOverdue) { %>
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-950 text-rose-300 border border-rose-500/40">
+                      ⚠️ <%= inc.countdown.formattedCountdown %>
+                    </span>
+                  <% } else { %>
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-950 text-amber-300 border border-amber-500/40 font-mono">
+                      ⏱️ <%= inc.countdown ? inc.countdown.formattedCountdown : '68h 14m Remaining' %>
+                    </span>
+                  <% } %>
+                </td>
+                <td class="py-3.5 px-4 font-sans text-xs">
+                  <div class="space-y-1">
+                    <% (inc.actions || []).slice(0, 2).forEach(function(action) { %>
+                      <label class="flex items-center gap-1.5 text-[11px] text-slate-300 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          class="action-checkbox rounded border-slate-700 text-rose-600 focus:ring-rose-500"
+                          data-incident="<%= inc.id %>"
+                          data-action="<%= action.id %>"
+                          <%= action.done ? 'checked' : '' %>
+                        >
+                        <span class="<%= action.done ? 'line-through text-slate-400' : '' %>">
+                          <%= action.text %>
+                        </span>
+                      </label>
+                    <% }); %>
+                  </div>
+                </td>
+                <td class="py-3.5 px-4 text-right font-sans whitespace-nowrap">
+                  <div class="inline-flex items-center gap-2 justify-end">
+                    <a
+                      href="/incidents/dossier/<%= inc.id %>"
+                      target="_blank"
+                      class="px-2.5 py-1.5 rounded-lg bg-sky-600/20 hover:bg-sky-600/30 text-sky-300 font-semibold text-xs border border-sky-500/30 transition-colors"
+                      title="Generate and print statutory Form DPBI-IR1"
+                    >
+                      📄 Form DPBI-IR1
+                    </a>
+                    <button
+                      type="button"
+                      class="btn-trigger-citizen-alert px-2.5 py-1.5 rounded-lg bg-rose-600/20 hover:bg-rose-600/30 text-rose-300 font-semibold text-xs border border-rose-500/30 transition-colors"
+                      data-incident="<%= inc.id %>"
+                    >
+                      📢 Notify
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            <% }); %>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Multi-Step Incident Wizard Modal -->
+  <div id="incidentWizardModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border-2 border-rose-500/40 rounded-2xl max-w-3xl w-full max-h-[92vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in duration-200">
+      <!-- Wizard Header -->
+      <div class="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-950/80">
         <div>
-            <h1 style="font-size: 20px; font-weight: 700; color: var(--text-main); margin: 0 0 8px 0;">Incident & Breach Management</h1>
-            <p style="color: var(--text-muted); font-size: 13px; margin: 0;">Track, assess, and respond to data incidents and security breaches. Manage DPBI notifications and<br>remediation actions.</p>
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-950 text-rose-400 border border-rose-500/40">
+              INCIDENT TRIAGE WIZARD · PILLAR 4
+            </span>
+            <span class="text-xs text-slate-400">DPDP Rules, 2025 (Rule 7)</span>
+          </div>
+          <h2 class="text-lg font-bold text-white mt-1">Declare Security Incident & Threat Modeling</h2>
+          <p class="text-xs text-slate-400 mt-0.5">
+            Select a pre-configured SME threat template or enter a custom incident. 72-hour timer arms immediately upon submission.
+          </p>
         </div>
-        <button class="btn-primary" style="background: #be185d; border: 1px solid #9d174d; color: white; padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px;">
-            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            New Incident
+        <button type="button" id="btnCloseWizardModal" class="text-slate-400 hover:text-white p-1.5 rounded-lg transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
         </button>
-    </div>
+      </div>
 
-    <!-- Top Metrics -->
-    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
-        <div class="card" style="padding: 20px;">
-            <div style="font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">TOTAL OPEN</div>
-            <div style="font-size: 28px; font-weight: 700; color: white;">1</div>
-        </div>
-        <div style="padding: 20px; border-radius: 8px; background: #fff1f2; border: 1px solid #ffe4e6;">
-            <div style="font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">CRITICAL / HIGH OPEN</div>
-            <div style="font-size: 28px; font-weight: 700; color: #e11d48;">1</div>
-        </div>
-        <div style="padding: 20px; border-radius: 8px; background: #fefce8; border: 1px solid #fef08a;">
-            <div style="font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">PENDING DPBI</div>
-            <div style="font-size: 28px; font-weight: 700; color: #ca8a04;">0</div>
-        </div>
-        <div style="padding: 20px; border-radius: 8px; background: #fff1f2; border: 1px solid #ffe4e6;">
-            <div style="font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">OVERDUE DPBI</div>
-            <div style="font-size: 28px; font-weight: 700; color: #e11d48;">0</div>
-        </div>
-    </div>
-
-    <div class="card p-0">
-        <!-- Filters -->
-        <div style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 16px;">
-            <div style="display: flex; flex-direction: column; gap: 8px;">
-                <select style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px; appearance: none;">
-                    <option>All Statuses</option>
-                </select>
-                <select style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 12px; border-radius: 6px; font-size: 13px; appearance: none;">
-                    <option>All Severities</option>
-                </select>
-            </div>
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <input type="text" placeholder="Search..." style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 12px; border-radius: 6px; font-size: 13px; width: 250px;">
-                
-                <div style="display: flex; gap: 16px; align-items: center; color: var(--text-muted); font-size: 13px;">
-                    <span>Previous</span>
-                    <span>Page 1 of 1</span>
-                    <span>Next</span>
+      <!-- Wizard Form Body -->
+      <form id="incidentDeclarationForm" class="flex-1 overflow-y-auto p-6 space-y-6">
+        <!-- Step 1: Scenario Template Selection -->
+        <div class="space-y-3">
+          <label class="block text-xs font-bold text-white uppercase tracking-wider">
+            Step 1: Select SME Threat Scenario Template
+          </label>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <!-- Scenario 1: Lost Smartphone -->
+            <label class="scenario-card p-3.5 rounded-xl border border-rose-500/50 bg-rose-950/20 hover:bg-rose-950/40 cursor-pointer transition-all flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-base">📱</span>
+                  <input type="radio" name="scenarioSelect" value="LOST_SMARTPHONE" checked class="text-rose-600 focus:ring-rose-500">
                 </div>
+                <div class="font-bold text-white text-xs">Lost Receptionist Smartphone</div>
+                <p class="text-[11px] text-slate-300 mt-1 leading-relaxed">
+                  250+ unencrypted WhatsApp chats, Aadhaar card photos, and diagnostic requisitions.
+                </p>
+              </div>
+              <div class="mt-3 flex items-center justify-between">
+                <span class="text-[10px] font-bold text-rose-400 uppercase">CRITICAL · 88/100</span>
+                <span class="text-[10px] text-slate-400">~250 Patients</span>
+              </div>
+            </label>
+
+            <!-- Scenario 2: Misdirected WhatsApp -->
+            <label class="scenario-card p-3.5 rounded-xl border border-slate-800 bg-slate-950/40 hover:bg-slate-950/80 cursor-pointer transition-all flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-base">💬</span>
+                  <input type="radio" name="scenarioSelect" value="MISDIRECTED_REPORT" class="text-rose-600 focus:ring-rose-500">
+                </div>
+                <div class="font-bold text-white text-xs">Misdirected Medical Report</div>
+                <p class="text-[11px] text-slate-300 mt-1 leading-relaxed">
+                  Confidential biopsy & blood panel dispatched to wrong mobile number via WhatsApp.
+                </p>
+              </div>
+              <div class="mt-3 flex items-center justify-between">
+                <span class="text-[10px] font-bold text-amber-400 uppercase">HIGH · 72/100</span>
+                <span class="text-[10px] text-slate-400">1 Patient</span>
+              </div>
+            </label>
+
+            <!-- Scenario 3: Compromised Desktop -->
+            <label class="scenario-card p-3.5 rounded-xl border border-slate-800 bg-slate-950/40 hover:bg-slate-950/80 cursor-pointer transition-all flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-base">💻</span>
+                  <input type="radio" name="scenarioSelect" value="COMPROMISED_BILLING_DESKTOP" class="text-rose-600 focus:ring-rose-500">
+                </div>
+                <div class="font-bold text-white text-xs">Compromised Billing Computer</div>
+                <p class="text-[11px] text-slate-300 mt-1 leading-relaxed">
+                  Front-desk Tally workstation infected with malware. Offline backup accessible.
+                </p>
+              </div>
+              <div class="mt-3 flex items-center justify-between">
+                <span class="text-[10px] font-bold text-sky-400 uppercase">MEDIUM · 45/100</span>
+                <span class="text-[10px] text-slate-400">~80 Invoices</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Step 2: Impacted Silos & Affected Headcount -->
+        <div class="space-y-3">
+          <label class="block text-xs font-bold text-white uppercase tracking-wider">
+            Step 2: Impacted Silo Mapping & Scope
+          </label>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs text-slate-400 mb-1.5">Impacted Silos</label>
+              <div class="space-y-2 bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs text-slate-300">
+                <label class="flex items-center gap-2">
+                  <input type="checkbox" name="silos" value="clinic_reception_chat.txt" checked class="rounded text-rose-600 focus:ring-rose-500">
+                  <span>WhatsApp Reception Chat (clinic_reception_chat.txt)</span>
+                </label>
+                <label class="flex items-center gap-2">
+                  <input type="checkbox" name="silos" value="customer_leads.csv" class="rounded text-rose-600 focus:ring-rose-500">
+                  <span>Customer Leads Spreadsheet (customer_leads.csv)</span>
+                </label>
+                <label class="flex items-center gap-2">
+                  <input type="checkbox" name="silos" value="invoices_billing.csv" class="rounded text-rose-600 focus:ring-rose-500">
+                  <span>Tally Billing Export (invoices_billing.csv)</span>
+                </label>
+              </div>
             </div>
+
+            <div class="space-y-3">
+              <div>
+                <label class="block text-xs text-slate-400 mb-1.5">Estimated Affected Data Principals</label>
+                <input
+                  type="number"
+                  id="inputEstimatedCount"
+                  name="estimatedCount"
+                  value="250"
+                  class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-xs font-mono focus:border-rose-500 focus:outline-none"
+                >
+              </div>
+              <div>
+                <label class="block text-xs text-slate-400 mb-1.5">Data Categories Present</label>
+                <input
+                  type="text"
+                  id="inputDataCategories"
+                  name="dataCategories"
+                  value="Aadhaar, Phone, Prescriptions, Clinical Health"
+                  class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-xs focus:border-rose-500 focus:outline-none"
+                >
+              </div>
+            </div>
+          </div>
         </div>
-        
-        <!-- Table -->
-        <div style="overflow-x: auto;">
-            <table class="table" style="min-width: 1000px;">
-                <thead>
-                    <tr>
-                        <th style="padding-left: 24px;">Title <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" style="display: inline-block; vertical-align: middle; margin-bottom: 2px;"><path d="M18 15l-6-6-6 6"/></svg></th>
-                        <th>Type <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2" fill="none" style="display: inline-block; vertical-align: middle; margin-left: 4px; opacity: 0.5;"><path d="M7 15l5 5 5-5M7 9l5-5 5 5"/></svg></th>
-                        <th>Severity <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2" fill="none" style="display: inline-block; vertical-align: middle; margin-left: 4px; opacity: 0.5;"><path d="M7 15l5 5 5-5M7 9l5-5 5 5"/></svg></th>
-                        <th>Status <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2" fill="none" style="display: inline-block; vertical-align: middle; margin-left: 4px; opacity: 0.5;"><path d="M7 15l5 5 5-5M7 9l5-5 5 5"/></svg></th>
-                        <th>DPBI Deadline <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2" fill="none" style="display: inline-block; vertical-align: middle; margin-left: 4px; opacity: 0.5;"><path d="M7 15l5 5 5-5M7 9l5-5 5 5"/></svg></th>
-                        <th>Discovered <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2" fill="none" style="display: inline-block; vertical-align: middle; margin-left: 4px; opacity: 0.5;"><path d="M7 15l5 5 5-5M7 9l5-5 5 5"/></svg></th>
-                        <th style="padding-right: 24px;"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td style="padding-left: 24px; font-weight: 600;">Keylogger on Loan Processor Workstation — Aadhaar & PAN Data Breach</td>
-                        <td>Data Breach</td>
-                        <td><span style="display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(249, 115, 22, 0.5); color: #f97316;">High</span></td>
-                        <td><span style="display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(168, 85, 247, 0.5); background: #a855f7; color: white;">Notifying</span></td>
-                        <td style="color: #ef4444;">Overdue</td>
-                        <td style="color: var(--text-muted);">28 Apr 2026, 03:03 pm</td>
-                        <td style="padding-right: 24px; text-align: right; color: var(--text-muted);"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><polyline points="9 18 15 12 9 6"></polyline></svg></td>
-                    </tr>
-                    <tr>
-                        <td style="padding-left: 24px; font-weight: 600;">Phishing Campaign Targeting Wealth Management Team</td>
-                        <td>Near Miss</td>
-                        <td><span style="display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(156, 163, 175, 0.5); color: #9ca3af;">Low</span></td>
-                        <td><span style="display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid rgba(156, 163, 175, 0.5); color: #9ca3af;">Closed</span></td>
-                        <td style="color: var(--text-muted);">&mdash;</td>
-                        <td style="color: var(--text-muted);">26 Feb 2026, 03:03 pm</td>
-                        <td style="padding-right: 24px; text-align: right; color: var(--text-muted);"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><polyline points="9 18 15 12 9 6"></polyline></svg></td>
-                    </tr>
-                </tbody>
-            </table>
+
+        <!-- Step 3: Automated Risk Scoring Preview -->
+        <div class="p-4 rounded-xl bg-slate-950 border border-rose-500/30 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-rose-400 uppercase tracking-wider flex items-center gap-1.5">
+              <span>⚖️ Rule 7 Statutory Assessment Outcome</span>
+            </span>
+            <span id="wizardSeverityBadge" class="px-2.5 py-0.5 rounded text-[10px] font-bold bg-rose-950 text-rose-300 border border-rose-500/50">
+              CRITICAL · SCORE: 88/100
+            </span>
+          </div>
+          <p class="text-xs text-slate-300">
+            <strong>Mandatory Intimation:</strong> Due to the presence of <em>Aadhaar</em> and <em>Clinical Health Data</em>, this incident requires immediate 72-hour filing to the Data Protection Board of India under Section 8(6).
+          </p>
         </div>
-        
-        <div style="padding: 16px 24px; display: flex; justify-content: flex-end; align-items: center; gap: 16px; border-top: 1px solid var(--border-color); color: var(--text-muted); font-size: 13px;">
-            <span>Previous</span>
-            <span>Page 1 of 1</span>
-            <span>Next</span>
+
+        <!-- Step 4: Containment Checklist Preview -->
+        <div class="space-y-2">
+          <label class="block text-xs font-bold text-white uppercase tracking-wider">
+            Step 4: Automated Immediate Containment Recommendations
+          </label>
+          <div class="space-y-1.5 text-xs text-slate-300 bg-slate-950/80 p-3.5 rounded-xl border border-slate-800">
+            <div class="flex items-center gap-2 text-emerald-400 font-semibold">
+              <span>✓</span> <span>1. Trigger Google Find My Device remote lock & wipe</span>
+            </div>
+            <div class="flex items-center gap-2 text-emerald-400 font-semibold">
+              <span>✓</span> <span>2. Revoke active WhatsApp Business linked web sessions</span>
+            </div>
+            <div class="flex items-center gap-2 text-amber-400 font-semibold">
+              <span>✓</span> <span>3. Generate statutory Form DPBI-IR1 72-Hour Intimation Dossier</span>
+            </div>
+            <div class="flex items-center gap-2 text-slate-400">
+              <span>✓</span> <span>4. Issue reassuring citizen alerts without technical vulnerability details</span>
+            </div>
+          </div>
         </div>
+
+        <!-- Submit Footer -->
+        <div class="pt-4 border-t border-slate-800 flex items-center justify-end gap-3">
+          <button
+            type="button"
+            id="btnCancelWizard"
+            class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            id="btnSubmitIncident"
+            class="px-5 py-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition-all shadow-lg shadow-rose-900/40 flex items-center gap-2"
+          >
+            <span>⚡</span>
+            <span>Declare Incident & Arm 72-Hour Clock</span>
+          </button>
+        </div>
+      </form>
     </div>
+  </div>
 </div>
+
+<script>
+  (function () {
+    const wizardModal = document.getElementById('incidentWizardModal');
+    const openWizardBtn = document.getElementById('btnOpenIncidentWizard');
+    const closeWizardBtn = document.getElementById('btnCloseWizardModal');
+    const cancelWizardBtn = document.getElementById('btnCancelWizard');
+    const form = document.getElementById('incidentDeclarationForm');
+    const inputEstimatedCount = document.getElementById('inputEstimatedCount');
+    const inputDataCategories = document.getElementById('inputDataCategories');
+    const wizardSeverityBadge = document.getElementById('wizardSeverityBadge');
+    const scenarioRadios = document.querySelectorAll('input[name="scenarioSelect"]');
+    const btnQuickAlerts = document.getElementById('btnQuickCitizenAlerts');
+
+    // Scenario preset selection changes
+    scenarioRadios.forEach((radio) => {
+      radio.addEventListener('change', (e) => {
+        const val = e.target.value;
+        if (val === 'LOST_SMARTPHONE') {
+          inputEstimatedCount.value = 250;
+          inputDataCategories.value = 'Aadhaar, Phone, Prescriptions, Clinical Health';
+          wizardSeverityBadge.textContent = 'CRITICAL · SCORE: 88/100';
+          wizardSeverityBadge.className = 'px-2.5 py-0.5 rounded text-[10px] font-bold bg-rose-950 text-rose-300 border border-rose-500/50';
+        } else if (val === 'MISDIRECTED_REPORT') {
+          inputEstimatedCount.value = 1;
+          inputDataCategories.value = 'Clinical Health (Biopsy, Blood Panels), Phone';
+          wizardSeverityBadge.textContent = 'HIGH · SCORE: 72/100';
+          wizardSeverityBadge.className = 'px-2.5 py-0.5 rounded text-[10px] font-bold bg-amber-950 text-amber-300 border border-amber-500/50';
+        } else if (val === 'COMPROMISED_BILLING_DESKTOP') {
+          inputEstimatedCount.value = 80;
+          inputDataCategories.value = 'Invoices, Tax Line Items, GSTIN, Customer Name';
+          wizardSeverityBadge.textContent = 'MEDIUM · SCORE: 45/100';
+          wizardSeverityBadge.className = 'px-2.5 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-300 border border-slate-700';
+        }
+      });
+    });
+
+    if (openWizardBtn) {
+      openWizardBtn.addEventListener('click', () => {
+        wizardModal.classList.remove('hidden');
+      });
+    }
+
+    if (closeWizardBtn) {
+      closeWizardBtn.addEventListener('click', () => wizardModal.classList.add('hidden'));
+    }
+
+    if (cancelWizardBtn) {
+      cancelWizardBtn.addEventListener('click', () => wizardModal.classList.add('hidden'));
+    }
+
+    // Submit incident declaration via AJAX
+    if (form) {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const selectedScenario = document.querySelector('input[name="scenarioSelect"]:checked')?.value || 'LOST_SMARTPHONE';
+        const submitBtn = document.getElementById('btnSubmitIncident');
+
+        let title = 'Lost Receptionist Smartphone (Indiranagar Metro Station)';
+        let scenarioType = 'DEVICE_LOSS_UNENCRYPTED';
+
+        if (selectedScenario === 'MISDIRECTED_REPORT') {
+          title = 'Misdirected WhatsApp Medical Report (Biopsy & Blood Panel)';
+          scenarioType = 'UNAUTHORIZED_DISCLOSURE';
+        } else if (selectedScenario === 'COMPROMISED_BILLING_DESKTOP') {
+          title = 'Compromised Desktop Billing Workstation (Tally Malware Quarantined)';
+          scenarioType = 'MALWARE_INFESTATION';
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span>⏳</span><span>Evaluating Statutory Risk & Arming Clock...</span>';
+
+        try {
+          const res = await fetch('/api/incidents/create', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              incidentTitle: title,
+              scenarioType: scenarioType,
+              estimatedCount: inputEstimatedCount.value,
+              dataCategories: inputDataCategories.value
+            })
+          });
+
+          const data = await res.json();
+          if (data.success) {
+            alert(`Incident Declared Successfully!\n\nIncident ID: ${data.incidentId}\nSeverity: ${data.severity} (Score: ${data.score}/100)\n72-Hour DPBI Deadline: ${data.statutoryDeadline}\n\nReloading incident operations queue...`);
+            window.location.reload();
+          } else {
+            alert(data.error || 'Failed to declare incident.');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<span>⚡</span><span>Declare Incident & Arm 72-Hour Clock</span>';
+          }
+        } catch (err) {
+          alert('Network communication error: ' + err.message);
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<span>⚡</span><span>Declare Incident & Arm 72-Hour Clock</span>';
+        }
+      });
+    }
+
+    // Checkbox triage handling
+    document.querySelectorAll('.action-checkbox').forEach((cb) => {
+      cb.addEventListener('change', async (e) => {
+        const incidentId = e.target.getAttribute('data-incident');
+        const actionId = e.target.getAttribute('data-action');
+        const isDone = e.target.checked;
+
+        try {
+          await fetch('/api/incidents/triage', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              incidentId,
+              actionId,
+              done: isDone
+            })
+          });
+          const span = e.target.nextElementSibling;
+          if (span) {
+            if (isDone) span.classList.add('line-through', 'text-slate-400');
+            else span.classList.remove('line-through', 'text-slate-400');
+          }
+        } catch (err) {
+          console.error('Failed to update triage action:', err);
+        }
+      });
+    });
+
+    // Quick Citizen Alert trigger
+    if (btnQuickAlerts) {
+      btnQuickAlerts.addEventListener('click', async () => {
+        btnQuickAlerts.disabled = true;
+        btnQuickAlerts.textContent = 'Dispatching alerts...';
+        try {
+          const res = await fetch('/api/incidents/dispatch-alerts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ incidentId: 'INC-2026-9921' })
+          });
+          const data = await res.json();
+          alert(`Patient Alerts Dispatched!\n\nDelivered: ${data.deliveredCount} recipients\nChannels: ${data.channels.join(', ')}\nLanguages: English, Kannada, Hindi\n\n${data.message}`);
+          btnQuickAlerts.disabled = false;
+          btnQuickAlerts.textContent = '📢 Dispatch Patient Alerts';
+        } catch (e) {
+          alert('Failed to dispatch alerts.');
+          btnQuickAlerts.disabled = false;
+          btnQuickAlerts.textContent = '📢 Dispatch Patient Alerts';
+        }
+      });
+    }
+  })();
+</script>
 
 <%- include('partials/footer') %>

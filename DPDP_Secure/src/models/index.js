@@ -244,11 +244,12 @@ const models = {
 
   createIncident: async (data) => {
     const id = data.id || `INC-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+    const actionsJson = typeof data.containmentActions === 'object' ? JSON.stringify(data.containmentActions) : String(data.containmentActions || '');
     await run(`
       INSERT INTO incidents (id, tenantId, incidentTitle, scenarioType, severity, affectedCount, dataCategories, containmentActions, reportedToDpbi, citizenAlertSent, discoveredAt)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `, [id, data.tenantId || 'TENANT-AAROGYA-01', data.incidentTitle, data.scenarioType, data.severity || 'CRITICAL', data.affectedCount || 0, data.dataCategories || '', data.containmentActions || '', data.reportedToDpbi || 0, data.citizenAlertSent || 0, data.discoveredAt || new Date().toISOString()]);
-    return id;
+    `, [id, data.tenantId || 'TENANT-AAROGYA-01', data.incidentTitle, data.scenarioType, data.severity || 'CRITICAL', data.affectedCount || 0, data.dataCategories || '', actionsJson, data.reportedToDpbi || 0, data.citizenAlertSent || 0, data.discoveredAt || new Date().toISOString()]);
+    return { id, ...data };
   },
 
   updateIncidentStatus: async (id, updates = {}) => {
@@ -257,6 +258,86 @@ const models = {
       SET reportedToDpbi = coalesce(?, reportedToDpbi), citizenAlertSent = coalesce(?, citizenAlertSent) 
       WHERE id = ?
     `, [updates.reportedToDpbi, updates.citizenAlertSent, id]);
+    return { success: true };
+  },
+
+  updateIncidentContainment: async (id, actionIdOrActions, doneState) => {
+    let updatedActions = [];
+    if (typeof actionIdOrActions === 'string' && typeof doneState === 'boolean') {
+      const incident = await get('SELECT containmentActions FROM incidents WHERE id = ?', [id]);
+      if (!incident) return { success: false, error: 'Incident not found' };
+      let currentActions = [];
+      try {
+        currentActions = typeof incident.containmentActions === 'string'
+          ? JSON.parse(incident.containmentActions)
+          : (incident.containmentActions || []);
+      } catch (e) {
+        currentActions = [];
+      }
+      updatedActions = currentActions.map((a) => {
+        if (a.id === actionIdOrActions) {
+          return { ...a, done: doneState };
+        }
+        return a;
+      });
+    } else if (Array.isArray(actionIdOrActions)) {
+      updatedActions = actionIdOrActions;
+    } else if (typeof actionIdOrActions === 'object') {
+      updatedActions = [actionIdOrActions];
+    } else {
+      try {
+        updatedActions = JSON.parse(actionIdOrActions);
+      } catch (e) {
+        updatedActions = [];
+      }
+    }
+
+    const actionsJson = JSON.stringify(updatedActions);
+    await run(`
+      UPDATE incidents 
+      SET containmentActions = ?
+      WHERE id = ?
+    `, [actionsJson, id]);
+
+    return { success: true, containmentActions: updatedActions };
+  },
+
+  updateIncident: async (id, updates = {}) => {
+    // Note: discoveredAt is permanently immutable to prevent retroactive falsification of regulatory reporting timelines!
+    const fields = [];
+    const values = [];
+    if (updates.containmentActions !== undefined) {
+      fields.push('containmentActions = ?');
+      values.push(typeof updates.containmentActions === 'object' ? JSON.stringify(updates.containmentActions) : String(updates.containmentActions));
+    }
+    if (updates.reportedToDpbi !== undefined) {
+      fields.push('reportedToDpbi = ?');
+      values.push(updates.reportedToDpbi);
+    }
+    if (updates.citizenAlertSent !== undefined) {
+      fields.push('citizenAlertSent = ?');
+      values.push(updates.citizenAlertSent);
+    }
+    if (updates.severity !== undefined) {
+      fields.push('severity = ?');
+      values.push(updates.severity);
+    }
+    if (updates.incidentTitle !== undefined) {
+      fields.push('incidentTitle = ?');
+      values.push(updates.incidentTitle);
+    }
+    if (updates.affectedCount !== undefined) {
+      fields.push('affectedCount = ?');
+      values.push(updates.affectedCount);
+    }
+    if (updates.dataCategories !== undefined) {
+      fields.push('dataCategories = ?');
+      values.push(updates.dataCategories);
+    }
+    if (fields.length === 0) return { success: true };
+    values.push(id);
+    await run(`UPDATE incidents SET ${fields.join(', ')} WHERE id = ?`, values);
+    return { success: true };
   },
 
   // ==========================================
