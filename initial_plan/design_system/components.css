@@ -88,3 +88,6 @@ input[type=radio]:checked + label { border-color: var(--color-primary); }
 
 
 .data-table th { letter-spacing: 0.025em; font-size: 0.8125rem; }
+
+
+.fab { box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
