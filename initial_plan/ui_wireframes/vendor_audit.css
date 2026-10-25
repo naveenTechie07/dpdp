@@ -7,3 +7,6 @@
 
 
 .vendor-card:hover { border-color: var(--color-primary); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+
+
+@media (max-width: 600px) { .vendor-container { padding: 1rem; } }
