@@ -1681,3 +1681,83 @@ a {
     .content { padding: 16px; }
 }
 
+/* ========================================================================= */
+/* SVG CONTAINMENT & UNIVERSAL UTILITY PRECAUTIONS                           */
+/* ========================================================================= */
+svg:not([width]):not(.allow-full-svg) {
+    max-width: 24px;
+    max-height: 24px;
+}
+svg.w-3, .w-3 { width: 12px !important; height: 12px !important; }
+svg.w-3\.5, .w-3\.5 { width: 14px !important; height: 14px !important; }
+svg.w-4, .w-4 { width: 16px !important; height: 16px !important; }
+svg.w-4\.5, .w-4\.5 { width: 18px !important; height: 18px !important; }
+svg.w-5, .w-5 { width: 20px !important; height: 20px !important; }
+svg.w-6, .w-6 { width: 24px !important; height: 24px !important; }
+svg.w-7, .w-7 { width: 28px !important; height: 28px !important; }
+svg.w-8, .w-8 { width: 32px !important; height: 32px !important; }
+svg.h-3, .h-3 { height: 12px !important; }
+svg.h-3\.5, .h-3\.5 { height: 14px !important; }
+svg.h-4, .h-4 { height: 16px !important; }
+svg.h-5, .h-5 { height: 20px !important; }
+svg.h-6, .h-6 { height: 24px !important; }
+svg.h-8, .h-8 { height: 32px !important; }
+
+/* Structural Utility Spacers */
+.space-y-6 > * + * { margin-top: 24px; }
+.space-y-5 > * + * { margin-top: 20px; }
+.space-y-4 > * + * { margin-top: 16px; }
+.space-y-3 > * + * { margin-top: 12px; }
+.space-y-2 > * + * { margin-top: 8px; }
+
+.flex { display: flex; }
+.inline-flex { display: inline-flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.items-stretch { align-items: stretch; }
+.justify-between { justify-content: space-between; }
+.justify-center { justify-content: center; }
+.justify-end { justify-content: flex-end; }
+.gap-1 { gap: 4px; }
+.gap-2 { gap: 8px; }
+.gap-3 { gap: 12px; }
+.gap-4 { gap: 16px; }
+.gap-5 { gap: 20px; }
+.gap-6 { gap: 24px; }
+.gap-8 { gap: 32px; }
+.w-full { width: 100%; }
+.h-full { height: 100%; }
+
+.rounded { border-radius: 4px; }
+.rounded-md { border-radius: 6px; }
+.rounded-lg { border-radius: 8px; }
+.rounded-xl { border-radius: 12px; }
+.rounded-2xl { border-radius: 16px; }
+.rounded-full { border-radius: 9999px; }
+
+.text-white { color: #ffffff !important; }
+.text-emerald-300 { color: #6ee7b7 !important; }
+.text-emerald-400 { color: #34d399 !important; }
+.text-sky-300 { color: #7dd3fc !important; }
+.text-sky-400 { color: #38bdf8 !important; }
+.text-amber-300 { color: #fcd34d !important; }
+.text-amber-400 { color: #fbbf24 !important; }
+.text-rose-400, .text-red-400 { color: #f87171 !important; }
+.text-slate-100 { color: #f1f5f9 !important; }
+.text-slate-200 { color: #e2e8f0 !important; }
+.text-slate-300 { color: #cbd5e1 !important; }
+.text-slate-400 { color: #94a3b8 !important; }
+.text-slate-500 { color: #64748b !important; }
+
+.bg-emerald-600 { background-color: #059669 !important; }
+.bg-emerald-600:hover { background-color: #10b981 !important; }
+.bg-slate-800 { background-color: rgba(30, 41, 59, 0.8) !important; }
+.bg-slate-900 { background-color: rgba(15, 23, 42, 0.85) !important; }
+.bg-slate-950 { background-color: #030712 !important; }
+
+.border-slate-700 { border-color: rgba(255, 255, 255, 0.12) !important; }
+.border-slate-800 { border-color: rgba(255, 255, 255, 0.08) !important; }
+
+.hidden { display: none !important; }
+
+

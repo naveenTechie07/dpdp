@@ -71,7 +71,12 @@ const DEFAULT_NOTICES = [
 async function renderCollectionPoints(req, res) {
   try {
     const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
-    let notices = await models.getActiveNotices(tenantId);
+    let [notices, collectionPoints, events, purposes] = await Promise.all([
+      models.getActiveNotices(tenantId),
+      models.getCollectionPoints(tenantId),
+      models.getConsentLedger(tenantId),
+      models.getConsentPurposes(tenantId)
+    ]);
 
     if (!notices || notices.length === 0) {
       notices = DEFAULT_NOTICES;
@@ -82,6 +87,9 @@ async function renderCollectionPoints(req, res) {
       description: 'Design and publish Section 5 multilingual notices.',
       breadcrumbs: ['Workspace', 'Consent', 'Collection points'],
       notices,
+      collectionPoints: collectionPoints || [],
+      events: events || [],
+      purposes: purposes || [],
       path: '/consent/collection-points'
     });
   } catch (error) {
@@ -90,6 +98,58 @@ async function renderCollectionPoints(req, res) {
       title: 'Error - DPDP_Secure',
       message: 'Failed to load consent collection points.'
     });
+  }
+}
+
+/**
+ * Creates a new collection point channel
+ * POST /api/consent/collection-points
+ */
+async function createCollectionPoint(req, res) {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    const { channelName, channelType, purposeCode, supportedLanguages, statutoryBasis, status } = req.body;
+
+    if (!channelName) {
+      return res.status(400).json({ success: false, error: 'Channel name is required' });
+    }
+
+    const created = await models.createCollectionPoint({
+      channelName: channelName.trim(),
+      channelType: channelType || 'WHATSAPP',
+      purposeCode: purposeCode || 'PURP-DIAGNOSTIC-REPORTING',
+      supportedLanguages: supportedLanguages || 'English, Kannada, Hindi',
+      statutoryBasis: statutoryBasis || 'Section 6(1) Explicit Consent',
+      status: status || 'ENABLED'
+    }, tenantId);
+
+    await models.logAuditEvent(
+      tenantId,
+      req.session?.user?.name || 'Ramesh Kumar (SME Owner)',
+      'CREATE_COLLECTION_POINT',
+      `consent_collection_points/${created.id}`,
+      created
+    );
+
+    return res.status(201).json({ success: true, point: created });
+  } catch (error) {
+    console.error('Error in consentController.createCollectionPoint:', error);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+}
+
+/**
+ * Deletes a collection point channel
+ * DELETE /api/consent/collection-points/:id
+ */
+async function deleteCollectionPoint(req, res) {
+  try {
+    const tenantId = req.session?.user?.tenantId || DEFAULT_TENANT_ID;
+    await models.deleteCollectionPoint(req.params.id, tenantId);
+    return res.json({ success: true, message: 'Collection point removed successfully' });
+  } catch (error) {
+    console.error('Error in consentController.deleteCollectionPoint:', error);
+    return res.status(500).json({ success: false, error: error.message });
   }
 }
 
@@ -396,5 +456,7 @@ module.exports = {
   getNoticeById,
   recordConsent,
   withdrawConsent,
+  createCollectionPoint,
+  deleteCollectionPoint,
   DEFAULT_NOTICES
 };

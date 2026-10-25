@@ -672,6 +672,20 @@ const SCHEMA_DDL = `
 
   CREATE INDEX IF NOT EXISTS idx_lineage_edges_tenant ON data_lineage_edges(tenantId);
 
+  CREATE TABLE IF NOT EXISTS consent_collection_points (
+    id TEXT PRIMARY KEY,
+    tenantId TEXT NOT NULL,
+    channelName TEXT NOT NULL,
+    channelType TEXT NOT NULL,
+    purposeCode TEXT NOT NULL,
+    supportedLanguages TEXT NOT NULL,
+    statutoryBasis TEXT DEFAULT 'Section 6(1) Explicit Consent',
+    status TEXT DEFAULT 'ENABLED',
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(tenantId) REFERENCES tenants(id)
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_collection_points_tenant ON consent_collection_points(tenantId);
 `;
 
 // Initialize Tables Synchronously on Module Load

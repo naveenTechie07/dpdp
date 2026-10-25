@@ -1,356 +1,673 @@
 <%- include('partials/header') %>
 
-<div class="space-y-6">
-  <!-- Page Header -->
-  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-800 pb-5">
+<!-- Custom Component Scoped Styles -->
+<style>
+.cp-page-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Metric Cards */
+.cp-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+@media (max-width: 1024px) {
+    .cp-metrics-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+    .cp-metrics-grid { grid-template-columns: 1fr; }
+}
+
+/* Pre-Configured Profiles */
+.cp-profiles-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+@media (max-width: 900px) {
+    .cp-profiles-grid { grid-template-columns: 1fr; }
+}
+
+.cp-profile-card {
+    background: rgba(17, 24, 39, 0.7);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 18px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.cp-profile-card:hover {
+    border-color: rgba(59, 130, 246, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+.cp-profile-card.active {
+    background: rgba(16, 185, 129, 0.08);
+    border-color: rgba(16, 185, 129, 0.6);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.15);
+}
+
+/* Main Studio Layout */
+.cp-main-grid {
+    display: grid;
+    grid-template-columns: 7fr 5fr;
+    gap: 24px;
+    align-items: start;
+}
+@media (max-width: 1100px) {
+    .cp-main-grid { grid-template-columns: 1fr; }
+}
+
+/* Language Switcher Tabs */
+.cp-lang-tab {
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-muted);
+    transition: all 0.2s ease;
+}
+.cp-lang-tab:hover {
+    color: var(--text-main);
+    background: rgba(255, 255, 255, 0.05);
+}
+.cp-lang-tab.active {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: rgba(59, 130, 246, 0.4);
+    color: #60a5fa;
+}
+
+/* WhatsApp Phone Mockup */
+.wa-phone-container {
+    background: #0b141a;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+}
+.wa-chat-header {
+    background: #1f2c34;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.wa-chat-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #00a884;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+}
+.wa-chat-bubble {
+    background: #005c4b;
+    border-radius: 8px;
+    border-top-left-radius: 0;
+    padding: 12px 14px;
+    color: #e9edef;
+    font-size: 12px;
+    line-height: 1.5;
+    position: relative;
+    max-width: 95%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+.wa-bubble-tail {
+    position: absolute;
+    top: 0;
+    left: -8px;
+    width: 0;
+    height: 0;
+    border-top: 8px solid #005c4b;
+    border-left: 8px solid transparent;
+}
+
+/* Toast */
+#dpdpToastContainer {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 1000000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+</style>
+
+<div class="cp-page-container">
+
+    <!-- Page Header -->
+    <div class="dashboard-header mb-0" style="align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+        <div class="title-group">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px;">
+                    DPDP Act Section 5 & 6
+                </span>
+                <span style="font-size: 12px; color: var(--text-muted);">Pillar 2: Consent & Purpose Management</span>
+            </div>
+            <h1 style="font-size: 24px; font-weight: 700; color: var(--text-main); margin: 0 0 6px 0;">
+                Section 5 Multilingual Notice Builder & WhatsApp Opt-in
+            </h1>
+            <p style="margin: 0; color: var(--text-muted); font-size: 13px; max-width: 800px; line-height: 1.5;">
+                Design itemised purpose notices in English, Kannada, and Hindi, generate 1-click WhatsApp opt-in links, and log cryptographic SHA-256 proofs with zero bundled consent.
+            </p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <a href="/consent/ledger" class="btn-secondary" style="background: rgba(255,255,255,0.06); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 6px;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                <span>View Consent Ledger</span>
+            </a>
+            <button type="button" onclick="openAddCollectionPointModal()" class="btn-primary" style="background-color: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <span>New Collection Channel</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Top Metrics Grid -->
+    <div class="cp-metrics-grid">
+        <div class="card metric-card">
+            <div class="metric-info w-100">
+                <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px;">ACTIVE SECTION 5 NOTICES</span>
+                <h2 class="metric-value" id="metricActiveNotices" style="margin-top: 8px; color: var(--text-main); font-size: 26px;">
+                    <%= (typeof notices !== 'undefined') ? notices.length : 3 %>
+                </h2>
+                <span style="font-size: 11px; color: var(--text-muted); margin-top: 4px; display: block;">Statutory Notices Ready</span>
+            </div>
+        </div>
+        <div class="card metric-card">
+            <div class="metric-info w-100">
+                <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px;">SCHEDULE 8 LANGUAGES</span>
+                <h2 class="metric-value" style="margin-top: 8px; color: #60a5fa; font-size: 26px;">
+                    3 Languages
+                </h2>
+                <span style="font-size: 11px; color: var(--text-muted); margin-top: 4px; display: block;">English &bull; ಕನ್ನಡ &bull; हिन्दी</span>
+            </div>
+        </div>
+        <div class="card metric-card">
+            <div class="metric-info w-100">
+                <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px;">PUBLISHED CHANNELS</span>
+                <h2 class="metric-value" id="metricCollectionChannels" style="margin-top: 8px; color: #34d399; font-size: 26px;">
+                    <%= (typeof collectionPoints !== 'undefined') ? collectionPoints.length : 4 %>
+                </h2>
+                <span style="font-size: 11px; color: #34d399; margin-top: 4px; display: block;">WhatsApp &bull; Web &bull; Desk</span>
+            </div>
+        </div>
+        <div class="card metric-card">
+            <div class="metric-info w-100">
+                <span class="metric-label" style="color: var(--text-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.5px;">SECTION 6(1) BUNDLING SAFEGUARD</span>
+                <h2 class="metric-value" style="margin-top: 8px; color: #a78bfa; font-size: 26px;">
+                    100% Enforced
+                </h2>
+                <span style="font-size: 11px; color: #a78bfa; margin-top: 4px; display: block;">Prohibition of Bundled Consent</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pre-Configured Purpose Profiles -->
     <div>
-      <div class="flex items-center gap-2">
-        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-          DPDP Act Section 5 & 6
-        </span>
-        <span class="text-xs text-slate-400">Pillar 2: Consent & Purpose Management</span>
-      </div>
-      <h1 class="text-2xl font-bold text-white tracking-tight mt-1">Section 5 Multilingual Notice Builder & WhatsApp Opt-in</h1>
-      <p class="text-sm text-slate-400 mt-1">
-        Design itemised purpose notices in English, Kannada, and Hindi, generate 1-click WhatsApp opt-in links, and log cryptographic SHA-256 proofs.
-      </p>
-    </div>
-    <div class="flex items-center gap-3">
-      <a href="/consent/ledger" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-semibold border border-slate-700 transition-colors">
-        <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-        </svg>
-        <span>View Consent Ledger</span>
-      </a>
-    </div>
-  </div>
-
-  <!-- Pre-Configured Purpose Profiles -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-    <!-- Profile 1: Aarogya Clinic Diagnostic -->
-    <div class="p-4 rounded-xl bg-slate-900/60 border border-emerald-500/30 hover:border-emerald-500/60 transition-all cursor-pointer relative group">
-      <div class="flex items-center justify-between mb-2">
-        <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-950/80 text-emerald-400 border border-emerald-500/30">CLINICAL DIAGNOSTIC</span>
-        <span class="text-xs text-emerald-400 font-semibold">Active Profile</span>
-      </div>
-      <h3 class="text-sm font-bold text-white group-hover:text-emerald-300 transition-colors">Diagnostic Test Booking & Lab Report Dispatch</h3>
-      <p class="text-xs text-slate-400 mt-1">Aarogya Diagnostic Center — Dispatches lipid, glucose, biopsy lab reports to patient WhatsApp numbers.</p>
-      <div class="mt-3 pt-3 border-t border-slate-800 text-[11px] text-slate-400 flex items-center justify-between">
-        <span>Purpose: <strong class="text-slate-300">PURP-DIAGNOSTIC-REPORTING</strong></span>
-        <span class="text-emerald-400 font-medium">Sec. 6(1) Compliant</span>
-      </div>
-    </div>
-
-    <!-- Profile 2: Retail Order -->
-    <div class="p-4 rounded-xl bg-slate-900/40 border border-slate-800 hover:border-slate-700 transition-all">
-      <div class="flex items-center justify-between mb-2">
-        <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-slate-800 text-slate-400 border border-slate-700">RETAIL & E-COMMERCE</span>
-        <span class="text-xs text-slate-400">Template</span>
-      </div>
-      <h3 class="text-sm font-bold text-slate-300">Retail Order Processing & Home Delivery</h3>
-      <p class="text-xs text-slate-400 mt-1">Coordinates diagnostic home sample pickups and customer delivery communications.</p>
-      <div class="mt-3 pt-3 border-t border-slate-800 text-[11px] text-slate-400 flex items-center justify-between">
-        <span>Purpose: <strong class="text-slate-300">PURP-RETAIL-DELIVERY</strong></span>
-        <span class="text-slate-400">Non-Bundled</span>
-      </div>
-    </div>
-
-    <!-- Profile 3: Tax Archival -->
-    <div class="p-4 rounded-xl bg-slate-900/40 border border-slate-800 hover:border-slate-700 transition-all">
-      <div class="flex items-center justify-between mb-2">
-        <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-slate-800 text-slate-400 border border-slate-700">STATUTORY TAX LOCK</span>
-        <span class="text-xs text-slate-400">Sec 8(7) Mandatory</span>
-      </div>
-      <h3 class="text-sm font-bold text-slate-300">Professional Tax Archival & Billing</h3>
-      <p class="text-xs text-slate-400 mt-1">Invoices, GST returns, and billing software audit records locked for 72 months under CGST Act.</p>
-      <div class="mt-3 pt-3 border-t border-slate-800 text-[11px] text-slate-400 flex items-center justify-between">
-        <span>Purpose: <strong class="text-slate-300">PURP-STATUTORY-BILLING</strong></span>
-        <span class="text-amber-400">Mandatory 6-Yr Lock</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Main Grid: Notice Builder & WhatsApp Simulation -->
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-    <!-- Notice Builder Form (Col 7) -->
-    <div class="lg:col-span-7 bg-slate-900/60 border border-slate-800 rounded-2xl p-5 space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <div class="flex items-center gap-2">
-          <svg class="w-5 h-5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-          </svg>
-          <h2 class="text-sm font-bold text-white uppercase tracking-wider">Statutory Notice Authoring</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h3 style="font-size: 13px; font-weight: 700; color: var(--text-main); margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">
+                Pre-Configured SME Purpose Profiles (Section 6(1) Itemisation)
+            </h3>
+            <span style="font-size: 12px; color: var(--text-muted);">Click any profile to load notice & parameters</span>
         </div>
-        <!-- Language Switcher Tabs -->
-        <div class="flex items-center gap-1.5 p-1 bg-slate-950/60 border border-slate-800 rounded-lg text-xs font-semibold">
-          <button type="button" class="notice-lang-tab px-3 py-1 rounded-md transition-all active-lang-tab" data-lang="English">
-            English
-          </button>
-          <button type="button" class="notice-lang-tab px-3 py-1 rounded-md transition-all text-slate-400 hover:text-white" data-lang="Kannada">
-            ಕನ್ನಡ (Kannada)
-          </button>
-          <button type="button" class="notice-lang-tab px-3 py-1 rounded-md transition-all text-slate-400 hover:text-white" data-lang="Hindi">
-            हिन्दी (Hindi)
-          </button>
-        </div>
-      </div>
 
-      <!-- Purpose & Title Inputs -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <div>
-          <label class="block text-xs font-medium text-slate-400 mb-1">Notice Title</label>
-          <input
-            type="text"
-            id="noticeTitleInput"
-            class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-sky-500"
-            value="Diagnostic Test Booking & Lab Report Dispatch (English)"
-          />
-        </div>
-        <div>
-          <label class="block text-xs font-medium text-slate-400 mb-1">Purpose Code (Section 6(1))</label>
-          <select
-            id="purposeCodeSelect"
-            class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-sky-500"
-          >
-            <option value="PURP-DIAGNOSTIC-REPORTING" selected>PURP-DIAGNOSTIC-REPORTING (Clinical Lab)</option>
-            <option value="PURP-RETAIL-DELIVERY">PURP-RETAIL-DELIVERY (Sample Pickup)</option>
-            <option value="PURP-STATUTORY-BILLING">PURP-STATUTORY-BILLING (Tax & Invoicing)</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Non-Bundled Consent Safeguards (Prohibition of Bundled Consent) -->
-      <div class="p-3 bg-slate-950/80 border border-slate-800 rounded-lg space-y-2">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-semibold text-slate-300">Granular Purpose Check (Section 6(1) Non-Bundled Defense)</span>
-          <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-500/30">PROHIBITION ENFORCED</span>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
-          <label class="flex items-center gap-2 text-slate-300 cursor-pointer">
-            <input type="checkbox" checked disabled class="rounded border-slate-700 text-emerald-500 bg-slate-900 focus:ring-0">
-            <span>Essential: Lab report dispatch via WhatsApp</span>
-          </label>
-          <label class="flex items-center gap-2 text-slate-400 cursor-pointer">
-            <input type="checkbox" class="rounded border-slate-700 text-sky-500 bg-slate-900 focus:ring-0">
-            <span>Optional: Clinic health camp announcements</span>
-          </label>
-        </div>
-      </div>
-
-      <!-- Notice Textarea -->
-      <div>
-        <div class="flex items-center justify-between mb-1">
-          <label class="text-xs font-medium text-slate-400">Notice Body Text (Statutory Section 5 Specification)</label>
-          <span id="noticeCharCount" class="text-[11px] text-slate-400 font-mono">0 characters</span>
-        </div>
-        <textarea
-          id="noticeTextarea"
-          rows="6"
-          class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-xs font-mono text-slate-200 focus:outline-none focus:border-sky-500 leading-relaxed"
-        ></textarea>
-      </div>
-
-      <!-- Action: 1-Click WhatsApp Link Generator -->
-      <div class="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-        <button
-          type="button"
-          id="btnGenerateWhatsAppLink"
-          class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition-colors shadow-lg shadow-emerald-900/30"
-        >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
-          </svg>
-          <span>📲 Generate WhatsApp Notice Link</span>
-        </button>
-      </div>
-
-      <!-- Generated Link Box (Hidden by default) -->
-      <div id="waLinkOutput" class="hidden p-3 bg-emerald-950/40 border border-emerald-500/40 rounded-xl space-y-2">
-        <div class="flex items-center justify-between text-xs">
-          <span class="font-bold text-emerald-400">WhatsApp Click-to-Chat Link (URI-Encoded):</span>
-          <span class="text-[10px] text-slate-400 font-mono">XSS-Immune</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <input
-            type="text"
-            id="waLinkInput"
-            readonly
-            class="flex-1 px-3 py-1.5 bg-slate-950 border border-slate-800 rounded text-xs font-mono text-emerald-300 focus:outline-none"
-          />
-          <button
-            type="button"
-            id="btnCopyWaLink"
-            class="px-3 py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition-colors"
-          >
-            Copy
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Live Preview & Fast-Track Simulator (Col 5) -->
-    <div class="lg:col-span-5 space-y-5">
-      <!-- Live WhatsApp Bubble Preview -->
-      <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 space-y-3">
-        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-          <div class="flex items-center gap-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span class="text-xs font-bold text-white uppercase tracking-wider">WhatsApp Message Preview</span>
-          </div>
-          <span class="text-[10px] text-slate-400">Citizen Mobile UI</span>
-        </div>
-        
-        <!-- Mock Phone Screen -->
-        <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 relative overflow-hidden" style="background-image: radial-gradient(rgba(16, 185, 129, 0.05) 1px, transparent 0); background-size: 16px 16px;">
-          <!-- WhatsApp Chat Header -->
-          <div class="flex items-center gap-2.5 pb-3 border-b border-slate-800 mb-3">
-            <div class="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center text-white text-xs font-bold">
-              AC
+        <div class="cp-profiles-grid">
+            <!-- Profile 1: Clinical Diagnostic -->
+            <div class="cp-profile-card active" id="profileCardDiagnostic" onclick="selectPurposeProfile('diagnostic')">
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px;">
+                            CLINICAL DIAGNOSTIC
+                        </span>
+                        <span id="badgeActiveProfile" style="font-size: 11px; color: #34d399; font-weight: 600; display: flex; align-items: center; gap: 4px;">
+                            <span style="width: 6px; height: 6px; border-radius: 50%; background: #34d399;"></span> Active Profile
+                        </span>
+                    </div>
+                    <h4 style="font-size: 14px; font-weight: 700; color: var(--text-main); margin: 0 0 6px 0;">
+                        Diagnostic Test Booking & Lab Report Dispatch
+                    </h4>
+                    <p style="font-size: 12px; color: var(--text-muted); margin: 0; line-height: 1.4;">
+                        Aarogya Diagnostic Center &mdash; Dispatches lipid, glucose, biopsy lab reports to patient WhatsApp numbers under Section 6(1).
+                    </p>
+                </div>
+                <div style="margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; font-size: 11px;">
+                    <span style="color: var(--text-muted);">Code: <strong style="color: var(--text-main);">PURP-DIAGNOSTIC-REPORTING</strong></span>
+                    <span style="color: #34d399; font-weight: 600;">Sec. 6(1) Compliant</span>
+                </div>
             </div>
+
+            <!-- Profile 2: Retail & E-Commerce -->
+            <div class="cp-profile-card" id="profileCardRetail" onclick="selectPurposeProfile('retail')">
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span class="badge" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px;">
+                            RETAIL & E-COMMERCE
+                        </span>
+                        <span style="font-size: 11px; color: var(--text-muted);">Template</span>
+                    </div>
+                    <h4 style="font-size: 14px; font-weight: 700; color: var(--text-main); margin: 0 0 6px 0;">
+                        Retail Order Processing & Home Delivery
+                    </h4>
+                    <p style="font-size: 12px; color: var(--text-muted); margin: 0; line-height: 1.4;">
+                        Coordinates diagnostic home sample pickups, test equipment delivery, and customer delivery confirmations.
+                    </p>
+                </div>
+                <div style="margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; font-size: 11px;">
+                    <span style="color: var(--text-muted);">Code: <strong style="color: var(--text-main);">PURP-RETAIL-DELIVERY</strong></span>
+                    <span style="color: #60a5fa; font-weight: 600;">Non-Bundled</span>
+                </div>
+            </div>
+
+            <!-- Profile 3: Statutory Tax Archival -->
+            <div class="cp-profile-card" id="profileCardTax" onclick="selectPurposeProfile('tax')">
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px;">
+                            STATUTORY TAX LOCK
+                        </span>
+                        <span style="font-size: 11px; color: #fbbf24;">Sec 8(7) Mandatory</span>
+                    </div>
+                    <h4 style="font-size: 14px; font-weight: 700; color: var(--text-main); margin: 0 0 6px 0;">
+                        Professional Tax Archival & Billing
+                    </h4>
+                    <p style="font-size: 12px; color: var(--text-muted); margin: 0; line-height: 1.4;">
+                        Invoices, GST returns, and billing software audit records locked for 72 months under the CGST Act.
+                    </p>
+                </div>
+                <div style="margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; font-size: 11px;">
+                    <span style="color: var(--text-muted);">Code: <strong style="color: var(--text-main);">PURP-STATUTORY-BILLING</strong></span>
+                    <span style="color: #fbbf24; font-weight: 600;">Mandatory 6-Yr Lock</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Studio Grid -->
+    <div class="cp-main-grid">
+        <!-- Left Column: Notice Authoring Studio -->
+        <div class="card" style="background: var(--bg-card); display: flex; flex-direction: column; gap: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 14px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div style="width: 28px; height: 28px; border-radius: 6px; background: rgba(59, 130, 246, 0.15); display: flex; align-items: center; justify-content: center; color: #60a5fa;">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-5m-1.414-9.414a2 2 0 1 1 2.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 14px; font-weight: 700; color: var(--text-main); margin: 0;">Statutory Notice Authoring Studio</h3>
+                        <span style="font-size: 11px; color: var(--text-muted);">Section 5 Mandatory Specification Standards</span>
+                    </div>
+                </div>
+
+                <!-- Language Tabs -->
+                <div style="display: flex; gap: 4px; background: rgba(0,0,0,0.3); padding: 4px; border-radius: 8px; border: 1px solid var(--border-color);">
+                    <button type="button" class="cp-lang-tab active" id="tabLangEn" onclick="switchLanguage('English')">
+                        English
+                    </button>
+                    <button type="button" class="cp-lang-tab" id="tabLangKn" onclick="switchLanguage('Kannada')">
+                        ಕನ್ನಡ (Kannada)
+                    </button>
+                    <button type="button" class="cp-lang-tab" id="tabLangHi" onclick="switchLanguage('Hindi')">
+                        हिन्दी (Hindi)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Form Inputs -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Notice Title</label>
+                    <input type="text" id="noticeTitleInput" style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.3); color: var(--text-main); font-size: 13px;" value="Diagnostic Test Booking & Lab Report Dispatch (English)">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Purpose Code (Section 6(1))</label>
+                    <select id="purposeCodeSelect" onchange="handlePurposeCodeChange()" style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); font-size: 13px;">
+                        <option value="PURP-DIAGNOSTIC-REPORTING" selected>PURP-DIAGNOSTIC-REPORTING (Clinical Lab)</option>
+                        <option value="PURP-RETAIL-DELIVERY">PURP-RETAIL-DELIVERY (Sample Pickup)</option>
+                        <option value="PURP-STATUTORY-BILLING">PURP-STATUTORY-BILLING (Tax & Invoicing)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Non-Bundled Consent Defense Safeguard -->
+            <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 8px; padding: 12px 14px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <span style="color: #34d399; font-size: 14px;">🛡️</span>
+                        <strong style="font-size: 12px; color: var(--text-main);">Prohibition of Bundled Consent (Section 6(1) Enforced)</strong>
+                    </div>
+                    <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px;">
+                        COMPLIANT
+                    </span>
+                </div>
+                <p style="font-size: 11px; color: var(--text-muted); margin: 0 0 8px 0; line-height: 1.4;">
+                    Under DPDP Act Section 6(1), diagnostic reporting consent must never be conditioned on accepting marketing messages. Purposes are explicitly separated.
+                </p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px;">
+                    <label style="display: flex; align-items: center; gap: 8px; color: var(--text-main); cursor: not-allowed;">
+                        <input type="checkbox" checked disabled style="width: 14px; height: 14px;">
+                        <span>Essential: Clinical Lab Report Dispatch</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; color: var(--text-muted); cursor: pointer;">
+                        <input type="checkbox" id="chkOptionalMarketing" onchange="toggleOptionalMarketing()" style="width: 14px; height: 14px;">
+                        <span>Optional: Clinic Health Camp Alerts</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Notice Body Textarea -->
             <div>
-              <div class="text-xs font-bold text-white flex items-center gap-1">
-                <span>Aarogya Diagnostic Center</span>
-                <span class="text-emerald-400 text-[10px]">✓</span>
-              </div>
-              <div class="text-[10px] text-emerald-400 font-mono">Official Clinic Business Account</div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); margin: 0;">
+                        Notice Body Text (Statutory Clause Specification)
+                    </label>
+                    <span id="noticeCharCount" style="font-size: 11px; font-family: monospace; color: var(--text-muted);">
+                        0 characters
+                    </span>
+                </div>
+                <textarea id="noticeTextarea" rows="7" oninput="handleNoticeTextInput()" style="width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.3); color: var(--text-main); font-size: 12px; font-family: monospace; line-height: 1.6; resize: vertical;"></textarea>
             </div>
-          </div>
 
-          <!-- Chat Bubble -->
-          <div class="bg-slate-900 border border-emerald-500/30 rounded-xl rounded-tl-none p-3 text-xs text-slate-200 leading-relaxed shadow-lg max-w-[95%]">
-            <div id="noticeLivePreview" class="whitespace-pre-wrap font-sans text-xs text-slate-300">
-              Loading notice preview...
+            <!-- Generator Actions -->
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <button type="button" id="btnGenerateWhatsAppLink" onclick="generateWhatsAppLink()" class="btn-primary" style="background-color: #059669; color: white; border: none; padding: 10px 18px; border-radius: 6px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.4);">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                    <span>📲 Generate WhatsApp Notice Link</span>
+                </button>
+                <button type="button" id="btnSaveNotice" onclick="saveNoticeToDatabase()" class="btn-secondary" style="background: rgba(255,255,255,0.06); color: var(--text-main); border: 1px solid var(--border-color); padding: 10px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                    <span>Save / Publish Notice</span>
+                </button>
             </div>
-            <div class="text-right text-[10px] text-slate-400 mt-2 font-mono">
-              09:42 AM · Delivered ✓✓
+
+            <!-- Generated WhatsApp Link Box -->
+            <div id="waLinkOutput" style="display: none; background: rgba(5, 150, 105, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 12px 14px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <span style="font-size: 11px; font-weight: 700; color: #34d399;">WhatsApp Click-to-Chat Link (URI Injection Protected):</span>
+                    <span style="font-size: 10px; color: var(--text-muted); font-family: monospace;">encodeURIComponent Safe</span>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <input type="text" id="waLinkInput" readonly style="flex: 1; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.4); color: #6ee7b7; font-size: 11px; font-family: monospace;">
+                    <button type="button" id="btnCopyWaLink" onclick="copyWhatsAppLink()" style="background: #059669; color: white; border: none; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap;">
+                        Copy Link
+                    </button>
+                    <a id="btnOpenWhatsAppWeb" href="#" target="_blank" rel="noopener noreferrer" style="background: rgba(255,255,255,0.08); color: var(--text-main); border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 4px; white-space: nowrap;">
+                        Open Chat &rarr;
+                    </a>
+                </div>
             </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Evaluator Fast-Track Simulator Card -->
-      <div class="bg-gradient-to-br from-slate-900/90 to-emerald-950/30 border border-emerald-500/40 rounded-2xl p-5 space-y-3.5 shadow-xl">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <span class="text-amber-400 text-sm">⚡</span>
-            <h3 class="text-sm font-bold text-white">Evaluator Fast-Track Simulator</h3>
-          </div>
-          <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-950 text-amber-400 border border-amber-500/30">1-CLICK DEMO</span>
-        </div>
-
-        <p class="text-xs text-slate-300">
-          Simulate a real-world citizen replying <strong>"YES"</strong> on WhatsApp. DPDP_Secure immediately logs an immutable Section 6 consent grant with a cryptographic SHA-256 proof.
-        </p>
-
-        <div>
-          <label class="block text-xs font-medium text-slate-400 mb-1">Citizen Mobile & Name</label>
-          <input
-            type="text"
-            id="simPatientPhone"
-            class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-xs font-mono text-emerald-300 focus:outline-none"
-            value="+91 9845012345 - Ramesh Sharma"
-          />
         </div>
 
-        <button
-          type="button"
-          id="btnSimulateWhatsAppOptIn"
-          class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-colors shadow-lg shadow-emerald-900/40"
-        >
-          <span>⚡ Simulate Patient Sending "YES" on WhatsApp</span>
-        </button>
+        <!-- Right Column: Live WhatsApp Bubble Preview & Fast-Track Simulator -->
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+            <!-- Live WhatsApp Preview Card -->
+            <div class="card p-0" style="background: var(--bg-card); overflow: hidden;">
+                <div style="padding: 14px 18px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981;"></span>
+                        <h4 style="font-size: 13px; font-weight: 700; color: var(--text-main); margin: 0;">WhatsApp Citizen UI Preview</h4>
+                    </div>
+                    <span style="font-size: 11px; color: var(--text-muted);">Live Mobile Rendering</span>
+                </div>
 
-        <!-- Dynamic Simulation Result -->
-        <div id="simResultBox" class="hidden"></div>
-      </div>
-    </div>
-  </div>
+                <div style="padding: 16px;">
+                    <div class="wa-phone-container">
+                        <!-- WhatsApp Chat Header -->
+                        <div class="wa-chat-header">
+                            <div class="wa-chat-avatar">AC</div>
+                            <div style="flex: 1;">
+                                <div style="display: flex; align-items: center; gap: 4px;">
+                                    <strong style="color: #e9edef; font-size: 13px;">Aarogya Diagnostic Center</strong>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="#00a884"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path></svg>
+                                </div>
+                                <div style="font-size: 11px; color: #8696a0;">Official Clinic Business Account &bull; Verified</div>
+                            </div>
+                        </div>
 
-  <!-- Active Published Collection Points Table -->
-  <div class="bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden">
-    <div class="p-4 border-b border-slate-800 flex items-center justify-between">
-      <div>
-        <h3 class="text-sm font-bold text-white uppercase tracking-wider">Active Published Collection Points</h3>
-        <p class="text-xs text-slate-400 mt-0.5">Live collection points authorized to capture Section 5 consent for Aarogya Diagnostic Center</p>
-      </div>
-      <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-        3 Active Channels
-      </span>
+                        <!-- Chat Area with Pattern -->
+                        <div style="padding: 16px; background: #0b141a; min-height: 180px; display: flex; flex-direction: column; justify-content: flex-end; position: relative;">
+                            <div class="wa-chat-bubble">
+                                <div class="wa-bubble-tail"></div>
+                                <div id="noticeLivePreview" style="white-space: pre-wrap; font-family: sans-serif; font-size: 12px; color: #e9edef; line-height: 1.5;">
+                                    Loading notice preview...
+                                </div>
+                                <div style="display: flex; justify-content: flex-end; align-items: center; gap: 4px; margin-top: 8px; font-size: 10px; color: #8696a0;">
+                                    <span>09:42 AM</span>
+                                    <span style="color: #53bdeb;">✓✓</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Evaluator Fast-Track Simulator Card -->
+            <div class="card" style="background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(6, 78, 59, 0.3)); border: 1px solid rgba(16, 185, 129, 0.4); box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <span style="color: #fbbf24; font-size: 16px;">⚡</span>
+                        <h4 style="font-size: 14px; font-weight: 700; color: var(--text-main); margin: 0;">Evaluator Fast-Track Simulator</h4>
+                    </div>
+                    <span class="badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px;">
+                        1-CLICK DEMO
+                    </span>
+                </div>
+
+                <p style="font-size: 12px; color: var(--text-muted); margin: 0 0 14px 0; line-height: 1.4;">
+                    Simulate a citizen replying <strong style="color: #34d399;">"YES"</strong> on WhatsApp. DPDP_Secure immediately logs an immutable Section 6 consent grant with cryptographic SHA-256 non-repudiation.
+                </p>
+
+                <div style="margin-bottom: 12px;">
+                    <label style="display: block; font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px;">Citizen Mobile & Name</label>
+                    <input type="text" id="simPatientPhone" value="+91 9845012345 - Ramesh Sharma" style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.4); color: #34d399; font-size: 12px; font-family: monospace;">
+                </div>
+
+                <button type="button" id="btnSimulateWhatsAppOptIn" onclick="runFastTrackSimulation()" style="width: 100%; background: #059669; color: white; border: none; padding: 10px; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.4); transition: background 0.2s;">
+                    <span>⚡ Simulate Patient Sending "YES" on WhatsApp</span>
+                </button>
+
+                <!-- Dynamic Simulation Result -->
+                <div id="simResultBox" style="display: none; margin-top: 14px;"></div>
+            </div>
+        </div>
     </div>
 
-    <div class="overflow-x-auto">
-      <table class="w-full text-left border-collapse text-xs">
-        <thead>
-          <tr class="border-b border-slate-800 text-[11px] font-semibold text-slate-400 uppercase tracking-wider bg-slate-950/40">
-            <th class="py-3 px-4">Channel / Identifier</th>
-            <th class="py-3 px-4">Purpose Group</th>
-            <th class="py-3 px-4">Supported Languages</th>
-            <th class="py-3 px-4">Statutory Basis</th>
-            <th class="py-3 px-4">Status</th>
-            <th class="py-3 px-4 text-right">Actions</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-slate-800/60 font-mono text-slate-300">
-          <tr>
-            <td class="py-3 px-4 font-sans font-semibold text-white flex items-center gap-2">
-              <span class="text-emerald-400">💬</span>
-              <span>Aarogya Clinic WhatsApp Bot (Cloud API)</span>
-            </td>
-            <td class="py-3 px-4 text-emerald-300">PURP-DIAGNOSTIC-REPORTING</td>
-            <td class="py-3 px-4 font-sans">
-              <span class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px]">English</span>
-              <span class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px]">ಕನ್ನಡ</span>
-              <span class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px]">हिन्दी</span>
-            </td>
-            <td class="py-3 px-4 font-sans text-slate-400">Section 6(1) Explicit Consent</td>
-            <td class="py-3 px-4">
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-500/30">ENABLED</span>
-            </td>
-            <td class="py-3 px-4 text-right font-sans">
-              <a href="/consent/ledger" class="text-sky-400 hover:text-sky-300 font-semibold text-xs">View Ledger &rarr;</a>
-            </td>
-          </tr>
-          <tr>
-            <td class="py-3 px-4 font-sans font-semibold text-white flex items-center gap-2">
-              <span class="text-sky-400">🌐</span>
-              <span>Online Patient Lab Booking Portal</span>
-            </td>
-            <td class="py-3 px-4 text-sky-300">PURP-RETAIL-DELIVERY</td>
-            <td class="py-3 px-4 font-sans">
-              <span class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px]">English</span>
-              <span class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px]">ಕನ್ನಡ</span>
-            </td>
-            <td class="py-3 px-4 font-sans text-slate-400">Section 6(1) Web Form</td>
-            <td class="py-3 px-4">
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-500/30">ENABLED</span>
-            </td>
-            <td class="py-3 px-4 text-right font-sans">
-              <a href="/consent/ledger" class="text-sky-400 hover:text-sky-300 font-semibold text-xs">View Ledger &rarr;</a>
-            </td>
-          </tr>
-          <tr>
-            <td class="py-3 px-4 font-sans font-semibold text-white flex items-center gap-2">
-              <span class="text-amber-400">📋</span>
-              <span>Physical Clinic Reception Desk Form</span>
-            </td>
-            <td class="py-3 px-4 text-amber-300">PURP-DIAGNOSTIC-REPORTING</td>
-            <td class="py-3 px-4 font-sans">
-              <span class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px]">English</span>
-              <span class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px]">ಕನ್ನಡ</span>
-            </td>
-            <td class="py-3 px-4 font-sans text-slate-400">Paper Form Digitized</td>
-            <td class="py-3 px-4">
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-500/30">ENABLED</span>
-            </td>
-            <td class="py-3 px-4 text-right font-sans">
-              <a href="/consent/ledger" class="text-sky-400 hover:text-sky-300 font-semibold text-xs">View Ledger &rarr;</a>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- Active Published Collection Points Table -->
+    <div class="card p-0" style="background: var(--bg-card); overflow: hidden;">
+        <div style="padding: 16px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div>
+                <h3 style="font-size: 14px; font-weight: 700; color: var(--text-main); margin: 0 0 2px 0;">Active Published Collection Points</h3>
+                <span style="font-size: 12px; color: var(--text-muted);">Live authorized channels capturing Section 5 consent for Aarogya Diagnostic Center</span>
+            </div>
+            <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 12px;">
+                Authorized Channels
+            </span>
+        </div>
+
+        <div style="overflow-x: auto;">
+            <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+                <thead>
+                    <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 11px; text-transform: uppercase;">
+                        <th style="padding: 12px 20px; font-weight: 600;">Channel / Identifier</th>
+                        <th style="padding: 12px 20px; font-weight: 600;">Purpose Group</th>
+                        <th style="padding: 12px 20px; font-weight: 600;">Supported Languages</th>
+                        <th style="padding: 12px 20px; font-weight: 600;">Statutory Basis</th>
+                        <th style="padding: 12px 20px; font-weight: 600;">Status</th>
+                        <th style="padding: 12px 20px; font-weight: 600; text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="collectionPointsTableBody" style="font-size: 12px;">
+                    <% if (typeof collectionPoints !== 'undefined' && collectionPoints.length > 0) { %>
+                        <% collectionPoints.forEach(point => { %>
+                            <%
+                                let channelIcon = '💬';
+                                if (point.channelType === 'WEB_FORM') channelIcon = '🌐';
+                                else if (point.channelType === 'PHYSICAL_PAPER') channelIcon = '📋';
+                                else if (point.channelType === 'MOBILE_APP') channelIcon = '📱';
+                                else if (point.channelType === 'SMS') channelIcon = '📩';
+                            %>
+                            <tr id="cp-row-<%= point.id %>" style="border-bottom: 1px solid var(--border-color);">
+                                <td style="padding: 14px 20px; font-weight: 600; color: var(--text-main); white-space: nowrap;">
+                                    <span style="margin-right: 6px;"><%= channelIcon %></span>
+                                    <span><%= point.channelName %></span>
+                                </td>
+                                <td style="padding: 14px 20px; font-family: monospace; color: #60a5fa;">
+                                    <%= point.purposeCode %>
+                                </td>
+                                <td style="padding: 14px 20px;">
+                                    <% (point.supportedLanguages || 'English').split(',').forEach(lang => { %>
+                                        <span class="badge" style="background: rgba(255,255,255,0.06); color: var(--text-muted); border: 1px solid var(--border-color); padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-right: 4px;">
+                                            <%= lang.trim() %>
+                                        </span>
+                                    <% }) %>
+                                </td>
+                                <td style="padding: 14px 20px; color: var(--text-muted);">
+                                    <%= point.statutoryBasis || 'Section 6(1) Explicit Consent' %>
+                                </td>
+                                <td style="padding: 14px 20px;">
+                                    <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700;">
+                                        <%= point.status || 'ENABLED' %>
+                                    </span>
+                                </td>
+                                <td style="padding: 14px 20px; text-align: right;">
+                                    <a href="/consent/ledger" style="color: #60a5fa; text-decoration: none; font-weight: 600; font-size: 11px; margin-right: 12px;">
+                                        View Ledger &rarr;
+                                    </a>
+                                    <button type="button" onclick="deleteCollectionPointChannel('<%= point.id %>')" title="Delete Channel" style="background: transparent; border: none; color: #f87171; cursor: pointer; padding: 2px;">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                    </button>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="6" style="padding: 24px; text-align: center; color: var(--text-muted);">
+                                No published collection points found. Click "+ New Collection Channel" to register one.
+                            </td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
     </div>
-  </div>
 </div>
 
+<!-- ========================================================================= -->
+<!-- MODAL: REGISTER NEW COLLECTION POINT CHANNEL                             -->
+<!-- ========================================================================= -->
+<div id="addCollectionPointModal" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(4px); z-index: 999999; align-items: center; justify-content: center; padding: 20px;">
+    <div class="modal-box" style="background: #111827; border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; max-width: 540px; width: 100%; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.7); overflow: hidden;">
+        <!-- Header -->
+        <div style="padding: 18px 22px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="width: 28px; height: 28px; border-radius: 6px; background: rgba(59, 130, 246, 0.2); display: flex; align-items: center; justify-content: center; color: #60a5fa;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                </div>
+                <h3 style="margin: 0; font-size: 15px; font-weight: 700; color: var(--text-main);">Register Collection Channel</h3>
+            </div>
+            <button type="button" onclick="closeAddCollectionPointModal()" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 20px; line-height: 1;">&times;</button>
+        </div>
+
+        <!-- Form -->
+        <form id="addCollectionPointForm" onsubmit="handleCollectionPointSubmit(event)" style="padding: 20px 22px;">
+            <div style="display: flex; flex-direction: column; gap: 14px;">
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">
+                        Channel Name <span style="color: #ef4444;">*</span>
+                    </label>
+                    <input type="text" id="cpChannelName" required placeholder="e.g. Teleconsultation Video Bot, SMS Consent Gateway" style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.3); color: var(--text-main); font-size: 13px;">
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                    <div>
+                        <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Channel Type</label>
+                        <select id="cpChannelType" style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); font-size: 13px;">
+                            <option value="WHATSAPP">WhatsApp Cloud API</option>
+                            <option value="WEB_FORM">Web Portal Form</option>
+                            <option value="MOBILE_APP">Mobile Application</option>
+                            <option value="PHYSICAL_PAPER">Physical Paper Form</option>
+                            <option value="SMS">SMS Two-Way Consent</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Purpose Group</label>
+                        <select id="cpPurposeCode" style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); font-size: 13px;">
+                            <option value="PURP-DIAGNOSTIC-REPORTING">PURP-DIAGNOSTIC-REPORTING</option>
+                            <option value="PURP-RETAIL-DELIVERY">PURP-RETAIL-DELIVERY</option>
+                            <option value="PURP-STATUTORY-BILLING">PURP-STATUTORY-BILLING</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Supported Languages</label>
+                    <input type="text" id="cpLanguages" value="English, Kannada, Hindi" placeholder="e.g. English, Kannada, Hindi, Tamil" style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.3); color: var(--text-main); font-size: 13px;">
+                </div>
+
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Statutory Basis Specification</label>
+                    <input type="text" id="cpStatutoryBasis" value="Section 6(1) Explicit Consent" style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.3); color: var(--text-main); font-size: 13px;">
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid var(--border-color); padding-top: 14px;">
+                <button type="button" onclick="closeAddCollectionPointModal()" style="padding: 8px 16px; border-radius: 6px; background: rgba(255,255,255,0.06); color: var(--text-muted); border: 1px solid var(--border-color); font-weight: 600; cursor: pointer;">Cancel</button>
+                <button type="submit" id="btnSaveCollectionPoint" style="padding: 8px 20px; border-radius: 6px; background: var(--primary); color: white; border: none; font-weight: 700; cursor: pointer;">Register Channel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Notification Container -->
+<div id="dpdpToastContainer"></div>
+
+<!-- Client Manager Script -->
 <script src="/js/consentManager.js"></script>
+
+<script>
+// Modal Utilities for Collection Points
+function openAddCollectionPointModal() {
+    const modal = document.getElementById('addCollectionPointModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+}
+function closeAddCollectionPointModal() {
+    const modal = document.getElementById('addCollectionPointModal');
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+}
+
+// Modal Dismissals on backdrop and Escape
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeAddCollectionPointModal();
+});
+const cpModal = document.getElementById('addCollectionPointModal');
+if (cpModal) {
+    cpModal.addEventListener('click', (e) => {
+        if (e.target === cpModal) closeAddCollectionPointModal();
+    });
+}
+</script>
+
 <%- include('partials/footer') %>

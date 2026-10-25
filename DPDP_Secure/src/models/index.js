@@ -441,6 +441,91 @@ createDataAsset: async (assetData) => {
     return await all('SELECT * FROM consent_events WHERE tenantId = ? ORDER BY timestamp DESC LIMIT ?', [tenantId, limit]);
   },
 
+  // Collection Points (Section 5 Channels)
+  getCollectionPoints: async (tenantId = 'TENANT-AAROGYA-01') => {
+    try {
+      const points = await all('SELECT * FROM consent_collection_points WHERE (tenantId = ? OR tenantId IS NULL OR ? = "TENANT-AAROGYA-01") ORDER BY createdAt ASC', [tenantId, tenantId]);
+      if (points && points.length > 0) return points;
+
+      const defaultPoints = [
+        {
+          id: 'cp-wa-bot',
+          tenantId,
+          channelName: 'Aarogya Clinic WhatsApp Bot (Cloud API)',
+          channelType: 'WHATSAPP',
+          purposeCode: 'PURP-DIAGNOSTIC-REPORTING',
+          supportedLanguages: 'English, Kannada, Hindi',
+          statutoryBasis: 'Section 6(1) Explicit Consent',
+          status: 'ENABLED'
+        },
+        {
+          id: 'cp-web-portal',
+          tenantId,
+          channelName: 'Online Patient Lab Booking Portal',
+          channelType: 'WEB_FORM',
+          purposeCode: 'PURP-RETAIL-DELIVERY',
+          supportedLanguages: 'English, Kannada',
+          statutoryBasis: 'Section 6(1) Web Form',
+          status: 'ENABLED'
+        },
+        {
+          id: 'cp-reception-desk',
+          tenantId,
+          channelName: 'Physical Clinic Reception Desk Form',
+          channelType: 'PHYSICAL_PAPER',
+          purposeCode: 'PURP-DIAGNOSTIC-REPORTING',
+          supportedLanguages: 'English, Kannada',
+          statutoryBasis: 'Paper Form Digitized',
+          status: 'ENABLED'
+        },
+        {
+          id: 'cp-phlebotomy-app',
+          tenantId,
+          channelName: 'Home Sample Phlebotomy Mobile App',
+          channelType: 'MOBILE_APP',
+          purposeCode: 'PURP-DIAGNOSTIC-REPORTING',
+          supportedLanguages: 'English, Kannada, Hindi',
+          statutoryBasis: 'Section 6(1) Mobile Consent',
+          status: 'ENABLED'
+        }
+      ];
+
+      for (const p of defaultPoints) {
+        await run(`
+          INSERT OR IGNORE INTO consent_collection_points (id, tenantId, channelName, channelType, purposeCode, supportedLanguages, statutoryBasis, status, createdAt)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+        `, [p.id, p.tenantId, p.channelName, p.channelType, p.purposeCode, p.supportedLanguages, p.statutoryBasis, p.status]);
+      }
+      return defaultPoints;
+    } catch (e) {
+      console.warn('[MODELS] getCollectionPoints fallback:', e.message);
+      return [];
+    }
+  },
+
+  createCollectionPoint: async (pointData, tenantId = 'TENANT-AAROGYA-01') => {
+    const id = pointData.id || uuidv4();
+    const tId = pointData.tenantId || tenantId;
+    await run(`
+      INSERT INTO consent_collection_points (id, tenantId, channelName, channelType, purposeCode, supportedLanguages, statutoryBasis, status, createdAt)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+    `, [
+      id,
+      tId,
+      pointData.channelName,
+      pointData.channelType || 'WHATSAPP',
+      pointData.purposeCode || 'PURP-DIAGNOSTIC-REPORTING',
+      pointData.supportedLanguages || 'English, Kannada, Hindi',
+      pointData.statutoryBasis || 'Section 6(1) Explicit Consent',
+      pointData.status || 'ENABLED'
+    ]);
+    return { id, ...pointData, tenantId: tId };
+  },
+
+  deleteCollectionPoint: async (id, tenantId = 'TENANT-AAROGYA-01') => {
+    return await run('DELETE FROM consent_collection_points WHERE id = ? AND (tenantId = ? OR tenantId IS NULL OR ? = "TENANT-AAROGYA-01")', [id, tenantId, tenantId]);
+  },
+
   // ==========================================
   // 5. PRIVACY REQUESTS & DSR (SECTION 11/12)
   // ==========================================

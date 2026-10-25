@@ -269,6 +269,8 @@ router.get('/api/consent/notices/:id', consentController.getNoticeById);
 router.post('/api/consent/record-consent', consentController.recordConsent);
 router.post('/api/consent/withdraw-consent', consentController.withdrawConsent);
 router.get('/api/consent/download-passbook/:id', consentController.downloadPassbook);
+router.post('/api/consent/collection-points', consentController.createCollectionPoint);
+router.delete('/api/consent/collection-points/:id', consentController.deleteCollectionPoint);
 
 // Consent Dashboard API
 router.get('/api/consent/dashboard', async (req, res) => {
