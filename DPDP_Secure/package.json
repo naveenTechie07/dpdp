@@ -1,17 +1,39 @@
 {
   "name": "dpdp_secure",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "DPDP_Secure - Enterprise-grade Privacy Management & DPDP Act 2023 Compliance Platform for SMEs",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "seed": "node src/models/seed.js",
+    "seed:demo": "node src/models/demoSeeder.js",
+    "test": "node tests/piiEngine.test.js",
+    "test:e2e": "node tests/e2eWorkflow.test.js"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "dpdp-act-2023",
+    "privacy",
+    "sme-compliance",
+    "data-protection",
+    "india"
+  ],
+  "author": "DPDP_Secure Team",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "ejs": "^6.0.1",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "express-rate-limit": "^7.4.0",
+    "express-session": "^1.18.0",
+    "helmet": "^8.0.0",
+    "multer": "^1.4.5-lts.1",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
   }
 }

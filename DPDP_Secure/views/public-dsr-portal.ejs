@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title || 'Citizen Data Rights Intake Portal | DPDP_Secure' %></title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body {
+            background: #0b0f19;
+            color: #f3f4f6;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        .portal-card {
+            background: rgba(17, 24, 39, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(16px);
+            border-radius: 12px;
+            padding: 36px;
+            max-width: 640px;
+            width: 100%;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+        }
+        h1 {
+            color: #ffffff;
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+        }
+        p.subtitle {
+            color: #9ca3af;
+            font-size: 13px;
+            margin: 0 0 24px 0;
+            line-height: 1.5;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        label {
+            display: block;
+            color: #d1d5db;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        input, select, textarea {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+            padding: 10px 14px;
+            color: #ffffff;
+            font-size: 14px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: #3b82f6;
+        }
+        .otp-row {
+            display: flex;
+            gap: 12px;
+        }
+        .btn-otp {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .btn-otp:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        .btn-submit {
+            width: 100%;
+            background: #3b82f6;
+            color: #ffffff;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+        .btn-submit:hover {
+            background: #2563eb;
+        }
+        .statutory-notice {
+            background: rgba(59, 130, 246, 0.08);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 8px;
+            padding: 14px;
+            margin-top: 24px;
+            font-size: 12px;
+            color: #93c5fd;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="portal-card">
+        <div class="badge">
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            Section 11 & Section 12 Portal
+        </div>
+        <h1>Citizen Data Rights Portal</h1>
+        <p class="subtitle">Aarogya Diagnostic Center • Indiranagar, Bengaluru<br>Submit a statutory request regarding your personal diagnostic & health records.</p>
+
+        <form action="/api/privacy/submit-dsr" method="POST">
+            <div class="form-group">
+                <label>Data Principal Full Name</label>
+                <input type="text" name="principalName" placeholder="e.g. Deepa Nair" value="Deepa Nair" required>
+            </div>
+
+            <div class="form-group">
+                <label>Registered Mobile Number (with OTP Verification)</label>
+                <div class="otp-row">
+                    <input type="tel" id="principalPhone" name="principalPhone" placeholder="+91 9988776655" value="+91 9988776655" required>
+                    <button type="button" class="btn-otp" onclick="document.getElementById('otp').value='882190'">Auto-Fill Test OTP</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Verification Code (SMS OTP)</label>
+                <input type="text" id="otp" name="otp" placeholder="Enter 6-digit OTP (e.g. 882190)" value="882190" required>
+            </div>
+
+            <div class="form-group">
+                <label>Statutory Right Requested</label>
+                <select name="requestType">
+                    <option value="ERASURE" selected>Section 12: Right to Erasure of Personal Data</option>
+                    <option value="ACCESS_SUMMARY">Section 11: Right to Access Summary of Personal Data</option>
+                    <option value="CORRECTION">Section 12: Right to Correction & Updating</option>
+                    <option value="GRIEVANCE">Section 13: Grievance Redressal / Complaint</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Reason / Specific Categories (Optional)</label>
+                <textarea name="remarks" rows="3" placeholder="Specify if you wish to erase WhatsApp appointment records or test history...">Requesting complete deletion of WhatsApp chat history and contact leads after diagnostic test completion.</textarea>
+            </div>
+
+            <button type="submit" class="btn-submit">Submit Statutory Data Rights Request</button>
+        </form>
+
+        <div class="statutory-notice">
+            <strong>Statutory Disclosure under DPDP Act, 2023:</strong> In accordance with Sections 11 and 12, your request will be acknowledged immediately and resolved within 7 working days. Note: Billing invoices and financial records are subject to statutory retention under Section 36 of the CGST Act, 2017 read with DPDP Act Section 8(7).
+        </div>
+    </div>
+</body>
+</html>
