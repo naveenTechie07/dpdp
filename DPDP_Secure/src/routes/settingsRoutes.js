@@ -303,8 +303,45 @@ router.get('/api/system/supabase-status', async (req, res) => {
 
 router.post('/api/system/supabase-sync', async (req, res) => {
   try {
-    await syncAllToSupabase();
-    res.json({ success: true, message: 'Supabase cloud synchronization completed' });
+    const result = await syncAllToSupabase();
+    res.json({ success: true, message: 'Supabase cloud synchronization completed', details: result });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.get('/api/system/backend-telemetry', async (req, res) => {
+  try {
+    const { all, dbPath } = require('../models/db');
+    const status = await pingSupabase();
+
+    const tables = await all("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'");
+    const tableCounts = {};
+    let totalRows = 0;
+    for (const t of tables) {
+      try {
+        const countRes = await all(`SELECT COUNT(*) as c FROM "${t.name}"`);
+        const c = countRes[0]?.c || 0;
+        tableCounts[t.name] = c;
+        totalRows += c;
+      } catch (e) {
+        tableCounts[t.name] = 0;
+      }
+    }
+
+    res.json({
+      success: true,
+      architecture: 'Dual-Engine (100% Offline SQLite + Enterprise Supabase Cloud PostgreSQL)',
+      offlineEngine: {
+        status: 'ACTIVE_100_PERCENT',
+        dbPath,
+        tablesCount: tables.length,
+        totalRecords: totalRows,
+        tableCounts
+      },
+      cloudEngine: status,
+      timestamp: new Date().toISOString()
+    });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }

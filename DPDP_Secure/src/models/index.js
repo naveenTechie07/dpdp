@@ -2,13 +2,21 @@ const crypto = require('crypto');
 const { v4: uuidv4 } = require('uuid');
 const { run, get, all, runTransaction, db, dbPath, encryptToken, decryptToken } = require('./db');
 const {
-  syncConsentEvent,
+  syncTenant,
+  syncDataSilo,
+  syncPiiFindings,
+  syncRopaRecord,
   syncConsentNotice,
-  syncCollectionPoint,
+  syncConsentEvent,
+  syncPrivacyRequest,
   syncDsrTicket,
+  syncIncident,
+  syncAuditLog,
   syncAuditRecord,
   syncDataAsset,
-  syncDataLineage
+  syncDataLineage,
+  syncCollectionPoint,
+  syncConsentPurpose
 } = require('../services/supabaseClient');
 
 /**
@@ -88,23 +96,41 @@ const models = {
       INSERT OR REPLACE INTO data_silos (id, tenantId, siloName, siloType, filePath, itemCount, riskLevel, lastScannedAt)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `, [id, tenantId, siloName, siloType, filePath, itemCount, riskLevel, now]);
+
+    // Auto-sync to Supabase Cloud
+    syncDataSilo({
+      id,
+      tenantId,
+      siloName,
+      siloType,
+      filePath,
+      itemCount,
+      riskLevel,
+      lastScannedAt: now
+    }).catch(() => {});
+
     return id;
   },
 
   savePiiFindings: async (findingsArray = []) => {
     if (!findingsArray || findingsArray.length === 0) return 0;
-    return await runTransaction(async ({ run }) => {
-      let inserted = 0;
+    const inserted = await runTransaction(async ({ run }) => {
+      let count = 0;
       for (const f of findingsArray) {
         const id = f.id || uuidv4();
         await run(`
           INSERT INTO pii_findings (id, siloId, entityName, piiType, maskedValue, rawSample, lineNumber, confidenceScore, isRedacted)
           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         `, [id, f.siloId, f.entityName || '', f.piiType, f.maskedValue, f.rawSample || '', f.lineNumber || 0, f.confidenceScore || 1.0, f.isRedacted || 0]);
-        inserted++;
+        count++;
       }
-      return inserted;
+      return count;
     });
+
+    // Auto-sync to Supabase Cloud
+    syncPiiFindings(findingsArray).catch(() => {});
+
+    return inserted;
   },
 
   getFindingsBySilo: async (siloId) => {
@@ -311,6 +337,20 @@ createDataAsset: async (assetData) => {
       ropaData.storageLocation,
       ropaData.securitySafeguards
     ]);
+
+    // Auto-sync to Supabase Cloud
+    syncRopaRecord({
+      id,
+      tenantId: ropaData.tenantId || 'TENANT-AAROGYA-01',
+      activityName: ropaData.activityName,
+      dataCategories: ropaData.dataCategories,
+      purpose: ropaData.purpose,
+      legalBasis: ropaData.legalBasis,
+      retentionPeriod: ropaData.retentionPeriod,
+      storageLocation: ropaData.storageLocation,
+      securitySafeguards: ropaData.securitySafeguards
+    }).catch(() => {});
+
     return { id, ...ropaData };
   },
 
@@ -330,18 +370,23 @@ createDataAsset: async (assetData) => {
 
   saveRoPARecords: async (ropaArray = []) => {
     if (!ropaArray || ropaArray.length === 0) return 0;
-    return await runTransaction(async ({ run }) => {
-      let saved = 0;
+    const saved = await runTransaction(async ({ run }) => {
+      let count = 0;
       for (const r of ropaArray) {
         const id = r.id || uuidv4();
         await run(`
           INSERT OR REPLACE INTO ropa_records (id, tenantId, activityName, dataCategories, purpose, legalBasis, retentionPeriod, storageLocation, securitySafeguards)
           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         `, [id, r.tenantId || 'TENANT-AAROGYA-01', r.activityName, r.dataCategories, r.purpose, r.legalBasis, r.retentionPeriod, r.storageLocation, r.securitySafeguards]);
-        saved++;
+        count++;
       }
-      return saved;
+      return count;
     });
+
+    // Auto-sync to Supabase Cloud
+    syncRopaRecord(ropaArray).catch(() => {});
+
+    return saved;
   },
 
   // ==========================================
@@ -673,6 +718,22 @@ createDataAsset: async (assetData) => {
       INSERT INTO incidents (id, tenantId, incidentTitle, scenarioType, severity, affectedCount, dataCategories, containmentActions, reportedToDpbi, citizenAlertSent, discoveredAt)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `, [id, data.tenantId || 'TENANT-AAROGYA-01', data.incidentTitle, data.scenarioType, data.severity || 'CRITICAL', data.affectedCount || 0, data.dataCategories || '', actionsJson, data.reportedToDpbi || 0, data.citizenAlertSent || 0, data.discoveredAt || new Date().toISOString()]);
+
+    // Auto-sync to Supabase Cloud
+    syncIncident({
+      id,
+      tenantId: data.tenantId || 'TENANT-AAROGYA-01',
+      incidentTitle: data.incidentTitle,
+      scenarioType: data.scenarioType,
+      severity: data.severity,
+      affectedCount: data.affectedCount,
+      dataCategories: data.dataCategories,
+      containmentActions: actionsJson,
+      reportedToDpbi: data.reportedToDpbi,
+      citizenAlertSent: data.citizenAlertSent,
+      discoveredAt: data.discoveredAt
+    }).catch(() => {});
+
     return { id, ...data };
   },
 
@@ -1282,6 +1343,17 @@ createDataAsset: async (assetData) => {
       INSERT INTO consent_purposes (id, tenantId, purposeName, purposeCode, description, isActive, createdAt)
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `, [id, data.tenantId || 'TENANT-AAROGYA-01', purposeName, purposeCode, data.description || '', data.isActive ?? 1, new Date().toISOString()]);
+
+    // Auto-sync to Supabase Cloud
+    syncConsentPurpose({
+      id,
+      tenantId: data.tenantId || 'TENANT-AAROGYA-01',
+      purposeName,
+      purposeCode,
+      description: data.description || '',
+      isActive: data.isActive ?? 1
+    }).catch(() => {});
+
     return { id, purposeName, purposeCode };
   },
 
