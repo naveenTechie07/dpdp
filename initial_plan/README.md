@@ -14,3 +14,9 @@ This directory contains the foundational architecture, regulatory compliance blu
 
 ## Deliverables Summary
 The complete architecture specifications, UI wireframe prototypes, accessible design system primitives, and statutory compliance frameworks are packaged inside this `initial_plan/` directory.
+
+
+### Architectural Modules
+- Security Architecture (STRIDE, Verhoeff engine, TPM guidelines).
+- Data Models (RoPA Schema, Vendor DPA Schema, DPIA scoring).
+- Interactive Wireframe Prototypes (Dashboard, Consent Banner, DSR Portal, Breach Center, Audit Explorer, DPIA Calculator, RoPA Inventory, Vendor Management).
