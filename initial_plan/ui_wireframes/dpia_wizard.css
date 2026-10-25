@@ -13,3 +13,9 @@
   .dpia-container { padding: 1rem; }
   .dpia-card { padding: 1.25rem; }
 }
+
+
+.mitigations-box .badge:hover {
+  transform: translateY(-1px);
+  cursor: pointer;
+}
