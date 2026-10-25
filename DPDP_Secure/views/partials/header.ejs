@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %></title>
-    <meta name="description" content="<%= description %>">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title><%= typeof title !== 'undefined' ? title : 'DPDP_Secure - Enterprise Privacy Operating System' %></title>
+    <meta name="description" content="<%= typeof description !== 'undefined' ? description : 'India DPDP Act 2023 Compliance & Data Protection Suite for Small Businesses' %>">
     <link rel="stylesheet" href="/css/style.css">
     <script>
         (function() {
@@ -18,243 +17,184 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- Sidebar -->
+        <!-- Sidebar Navigation -->
         <aside class="sidebar">
             <div class="sidebar-header">
                 <div class="logo-icon">
-                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                 </div>
                 <div class="logo-text">
                     <h2>DPDP_Secure</h2>
-                    <p>DPDP_Secure Mumbai HQ</p>
+                    <p>SME Privacy Suite &bull; India 2023</p>
                 </div>
             </div>
 
+            <!-- Active SME Tenant Profile Card -->
             <div class="sidebar-user">
-                <div class="user-icon">
-                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                <div class="user-icon" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa;">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                 </div>
-                <div class="user-info">
-                    <h3>DPDP_Secure</h3>
-                    <p>Customer Administration...</p>
+                <div class="user-info truncate-text">
+                    <h3 class="truncate-text"><%= (typeof tenant !== 'undefined' && tenant && tenant.name) ? tenant.name : 'Aarogya Diagnostic Center' %></h3>
+                    <p class="truncate-text">Indiranagar &bull; Health SME</p>
                 </div>
             </div>
 
             <nav class="sidebar-nav">
-                <!-- INSIGHTS & ANALYTICS -->
+                <!-- 1. WORKSPACE OVERVIEW -->
                 <div class="nav-section expanded">
                     <div class="nav-section-header" onclick="toggleNavSection(this)">
                         <svg class="icon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-                        <span class="title">INSIGHTS & ANALYTICS</span>
+                        <span class="title">WORKSPACE OVERVIEW</span>
                         <svg class="chevron" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </div>
                     <div class="nav-section-content">
-                        <a href="/" class="nav-item active">
-                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-                            Dashboard
+                        <a href="/" class="nav-item <%= typeof path !== 'undefined' && path === '/' ? 'active' : '' %>">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                            Executive Dashboard
+                        </a>
+                        <a href="/profile" class="nav-item <%= typeof path !== 'undefined' && path === '/profile' ? 'active' : '' %>">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                            User Profile
+                        </a>
+                        <a href="/about" class="nav-item <%= typeof path !== 'undefined' && path === '/about' ? 'active' : '' %>">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                            About Platform
                         </a>
                     </div>
                 </div>
 
-                <!-- DATA INTELLIGENCE -->
+                <!-- 2. PILLAR 1: DATA DISCOVERY & ROPA -->
                 <div class="nav-section expanded">
                     <div class="nav-section-header" onclick="toggleNavSection(this)">
                         <svg class="icon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
-                        <span class="title">DATA INTELLIGENCE</span>
+                        <span class="title">PILLAR 1: DISCOVERY &amp; ROPA</span>
                         <svg class="chevron" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </div>
                     <div class="nav-section-content">
-                        <div class="nav-group-title">DISCOVERY</div>
-                        <a href="/discovery/connectors" class="nav-item"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path></svg> Connectors & Scans</a>
-                        
-                        <div class="nav-group-title">DATA INVENTORY</div>
-                        <a href="/inventory/assets" class="nav-item"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse></svg> Data Assets</a>
-                        <a href="/inventory/tags" class="nav-item"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg> Classification Tags</a>
-                        <a href="/inventory/ropa" class="nav-item <%= typeof title !== 'undefined' && title.includes('Processing Activities') ? 'active' : '' %>"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg> Processing Activities</a>
-                        <a href="/inventory/lineage" class="nav-item <%= typeof title !== 'undefined' && title.includes('Lineage') ? 'active' : '' %>"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg> Data Lineage</a>
-                        <a href="/inventory/assessment-enrichment" class="nav-item <%= typeof title !== 'undefined' && title.includes('Enrichment') ? 'active' : '' %>"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg> Assessment Enrichment</a>
-                        
-                        <div class="nav-group-title">GOVERNANCE</div>
-                        <a href="/governance/processors" class="nav-item"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon></svg> Data Processors</a>
-                        <a href="/governance/retention" class="nav-item"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg> Retention</a>
-                        <a href="/governance/cross-border" class="nav-item"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg> Cross-Border</a>
-                        <a href="/governance/evidence" class="nav-item"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg> Compliance Evidence</a>
-                        <a href="/governance/security-controls" class="nav-item"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg> Security Controls</a>
-                        <a href="/governance/processors" class="nav-item"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> AI Governance</a>
+                        <a href="/discovery/connectors" class="nav-item <%= typeof path !== 'undefined' && path.includes('/discovery') ? 'active' : '' %>">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><line x1="12" y1="12" x2="12" y2="12.01"></line></svg>
+                            Silo Scanner (WhatsApp/Excel)
+                        </a>
+                        <a href="/inventory/ropa" class="nav-item <%= typeof path !== 'undefined' && path === '/inventory/ropa' ? 'active' : '' %>">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                            RoPA Register (Section 8)
+                        </a>
+                        <a href="/inventory/assets" class="nav-item <%= typeof path !== 'undefined' && path === '/inventory/assets' ? 'active' : '' %>">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path></svg>
+                            Data Assets Catalog
+                        </a>
+                        <a href="/inventory/tags" class="nav-item <%= typeof path !== 'undefined' && path === '/inventory/tags' ? 'active' : '' %>">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                            Classification Tags (PII)
+                        </a>
+                        <a href="/inventory/lineage" class="nav-item <%= typeof path !== 'undefined' && path === '/inventory/lineage' ? 'active' : '' %>">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                            Data Lineage
+                        </a>
                     </div>
                 </div>
 
-                <!-- ASSESSMENT AUTOMATION -->
-                <div class="nav-section expanded">
-                    <div class="nav-section-header" onclick="toggleNavSection(this)">
-                        <svg class="icon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
-                        <span class="title">ASSESSMENT AUTOMATION</span>
-                        <svg class="chevron" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                    </div>
-                    <div class="nav-section-content">
-                        <a href="/assessment/dashboard" class="nav-item <%= typeof title !== 'undefined' && title.includes('Assessment Dashboard') ? 'active' : '' %>"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg> Dashboard</a>
-                        <a href="/assessment/templates" class="nav-item"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg> Question Bank</a>
-                        <a href="/assessment/templates" class="nav-item <%= typeof title !== 'undefined' && title.includes('Templates') ? 'active' : '' %>"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg> Templates</a>
-                        <a href="/assessment/pia-dpia" class="nav-item <%= typeof title !== 'undefined' && title.includes('DPIA') ? 'active' : '' %>"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg> PIA & DPIA</a>
-                        <a href="/assessment/settings" class="nav-item <%= typeof title !== 'undefined' && title.includes('Settings') && breadcrumbs.includes('Assessments') ? 'active' : '' %>"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg> Module Settings</a>
-                    </div>
-                </div>
-
-                <!-- CONSENT & PERMISSIONS -->
+                <!-- 3. PILLAR 2: CONSENT & NOTICES -->
                 <div class="nav-section expanded">
                     <div class="nav-section-header" onclick="toggleNavSection(this)">
                         <svg class="icon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
-                        <span class="title">CONSENT & PERMISSIONS</span>
+                        <span class="title">PILLAR 2: CONSENT &amp; NOTICES</span>
                         <svg class="chevron" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </div>
                     <div class="nav-section-content">
-                        <div class="nav-group-title">SETUP</div>
-                        <a href="/consent/dashboard" class="nav-item <%= typeof title !== 'undefined' && title.includes('Consent Dashboard') ? 'active' : '' %>"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg> Consent Dashboard</a>
-                        <a href="/consent/purposes" class="nav-item <%= typeof title !== 'undefined' && title.includes('Purposes') ? 'active' : '' %>"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> Purposes</a>
-                        <a href="/consent/preferences" class="nav-item <%= typeof title !== 'undefined' && title.includes('Preferences') ? 'active' : '' %>"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg> Preference Library</a>
-                        <a href="/consent/preference-centers" class="nav-item <%= typeof title !== 'undefined' && title.includes('Preference Centers') ? 'active' : '' %>">
-                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                            Preference Centers
-                        </a>
-                        <a href="/consent/collection-points" class="nav-item <%= typeof title !== 'undefined' && title.includes('Collection points') ? 'active' : '' %>">
+                        <a href="/consent/collection-points" class="nav-item <%= typeof path !== 'undefined' && path === '/consent/collection-points' ? 'active' : '' %>">
                             <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
-                            Collection Points
+                            Multilingual Section 5 Notices
                         </a>
-                        <a href="/consent/data-elements" class="nav-item <%= typeof title !== 'undefined' && title.includes('Data Elements') ? 'active' : '' %>">
-                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
-                            Data Elements
-                        </a>
-
-                        <div class="nav-group-title">TRANSACTIONS</div>
-                        <a href="/consent/ledger" class="nav-item <%= typeof title !== 'undefined' && title.includes('ledger') ? 'active' : '' %>">
+                        <a href="/consent/ledger" class="nav-item <%= typeof path !== 'undefined' && path === '/consent/ledger' ? 'active' : '' %>">
                             <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                            Consents & Ledger
+                            Consent Event Ledger (SHA-256)
                         </a>
-                        <a href="/consent/transactions" class="nav-item <%= typeof title !== 'undefined' && title.includes('Transactions') ? 'active' : '' %>">
-                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-                            Transactions
+                        <a href="/consent/purposes" class="nav-item <%= typeof path !== 'undefined' && path === '/consent/purposes' ? 'active' : '' %>">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            Specified Purpose Library
                         </a>
-                        <a href="/consent/policies" class="nav-item <%= typeof title !== 'undefined' && title.includes('Policies') ? 'active' : '' %>">
-                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                            Policies
-                        </a>
-
-                        <div class="nav-group-title">CONFIGURATION</div>
-                        <a href="/consent/portal-settings" class="nav-item <%= typeof title !== 'undefined' && title.includes('Portal Settings') ? 'active' : '' %>">
-                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                            Portal Settings
+                        <a href="/cookies/dashboard" class="nav-item <%= typeof path !== 'undefined' && path.includes('/cookies') ? 'active' : '' %>">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                            Cookie Governance
                         </a>
                     </div>
                 </div>
 
-                <!-- COOKIE MANAGEMENT -->
-                <div class="nav-section expanded">
-                    <div class="nav-section-header" onclick="toggleNavSection(this)">
-                        <svg class="icon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                        <span class="title">COOKIE MANAGEMENT</span>
-                        <svg class="chevron" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                    </div>
-                    <div class="nav-section-content">
-                        <a href="/cookies/dashboard" class="nav-item <%= typeof title !== 'undefined' && title.includes('Cookie Dashboard') ? 'active' : '' %>"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg> Cookie Dashboard</a>
-                        <div class="nav-group-title">OBJECTS</div>
-                        <a href="/cookies/scans" class="nav-item <%= typeof title !== 'undefined' && title.includes('Scans') ? 'active' : '' %>"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle></svg> Site scans</a>
-                        <a href="/cookies/logs" class="nav-item <%= typeof title !== 'undefined' && title.includes('Logs') ? 'active' : '' %>"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg> Consent logs</a>
-                        <a href="/cookies/banners" class="nav-item <%= typeof title !== 'undefined' && title.includes('Banners') ? 'active' : '' %>"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line></svg> Banners</a>
-                        <a href="/cookies/geo-rules" class="nav-item <%= typeof title !== 'undefined' && title.includes('Geo') ? 'active' : '' %>"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg> Geo rules</a>
-                    </div>
-                </div>
-
-                <!-- PRIVACY RIGHTS MANAGEMENT -->
+                <!-- 4. PILLAR 3: CITIZEN RIGHTS & DSR -->
                 <div class="nav-section expanded">
                     <div class="nav-section-header" onclick="toggleNavSection(this)">
                         <svg class="icon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                        <span class="title">PRIVACY RIGHTS MGMT</span>
+                        <span class="title">PILLAR 3: CITIZEN RIGHTS (DSR)</span>
                         <svg class="chevron" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </div>
                     <div class="nav-section-content">
-                        <a href="/privacy/dashboard" class="nav-item <%= typeof title !== 'undefined' && title.includes('Privacy Dashboard') ? 'active' : '' %>"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg> Privacy Dashboard</a>
-                        <a href="/privacy/requests" class="nav-item <%= typeof title !== 'undefined' && title.includes('Requests') ? 'active' : '' %>"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> Data Principal Rights</a>
-                        <a href="/privacy/workflows" class="nav-item <%= typeof title !== 'undefined' && title.includes('Workflows') ? 'active' : '' %>"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg> Workflows</a>
-                        <a href="/privacy/forms" class="nav-item <%= typeof title !== 'undefined' && title.includes('Forms') ? 'active' : '' %>"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg> Request Form Designer</a>
-                    </div>
-                </div>
-
-                <!-- INCIDENTS & BREACHES -->
-                <div class="nav-section expanded">
-                    <div class="nav-section-header" onclick="toggleNavSection(this)">
-                        <svg class="icon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                        <span class="title">INCIDENTS & BREACHES</span>
-                        <svg class="chevron" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                    </div>
-                    <div class="nav-section-content">
-                        <a href="/incidents/dashboard" class="nav-item <%= typeof title !== 'undefined' && title.includes('Dashboard - DPDP_Secure') && typeof breadcrumbs !== 'undefined' && breadcrumbs.includes('Incidents & Breaches') ? 'active' : '' %>">
-                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg> 
-                            Dashboard
+                        <a href="/privacy/requests" class="nav-item <%= typeof path !== 'undefined' && path === '/privacy/requests' ? 'active' : '' %>">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line></svg>
+                            Section 11/12 Requests Queue
                         </a>
-                        <a href="/incidents/management" class="nav-item <%= typeof title !== 'undefined' && title.includes('Incident Management') ? 'active' : '' %>">
-                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg> 
-                            Incident Management
+                        <a href="/privacy/workflows" class="nav-item <%= typeof path !== 'undefined' && path === '/privacy/workflows' ? 'active' : '' %>">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line></svg>
+                            Tax-Lock Collision Workflows
+                        </a>
+                        <a href="/dsr" target="_blank" class="nav-item">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                            Public Citizen Portal (/dsr)
                         </a>
                     </div>
                 </div>
 
-                <!-- INTEGRATIONS -->
+                <!-- 5. PILLAR 4: BREACH TRIAGE & DPBI -->
                 <div class="nav-section expanded">
                     <div class="nav-section-header" onclick="toggleNavSection(this)">
-                        <svg class="icon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg>
-                        <span class="title">INTEGRATIONS</span>
+                        <svg class="icon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                        <span class="title">PILLAR 4: BREACH &amp; DPBI</span>
                         <svg class="chevron" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </div>
                     <div class="nav-section-content">
-                        <a href="/integrations/dashboard" class="nav-item <%= typeof title !== 'undefined' && title.includes('Dashboard - DPDP_Secure') && typeof breadcrumbs !== 'undefined' && breadcrumbs.includes('Integrations') ? 'active' : '' %>">
-                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg> 
-                            Dashboard
+                        <a href="/incidents/management" class="nav-item <%= typeof path !== 'undefined' && path === '/incidents/management' ? 'active' : '' %>">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                            Incident Command &amp; Triage
                         </a>
-                        <a href="/integrations/hub" class="nav-item <%= typeof title !== 'undefined' && title.includes('Integrations Hub') ? 'active' : '' %>">
-                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> 
-                            Integrations Hub
+                        <a href="/incidents/dashboard" class="nav-item <%= typeof path !== 'undefined' && path === '/incidents/dashboard' ? 'active' : '' %>">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                            Breach Posture Dashboard
                         </a>
-                        <a href="/integrations/api-keys" class="nav-item <%= typeof title !== 'undefined' && title.includes('API keys') ? 'active' : '' %>">
-                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg> 
-                            API Keys
+                        <a href="/notifications/center" class="nav-item <%= typeof path !== 'undefined' && path === '/notifications/center' ? 'active' : '' %>">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                            72h DPBI &amp; Citizen Dispatch
                         </a>
                     </div>
                 </div>
 
-                <!-- NOTIFICATIONS -->
-                <div class="nav-section expanded">
+                <!-- SYSTEM ADMINISTRATION & GOVERNANCE -->
+                <div class="nav-section">
                     <div class="nav-section-header" onclick="toggleNavSection(this)">
-                        <svg class="icon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-                        <span class="title">NOTIFICATIONS</span>
+                        <svg class="icon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                        <span class="title">ADMINISTRATION</span>
                         <svg class="chevron" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </div>
                     <div class="nav-section-content">
-                        <a href="/notifications/center" class="nav-item <%= typeof title !== 'undefined' && title.includes('Notification Center') ? 'active' : '' %>">
-                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg> 
-                            Notification Center
+                        <a href="/governance/processors" class="nav-item <%= typeof path !== 'undefined' && path === '/governance/processors' ? 'active' : '' %>">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon></svg>
+                            Data Processors
                         </a>
-                    </div>
-                </div>
-
-                <!-- SETTINGS -->
-                <div class="nav-section expanded">
-                    <div class="nav-section-header" onclick="toggleNavSection(this)">
-                        <svg class="icon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l-.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06-.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                        <span class="title">SETTINGS</span>
-                        <svg class="chevron" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                    </div>
-                    <div class="nav-section-content">
-                        <a href="/settings/general" class="nav-item <%= typeof title !== 'undefined' && title.includes('General Settings') ? 'active' : '' %>"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg> General Settings</a>
-                        <a href="/settings/sso" class="nav-item <%= typeof title !== 'undefined' && title.includes('Single Sign-On') ? 'active' : '' %>"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg> SSO</a>
-                        <a href="/settings/branding" class="nav-item <%= typeof title !== 'undefined' && title.includes('Branding & Theme') ? 'active' : '' %>"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg> Branding & Theme</a>
-                        <a href="/settings/organization" class="nav-item <%= typeof title !== 'undefined' && title.includes('Organization Hierarchy') ? 'active' : '' %>"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg> Organization Hierarchy</a>
-                        <a href="/settings/roles" class="nav-item <%= typeof title !== 'undefined' && title.includes('Roles & Permissions') ? 'active' : '' %>"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> Roles & Permissions</a>
-                        <a href="/settings/audit-log" class="nav-item <%= typeof title !== 'undefined' && title.includes('Audit Log') ? 'active' : '' %>"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> Audit Log</a>
-                        <a href="/settings/localization" class="nav-item <%= typeof title !== 'undefined' && title.includes('Localization') ? 'active' : '' %>"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg> Localization</a>
+                        <a href="/governance/security-controls" class="nav-item <%= typeof path !== 'undefined' && path === '/governance/security-controls' ? 'active' : '' %>">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                            Security Controls
+                        </a>
+                        <a href="/settings/general" class="nav-item <%= typeof path !== 'undefined' && path === '/settings/general' ? 'active' : '' %>">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                            General Settings
+                        </a>
+                        <a href="/settings/audit-log" class="nav-item <%= typeof path !== 'undefined' && path === '/settings/audit-log' ? 'active' : '' %>">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line></svg>
+                            Audit Log
+                        </a>
                     </div>
                 </div>
             </nav>
-
         </aside>
 
         <script>
@@ -266,10 +206,10 @@
 
         <!-- Main Content Wrapper -->
         <div class="main-wrapper">
-            <!-- Topbar -->
+            <!-- Topbar Header -->
             <header class="topbar">
                 <div class="breadcrumb">
-                    <% if (typeof breadcrumbs !== 'undefined') { %>
+                    <% if (typeof breadcrumbs !== 'undefined' && Array.isArray(breadcrumbs)) { %>
                         <% breadcrumbs.forEach((crumb, index) => { %>
                             <% if (index === breadcrumbs.length - 1) { %>
                                 <strong><%= crumb %></strong>
@@ -281,65 +221,37 @@
                         Workspace <span class="divider">&gt;</span> <strong>Dashboard</strong>
                     <% } %>
                 </div>
-                
-                <div style="position: relative; flex: 1; max-width: 400px; margin: 0 32px;">
+
+                <!-- SME Tenant & Real-Time Statutory Health Status -->
+                <div class="topbar-status-badge badge-pill success" style="margin: 0 16px;">
+                    <span class="status-dot-active"></span>
+                    <span><%= (typeof tenant !== 'undefined' && tenant && tenant.name) ? tenant.name : 'Aarogya Diagnostic Center' %></span>
+                    <span style="opacity: 0.5;">&bull;</span>
+                    <strong>DPDP Compliance: <%= typeof complianceScore !== 'undefined' ? complianceScore : 84 %>%</strong>
+                </div>
+
+                <!-- Global Quick Action Command Bar (Ctrl + K) -->
+                <div style="position: relative; flex: 1; max-width: 380px; margin: 0 16px;">
                     <div class="search-bar" style="width: 100%;">
                         <svg class="search-icon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                        <input type="text" class="search-input" placeholder="Search records, modules..." value="te" id="globalSearchInput" style="width: 100%;">
-                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" style="cursor: pointer; position: absolute; right: 12px; top: 12px;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                    </div>
-                    
-                    <!-- Global Search Dropdown -->
-                    <div id="globalSearchDropdown" style="display: none; position: absolute; top: 100%; left: 0; width: 100%; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 8px; margin-top: 8px; z-index: 200; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5); overflow: hidden;">
-                        <div style="padding: 8px 0;">
-                            <% const searchResults = [
-                                {icon: 'search', title: 'Connectors & Scans', sub: 'Data Intelligence'},
-                                {icon: 'search', title: 'Data Assets', sub: 'Data Intelligence'},
-                                {icon: 'none', title: 'Classification Tags', sub: 'Data Intelligence', highlight: true},
-                                {icon: 'search', title: 'Processing Activities', sub: 'Data Intelligence'},
-                                {icon: 'search', title: 'Data Lineage', sub: 'Data Intelligence'},
-                                {icon: 'search', title: 'Assessment Enrichment', sub: 'Data Intelligence'},
-                                {icon: 'search', title: 'Data Processors', sub: 'Data Intelligence'},
-                                {icon: 'search', title: 'Retention', sub: 'Data Intelligence'}
-                            ] %>
-                            <% searchResults.forEach(res => { %>
-                                <div style="display: flex; gap: 12px; padding: 12px 16px; align-items: center; cursor: pointer; <%= res.highlight ? 'background: rgba(253, 226, 237, 0.9); color: #831843;' : 'color: white;' %>" class="search-result-item">
-                                    <% if (res.icon === 'search') { %>
-                                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" style="opacity: 0.5;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                                    <% } else { %>
-                                        <div style="width: 16px; height: 16px; background: rgba(0,0,0,0.1); border-radius: 4px;"></div>
-                                    <% } %>
-                                    <div>
-                                        <div style="font-size: 13px; font-weight: 600; margin-bottom: 2px; <%= res.highlight ? 'color: #831843;' : 'color: white;' %>"><%= res.title %></div>
-                                        <div style="font-size: 11px; font-weight: 500; <%= res.highlight ? 'color: #9d174d;' : 'color: var(--text-muted);' %>"><%= res.sub %></div>
-                                    </div>
-                                </div>
-                            <% }) %>
-                        </div>
+                        <input type="text" class="search-input" placeholder="Search silos, Aadhaar, DSR tickets... (Ctrl + K)" id="globalSearchInput" style="width: 100%;">
                     </div>
                 </div>
-    
-                <script>
-                const searchInput = document.getElementById('globalSearchInput');
-                const searchDropdown = document.getElementById('globalSearchDropdown');
-                searchInput.addEventListener('focus', () => { searchDropdown.style.display = 'block'; });
-                document.addEventListener('click', (e) => {
-                    if (!searchInput.contains(e.target) && !searchDropdown.contains(e.target)) {
-                        searchDropdown.style.display = 'none';
-                    }
-                });
-                </script>
 
+                <!-- User Profile & Action Dropdown -->
                 <div class="topbar-actions">
-                    <button class="icon-btn"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg></button>
-                    <button class="icon-btn"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg></button>
-                    <div class="user-profile">
-                        <div class="avatar">T</div>
-                        <span class="email">tenant_admin@dpdpsecure.in</span>
-                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    <a href="/notifications/center" class="icon-btn" title="Notification Alerts">
+                        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                    </a>
+                    <div class="user-profile" onclick="window.location.href='/profile'" title="Logged in as <%= (typeof currentUser !== 'undefined' && currentUser && currentUser.name) ? currentUser.name : 'Ramesh Kumar' %>">
+                        <div class="avatar"><%= (typeof currentUser !== 'undefined' && currentUser && currentUser.name) ? currentUser.name.charAt(0) : 'R' %></div>
+                        <span class="email truncate-text" style="max-width: 180px;"><%= (typeof currentUser !== 'undefined' && currentUser && currentUser.name) ? currentUser.name : 'Ramesh Kumar' %> (<%= (typeof currentUser !== 'undefined' && currentUser && currentUser.role) ? currentUser.role : 'SME_OWNER' %>)</span>
                     </div>
+                    <a href="/auth/logout" class="icon-btn" title="Logout" style="color: var(--text-muted);">
+                        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    </a>
                 </div>
             </header>
 
-            <!-- Page Content -->
+            <!-- Page Content Injection -->
             <main class="content">

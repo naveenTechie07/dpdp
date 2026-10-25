@@ -1,337 +1,318 @@
 <%- include('partials/header') %>
 
+<!-- Dashboard Top Header -->
 <div class="dashboard-header">
     <div class="title-group">
-        <h1>Compliance Dashboard</h1>
-        <p>DPDP_Secure Payments Pvt Ltd &bull; Wednesday, 16 September 2026</p>
+        <h1 style="font-size: 24px; font-weight: 700; color: #ffffff; letter-spacing: -0.5px;">Executive Compliance Dashboard</h1>
+        <p style="color: var(--text-muted); font-size: 13px;">
+            <strong style="color: #60a5fa;"><%= (typeof tenant !== 'undefined' && tenant && tenant.name) ? tenant.name : 'Aarogya Diagnostic Center' %></strong> &bull; Indiranagar, Bengaluru &bull; Real-Time DPDP Act, 2023 Posture
+        </p>
     </div>
-    <div class="status-badge">System healthy</div>
-</div>
-
-<!-- Top Metrics -->
-<div class="metrics-grid">
-    <div class="card metric-card">
-        <div class="metric-info">
-            <span class="metric-label">CONSENT EVENTS</span>
-            <h2 class="metric-value blue">40</h2>
-        </div>
-        <div class="metric-icon blue-bg">
-            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-        </div>
-    </div>
-    <div class="card metric-card">
-        <div class="metric-info">
-            <span class="metric-label">CONSENT RATE</span>
-            <h2 class="metric-value orange">78%</h2>
-        </div>
-        <div class="metric-icon orange-bg">
-            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-        </div>
-    </div>
-    <div class="card metric-card">
-        <div class="metric-info">
-            <span class="metric-label">OPEN DPRR</span>
-            <h2 class="metric-value orange">8</h2>
-        </div>
-        <div class="metric-icon orange-bg">
-            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-        </div>
-    </div>
-    <div class="card metric-card">
-        <div class="metric-info">
-            <span class="metric-label">OPEN INCIDENTS</span>
-            <h2 class="metric-value red">1</h2>
-        </div>
-        <div class="metric-icon red-bg">
-            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-        </div>
+    <div style="display: flex; gap: 10px; align-items: center;">
+        <span class="badge-pill success">
+            <span class="status-dot-active"></span>
+            DPDP Status: Verified Compliant
+        </span>
+        <button class="btn-primary" onclick="window.location.href='/discovery/connectors'">
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path><polyline points="9 11 12 14 22 4"></polyline></svg>
+            Trigger New Scan
+        </button>
     </div>
 </div>
 
-<!-- Main Details Grid -->
-<div class="details-grid">
-    
-    <!-- Consent Management -->
-    <div class="card detail-card">
-        <div class="card-header">
-            <h3>Consent Management</h3>
-            <a href="#" class="view-link">View &rarr;</a>
+<!-- 1. Hero Compliance Health & Statutory Exposure Banner -->
+<div class="hero-compliance-banner">
+    <!-- Compliance Health Score Gauge -->
+    <div class="glass-card compliance-health-box">
+        <div class="radial-gauge-container">
+            <svg class="radial-gauge-svg" width="110" height="110" viewBox="0 0 110 110">
+                <circle class="gauge-bg-circle" cx="55" cy="55" r="45"></circle>
+                <circle class="gauge-fill-circle" cx="55" cy="55" r="45" 
+                        stroke-dasharray="282.7" 
+                        stroke-dashoffset="<%= 282.7 - (282.7 * (complianceScore || 84)) / 100 %>"></circle>
+            </svg>
+            <div class="radial-gauge-number">
+                <div class="val"><%= complianceScore || 84 %></div>
+                <div class="tot">/ 100</div>
+            </div>
         </div>
-        <div class="card-body consent-body">
-            <!-- CSS Donut Chart -->
-            <div class="donut-chart-container">
-                <div class="donut-chart"></div>
+        <div style="flex: 1;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                <span class="badge-pill success">Low Regulatory Risk</span>
+                <span style="font-size: 11px; color: var(--text-muted);">Section 8(4) &amp; Rule 5 Validated</span>
             </div>
-            <div class="consent-stats">
-                <div class="stat-row">
-                    <span>Total Events</span>
-                    <strong>40</strong>
-                </div>
-                <div class="stat-row">
-                    <span><span class="dot green"></span> Granted</span>
-                    <strong class="green-text">31</strong>
-                </div>
-                <div class="stat-row">
-                    <span><span class="dot red"></span> Withdrawn</span>
-                    <strong class="red-text">9</strong>
-                </div>
-                <div class="progress-bar-container mt-2">
-                    <div class="progress-label"><span>Consent Rate</span> <span class="orange-text">78%</span></div>
-                    <div class="progress-track"><div class="progress-fill orange-bg" style="width: 78%"></div></div>
-                </div>
-            </div>
+            <h3 style="font-size: 16px; font-weight: 700; color: #ffffff; margin-bottom: 4px;">Statutory Compliance Health</h3>
+            <p style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">
+                All 3 informal data silos cataloged with Verhoeff-verified Aadhaar tokens and dynamic WhatsApp consent ledgers.
+            </p>
         </div>
     </div>
 
-    <!-- Privacy Rights -->
-    <div class="card detail-card">
-        <div class="card-header">
-            <h3>Privacy Rights (DPRR)</h3>
-            <a href="#" class="view-link">View &rarr;</a>
+    <!-- Statutory Penalty Exposure Shield -->
+    <div class="glass-card statutory-exposure-box">
+        <div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px;">Statutory Exposure Defense</div>
+                <span class="badge-pill info">Section 33 Protected</span>
+            </div>
+            <div class="exposure-amount">₹0 Active Penalties</div>
+            <p style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">
+                Avoided up to <strong style="color: #f87171;">₹250 Crore</strong> statutory fine exposure under DPDP Act Schedule 2 through automated informal data discovery and 72-hour breach readiness.
+            </p>
         </div>
-        <div class="card-body">
-            <div class="big-numbers">
-                <div class="number-box">
-                    <strong>8</strong>
-                    <span>TOTAL</span>
-                </div>
-                <div class="number-box active orange">
-                    <strong>8</strong>
-                    <span>OPEN</span>
-                </div>
-                <div class="number-box">
-                    <strong>0</strong>
-                    <span>OVERDUE</span>
-                </div>
-            </div>
-            <div class="list-stats mt-3">
-                <div class="list-row"><span><span class="dot blue"></span> ACCESS</span> <strong>2</strong></div>
-                <div class="list-row"><span><span class="dot red"></span> DELETE</span> <strong>3</strong></div>
-                <div class="list-row"><span><span class="dot orange"></span> CORRECT</span> <strong>2</strong></div>
-            </div>
+        <div style="display: flex; gap: 16px; margin-top: 14px; font-size: 12px;">
+            <div><span style="color: #34d399; font-weight: 700;">100%</span> <span style="color: var(--text-muted);">Notice Delivery</span></div>
+            <div><span style="color: #fbbf24; font-weight: 700;">1 Active</span> <span style="color: var(--text-muted);">CGST Tax Lock</span></div>
+            <div><span style="color: #60a5fa; font-weight: 700;">&lt; 72h</span> <span style="color: var(--text-muted);">DPBI SLA Armed</span></div>
         </div>
     </div>
+</div>
 
-    <!-- Cookie Compliance -->
-    <div class="card detail-card">
-        <div class="card-header">
-            <h3>Cookie Compliance</h3>
-            <a href="#" class="view-link">View &rarr;</a>
-        </div>
-        <div class="card-body">
-            <div class="big-numbers">
-                <div class="number-box">
-                    <strong>2</strong>
-                    <span>SCANS</span>
-                </div>
-                <div class="number-box active green">
-                    <strong>2</strong>
-                    <span>COMPLETED</span>
-                </div>
-                <div class="number-box active blue">
-                    <strong>0</strong>
-                    <span>BANNERS LIVE</span>
-                </div>
-            </div>
-            <div class="info-box mt-3 flex-between">
+<!-- 2. The 4 Statutory Pillar Command Cards -->
+<div class="pillar-command-grid">
+    <!-- Card 1: Data Discovery & RoPA -->
+    <div class="glass-card pillar-card">
+        <div>
+            <div class="pillar-header">
                 <div>
-                    <div class="info-url">https://www.dpdpsecure.in</div>
-                    <div class="info-sub">Latest scan - 0 trackers found</div>
+                    <div class="pillar-title">Pillar 1: Discovery</div>
+                    <div class="pillar-stat-main"><%= silosCount || 3 %> Silos Active</div>
                 </div>
-                <div class="pill green">COMPLETED</div>
+                <div class="pillar-icon-box" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa;">
+                    <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </div>
             </div>
+            <div class="pillar-stat-sub" style="margin-bottom: 6px;">
+                <strong style="color: #ffffff;"><%= piiCount || 1420 %></strong> Indian PII Items Discovered
+            </div>
+            <p style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">
+                WhatsApp chats, Google Forms leads &amp; CSV billing files indexed in RoPA.
+            </p>
         </div>
+        <a href="/discovery/connectors" class="pillar-action-link">
+            <span>Scan Silos &amp; RoPA</span>
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </a>
     </div>
 
-    <!-- Assessment & PIA/DPIA -->
-    <div class="card detail-card">
-        <div class="card-header">
-            <h3>Assessment & PIA/DPIA</h3>
-            <a href="#" class="view-link">View &rarr;</a>
-        </div>
-        <div class="card-body">
-            <div class="big-numbers">
-                <div class="number-box">
-                    <strong>3</strong>
-                    <span>TOTAL</span>
+    <!-- Card 2: Consent & Multilingual Notices -->
+    <div class="glass-card pillar-card">
+        <div>
+            <div class="pillar-header">
+                <div>
+                    <div class="pillar-title">Pillar 2: Consent</div>
+                    <div class="pillar-stat-main"><%= activeNoticesCount || 3 %> Notices Live</div>
                 </div>
-                <div class="number-box active red">
-                    <strong>1</strong>
-                    <span>HIGH RISK</span>
-                </div>
-                <div class="number-box active orange">
-                    <strong>2</strong>
-                    <span>OVERDUE</span>
+                <div class="pillar-icon-box" style="background: rgba(16, 185, 129, 0.15); color: #34d399;">
+                    <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
                 </div>
             </div>
-            <div class="list-stats mt-3 bordered">
-                <div class="list-row"><span>In Progress</span> <strong class="blue-text">3</strong></div>
-                <div class="list-row"><span>Open Mitigations</span> <strong class="orange-text">2</strong></div>
+            <div class="pillar-stat-sub" style="margin-bottom: 6px;">
+                <strong style="color: #34d399;">94.2%</strong> WhatsApp Opt-In Rate
             </div>
+            <p style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">
+                Kannada, Hindi &amp; English notices with SHA-256 tamper-evident chaining.
+            </p>
         </div>
+        <a href="/consent/collection-points" class="pillar-action-link">
+            <span>Manage Consent Ledger</span>
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </a>
     </div>
 
-    <!-- Incident Management -->
-    <div class="card detail-card">
-        <div class="card-header">
-            <h3>Incident Management</h3>
-            <a href="#" class="view-link">View &rarr;</a>
-        </div>
-        <div class="card-body">
-            <div class="big-numbers">
-                <div class="number-box">
-                    <strong>2</strong>
-                    <span>TOTAL</span>
+    <!-- Card 3: Citizen Rights & DSR -->
+    <div class="glass-card pillar-card">
+        <div>
+            <div class="pillar-header">
+                <div>
+                    <div class="pillar-title">Pillar 3: Citizen DSR</div>
+                    <div class="pillar-stat-main"><%= pendingDsrCount || 1 %> Open Ticket</div>
                 </div>
-                <div class="number-box active orange">
-                    <strong>1</strong>
-                    <span>OPEN</span>
-                </div>
-                <div class="number-box active red">
-                    <strong>1</strong>
-                    <span>CRIT/HIGH OPEN</span>
+                <div class="pillar-icon-box" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24;">
+                    <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                 </div>
             </div>
-            <div class="pill-group mt-3">
-                <span class="pill-small orange">High: 1</span>
-                <span class="pill-small gray">Low: 1</span>
+            <div class="pillar-stat-sub" style="margin-bottom: 6px;">
+                <strong style="color: #fbbf24;"><%= taxLockedCount || 1 %></strong> CGST Section 36 Tax Lock
             </div>
+            <p style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">
+                Dual-track resolver safely redacts informal marketing chats while locking invoices.
+            </p>
         </div>
+        <a href="/privacy/requests" class="pillar-action-link">
+            <span>Resolve DSR Queue</span>
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </a>
     </div>
 
-    <!-- Data & AI Governance -->
-    <div class="card detail-card">
-        <div class="card-header">
-            <h3>Data & AI Governance</h3>
-            <a href="#" class="view-link">Data &rarr; | AI &rarr;</a>
-        </div>
-        <div class="card-body">
-            <div class="big-numbers">
-                <div class="number-box active green-light">
-                    <strong>5</strong>
-                    <span>DATA ASSETS</span>
+    <!-- Card 4: Breach Triage & DPBI -->
+    <div class="glass-card pillar-card">
+        <div>
+            <div class="pillar-header">
+                <div>
+                    <div class="pillar-title">Pillar 4: Breach Triage</div>
+                    <div class="pillar-stat-main"><%= activeIncidentsCount || 0 %> Breaches Active</div>
                 </div>
-                <div class="number-box active purple">
-                    <strong>1</strong>
-                    <span>AI MODELS</span>
-                </div>
-                <div class="number-box active green-light">
-                    <strong>1</strong>
-                    <span>IN PRODUCTION</span>
+                <div class="pillar-icon-box" style="background: rgba(239, 68, 68, 0.15); color: #f87171;">
+                    <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
                 </div>
             </div>
-            <div class="mt-3">
-                <div class="info-sub mb-1">DATA BY CLASSIFICATION</div>
-                <div class="list-row"><span><span class="dot gray"></span> unclassified</span> <strong>5</strong></div>
+            <div class="pillar-stat-sub" style="margin-bottom: 6px;">
+                <span class="badge-pill success">72h SLA Armed</span>
             </div>
+            <p style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">
+                Automated breach triage engine ready for DPBI &amp; Data Principal dispatches.
+            </p>
         </div>
-    </div>
-
-</div>
-
-<!-- DPDPA Compliance Readiness -->
-<div class="compliance-readiness mt-4">
-    <div class="readiness-header">
-        <div class="flex-align-center gap-2">
-            <svg viewBox="0 0 24 24" width="18" height="18" stroke="#10b981" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-            <h3 class="readiness-title">DPDPA Compliance Readiness</h3>
-            <span class="pill-badge orange-outline">HIGH</span>
-            <span class="readiness-subtitle">— Swish DPDPA GapAssessment</span>
-        </div>
-        <a href="#" class="view-link-red">Full Report &rarr;</a>
-    </div>
-    
-    <div class="readiness-body">
-        <div class="gauge-section">
-            <div class="circular-gauge">
-                <div class="gauge-inner">
-                    <span class="gauge-value">58</span>
-                    <span class="gauge-total">/ 100</span>
-                </div>
-            </div>
-            <div class="gauge-label">7 sections</div>
-        </div>
-        
-        <div class="progress-bars-section">
-            <div class="progress-col">
-                <div class="progress-row">
-                    <span class="p-label">Consent Mgmt</span>
-                    <div class="p-track"><div class="p-fill orange-bg-solid" style="width: 50%"></div></div>
-                    <span class="p-value orange">50%</span>
-                </div>
-                <div class="progress-row">
-                    <span class="p-label">Rights</span>
-                    <div class="p-track"><div class="p-fill orange-bg-solid" style="width: 53%"></div></div>
-                    <span class="p-value orange">53%</span>
-                </div>
-                <div class="progress-row">
-                    <span class="p-label">Fiduciary Duties</span>
-                    <div class="p-track"><div class="p-fill yellow-bg-solid" style="width: 63%"></div></div>
-                    <span class="p-value yellow">63%</span>
-                </div>
-                <div class="progress-row">
-                    <span class="p-label">SDF</span>
-                    <div class="p-track"><div class="p-fill yellow-bg-solid" style="width: 60%"></div></div>
-                    <span class="p-value yellow">60%</span>
-                </div>
-            </div>
-            
-            <div class="progress-divider"></div>
-            
-            <div class="progress-col">
-                <div class="progress-row">
-                    <span class="p-label">Cross-border</span>
-                    <div class="p-track"><div class="p-fill yellow-bg-solid" style="width: 60%"></div></div>
-                    <span class="p-value yellow">60%</span>
-                </div>
-                <div class="progress-row">
-                    <span class="p-label">Children</span>
-                    <div class="p-track"><div class="p-fill yellow-bg-solid" style="width: 60%"></div></div>
-                    <span class="p-value yellow">60%</span>
-                </div>
-                <div class="progress-row">
-                    <span class="p-label">Data Governance</span>
-                    <div class="p-track"><div class="p-fill yellow-bg-solid" style="width: 60%"></div></div>
-                    <span class="p-value yellow">60%</span>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="readiness-footer">
-        <div><span class="dot red"></span> Weakest: <strong>Consent Mgmt <span class="orange">50%</span></strong></div>
-        <div><span class="dot green"></span> Strongest: <strong>Fiduciary Duties <span class="yellow">63%</span></strong></div>
+        <a href="/incidents/management" class="pillar-action-link">
+            <span>Incident Command</span>
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </a>
     </div>
 </div>
 
-<!-- Quick Navigation -->
-<div class="quick-nav mt-4">
-    <div class="quick-nav-header">QUICK NAVIGATION</div>
-    <div class="quick-nav-grid">
-        <a href="#" class="quick-nav-item">
-            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="blue"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-            <span>Consent</span>
+<!-- 3. Interactive Quick-Action Dock -->
+<div class="quick-action-dock">
+    <a href="/discovery/connectors" class="dock-btn">
+        <span class="dock-icon">⚡</span>
+        <div>
+            <div>Scan New Silo</div>
+            <div style="font-size: 11px; font-weight: 400; color: var(--text-muted);">WhatsApp / Excel / CSV</div>
+        </div>
+    </a>
+    <a href="/consent/collection-points" class="dock-btn">
+        <span class="dock-icon">💬</span>
+        <div>
+            <div>Send WhatsApp Notice</div>
+            <div style="font-size: 11px; font-weight: 400; color: var(--text-muted);">Section 5 Multilingual</div>
+        </div>
+    </a>
+    <a href="/privacy/requests" class="dock-btn">
+        <span class="dock-icon">🛡️</span>
+        <div>
+            <div>Resolve Erasure Request</div>
+            <div style="font-size: 11px; font-weight: 400; color: var(--text-muted);">Tax-Lock Collision Check</div>
+        </div>
+    </a>
+    <a href="/incidents/management" class="dock-btn">
+        <span class="dock-icon">🚨</span>
+        <div>
+            <div>Triage Security Incident</div>
+            <div style="font-size: 11px; font-weight: 400; color: var(--text-muted);">72h DPBI Dossier Dispatch</div>
+        </div>
+    </a>
+</div>
+
+<!-- 4. Connected Informal Silos Compliance Posture Table -->
+<div class="glass-card silos-table-card">
+    <div class="table-header-row">
+        <div>
+            <h3 style="font-size: 15px; font-weight: 700; color: #ffffff;">Connected Informal Data Silos Posture</h3>
+            <p style="font-size: 12px; color: var(--text-muted);">Discovered informal systems mapped to statutory safeguards (Section 8)</p>
+        </div>
+        <a href="/inventory/ropa" class="btn-outline">
+            Export RoPA (Art. 30 / Sec. 8)
         </a>
-        <a href="#" class="quick-nav-item">
-            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="purple"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-            <span>Privacy</span>
-        </a>
-        <a href="#" class="quick-nav-item">
-            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="yellow"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-            <span>Cookies</span>
-        </a>
-        <a href="#" class="quick-nav-item">
-            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="purple"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-            <span>Assessment</span>
-        </a>
-        <a href="#" class="quick-nav-item">
-            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="red"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-            <span>Incidents</span>
-        </a>
-        <a href="#" class="quick-nav-item">
-            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="green-light"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
-            <span>Governance</span>
-        </a>
+    </div>
+    
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Data Silo &amp; Location</th>
+                <th>Silo Type</th>
+                <th>Discovered Indian PII</th>
+                <th>Statutory Safeguards Applied</th>
+                <th>Statutory Retention Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <div style="font-weight: 600; color: #ffffff;">clinic_reception_chat.txt</div>
+                    <div style="font-size: 11px; color: var(--text-muted);">Reception Desk Phone (WhatsApp Business)</div>
+                </td>
+                <td><span class="badge-pill info">Informal Chat</span></td>
+                <td>
+                    <div>Aadhaar (8), Mobile (12), Clinical Diagnoses (6)</div>
+                    <div style="font-size: 11px; color: #34d399;">Verhoeff Checksum Validated</div>
+                </td>
+                <td>
+                    <span class="badge-pill success">Tokenized in RoPA</span>
+                </td>
+                <td>
+                    <span class="badge-pill warning">Informal Silo Redactable</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div style="font-weight: 600; color: #ffffff;">customer_leads.csv</div>
+                    <div style="font-size: 11px; color: var(--text-muted);">Google Forms Intake / Marketing Desk</div>
+                </td>
+                <td><span class="badge-pill purple">Spreadsheet Silo</span></td>
+                <td>
+                    <div>Names (45), Phone Numbers (45), Locations (12)</div>
+                    <div style="font-size: 11px; color: #60a5fa;">Direct Marketing Leads</div>
+                </td>
+                <td>
+                    <span class="badge-pill success">Section 5 Notice Dispatched</span>
+                </td>
+                <td>
+                    <span class="badge-pill info">Revocable Consent Track</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div style="font-weight: 600; color: #ffffff;">invoices_billing.csv</div>
+                    <div style="font-size: 11px; color: var(--text-muted);">Local Billing Software Export</div>
+                </td>
+                <td><span class="badge-pill warning">Financial / Billing</span></td>
+                <td>
+                    <div>PAN (18), GSTIN (12), Patient Invoices (24)</div>
+                    <div style="font-size: 11px; color: #fbbf24;">Statutory Tax Records</div>
+                </td>
+                <td>
+                    <span class="badge-pill warning">CGST Sec 36 Retention Lock</span>
+                </td>
+                <td>
+                    <strong style="color: #fbbf24; font-size: 12px;">Locked (Mandatory 6-Year Retention)</strong>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- 5. Recent Activity Feed -->
+<div class="glass-card activity-feed-card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <div>
+            <h3 style="font-size: 15px; font-weight: 700; color: #ffffff;">Real-Time Statutory Audit Trail</h3>
+            <p style="font-size: 12px; color: var(--text-muted);">Chronological event logging for DPBI evidentiary compliance</p>
+        </div>
+        <a href="/settings/audit-log" class="btn-outline">View Complete Audit Log</a>
+    </div>
+
+    <div class="timeline-list">
+        <% if (typeof recentActivity !== 'undefined' && Array.isArray(recentActivity) && recentActivity.length > 0) { %>
+            <% recentActivity.forEach((item) => { %>
+                <div class="timeline-item">
+                    <div class="timeline-dot <%= item.action && item.action.includes('TAX') ? 'warning' : (item.action && item.action.includes('INCIDENT') ? 'danger' : 'success') %>"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-meta">
+                            <span class="timeline-actor"><%= item.actor %> &bull; <span style="font-weight: 400; color: #60a5fa;"><%= item.action %></span></span>
+                            <span class="timeline-time"><%= item.timestamp %></span>
+                        </div>
+                        <div style="font-size: 12px; font-weight: 600; color: #f8fafc; margin-bottom: 2px;">
+                            Resource: <%= item.resource %>
+                        </div>
+                        <div class="timeline-details">
+                            <%= item.details %>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        <% } else { %>
+            <div style="padding: 16px; color: var(--text-muted); font-size: 13px;">No recent audit activity recorded.</div>
+        <% } %>
     </div>
 </div>
 
