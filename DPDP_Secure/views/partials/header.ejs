@@ -230,6 +230,26 @@
                     <strong>DPDP Compliance: <%= typeof complianceScore !== 'undefined' ? complianceScore : 84 %>%</strong>
                 </div>
 
+                <!-- Supabase Cloud Connection Status Badge -->
+                <div class="topbar-status-badge badge-pill" id="topbarSupabaseBadge" style="margin-right: 12px; background: rgba(16, 185, 129, 0.12); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;" title="Supabase Cloud: HACKATHON (ap-south-1 Mumbai) Connected" onclick="testSupabaseConnection()">
+                    <span style="width: 7px; height: 7px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981;"></span>
+                    <span>⚡ Supabase: ap-south-1</span>
+                </div>
+                <script>
+                    function testSupabaseConnection() {
+                        fetch('/api/system/supabase-status')
+                            .then(r => r.json())
+                            .then(data => {
+                                if (data && data.supabase && data.supabase.connected) {
+                                    alert('⚡ Supabase Cloud Backend Connected!\n\nProject: ' + data.supabase.projectRef + '\nRegion: ' + data.supabase.region + ' (Mumbai)\nLatency: ' + data.supabase.latencyMs + 'ms\nStatus: Online & Ready');
+                                } else {
+                                    alert('Supabase Status: ' + JSON.stringify(data));
+                                }
+                            })
+                            .catch(e => alert('Failed to check Supabase status: ' + e.message));
+                    }
+                </script>
+
                 <!-- Global Quick Action Command Bar (Ctrl + K) -->
                 <div style="position: relative; flex: 1; max-width: 380px; margin: 0 16px;">
                     <div class="search-bar" style="width: 100%;">

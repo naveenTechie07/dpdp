@@ -59,6 +59,22 @@ async function logEvent(tenantId = DEFAULT_TENANT_ID, actor, action, resource, d
     [id, tenantId, actor, action, resource, detailsJson, timestamp, prevHash, hash]
   );
 
+  // Auto-sync to Supabase Cloud
+  try {
+    const { syncAuditRecord } = require('../services/supabaseClient');
+    syncAuditRecord({
+      id,
+      tenantId,
+      eventType: action,
+      entityId: resource,
+      actorId: actor,
+      details: detailsJson,
+      previousHash: prevHash,
+      currentHash: hash,
+      timestamp
+    }).catch(() => {});
+  } catch (e) {}
+
   return {
     id,
     tenantId,

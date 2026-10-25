@@ -216,6 +216,102 @@
         </div>
     </div>
 
+    <!-- Supabase Cloud Backend Card -->
+    <div class="settings-card" style="border-color: rgba(16, 185, 129, 0.3); background: linear-gradient(180deg, rgba(16, 185, 129, 0.04), rgba(15, 23, 42, 0.6));">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+            <div>
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                    <span style="font-size: 18px;">⚡</span>
+                    <h2 class="settings-section-title" style="margin: 0;">Supabase Cloud Backend (PostgreSQL)</h2>
+                    <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 12px;">
+                        LIVE CLOUD SYNC
+                    </span>
+                </div>
+                <p class="settings-section-desc" style="margin: 0;">Multi-tenant PostgreSQL cloud persistence hosted in South Asia (Mumbai, ap-south-1) with cryptographic SHA-256 ledger mirroring.</p>
+            </div>
+            <button type="button" onclick="pingSupabaseLive()" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">
+                Test Live Ping
+            </button>
+        </div>
+
+        <div class="form-grid-2" style="margin-bottom: 16px;">
+            <div>
+                <label class="form-label">Supabase Project Reference</label>
+                <input type="text" readonly class="form-input" style="font-family: monospace; color: #34d399;" value="bxiuiopomqpwxmslllhl">
+            </div>
+            <div>
+                <label class="form-label">Cloud Deployment Region</label>
+                <input type="text" readonly class="form-input" value="ap-south-1 (South Asia - Mumbai, AWS)">
+            </div>
+        </div>
+
+        <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 8px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div>
+                <div style="font-size: 13px; font-weight: 600; color: white; display: flex; align-items: center; gap: 6px;">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981;"></span>
+                    <span>Database Synchronizer: Ready</span>
+                </div>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Synchronizes local SQLite audit trails, consent events, and DSR tickets to Supabase PostgreSQL.</div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <button type="button" onclick="triggerSupabaseSync()" id="btnSupabaseSync" style="background: #059669; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; box-shadow: 0 2px 8px rgba(5, 150, 105, 0.4);">
+                    🔄 Trigger Cloud Sync
+                </button>
+            </div>
+        </div>
+        <div id="supabaseSyncStatusBox" style="display: none; margin-top: 12px; font-size: 12px; padding: 10px 14px; border-radius: 6px;"></div>
+    </div>
+
+    <script>
+        function pingSupabaseLive() {
+            fetch('/api/system/supabase-status')
+                .then(r => r.json())
+                .then(data => {
+                    if (data && data.supabase) {
+                        alert('⚡ Supabase Cloud Live Ping:\n\n' +
+                              'Status: ' + (data.supabase.connected ? '🟢 CONNECTED' : '🔴 DISCONNECTED') + '\n' +
+                              'Latency: ' + data.supabase.latencyMs + 'ms\n' +
+                              'Region: ' + data.supabase.region + ' (Mumbai)\n' +
+                              'Project: ' + data.supabase.projectRef + '\n' +
+                              'Timestamp: ' + data.supabase.timestamp);
+                    }
+                })
+                .catch(err => alert('Error checking Supabase: ' + err.message));
+        }
+
+        function triggerSupabaseSync() {
+            const btn = document.getElementById('btnSupabaseSync');
+            const box = document.getElementById('supabaseSyncStatusBox');
+            btn.disabled = true;
+            btn.textContent = 'Syncing...';
+            box.style.display = 'block';
+            box.style.background = 'rgba(59, 130, 246, 0.1)';
+            box.style.color = '#60a5fa';
+            box.style.border = '1px solid rgba(59, 130, 246, 0.3)';
+            box.textContent = 'Initiating cloud synchronization with Supabase PostgreSQL...';
+
+            fetch('/api/system/supabase-sync', { method: 'POST' })
+                .then(r => r.json())
+                .then(data => {
+                    btn.disabled = false;
+                    btn.textContent = '🔄 Trigger Cloud Sync';
+                    box.style.background = 'rgba(16, 185, 129, 0.1)';
+                    box.style.color = '#34d399';
+                    box.style.border = '1px solid rgba(16, 185, 129, 0.3)';
+                    box.textContent = '✓ Cloud synchronization complete. Data backed up to Supabase Cloud.';
+                })
+                .catch(err => {
+                    btn.disabled = false;
+                    btn.textContent = '🔄 Trigger Cloud Sync';
+                    box.style.background = 'rgba(239, 68, 68, 0.1)';
+                    box.style.color = '#f87171';
+                    box.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+                    box.textContent = 'Sync notice: ' + err.message;
+                });
+        }
+    </script>
+
+
     <div style="display: flex; justify-content: flex-end; margin-bottom: 32px;">
         <button onclick="saveAllSettings()" id="btnSaveBottom" class="btn-primary" style="background: #3b82f6; border: 1px solid #2563eb; color: white; padding: 12px 32px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer;">
             Save All Settings

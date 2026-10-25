@@ -288,4 +288,27 @@ router.post('/api/settings/localization', async (req, res) => {
 // Demo Seeder Reset API
 router.post('/api/demo/reset', demoController.resetDemoEnvironment);
 
+// Supabase Cloud System Status & Sync APIs
+const { pingSupabase, isSupabaseAvailable } = require('../services/supabaseClient');
+const { syncAllToSupabase } = require('../../scripts/syncToSupabase');
+
+router.get('/api/system/supabase-status', async (req, res) => {
+  try {
+    const status = await pingSupabase();
+    res.json({ success: true, supabase: status });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.post('/api/system/supabase-sync', async (req, res) => {
+  try {
+    await syncAllToSupabase();
+    res.json({ success: true, message: 'Supabase cloud synchronization completed' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 module.exports = router;
+

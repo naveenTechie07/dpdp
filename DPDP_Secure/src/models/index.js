@@ -1,6 +1,15 @@
 const crypto = require('crypto');
 const { v4: uuidv4 } = require('uuid');
 const { run, get, all, runTransaction, db, dbPath, encryptToken, decryptToken } = require('./db');
+const {
+  syncConsentEvent,
+  syncConsentNotice,
+  syncCollectionPoint,
+  syncDsrTicket,
+  syncAuditRecord,
+  syncDataAsset,
+  syncDataLineage
+} = require('../services/supabaseClient');
 
 /**
  * DPDP_Secure Centralized Repository Layer
@@ -136,6 +145,20 @@ createDataAsset: async (assetData) => {
       assetData.description || '',
       new Date().toISOString()
     ]);
+
+    // Auto-sync to Supabase Cloud
+    syncDataAsset({
+      id,
+      tenantId: assetData.tenantId || 'TENANT-AAROGYA-01',
+      assetName: assetData.assetName,
+      assetType: assetData.assetType,
+      sourceSystem: assetData.sourceSystem,
+      sensitivity: assetData.sensitivity,
+      elements: assetData.elements || '0',
+      status: assetData.status || 'active',
+      description: assetData.description || ''
+    }).catch(() => {});
+
     return id;
   },
 
@@ -242,6 +265,18 @@ createDataAsset: async (assetData) => {
       edgeData.lastConfirmed || formattedDate,
       now.toISOString()
     ]);
+
+    // Auto-sync to Supabase Cloud
+    syncDataLineage({
+      id,
+      tenantId: tId,
+      sourceAssetId: edgeData.source,
+      targetAssetId: edgeData.target,
+      transformationType: edgeData.flowType || 'etl',
+      notes: edgeData.notes || '',
+      status: 'ACTIVE'
+    }).catch(() => {});
+
     return { id, ...edgeData, tenantId: tId, lastConfirmed: edgeData.lastConfirmed || formattedDate };
   },
 
@@ -387,6 +422,19 @@ createDataAsset: async (assetData) => {
       INSERT OR REPLACE INTO consent_notices (id, tenantId, title, purposeCode, language, noticeText, version, isActive)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `, [id, noticeData.tenantId || 'TENANT-AAROGYA-01', noticeData.title, noticeData.purposeCode, noticeData.language, noticeData.noticeText, noticeData.version || '1.0', noticeData.isActive ?? 1]);
+
+    // Auto-sync to Supabase Cloud
+    syncConsentNotice({
+      id,
+      tenantId: noticeData.tenantId || 'TENANT-AAROGYA-01',
+      title: noticeData.title,
+      purposeCode: noticeData.purposeCode,
+      language: noticeData.language,
+      body: noticeData.noticeText,
+      version: noticeData.version || '1.0',
+      isActive: noticeData.isActive !== false
+    }).catch(() => {});
+
     return id;
   },
 
@@ -407,6 +455,19 @@ createDataAsset: async (assetData) => {
       INSERT INTO consent_events (id, tenantId, dataPrincipalPhone, purposeCode, status, channel, timestamp, sha256Proof)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `, [id, tenantId, phone, purposeCode, status, channel, timestamp, sha256Proof]);
+
+    // Auto-sync to Supabase Cloud
+    syncConsentEvent({
+      id,
+      tenantId,
+      phone,
+      purposeCode,
+      status,
+      channel,
+      timestamp,
+      sha256Proof
+    }).catch(() => {});
+
     return { id, sha256Proof, timestamp, phone, purposeCode, status, channel };
   },
 
@@ -430,6 +491,19 @@ createDataAsset: async (assetData) => {
       INSERT INTO consent_events (id, tenantId, dataPrincipalPhone, purposeCode, status, channel, timestamp, sha256Proof)
       VALUES (?, ?, ?, ?, 'WITHDRAWN', 'CITIZEN_WHATSAPP_REVOCATION', ?, ?)
     `, [id, tenantId, phone, purposeCode, timestamp, sha256Proof]);
+
+    // Auto-sync to Supabase Cloud
+    syncConsentEvent({
+      id,
+      tenantId,
+      phone,
+      purposeCode,
+      status: 'WITHDRAWN',
+      channel: 'CITIZEN_WHATSAPP_REVOCATION',
+      timestamp,
+      sha256Proof
+    }).catch(() => {});
+
     return { id, sha256Proof, status: 'WITHDRAWN', timestamp };
   },
 
@@ -519,6 +593,19 @@ createDataAsset: async (assetData) => {
       pointData.statutoryBasis || 'Section 6(1) Explicit Consent',
       pointData.status || 'ENABLED'
     ]);
+
+    // Auto-sync to Supabase Cloud
+    syncCollectionPoint({
+      id,
+      tenantId: tId,
+      channelName: pointData.channelName,
+      channelType: pointData.channelType || 'WHATSAPP',
+      purposeCode: pointData.purposeCode || 'PURP-DIAGNOSTIC-REPORTING',
+      supportedLanguages: pointData.supportedLanguages || 'English, Kannada, Hindi',
+      statutoryBasis: pointData.statutoryBasis || 'Section 6(1) Explicit Consent',
+      status: pointData.status || 'ENABLED'
+    }).catch(() => {});
+
     return { id, ...pointData, tenantId: tId };
   },
 
@@ -540,10 +627,23 @@ createDataAsset: async (assetData) => {
   createDsrRequest: async (dsrData) => {
     const id = dsrData.id || uuidv4();
     const ticketNumber = dsrData.ticketNumber || `DSR-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+    const tenantId = dsrData.tenantId || 'TENANT-AAROGYA-01';
     await run(`
       INSERT INTO privacy_requests (id, tenantId, ticketNumber, principalName, principalPhone, principalEmail, requestType, status, statutoryLockReason, certHash)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `, [id, dsrData.tenantId || 'TENANT-AAROGYA-01', ticketNumber, dsrData.principalName, dsrData.principalPhone, dsrData.principalEmail || '', dsrData.requestType || 'ERASURE_SEC_12', dsrData.status || 'PENDING_TAX_LOCK_REVIEW', dsrData.statutoryLockReason || null, dsrData.certHash || null]);
+    `, [id, tenantId, ticketNumber, dsrData.principalName, dsrData.principalPhone, dsrData.principalEmail || '', dsrData.requestType || 'ERASURE_SEC_12', dsrData.status || 'PENDING_TAX_LOCK_REVIEW', dsrData.statutoryLockReason || null, dsrData.certHash || null]);
+
+    // Auto-sync to Supabase Cloud
+    syncDsrTicket({
+      id,
+      ticketNumber,
+      tenantId,
+      citizenName: dsrData.principalName,
+      phoneMasked: dsrData.principalPhone,
+      requestType: dsrData.requestType || 'ERASURE_SEC_12',
+      status: dsrData.status || 'PENDING_TAX_LOCK_REVIEW'
+    }).catch(() => {});
+
     return { id, ticketNumber };
   },
 

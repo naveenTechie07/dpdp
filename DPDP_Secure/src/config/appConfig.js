@@ -31,6 +31,16 @@ const appConfig = {
     db: process.env.VERCEL
       ? path.join('/tmp', 'dpdp_secure.db')
       : path.join(__dirname, '../../data/dpdp_secure.db')
+  },
+  supabase: {
+    enabled: process.env.SUPABASE_ENABLED === 'true' || !!process.env.SUPABASE_URL,
+    url: process.env.SUPABASE_URL || 'https://bxiuiopomqpwxmslllhl.supabase.co',
+    projectRef: process.env.SUPABASE_PROJECT_REF || 'bxiuiopomqpwxmslllhl',
+    region: process.env.SUPABASE_REGION || 'ap-south-1',
+    publishableKey: process.env.SUPABASE_PUBLISHABLE_KEY || '',
+    secretKey: process.env.SUPABASE_SECRET_KEY || '',
+    anonKey: process.env.SUPABASE_ANON_KEY || '',
+    serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || ''
   }
 };
 
