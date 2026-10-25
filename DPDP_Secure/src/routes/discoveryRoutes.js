@@ -124,6 +124,11 @@ router.delete('/api/assets/:id', async (req, res) => {
   }
 });
 
+// Sensitivity Hierarchy & Roll-Up APIs
+router.get('/api/inventory/sensitivity-hierarchy', discoveryController.getSensitivityHierarchy);
+router.get('/api/inventory/sensitivity-rollup', discoveryController.getSensitivityHierarchy);
+router.post('/api/inventory/calculate-rollup', discoveryController.calculateCustomRollup);
+
 router.get('/inventory/tags', async (req, res) => {
   try {
     const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';

@@ -24,6 +24,7 @@ const {
   getConnectorById,
   getTableById
 } = require('../services/connectorCatalog');
+const sensitivityRollupService = require('../services/sensitivityRollupService');
 
 const discoveryController = {
   /**
@@ -860,6 +861,64 @@ const discoveryController = {
       res.status(500).render('500', {
         title: 'Error - DPDP_Secure',
         description: 'Failed to load printable RoPA register: ' + err.message
+      });
+    }
+  },
+
+  /**
+   * Sensitivity Hierarchy & Bottom-Up Roll-Up Engine
+   * GET /api/inventory/sensitivity-hierarchy
+   */
+  getSensitivityHierarchy: async (req, res) => {
+    try {
+      const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+      const hierarchy = await sensitivityRollupService.getFullSensitivityHierarchy(tenantId);
+      res.json({
+        success: true,
+        data: hierarchy
+      });
+    } catch (err) {
+      console.error('[DISCOVERY] getSensitivityHierarchy error:', err);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to retrieve sensitivity hierarchy: ' + err.message
+      });
+    }
+  },
+
+  /**
+   * Dynamic Custom Rollup Calculation & Downstream Impact Simulator
+   * POST /api/inventory/calculate-rollup
+   */
+  calculateCustomRollup: async (req, res) => {
+    try {
+      const { containerName, elements = [] } = req.body;
+      const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+      
+      const tagsRows = await models.getDataTags(tenantId);
+      const tagsMap = {};
+      for (const t of (tagsRows || [])) {
+        tagsMap[t.tagName.toLowerCase()] = t;
+        tagsMap[t.category.toLowerCase()] = t;
+      }
+
+      const containerRollup = sensitivityRollupService.calculateContainerRollup({
+        name: containerName || 'Simulated Container',
+        elements
+      }, tagsMap);
+
+      const downstream = sensitivityRollupService.calculateDownstreamFeeds(containerRollup);
+
+      res.json({
+        success: true,
+        rollup: containerRollup,
+        downstream
+      });
+    } catch (err) {
+      console.error('[DISCOVERY] calculateCustomRollup error:', err);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to compute roll-up: ' + err.message
       });
     }
   }

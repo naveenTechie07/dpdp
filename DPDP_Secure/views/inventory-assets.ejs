@@ -8,6 +8,201 @@ const totalElements = assetsList.reduce((acc, a) => acc + (parseInt(a.elements) 
 const highSensAssets = assetsList.filter(a => a.sensitivity === 'HIGH' || a.sensitivity === 'RESTRICTED' || a.sensitivity === 'HIGH_RISK' || a.sensitivity === 'CONFIDENTIAL').length;
 %>
 
+<style>
+/* View Switcher */
+.view-toggle-container {
+    display: inline-flex;
+    background: rgba(15, 23, 42, 0.8);
+    padding: 5px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 24px;
+    gap: 6px;
+    backdrop-filter: blur(8px);
+}
+.view-toggle-btn {
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 7px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.view-toggle-btn.active {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
+}
+.view-toggle-btn.inactive {
+    background: transparent;
+    color: var(--text-muted);
+}
+.view-toggle-btn.inactive:hover {
+    color: var(--text-main);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Pipeline Flowchart Canvas */
+.pipeline-canvas {
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.85) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 24px;
+    position: relative;
+    overflow-x: auto;
+    margin-bottom: 24px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+.pipeline-flow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 980px;
+    gap: 8px;
+    padding: 10px 0;
+}
+.pipe-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 12px 14px;
+    background: rgba(30, 41, 59, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    min-width: 110px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+}
+.pipe-step:hover {
+    border-color: #3b82f6;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.25);
+}
+.pipe-step.active {
+    border-color: #60a5fa;
+    background: rgba(37, 99, 235, 0.2);
+    box-shadow: 0 0 16px rgba(59, 130, 246, 0.4);
+}
+.pipe-step-icon {
+    font-size: 20px;
+    margin-bottom: 6px;
+}
+.pipe-step-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-main);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+.pipe-step-subtitle {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-top: 3px;
+}
+.pipe-arrow {
+    color: #64748b;
+    font-weight: 800;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    animation: pulseArrow 2s infinite ease-in-out;
+}
+@keyframes pulseArrow {
+    0%, 100% { transform: translateX(0); opacity: 0.6; }
+    50% { transform: translateX(3px); opacity: 1; color: #60a5fa; }
+}
+
+/* Tier Badges */
+.tier-pill {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+.tier-critical { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4); }
+.tier-high { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.4); }
+.tier-medium { background: rgba(59, 130, 246, 0.2); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.4); }
+.tier-low { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4); }
+
+/* Downstream Triple Grid */
+.downstream-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 24px;
+}
+.downstream-card {
+    background: rgba(30, 41, 59, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+.downstream-card:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    transform: translateY(-2px);
+}
+.downstream-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+}
+.downstream-retention::before { background: linear-gradient(90deg, #10b981, #059669); }
+.downstream-ropa::before { background: linear-gradient(90deg, #3b82f6, #1d4ed8); }
+.downstream-breach::before { background: linear-gradient(90deg, #ef4444, #dc2626); }
+
+/* Container Selector Grid */
+.containers-bar {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 12px;
+    margin-bottom: 20px;
+}
+.container-chip {
+    padding: 8px 14px;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    font-size: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    color: var(--text-main);
+}
+.container-chip:hover {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: #3b82f6;
+}
+.container-chip.active {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: #60a5fa;
+    box-shadow: 0 0 12px rgba(59, 130, 246, 0.3);
+}
+</style>
+
 <!-- Top Metrics -->
 <div class="metrics-grid mb-4">
     <div class="card metric-card">
@@ -36,97 +231,620 @@ const highSensAssets = assetsList.filter(a => a.sensitivity === 'HIGH' || a.sens
     </div>
 </div>
 
-<div class="dashboard-header mb-4" style="align-items: center;">
+<div class="dashboard-header mb-3" style="align-items: center;">
     <div class="title-group">
-        <h1>Data Assets</h1>
-        <p>Inventory of all data systems and containers with classified elements and sensitivity tiers.</p>
+        <h1>Data Assets & Sensitivity Hierarchy</h1>
+        <p>Interactive classification roll-up pipeline connecting customer databases, containers, and elements to statutory Retention, RoPA, and Breach Severity.</p>
     </div>
-    <button class="btn-primary" style="background-color: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="window.location.href='/inventory/assets/create'">
-        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-        New Asset
+    <div style="display: flex; gap: 10px;">
+        <button class="btn-primary" style="background-color: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="window.location.href='/inventory/assets/create'">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            New Asset
+        </button>
+    </div>
+</div>
+
+<!-- View Switcher -->
+<div class="view-toggle-container">
+    <button id="tabBtnHierarchy" class="view-toggle-btn active" onclick="switchAssetTab('hierarchy')">
+        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        Sensitivity Hierarchy & Roll-Up Engine
+    </button>
+    <button id="tabBtnRegister" class="view-toggle-btn inactive" onclick="switchAssetTab('register')">
+        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+        Data Assets Catalog
     </button>
 </div>
 
-<div class="card p-0" style="overflow: hidden;">
-    <!-- Table Toolbar -->
-    <div class="table-toolbar" style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
-        <div class="search-bar" style="width: 300px; background: transparent; padding: 0; border: none;">
-            <input type="text" id="asset-search" placeholder="Search assets..." onkeyup="filterAssets()" style="border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 6px; background: transparent; color: var(--text-main); width: 100%;">
+<!-- ========================================================================= -->
+<!-- VIEW 1: SENSITIVITY HIERARCHY & BOTTOM-UP ROLL-UP ENGINE                   -->
+<!-- ========================================================================= -->
+<div id="viewHierarchy">
+
+    <!-- ARCHITECTURAL PIPELINE CANVAS -->
+    <div class="pipeline-canvas">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <div>
+                <span style="font-size: 11px; font-weight: 700; color: #60a5fa; text-transform: uppercase; letter-spacing: 0.5px;">Live Architecture Flow</span>
+                <h3 style="font-size: 16px; margin: 2px 0 0 0; color: var(--text-main);">Bottom-Up Sensitivity Classification & Statutory Roll-Up Pipeline</h3>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <span class="tier-pill tier-critical">● CRITICAL (≥85)</span>
+                <span class="tier-pill tier-high">● HIGH (70-84)</span>
+                <span class="tier-pill tier-medium">● MEDIUM (40-69)</span>
+                <span class="tier-pill tier-low">● LOW (&lt;40)</span>
+            </div>
         </div>
-        
-        <div style="background: rgba(255,255,255,0.05); padding: 4px; border-radius: 6px; display: flex; align-items: center;">
-            <div style="padding: 6px 16px; font-size: 12px; font-weight: 600; background: var(--bg-card); color: var(--text-main); border-radius: 4px;">Systems (<%= systemAssets %>)</div>
-            <div style="padding: 6px 16px; font-size: 12px; font-weight: 500; color: var(--text-muted);">Total (<%= totalAssets %>)</div>
-        </div>
-        
-        <div class="pagination" style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-muted);">
-            <span><%= totalAssets %> rows</span>
-            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Previous</button>
-            <span>Page 1 of 1</span>
-            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Next</button>
+
+        <!-- The User's Flowchart Rendered -->
+        <div class="pipeline-flow">
+            <!-- 1. Customer Database -->
+            <div class="pipe-step active" onclick="highlightTierStep('database')">
+                <div class="pipe-step-icon">🗄️</div>
+                <div class="pipe-step-title">Customer DB</div>
+                <div class="pipe-step-subtitle">Aarogya Master</div>
+            </div>
+
+            <div class="pipe-arrow">➔</div>
+
+            <!-- 2. Data Asset -->
+            <div class="pipe-step" onclick="highlightTierStep('asset')">
+                <div class="pipe-step-icon">📦</div>
+                <div class="pipe-step-title">Data Asset</div>
+                <div class="pipe-step-subtitle"><span id="metricAssetCount">4</span> Systems</div>
+            </div>
+
+            <div class="pipe-arrow">➔</div>
+
+            <!-- 3. Container -->
+            <div class="pipe-step" onclick="highlightTierStep('container')">
+                <div class="pipe-step-icon">🗂️</div>
+                <div class="pipe-step-title">Container</div>
+                <div class="pipe-step-subtitle"><span id="metricContainerCount">29</span> Tables/Files</div>
+            </div>
+
+            <div class="pipe-arrow">➔</div>
+
+            <!-- 4. Element -->
+            <div class="pipe-step" onclick="highlightTierStep('element')">
+                <div class="pipe-step-icon">🏷️</div>
+                <div class="pipe-step-title">Element</div>
+                <div class="pipe-step-subtitle"><span id="metricElementCount">121</span> Fields</div>
+            </div>
+
+            <div class="pipe-arrow">➔</div>
+
+            <!-- 5. Classification -->
+            <div class="pipe-step" onclick="highlightTierStep('classification')">
+                <div class="pipe-step-icon">🗃️</div>
+                <div class="pipe-step-title">Classification</div>
+                <div class="pipe-step-subtitle">5 Taxonomies</div>
+            </div>
+
+            <div class="pipe-arrow">➔</div>
+
+            <!-- 6. Tag & Sensitivity Weight -->
+            <div class="pipe-step" onclick="highlightTierStep('tag')">
+                <div class="pipe-step-icon">🔖</div>
+                <div class="pipe-step-title">Tag & Weight</div>
+                <div class="pipe-step-subtitle">0 - 100 Weight</div>
+            </div>
+
+            <div class="pipe-arrow">➔</div>
+
+            <!-- 7. Element Sensitivity -->
+            <div class="pipe-step" onclick="highlightTierStep('elementsens')">
+                <div class="pipe-step-icon">⚡</div>
+                <div class="pipe-step-title">Element Sens</div>
+                <div class="pipe-step-subtitle">Weight × Conf</div>
+            </div>
+
+            <div class="pipe-arrow">➔</div>
+
+            <!-- 8. Container Roll-Up -->
+            <div class="pipe-step" onclick="highlightTierStep('containerrollup')">
+                <div class="pipe-step-icon">📦</div>
+                <div class="pipe-step-title">Container Roll-up</div>
+                <div class="pipe-step-subtitle">Max + Density</div>
+            </div>
+
+            <div class="pipe-arrow">➔</div>
+
+            <!-- 9. System Roll-Up -->
+            <div class="pipe-step" onclick="highlightTierStep('systemrollup')">
+                <div class="pipe-step-icon">🌐</div>
+                <div class="pipe-step-title">System Roll-up</div>
+                <div class="pipe-step-subtitle"><span id="metricSystemTier" class="tier-pill tier-critical">CRITICAL</span></div>
+            </div>
         </div>
     </div>
 
-    <!-- Data Table -->
-    <table class="data-table" id="assets-table" style="width: 100%; border-collapse: collapse; text-align: left;">
-        <thead>
-            <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 11px; text-transform: uppercase;">
-                <th style="padding: 12px 24px; font-weight: 600;">Asset Name &#9652;</th>
-                <th style="padding: 12px 24px; font-weight: 600;">Type &#8597;</th>
-                <th style="padding: 12px 24px; font-weight: 600;">Source System &#8597;</th>
-                <th style="padding: 12px 24px; font-weight: 600;">Sensitivity</th>
-                <th style="padding: 12px 24px; font-weight: 600;">Elements</th>
-                <th style="padding: 12px 24px; font-weight: 600;">Status &#8597;</th>
-                <th style="padding: 12px 24px; font-weight: 600; text-align: right;">Actions</th>
-            </tr>
-        </thead>
-        <tbody style="font-size: 13px;">
-            <% if (assetsList.length === 0) { %>
-                <tr>
-                    <td colspan="7" style="padding: 32px; text-align: center; color: var(--text-muted);">No data assets found. Click "New Asset" to register a system.</td>
-                </tr>
-            <% } else { %>
-                <% assetsList.forEach(asset => { %>
-                    <tr style="border-bottom: 1px solid var(--border-color);" class="asset-row">
-                        <td style="padding: 16px 24px; font-weight: 600; color: var(--text-main);">
-                            <div><%= asset.assetName %></div>
-                            <% if (asset.description) { %>
-                                <div style="font-size: 11px; color: var(--text-muted); font-weight: normal; margin-top: 2px;"><%= asset.description %></div>
-                            <% } %>
-                        </td>
-                        <td style="padding: 16px 24px;">
-                            <span class="badge" style="background: #bfdbfe; color: #1e3a8a; padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: 700;"><%= asset.assetType %></span>
-                        </td>
-                        <td style="padding: 16px 24px; font-family: monospace; color: var(--text-muted);"><%= asset.sourceSystem || 'Local' %></td>
-                        <td style="padding: 16px 24px;">
-                            <span style="background: <%= (asset.sensitivity === 'RESTRICTED' || asset.sensitivity === 'HIGH_RISK') ? 'rgba(239, 68, 68, 0.2); color: #ef4444;' : (asset.sensitivity === 'CONFIDENTIAL' ? 'rgba(245, 158, 11, 0.2); color: #f59e0b;' : 'rgba(255,255,255,0.1); color: var(--text-muted);') %> padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 700;"><%= asset.sensitivity %></span>
-                        </td>
-                        <td style="padding: 16px 24px; color: var(--text-main); font-weight: 500;"><%= asset.elements %></td>
-                        <td style="padding: 16px 24px;">
-                            <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;"><%= asset.status %></span>
-                        </td>
-                        <td style="padding: 16px 24px; text-align: right;">
-                            <button onclick="deleteAsset('<%= asset.id %>')" title="Delete Asset" style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 4px; border-radius: 4px;">
-                                <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                            </button>
-                        </td>
-                    </tr>
-                <% }); %>
-            <% } %>
-        </tbody>
-    </table>
-    
-    <!-- Table Footer -->
-    <div class="table-toolbar" style="padding: 16px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; align-items: center;">
-        <div class="pagination" style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-muted);">
-            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Previous</button>
-            <span>Page 1 of 1</span>
-            <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Next</button>
+    <!-- MASTER SYSTEM ROLL-UP BANNER -->
+    <div class="card mb-4" style="background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); padding: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                    🛡️
+                </div>
+                <div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <h2 style="margin: 0; font-size: 18px; color: var(--text-main);">CUSTOMER DATABASE (Aarogya Central Master)</h2>
+                        <span id="badgeMasterSystemTier" class="tier-pill tier-critical">SYSTEM: CRITICAL (SCORE: 95)</span>
+                    </div>
+                    <p style="margin: 4px 0 0 0; font-size: 12px; color: var(--text-muted);">
+                        Hierarchical roll-up aggregated across <strong>4 Data Assets</strong>, <strong>29 Containers</strong>, and <strong>121 Classified Data Elements</strong>.
+                    </p>
+                </div>
+            </div>
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <div style="text-align: right; border-right: 1px solid var(--border-color); padding-right: 16px;">
+                    <div style="font-size: 11px; color: var(--text-muted); font-weight: 600;">CONTAINER TIERS</div>
+                    <div style="font-size: 14px; font-weight: 700; color: #ef4444;" id="textTierBreakdown">8 Critical · 12 High · 7 Medium · 2 Low</div>
+                </div>
+                <button class="btn-secondary" onclick="loadHierarchyData()" style="background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 14px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 12px;">
+                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M23 4v6h-6"></path><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                    Refresh Engine
+                </button>
+            </div>
         </div>
+    </div>
+
+    <!-- CONTAINER EXPLORER & ELEMENT LEVEL BREAKDOWN -->
+    <div class="card mb-4 p-0" style="overflow: hidden;">
+        <div style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <span style="font-size: 10px; font-weight: 700; color: #60a5fa; text-transform: uppercase;">Step 3 & 4 of Pipeline</span>
+                <h3 style="margin: 2px 0 0 0; font-size: 15px; color: var(--text-main);">Container Inspection & Element Sensitivity Roll-Up</h3>
+            </div>
+            <div style="font-size: 12px; color: var(--text-muted);">
+                Select a container to inspect element weights and computed container roll-up:
+            </div>
+        </div>
+
+        <!-- Container Horizontal Chips -->
+        <div style="padding: 16px 24px 0 24px;">
+            <div class="containers-bar" id="containersChipsBar">
+                <!-- Injected via JavaScript -->
+                <div class="container-chip active">Loading Containers...</div>
+            </div>
+        </div>
+
+        <!-- Selected Container Roll-up Summary -->
+        <div style="background: rgba(15, 23, 42, 0.5); padding: 16px 24px; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+            <div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <h4 id="lblCurrentContainerName" style="margin: 0; font-size: 15px; color: var(--text-main);">Claims Database › claims</h4>
+                    <span id="badgeCurrentContainerTier" class="tier-pill tier-critical">CRITICAL (SCORE: 95)</span>
+                </div>
+                <div id="lblCurrentContainerMeta" style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+                    Type: SQL TABLE · 680 Records · 8 Data Elements
+                </div>
+            </div>
+            <div style="background: rgba(30, 41, 59, 0.8); padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); font-size: 12px;">
+                <span style="color: var(--text-muted);">Roll-up Formula:</span>
+                <strong style="color: #60a5fa; margin-left: 6px;">70% Max Element + 30% Avg Elements</strong>
+                <span id="lblFormulaResult" style="color: #ef4444; font-weight: 700; margin-left: 8px;">= 95 (CRITICAL)</span>
+            </div>
+        </div>
+
+        <!-- Elements Data Table -->
+        <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+                <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 11px; text-transform: uppercase;">
+                    <th style="padding: 12px 24px;">Data Element</th>
+                    <th style="padding: 12px 20px;">Classification</th>
+                    <th style="padding: 12px 20px;">Applied Tag</th>
+                    <th style="padding: 12px 20px;">Sensitivity Weight</th>
+                    <th style="padding: 12px 20px;">Confidence</th>
+                    <th style="padding: 12px 20px;">Element Sensitivity</th>
+                    <th style="padding: 12px 24px; text-align: right;">Tier</th>
+                </tr>
+            </thead>
+            <tbody id="tblElementsBody" style="font-size: 13px;">
+                <!-- Injected via JavaScript -->
+                <tr>
+                    <td colspan="7" style="padding: 32px; text-align: center; color: var(--text-muted);">Loading elements...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- DOWNSTREAM PIPELINE IMPACT CARDS (RETENTION, ROPA, BREACH SEVERITY) -->
+    <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <div>
+                <span style="font-size: 11px; font-weight: 700; color: #10b981; text-transform: uppercase; letter-spacing: 0.5px;">Pipeline Outputs</span>
+                <h3 style="font-size: 16px; margin: 2px 0 0 0; color: var(--text-main);">Downstream Statutory Consumers Triggered by Roll-Up</h3>
+            </div>
+            <div style="font-size: 12px; color: var(--text-muted);">
+                Live statutory evaluation driven by container and system sensitivity tiers
+            </div>
+        </div>
+
+        <div class="downstream-grid">
+            <!-- 1. RETENTION ENGINE -->
+            <div class="downstream-card downstream-retention">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 20px;">🕒</span>
+                        <h4 style="margin: 0; font-size: 14px; color: var(--text-main);">Statutory Retention</h4>
+                    </div>
+                    <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #10b981; font-weight: 700; font-size: 10px;">SEC 8(7) DPDP</span>
+                </div>
+                <div style="margin: 16px 0;">
+                    <span style="font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Statutory Duration</span>
+                    <div id="lblRetentionDuration" style="font-size: 20px; font-weight: 800; color: #10b981; margin-top: 4px;">84 Months (7 Years)</div>
+                </div>
+                <div style="border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 12px; font-size: 12px;">
+                    <div style="margin-bottom: 6px;">
+                        <span style="color: var(--text-muted);">Statutory Citation:</span>
+                        <div id="lblRetentionCitation" style="color: var(--text-main); font-weight: 600; font-size: 11px; margin-top: 2px;">
+                            Income Tax Act 1961 Sec 44AA / CGST Sec 36 r/w DPDP Sec 8(7)
+                        </div>
+                    </div>
+                    <div>
+                        <span style="color: var(--text-muted);">Trigger Event:</span>
+                        <div id="lblRetentionTrigger" style="color: #60a5fa; font-weight: 600; font-size: 11px; margin-top: 2px;">
+                            Tax Audit Clearance / Financial Year End
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. ROPA REGISTER -->
+            <div class="downstream-card downstream-ropa">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 20px;">📋</span>
+                        <h4 style="margin: 0; font-size: 14px; color: var(--text-main);">RoPA Register & Posture</h4>
+                    </div>
+                    <span class="badge" style="background: rgba(59, 130, 246, 0.2); color: #3b82f6; font-weight: 700; font-size: 10px;">SEC 8(4) DPDP</span>
+                </div>
+                <div style="margin: 16px 0;">
+                    <span style="font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Activity Risk Posture</span>
+                    <div id="lblRopaRiskTier" style="font-size: 20px; font-weight: 800; color: #60a5fa; margin-top: 4px;">HIGH RISK EXPOSURE</div>
+                </div>
+                <div style="border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 12px; font-size: 12px;">
+                    <div style="margin-bottom: 6px;">
+                        <span style="color: var(--text-muted);">Recommended Lawful Basis:</span>
+                        <div id="lblRopaLegalBasis" style="color: var(--text-main); font-weight: 600; font-size: 11px; margin-top: 2px;">
+                            Explicit Consent (Sec 6) + Statutory Obligation
+                        </div>
+                    </div>
+                    <div>
+                        <span style="color: var(--text-muted);">Mandatory Safeguards:</span>
+                        <div id="lblRopaSafeguards" style="color: #f59e0b; font-weight: 500; font-size: 11px; margin-top: 2px;">
+                            AES-256-GCM, Verhoeff Tokenization, SHA-256 Trail
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. BREACH SEVERITY & 72H DPBI -->
+            <div class="downstream-card downstream-breach">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 20px;">🚨</span>
+                        <h4 style="margin: 0; font-size: 14px; color: var(--text-main);">Breach Severity Engine</h4>
+                    </div>
+                    <span class="badge" style="background: rgba(239, 68, 68, 0.2); color: #ef4444; font-weight: 700; font-size: 10px;">SEC 8(6) & RULE 7</span>
+                </div>
+                <div style="margin: 16px 0;">
+                    <span style="font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Regulatory Threat Triage</span>
+                    <div id="lblBreachSeverity" style="font-size: 20px; font-weight: 800; color: #ef4444; margin-top: 4px;">CRITICAL SEVERITY</div>
+                </div>
+                <div style="border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 12px; font-size: 12px;">
+                    <div style="margin-bottom: 6px; display: flex; justify-content: space-between;">
+                        <span style="color: var(--text-muted);">Mandatory 72h DPBI Intimation:</span>
+                        <strong id="lblDpbiMandate" style="color: #ef4444;">YES (ACTIVE MANDATE)</strong>
+                    </div>
+                    <div>
+                        <span style="color: var(--text-muted);">Statutory Reporting:</span>
+                        <div style="color: var(--text-main); font-weight: 600; font-size: 11px; margin-top: 2px;">
+                            Form DPBI-IR1 Regulatory Dossier Ready
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- ========================================================================= -->
+<!-- VIEW 2: CLASSIC DATA ASSETS CATALOG REGISTER                              -->
+<!-- ========================================================================= -->
+<div id="viewRegister" style="display: none;">
+    <div class="card p-0" style="overflow: hidden;">
+        <!-- Table Toolbar -->
+        <div class="table-toolbar" style="padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <div class="search-bar" style="width: 300px; background: transparent; padding: 0; border: none;">
+                <input type="text" id="asset-search" placeholder="Search assets..." onkeyup="filterAssets()" style="border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 6px; background: transparent; color: var(--text-main); width: 100%;">
+            </div>
+            
+            <div style="background: rgba(255,255,255,0.05); padding: 4px; border-radius: 6px; display: flex; align-items: center;">
+                <div style="padding: 6px 16px; font-size: 12px; font-weight: 600; background: var(--bg-card); color: var(--text-main); border-radius: 4px;">Systems (<%= systemAssets %>)</div>
+                <div style="padding: 6px 16px; font-size: 12px; font-weight: 500; color: var(--text-muted);">Total (<%= totalAssets %>)</div>
+            </div>
+            
+            <div class="pagination" style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-muted);">
+                <span><%= totalAssets %> rows</span>
+                <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Previous</button>
+                <span>Page 1 of 1</span>
+                <button class="btn-secondary" disabled style="background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); padding: 4px 12px; border-radius: 4px; cursor: not-allowed;">Next</button>
+            </div>
+        </div>
+
+        <!-- Data Table -->
+        <table class="data-table" id="assets-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+                <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 11px; text-transform: uppercase;">
+                    <th style="padding: 12px 24px; font-weight: 600;">Asset Name &#9652;</th>
+                    <th style="padding: 12px 24px; font-weight: 600;">Type &#8597;</th>
+                    <th style="padding: 12px 24px; font-weight: 600;">Source System &#8597;</th>
+                    <th style="padding: 12px 24px; font-weight: 600;">Sensitivity</th>
+                    <th style="padding: 12px 24px; font-weight: 600;">Elements</th>
+                    <th style="padding: 12px 24px; font-weight: 600;">Status &#8597;</th>
+                    <th style="padding: 12px 24px; font-weight: 600; text-align: right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody style="font-size: 13px;">
+                <% if (assetsList.length === 0) { %>
+                    <tr>
+                        <td colspan="7" style="padding: 32px; text-align: center; color: var(--text-muted);">No data assets found. Click "New Asset" to register a system.</td>
+                    </tr>
+                <% } else { %>
+                    <% assetsList.forEach(asset => { %>
+                        <tr style="border-bottom: 1px solid var(--border-color);" class="asset-row">
+                            <td style="padding: 16px 24px; font-weight: 600; color: var(--text-main);">
+                                <div><%= asset.assetName %></div>
+                                <% if (asset.description) { %>
+                                    <div style="font-size: 11px; color: var(--text-muted); font-weight: normal; margin-top: 2px;"><%= asset.description %></div>
+                                <% } %>
+                            </td>
+                            <td style="padding: 16px 24px;">
+                                <span class="badge" style="background: #bfdbfe; color: #1e3a8a; padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: 700;"><%= asset.assetType %></span>
+                            </td>
+                            <td style="padding: 16px 24px; font-family: monospace; color: var(--text-muted);"><%= asset.sourceSystem || 'Local' %></td>
+                            <td style="padding: 16px 24px;">
+                                <span style="background: <%= (asset.sensitivity === 'RESTRICTED' || asset.sensitivity === 'HIGH_RISK') ? 'rgba(239, 68, 68, 0.2); color: #ef4444;' : (asset.sensitivity === 'CONFIDENTIAL' ? 'rgba(245, 158, 11, 0.2); color: #f59e0b;' : 'rgba(255,255,255,0.1); color: var(--text-muted);') %> padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 700;"><%= asset.sensitivity %></span>
+                            </td>
+                            <td style="padding: 16px 24px; color: var(--text-main); font-weight: 500;"><%= asset.elements %></td>
+                            <td style="padding: 16px 24px;">
+                                <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;"><%= asset.status %></span>
+                            </td>
+                            <td style="padding: 16px 24px; text-align: right;">
+                                <button onclick="deleteAsset('<%= asset.id %>')" title="Delete Asset" style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 4px; border-radius: 4px;">
+                                    <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                </button>
+                            </td>
+                        </tr>
+                    <% }); %>
+                <% } %>
+            </tbody>
+        </table>
     </div>
 </div>
 
 <script>
+let globalHierarchy = null;
+let currentContainerIndex = 0;
+
+// Tab Switching
+function switchAssetTab(tab) {
+    const isHierarchy = tab === 'hierarchy';
+    document.getElementById('viewHierarchy').style.display = isHierarchy ? 'block' : 'none';
+    document.getElementById('viewRegister').style.display = isHierarchy ? 'none' : 'block';
+    
+    document.getElementById('tabBtnHierarchy').className = isHierarchy ? 'view-toggle-btn active' : 'view-toggle-btn inactive';
+    document.getElementById('tabBtnRegister').className = isHierarchy ? 'view-toggle-btn inactive' : 'view-toggle-btn active';
+
+    if (isHierarchy && !globalHierarchy) {
+        loadHierarchyData();
+    }
+}
+
+// Load Sensitivity Hierarchy from API
+async function loadHierarchyData() {
+    try {
+        const res = await fetch('/api/inventory/sensitivity-hierarchy');
+        const json = await res.json();
+        if (json.success && json.data) {
+            globalHierarchy = json.data;
+            renderHierarchy(globalHierarchy);
+        } else {
+            console.error('Failed to load sensitivity hierarchy:', json.error);
+        }
+    } catch (e) {
+        console.error('Network error loading hierarchy:', e);
+    }
+}
+
+// Render Hierarchy UI
+function renderHierarchy(data) {
+    const sys = data.systemRollup || {};
+    const containers = sys.containers || [];
+
+    // 1. Update Metrics in Pipeline Flow
+    document.getElementById('metricAssetCount').innerText = data.dataAssets ? data.dataAssets.length : 4;
+    document.getElementById('metricContainerCount').innerText = containers.length;
+    document.getElementById('metricElementCount').innerText = sys.totalElements || 121;
+    
+    const sysTier = sys.systemTier || 'CRITICAL';
+    const tierPill = document.getElementById('metricSystemTier');
+    tierPill.innerText = sysTier;
+    tierPill.className = 'tier-pill tier-' + sysTier.toLowerCase();
+
+    // 2. Update Master System Banner
+    const masterBadge = document.getElementById('badgeMasterSystemTier');
+    masterBadge.innerText = `SYSTEM: ${sysTier} (SCORE: ${sys.systemScore || 95})`;
+    masterBadge.className = 'tier-pill tier-' + sysTier.toLowerCase();
+
+    const cCounts = sys.containerCounts || {};
+    document.getElementById('textTierBreakdown').innerText = 
+        `${cCounts.CRITICAL || 0} Critical · ${cCounts.HIGH || 0} High · ${cCounts.MEDIUM || 0} Medium · ${cCounts.LOW || 0} Low`;
+
+    // 3. Render Container Chips
+    const chipsBar = document.getElementById('containersChipsBar');
+    chipsBar.innerHTML = '';
+
+    containers.forEach((c, idx) => {
+        const chip = document.createElement('div');
+        chip.className = 'container-chip' + (idx === currentContainerIndex ? ' active' : '');
+        chip.onclick = () => selectContainer(idx);
+
+        const tierClass = 'tier-' + (c.containerTier || 'low').toLowerCase();
+        chip.innerHTML = `
+            <span>${c.containerName}</span>
+            <span class="tier-pill ${tierClass}" style="padding: 2px 6px; font-size: 9px;">${c.containerTier}</span>
+        `;
+        chipsBar.appendChild(chip);
+    });
+
+    // 4. Render Active Container Elements & Downstream Impact
+    if (containers.length > 0) {
+        renderContainerDetails(containers[currentContainerIndex]);
+    }
+
+    // 5. Render Downstream Impact Cards
+    renderDownstream(data.downstream || {});
+}
+
+// Select Container
+function selectContainer(idx) {
+    currentContainerIndex = idx;
+    const chips = document.querySelectorAll('.container-chip');
+    chips.forEach((ch, i) => {
+        ch.className = 'container-chip' + (i === idx ? ' active' : '');
+    });
+
+    if (globalHierarchy && globalHierarchy.systemRollup && globalHierarchy.systemRollup.containers) {
+        const c = globalHierarchy.systemRollup.containers[idx];
+        renderContainerDetails(c);
+        // Also recalculate container-specific downstream impacts!
+        fetchContainerDownstream(c);
+    }
+}
+
+// Render Container Element Table
+function renderContainerDetails(c) {
+    if (!c) return;
+    document.getElementById('lblCurrentContainerName').innerText = c.containerName;
+    const tierBadge = document.getElementById('badgeCurrentContainerTier');
+    tierBadge.innerText = `${c.containerTier} (SCORE: ${c.compositeScore})`;
+    tierBadge.className = 'tier-pill tier-' + (c.containerTier || 'low').toLowerCase();
+
+    document.getElementById('lblCurrentContainerMeta').innerText = 
+        `Type: ${c.containerType} · ${c.recordCount || 0} Records · ${c.elementCount || 0} Elements · ${c.description || 'Enterprise Container'}`;
+
+    document.getElementById('lblFormulaResult').innerText = `= ${c.compositeScore} (${c.containerTier})`;
+    document.getElementById('lblFormulaResult').style.color = (c.containerTier === 'CRITICAL' ? '#ef4444' : (c.containerTier === 'HIGH' ? '#f59e0b' : '#3b82f6'));
+
+    const tbody = document.getElementById('tblElementsBody');
+    tbody.innerHTML = '';
+
+    const elements = c.elements || [];
+    if (elements.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="padding: 24px; text-align: center; color: var(--text-muted);">No elements cataloged in this container.</td></tr>';
+        return;
+    }
+
+    elements.forEach(el => {
+        const tr = document.createElement('tr');
+        tr.style.borderBottom = '1px solid var(--border-color)';
+
+        const weight = el.sensitivityWeight || 50;
+        const barColor = weight >= 85 ? '#ef4444' : (weight >= 70 ? '#f59e0b' : '#3b82f6');
+        const tierClass = 'tier-' + (el.tier || 'low').toLowerCase();
+
+        tr.innerHTML = `
+            <td style="padding: 14px 24px; font-weight: 600; color: var(--text-main);">
+                ${el.elementName}
+            </td>
+            <td style="padding: 14px 20px;">
+                <span class="badge" style="background: rgba(139, 92, 246, 0.15); color: #8b5cf6; padding: 3px 8px; border-radius: 10px; font-size: 10px; font-weight: 600;">
+                    ${el.classification}
+                </span>
+            </td>
+            <td style="padding: 14px 20px;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: ${el.colorTag || '#3b82f6'};"></span>
+                    <span style="font-weight: 500;">${el.tag}</span>
+                </div>
+            </td>
+            <td style="padding: 14px 20px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div style="width: 60px; height: 5px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
+                        <div style="height: 100%; width: ${weight}%; background: ${barColor};"></div>
+                    </div>
+                    <span style="font-size: 11px; font-weight: 700; color: var(--text-main);">${weight}</span>
+                </div>
+            </td>
+            <td style="padding: 14px 20px; color: var(--text-muted); font-size: 12px;">
+                ${Math.round((el.confidenceScore || 1.0) * 100)}%
+            </td>
+            <td style="padding: 14px 20px; font-weight: 700; color: ${barColor};">
+                ${el.elementSensitivityScore}
+            </td>
+            <td style="padding: 14px 24px; text-align: right;">
+                <span class="tier-pill ${tierClass}">${el.tier}</span>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+// Render Downstream Impacts
+function renderDownstream(downstream) {
+    if (!downstream) return;
+
+    // 1. Retention
+    const ret = downstream.retention || {};
+    document.getElementById('lblRetentionDuration').innerText = ret.retentionPeriodDisplay || '84 Months (7 Years)';
+    document.getElementById('lblRetentionCitation').innerText = ret.statutoryCitation || 'Income Tax Act 1961 Sec 44AA / CGST Sec 36 r/w DPDP Sec 8(7)';
+    document.getElementById('lblRetentionTrigger').innerText = ret.triggerEvent || 'Tax Audit Clearance / Financial Year End';
+
+    // 2. RoPA
+    const ropa = downstream.ropa || {};
+    document.getElementById('lblRopaRiskTier').innerText = `${ropa.activityClassification || 'CRITICAL'} RISK EXPOSURE`;
+    document.getElementById('lblRopaLegalBasis').innerText = ropa.lawfulBasisRecommended || 'Explicit Consent (Sec 6) + Statutory Obligation';
+    document.getElementById('lblRopaSafeguards').innerText = Array.isArray(ropa.mandatorySafeguards) 
+        ? ropa.mandatorySafeguards.slice(0, 3).join(', ') 
+        : 'AES-256-GCM, Verhoeff Tokenization, SHA-256 Trail';
+
+    // 3. Breach Severity
+    const br = downstream.breachSeverity || {};
+    document.getElementById('lblBreachSeverity').innerText = `${br.breachTier || 'CRITICAL'} SEVERITY`;
+    document.getElementById('lblDpbiMandate').innerText = br.mandatoryDpbiIntimation ? 'YES (ACTIVE MANDATE)' : 'INTERNAL LOG ONLY';
+    document.getElementById('lblDpbiMandate').style.color = br.mandatoryDpbiIntimation ? '#ef4444' : '#10b981';
+}
+
+// Fetch Container-specific downstream impact
+async function fetchContainerDownstream(c) {
+    try {
+        const res = await fetch('/api/inventory/calculate-rollup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                containerName: c.containerName,
+                elements: c.elements
+            })
+        });
+        const json = await res.json();
+        if (json.success && json.downstream) {
+            renderDownstream(json.downstream);
+        }
+    } catch (e) {
+        console.warn('Error fetching container downstream:', e);
+    }
+}
+
+// Pipeline highlight step
+function highlightTierStep(step) {
+    console.log('Inspecting pipeline tier:', step);
+}
+
+// Classic Asset Filter
 function filterAssets() {
     const q = document.getElementById('asset-search').value.toLowerCase();
     document.querySelectorAll('.asset-row').forEach(row => {
@@ -134,6 +852,7 @@ function filterAssets() {
     });
 }
 
+// Delete Asset
 async function deleteAsset(id) {
     if (!confirm('Are you sure you want to delete this data asset?')) return;
     try {
@@ -148,6 +867,11 @@ async function deleteAsset(id) {
         alert('Network error deleting asset');
     }
 }
+
+// Auto-initialize hierarchy on load
+document.addEventListener('DOMContentLoaded', () => {
+    loadHierarchyData();
+});
 </script>
 
 <%- include('partials/footer') %>
