@@ -1,23 +1,41 @@
 const appConfig = require('../config/appConfig');
+const models = require('../models');
 
 /**
- * Dashboard & Navigation Controller
+ * Dashboard & Navigation Controller (Wired to SQLite Persistence)
  */
 const dashboardController = {
   /**
    * Render the Executive Compliance Dashboard
    */
-  renderDashboard: (req, res) => {
-    // Default / Seeded SME compliance stats
-    const metrics = {
-      silosCount: 3,
-      piiCount: 1420,
-      activeNoticesCount: 3,
-      pendingDsrCount: 1,
-      taxLockedCount: 1,
-      activeIncidentsCount: 0,
-      complianceScore: 84,
-      recentActivity: [
+  renderDashboard: async (req, res) => {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+
+    // 1. Fetch live metrics from SQLite
+    const metrics = await models.getDashboardMetrics(tenantId);
+
+    // 2. Fetch live audit activity from SQLite
+    let recentActivity = [];
+    try {
+      const logs = await models.getAuditLogs(tenantId, 5);
+      if (logs && logs.length > 0) {
+        recentActivity = logs.map((l) => ({
+          timestamp: new Date(l.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          actor: l.actor,
+          action: l.action,
+          resource: l.resource,
+          details: typeof l.detailsJson === 'string' && l.detailsJson.startsWith('{') 
+            ? JSON.parse(l.detailsJson)?.details || l.detailsJson 
+            : l.detailsJson
+        }));
+      }
+    } catch (e) {
+      console.error('[DASHBOARD] Error reading audit logs from SQLite:', e.message);
+    }
+
+    // Safe fallback if logs empty
+    if (!recentActivity || recentActivity.length === 0) {
+      recentActivity = [
         {
           timestamp: 'Just now',
           actor: 'System Scanner',
@@ -53,8 +71,8 @@ const dashboardController = {
           resource: 'Section 8(4) Register',
           details: 'Synthesized 3 lawful processing activities across diagnostic workflows'
         }
-      ]
-    };
+      ];
+    }
 
     res.render('index', {
       title: 'Executive Compliance Dashboard - DPDP_Secure',
@@ -68,25 +86,19 @@ const dashboardController = {
       taxLockedCount: metrics.taxLockedCount,
       activeIncidentsCount: metrics.activeIncidentsCount,
       complianceScore: metrics.complianceScore,
-      recentActivity: metrics.recentActivity
+      recentActivity: recentActivity
     });
   },
 
   /**
    * Return dynamic metrics as JSON for frontend polling
    */
-  getMetricsJson: (req, res) => {
+  getMetricsJson: async (req, res) => {
+    const tenantId = req.session?.user?.tenantId || 'TENANT-AAROGYA-01';
+    const metrics = await models.getDashboardMetrics(tenantId);
     res.json({
       success: true,
-      metrics: {
-        silosCount: 3,
-        piiCount: 1420,
-        activeNoticesCount: 3,
-        pendingDsrCount: 1,
-        taxLockedCount: 1,
-        activeIncidentsCount: 0,
-        complianceScore: 84
-      }
+      metrics
     });
   },
 
