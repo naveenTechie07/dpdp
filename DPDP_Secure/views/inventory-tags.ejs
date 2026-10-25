@@ -99,10 +99,14 @@ const highSensTags = tagsList.filter(t => (parseInt(t.sensitivityWeight) || 0) >
         <h1>Classification Tags</h1>
         <p>Define PII/sensitivity categories and statutory weights that classify data elements across your inventory.</p>
     </div>
-    <div style="display: flex; gap: 10px;">
-        <button class="btn-primary" id="btnOpenNewTagModal" style="background-color: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;" onclick="openNewTagModal()">
-            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            + New Tag
+    <div style="display: flex; gap: 8px; align-items: center;">
+        <a href="/inventory/tags/create" class="btn-secondary" style="background: rgba(255,255,255,0.06); color: var(--text-muted); border: 1px solid var(--border-color); padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 6px;">
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+            Full Form
+        </a>
+        <button type="button" class="btn-primary" id="btnOpenNewTagModal" style="background-color: var(--primary); color: white; border: none; padding: 8px 18px; border-radius: 6px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);" onclick="openNewTagModal(event)">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            New Tag
         </button>
     </div>
 </div>
@@ -184,7 +188,7 @@ const highSensTags = tagsList.filter(t => (parseInt(t.sensitivityWeight) || 0) >
 <!-- ========================================================================= -->
 <!-- MODAL: CREATE NEW CLASSIFICATION TAG                                      -->
 <!-- ========================================================================= -->
-<div id="newTagModal" class="modal-overlay">
+<div id="newTagModal" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(4px); z-index: 999999; align-items: center; justify-content: center; padding: 20px;">
     <div class="modal-box">
         <div style="padding: 18px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2);">
             <div>
@@ -268,7 +272,7 @@ const highSensTags = tagsList.filter(t => (parseInt(t.sensitivityWeight) || 0) >
 <!-- ========================================================================= -->
 <!-- MODAL: CONFIRM DELETE TAG                                                 -->
 <!-- ========================================================================= -->
-<div id="deleteTagModal" class="modal-overlay">
+<div id="deleteTagModal" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(4px); z-index: 999999; align-items: center; justify-content: center; padding: 20px;">
     <div class="modal-box" style="max-width: 440px;">
         <div style="padding: 20px 24px; text-align: center;">
             <div style="width: 48px; height: 48px; border-radius: 50%; background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto; color: #ef4444; font-size: 22px;">
@@ -306,12 +310,19 @@ function showToast(msg, isSuccess = true) {
 }
 
 // Modal open/close
-function openNewTagModal() {
-    document.getElementById('newTagModal').style.display = 'flex';
-    document.getElementById('modalTagName').focus();
+function openNewTagModal(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const modal = document.getElementById('newTagModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        modal.style.zIndex = '999999';
+    }
+    const input = document.getElementById('modalTagName');
+    if (input) input.focus();
 }
 function closeNewTagModal() {
-    document.getElementById('newTagModal').style.display = 'none';
+    const modal = document.getElementById('newTagModal');
+    if (modal) modal.style.display = 'none';
 }
 function setModalColor(color) {
     document.getElementById('modalColorTag').value = color;
@@ -459,6 +470,18 @@ document.getElementById('newTagModal').addEventListener('click', (e) => {
 });
 document.getElementById('deleteTagModal').addEventListener('click', (e) => {
     if (e.target.id === 'deleteTagModal') closeDeleteModal();
+});
+
+// Explicit button listener
+document.addEventListener('DOMContentLoaded', () => {
+    const btnTag = document.getElementById('btnOpenNewTagModal');
+    if (btnTag) {
+        btnTag.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            openNewTagModal(e);
+        });
+    }
 });
 </script>
 

@@ -57,9 +57,9 @@
             Sensitivity Hierarchy
         </a>
 
-        <button class="btn-primary" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);" onclick="openRoPAModal()">
+        <button type="button" class="btn-primary" id="btnOpenNewRoPAModal" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);" onclick="openRoPAModal(event)">
             <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            + New Activity
+            New Activity
         </button>
         <button id="btnSyncRoPA" class="btn-secondary" style="background: rgba(255,255,255,0.06); color: var(--text-main); border: 1px solid var(--border-color); padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;" onclick="syncRoPA()">
             <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
@@ -358,7 +358,7 @@
 <!-- ========================================================================= -->
 <!-- 4. CREATE / EDIT ROPA MODAL WITH STATUTORY RETENTION ENGINE               -->
 <!-- ========================================================================= -->
-<div id="ropaModal" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1050; align-items: center; justify-content: center;">
+<div id="ropaModal" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 999999; align-items: center; justify-content: center;">
     <div class="modal-content" style="max-width: 660px; width: 92%; max-height: 90vh; overflow-y: auto; background: #0f172a; border: 1px solid var(--border-color); border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.5);">
         <div class="modal-header" style="padding: 18px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: #0f172a; z-index: 5;">
             <div style="display: flex; align-items: center; gap: 8px;">
@@ -992,6 +992,15 @@ function handleSourceChange(siloId) {
 
 // Initial Graph Load
 document.addEventListener('DOMContentLoaded', () => {
+    const btnNewActivity = document.getElementById('btnOpenNewRoPAModal');
+    if (btnNewActivity) {
+        btnNewActivity.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            openRoPAModal(e);
+        });
+    }
+
     loadAndRenderGraph();
 
     // 1. Text Search Filter
@@ -1083,23 +1092,41 @@ function showToast(msg) {
 }
 
 function openRoPAModal(activityName = '', dataCategories = '', purpose = '', legalBasis = 'Section 6 - Consent', retentionPeriod = '36 Months', storageLocation = '', securitySafeguards = '', id = '') {
-    document.getElementById('ropaActivityName').value = activityName;
-    document.getElementById('ropaDataCategories').value = dataCategories;
-    document.getElementById('ropaPurpose').value = purpose;
-    document.getElementById('ropaLegalBasis').value = legalBasis || 'Section 6 - Consent';
-    document.getElementById('ropaRetentionPeriod').value = retentionPeriod || '36 Months';
-    document.getElementById('ropaStorageLocation').value = storageLocation;
-    document.getElementById('ropaSecuritySafeguards').value = securitySafeguards || 'Verhoeff tokenization, AES-256 local encryption, Zero Cloud Egress';
+    if (typeof activityName === 'object' && activityName !== null) {
+        if (activityName.preventDefault) activityName.preventDefault();
+        activityName = '';
+    }
+    const actInput = document.getElementById('ropaActivityName');
+    if (actInput) actInput.value = activityName || '';
+    const catInput = document.getElementById('ropaDataCategories');
+    if (catInput) catInput.value = dataCategories || '';
+    const purInput = document.getElementById('ropaPurpose');
+    if (purInput) purInput.value = purpose || '';
+    const legInput = document.getElementById('ropaLegalBasis');
+    if (legInput) legInput.value = legalBasis || 'Section 6 - Consent';
+    const retInput = document.getElementById('ropaRetentionPeriod');
+    if (retInput) retInput.value = retentionPeriod || '36 Months';
+    const locInput = document.getElementById('ropaStorageLocation');
+    if (locInput) locInput.value = storageLocation || '';
+    const secInput = document.getElementById('ropaSecuritySafeguards');
+    if (secInput) secInput.value = securitySafeguards || 'Verhoeff tokenization, AES-256 local encryption, Zero Cloud Egress';
     currentEditId = id;
-    document.getElementById('modalTitle').textContent = currentEditId ? 'Edit Processing Activity' : 'Create New Processing Activity';
-    document.getElementById('ropaModal').style.display = 'flex';
-    triggerRetentionCalc();
+    const titleEl = document.getElementById('modalTitle');
+    if (titleEl) titleEl.textContent = currentEditId ? 'Edit Processing Activity' : 'Create New Processing Activity';
+    const modal = document.getElementById('ropaModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        modal.style.zIndex = '999999';
+    }
+    if (typeof triggerRetentionCalc === 'function') triggerRetentionCalc();
 }
 
 function closeRoPAModal() {
-    document.getElementById('ropaModal').style.display = 'none';
+    const modal = document.getElementById('ropaModal');
+    if (modal) modal.style.display = 'none';
     currentEditId = null;
-    document.getElementById('ropaForm').reset();
+    const form = document.getElementById('ropaForm');
+    if (form) form.reset();
 }
 
 function editRoPA(id, activityName, dataCategories, purpose, legalBasis, retentionPeriod, storageLocation, securitySafeguards) {
