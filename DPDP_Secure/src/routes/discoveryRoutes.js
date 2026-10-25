@@ -18,15 +18,10 @@ const upload = multer({
   }
 });
 
+const discoveryController = require('../controllers/discoveryController');
+
 // GET View Routes
-router.get('/discovery/connectors', (req, res) => {
-  res.render('discovery-connectors', {
-    title: 'Data Discovery - DPDP_Secure',
-    description: 'Connect data sources, run scans, and review PII findings.',
-    breadcrumbs: ['Workspace', 'Data Discovery'],
-    path: '/discovery/connectors'
-  });
-});
+router.get('/discovery/connectors', discoveryController.renderConnectors);
 
 router.get('/inventory/assets', (req, res) => {
   res.render('inventory-assets', {
@@ -74,48 +69,9 @@ router.get('/inventory/assessment-enrichment', (req, res) => {
 });
 
 // API Routes
-router.post('/api/discovery/scan-sample', (req, res) => {
-  // Pre-configured response for pre-staged clinic samples
-  res.json({
-    success: true,
-    totalFilesScanned: 3,
-    totalPiiCount: 1420,
-    silos: [
-      { name: 'clinic_reception_chat.txt', type: 'WHATSAPP_CHAT', count: 840, risk: 'CRITICAL' },
-      { name: 'customer_leads.csv', type: 'SPREADSHEET_CSV', count: 420, risk: 'HIGH' },
-      { name: 'invoices_billing.csv', type: 'BILLING_SYSTEM', count: 160, risk: 'MEDIUM' }
-    ],
-    sampleFindings: [
-      { source: 'clinic_reception_chat.txt', entity: 'Ramesh Sharma', type: 'AADHAAR', masked: 'XXXX-XXXX-2345', proof: 'Verhoeff D5 Valid' },
-      { source: 'customer_leads.csv', entity: 'Priya Patel', type: 'INDIVIDUAL_PAN', masked: 'XXXXX1234F', proof: 'Entity Char P Valid' },
-      { source: 'clinic_reception_chat.txt', entity: 'Deepa Nair', type: 'CLINICAL_HEALTH', masked: 'Lipid Profile & HbA1c', proof: 'Lexicon Sec 2(t)' }
-    ]
-  });
-});
-
-router.post('/api/discovery/upload', upload.single('siloFile'), (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ success: false, error: 'No file uploaded.' });
-  }
-  res.json({
-    success: true,
-    filename: req.file.originalname,
-    size: req.file.size,
-    message: 'File ingested and scanned successfully.'
-  });
-});
-
-router.get('/api/discovery/findings', (req, res) => {
-  res.json({
-    success: true,
-    count: 3,
-    findings: [
-      { id: 'FIND-001', type: 'AADHAAR', maskedValue: 'XXXX-XXXX-2345', source: 'clinic_reception_chat.txt', sensitivity: 'CRITICAL' },
-      { id: 'FIND-002', type: 'INDIVIDUAL_PAN', maskedValue: 'XXXXX1234F', source: 'customer_leads.csv', sensitivity: 'HIGH' },
-      { id: 'FIND-003', type: 'CLINICAL_HEALTH', maskedValue: 'Thyroid Panel (TSH)', source: 'clinic_reception_chat.txt', sensitivity: 'CRITICAL' }
-    ]
-  });
-});
+router.post('/api/discovery/scan-sample', discoveryController.scanSampleFiles);
+router.post('/api/discovery/upload', upload.single('siloFile'), discoveryController.uploadAndScan);
+router.get('/api/discovery/findings', discoveryController.getFindings);
 
 router.get('/api/ropa/export-csv', (req, res) => {
   const csvHeaders = 'Activity Name,Categories of Personal Data,Purpose,Legal Basis,Retention Period,Storage Location,Safeguards\n';

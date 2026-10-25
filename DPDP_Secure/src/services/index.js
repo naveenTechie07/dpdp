@@ -6,10 +6,14 @@
 
 const verhoeffAlgorithm = require('./verhoeffAlgorithm');
 const indianPiiEngine = require('./indianPiiEngine');
+const fileParsers = require('./fileParsers');
 
 module.exports = {
   ...verhoeffAlgorithm,
   ...indianPiiEngine,
+  ...fileParsers,
   verhoeffAlgorithm,
-  indianPiiEngine
+  indianPiiEngine,
+  fileParsers
 };
+
