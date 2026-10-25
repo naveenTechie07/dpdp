@@ -12,6 +12,19 @@ const dbPath = process.env.VERCEL
 // Ensure directory exists to prevent EROFS or ENOENT
 fs.mkdirSync(path.dirname(dbPath), { recursive: true });
 
+// Copy pre-seeded SQLite database to /tmp if running under Vercel serverless environment
+if (process.env.VERCEL) {
+  const localDb = path.join(__dirname, '../../data/dpdp_secure.db');
+  if (fs.existsSync(localDb) && !fs.existsSync(dbPath)) {
+    try {
+      fs.copyFileSync(localDb, dbPath);
+      console.log('[DATABASE] Copied bundled database to /tmp/dpdp_secure.db for serverless execution.');
+    } catch (e) {
+      console.warn('[DATABASE] Could not copy bundled DB to /tmp, will initialize fresh:', e.message);
+    }
+  }
+}
+
 // Initialize SQLite Database Client
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {

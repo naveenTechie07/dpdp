@@ -1,0 +1,8 @@
+.env
+.git
+node_modules
+tests
+privacy_related/
+scratch/
+NVIDIA/
+google_gemini/
