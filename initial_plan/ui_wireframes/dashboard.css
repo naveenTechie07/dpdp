@@ -42,3 +42,6 @@ body, .sidebar, .topbar, .card { transition: background 0.2s ease, color 0.2s ea
 .metric-card h3 { font-size: 1rem; color: var(--text-muted); }
 
 .dot { width:8px; height:8px; border-radius:50%; background:green; display:inline-block; }
+
+
+.nav-item.active { border-left: 3px solid var(--color-primary); }
