@@ -13,7 +13,7 @@ export interface AuthenticatedRequest extends Request {
   tenantId?: string;
 }
 
-export function authenticate(req: Request, res: Response, next: NextFunction): void {
+export async function authenticate(req: Request, res: Response, next: NextFunction): Promise<void> {
   const rawAuthHeader = req.headers.authorization;
 
   if (!rawAuthHeader) {
@@ -36,7 +36,7 @@ export function authenticate(req: Request, res: Response, next: NextFunction): v
 
   try {
     const supabase = getSupabaseAdmin();
-    const { data, error } = supabase.auth.getUser(token);
+    const { data, error } = await supabase.auth.getUser(token);
 
     if (error || !data?.user) {
       throw new Error(error?.message || 'Invalid token');
