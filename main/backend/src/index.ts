@@ -37,4 +37,7 @@ if (!process.env.VERCEL) {
   })();
 }
 
+// Compatibility with Vercel Serverless & CommonJS
+module.exports = app;
+module.exports.default = app;
 export default app;

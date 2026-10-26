@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { getSupabaseAdmin } from '../lib/supabase';
+import { prisma } from '../lib/prisma';
 
 export interface AuthenticatedRequest extends Request {
   user?: {
@@ -45,15 +46,36 @@ export async function authenticate(req: Request, res: Response, next: NextFuncti
     const supabaseUser = data.user;
     const userMetadata = supabaseUser.user_metadata || {};
 
+    let effectiveUserId = supabaseUser.id;
+    let effectiveTenantId = userMetadata.tenant_id || '';
+
+    // If database has a matching user by email, ensure effective IDs align
+    try {
+      const dbUser = await prisma.user.findFirst({
+        where: {
+          OR: [
+            { id: supabaseUser.id },
+            { email: supabaseUser.email?.toLowerCase().trim() },
+          ],
+        },
+      });
+      if (dbUser) {
+        effectiveUserId = dbUser.id;
+        effectiveTenantId = dbUser.tenantId || effectiveTenantId;
+      }
+    } catch {
+      // non-blocking fallback
+    }
+
     (req as AuthenticatedRequest).user = {
-      userId: supabaseUser.id,
-      tenantId: userMetadata.tenant_id || '',
+      userId: effectiveUserId,
+      tenantId: effectiveTenantId,
       email: supabaseUser.email || '',
       isPlatformAdmin: userMetadata.is_platform_admin === true,
       userType: userMetadata.user_type as 'MSME' | 'CITIZEN' | undefined,
       role: userMetadata.role || undefined,
     };
-    (req as AuthenticatedRequest).tenantId = userMetadata.tenant_id || '';
+    (req as AuthenticatedRequest).tenantId = effectiveTenantId;
 
     next();
   } catch (error: any) {

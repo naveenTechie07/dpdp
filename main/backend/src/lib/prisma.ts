@@ -2,10 +2,9 @@ import { PrismaClient } from '@prisma/client';
 
 export const prisma = new PrismaClient();
 
-let dbConnected = false;
+let dbConnected = true;
 
 export async function ensureDbConnection(): Promise<boolean> {
-  if (dbConnected) return true;
   try {
     await prisma.$connect();
     dbConnected = true;
@@ -18,5 +17,8 @@ export async function ensureDbConnection(): Promise<boolean> {
 }
 
 export function isDbConnected(): boolean {
+  if (!process.env.DATABASE_URL) {
+    return false;
+  }
   return dbConnected;
 }

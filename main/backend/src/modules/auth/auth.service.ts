@@ -198,8 +198,13 @@ export async function login(input: LoginInput, ipAddress?: string, userAgent?: s
   const userMetadata = authUser.user_metadata || {};
 
   // 2. Fetch user record from our database with tenant info
-  const user = await prisma.user.findUnique({
-    where: { id: authUser.id },
+  const user = await prisma.user.findFirst({
+    where: {
+      OR: [
+        { id: authUser.id },
+        { email: (authUser.email || input.email).toLowerCase().trim() },
+      ],
+    },
     include: {
       tenant: true,
       userRoles: true,
@@ -276,8 +281,11 @@ export async function getCurrentUser(userId: string, tenantId: string) {
   requireDb();
   const user = await prisma.user.findFirst({
     where: {
-      id: userId,
-      tenantId: tenantId,
+      OR: [
+        { id: userId },
+        { email: userId.toLowerCase().trim() },
+      ],
+      ...(tenantId ? { tenantId } : {}),
     },
     include: {
       tenant: true,
