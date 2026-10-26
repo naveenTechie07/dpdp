@@ -4,16 +4,12 @@
     "backend": {
       "root": "backend",
       "framework": "express",
-      "buildCommand": "npm install && npx prisma generate && npx tsc",
-      "devCommand": "npm run dev",
-      "startCommand": "npm start"
+      "buildCommand": "npm install && npx prisma generate && npx tsc"
     },
     "frontend": {
       "root": "frontend",
       "framework": "vite",
-      "buildCommand": "npm install && npm run build",
-      "devCommand": "npm run dev",
-      "startCommand": "npm run preview"
+      "buildCommand": "npm install && npm run build"
     }
   },
   "rewrites": [
