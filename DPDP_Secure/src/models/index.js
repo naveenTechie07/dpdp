@@ -34,6 +34,17 @@ const models = {
   decryptToken,
   dbPath,
 
+  ensureTenantExists: async (tenantId = 'TENANT-AAROGYA-01') => {
+    try {
+      await run(`
+        INSERT OR IGNORE INTO tenants (id, businessName, businessType, gstNumber, address, dpoName, dpoEmail, complianceScore)
+        VALUES (?, 'Aarogya Diagnostic Center', 'Diagnostic Laboratory & Healthcare SME', '29AAAAA0000A1Z5', '12th Main Road, Indiranagar, Bengaluru, Karnataka - 560038', 'Ramesh Kumar', 'privacy@aarogyaclinic.in', 84)
+      `, [tenantId]);
+    } catch (e) {
+      // Ignored
+    }
+  },
+
   // ==========================================
   // 1. DASHBOARD COMPLIANCE METRICS
   // ==========================================
@@ -326,6 +337,7 @@ createDataAsset: async (assetData) => {
   createRoPARecord: async (ropaData) => {
     const id = ropaData.id || `ROPA-${uuidv4().slice(0, 8).toUpperCase()}`;
     const tId = ropaData.tenantId || 'TENANT-AAROGYA-01';
+    await models.ensureTenantExists(tId);
     await run(`
       INSERT INTO ropa_records (id, tenantId, activityName, dataCategories, purpose, legalBasis, retentionPeriod, storageLocation, securitySafeguards)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -413,14 +425,17 @@ createDataAsset: async (assetData) => {
 
   saveRoPARecords: async (ropaArray = []) => {
     if (!ropaArray || ropaArray.length === 0) return 0;
+    const defaultTenantId = ropaArray[0]?.tenantId || 'TENANT-AAROGYA-01';
+    await models.ensureTenantExists(defaultTenantId);
     const saved = await runTransaction(async ({ run }) => {
       let count = 0;
       for (const r of ropaArray) {
         const id = r.id || uuidv4();
+        const tId = r.tenantId || defaultTenantId;
         await run(`
           INSERT OR REPLACE INTO ropa_records (id, tenantId, activityName, dataCategories, purpose, legalBasis, retentionPeriod, storageLocation, securitySafeguards)
           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `, [id, r.tenantId || 'TENANT-AAROGYA-01', r.activityName, r.dataCategories, r.purpose, r.legalBasis, r.retentionPeriod, r.storageLocation, r.securitySafeguards]);
+        `, [id, tId, r.activityName, r.dataCategories, r.purpose, r.legalBasis, r.retentionPeriod, r.storageLocation, r.securitySafeguards]);
         count++;
       }
       return count;
@@ -473,6 +488,7 @@ createDataAsset: async (assetData) => {
   },
 
   setRopaSiloMappings: async (ropaRecordId, siloIds = [], tenantId = 'TENANT-AAROGYA-01') => {
+    await models.ensureTenantExists(tenantId);
     const formattedDate = new Date().toISOString().split('T')[0];
     const mappingsToSync = [];
     const existingSilos = await all('SELECT id FROM data_silos WHERE tenantId = ?', [tenantId]);
@@ -485,8 +501,12 @@ createDataAsset: async (assetData) => {
       for (const siloId of siloIds) {
         if (!siloId) continue;
         if (!validSiloIds.has(siloId)) {
-          console.warn(`[ROPA] Silo ${siloId} not found in data_silos for tenant ${tenantId}, skipping foreign key insertion`);
-          continue;
+          // Auto-provision stub silo so foreign key never fails
+          await run(`
+            INSERT OR IGNORE INTO data_silos (id, tenantId, siloName, siloType, itemCount, riskLevel)
+            VALUES (?, ?, ?, 'ENTERPRISE_SYSTEM', 0, 'LOW')
+          `, [siloId, tenantId, siloId.replace('SILO-', '').replace(/-/g, ' ')]);
+          validSiloIds.add(siloId);
         }
         const id = `RSM-${uuidv4().slice(0, 8).toUpperCase()}`;
         await run(`

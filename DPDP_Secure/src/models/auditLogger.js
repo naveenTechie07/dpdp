@@ -54,6 +54,12 @@ async function logEvent(tenantId = DEFAULT_TENANT_ID, actor, action, resource, d
   const hash = computeEntryHash(prevHash, timestamp, actor, action, resource, detailsJson);
 
   await run(
+    `INSERT OR IGNORE INTO tenants (id, businessName, businessType, gstNumber, address, dpoName, dpoEmail, complianceScore)
+     VALUES (?, 'Aarogya Diagnostic Center', 'Diagnostic Laboratory & Healthcare SME', '29AAAAA0000A1Z5', '12th Main Road, Indiranagar, Bengaluru, Karnataka - 560038', 'Ramesh Kumar', 'privacy@aarogyaclinic.in', 84)`,
+    [tenantId]
+  ).catch(() => {});
+
+  await run(
     `INSERT INTO audit_logs (id, tenantId, actor, action, resource, detailsJson, timestamp, prevHash, hash)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [id, tenantId, actor, action, resource, detailsJson, timestamp, prevHash, hash]

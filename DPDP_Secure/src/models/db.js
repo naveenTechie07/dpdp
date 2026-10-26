@@ -713,6 +713,27 @@ const SCHEMA_DDL = `
   );
 
   CREATE INDEX IF NOT EXISTS idx_collection_points_tenant ON consent_collection_points(tenantId);
+
+  -- Atomic baseline tenant seed to prevent any FOREIGN KEY constraint failures on cold start
+  INSERT OR IGNORE INTO tenants (id, businessName, businessType, gstNumber, address, dpoName, dpoEmail, complianceScore)
+  VALUES ('TENANT-AAROGYA-01', 'Aarogya Diagnostic Center', 'Diagnostic Laboratory & Healthcare SME', '29AAAAA0000A1Z5', '12th Main Road, Indiranagar, Bengaluru, Karnataka - 560038', 'Ramesh Kumar', 'privacy@aarogyaclinic.in', 84);
+
+  -- Baseline silos seed
+  INSERT OR IGNORE INTO data_silos (id, tenantId, siloName, siloType, itemCount, riskLevel)
+  VALUES 
+    ('SILO-CLAIMS-DB', 'TENANT-AAROGYA-01', 'Claims Database (claims, policyholders, medical_histories)', 'ENTERPRISE_RDBMS', 1840, 'CRITICAL'),
+    ('SILO-POLICY-ADMIN-DB', 'TENANT-AAROGYA-01', 'Policy Administration Database (customers, policies, nominees)', 'ENTERPRISE_CORE', 2650, 'HIGH'),
+    ('SILO-EXCEL-FILES', 'TENANT-AAROGYA-01', 'Excel Files (agent_commission, tpa_network, customer_leads)', 'SPREADSHEET', 780, 'MEDIUM'),
+    ('SILO-PDFS', 'TENANT-AAROGYA-01', 'PDF Documents (blood_reports, discharge_summaries, kyc_scans)', 'PDF_DOCUMENTS', 520, 'CRITICAL'),
+    ('SILO-DOCUMENTS', 'TENANT-AAROGYA-01', 'Office Documents (clinical_notes, doctor_rx, consent_declarations)', 'OFFICE_DOCUMENTS', 340, 'HIGH'),
+    ('SILO-CLOUD-STORAGE', 'TENANT-AAROGYA-01', 'Cloud Storage (s3://aarogya-records, gcs://claims-archive)', 'CLOUD_OBJECT_STORE', 1120, 'RESTRICTED'),
+    ('SILO-WHATSAPP-01', 'TENANT-AAROGYA-01', 'Clinic Reception WhatsApp (Chat Exports & Patient PII)', 'INFORMAL_CHAT', 1420, 'CRITICAL'),
+    ('SILO-LEADS-02', 'TENANT-AAROGYA-01', 'Marketing & Customer Leads (Unsecured CSV Tracker)', 'INFORMAL_SPREADSHEET', 850, 'HIGH'),
+    ('SILO-INVOICES-03', 'TENANT-AAROGYA-01', 'Billing & Invoices (Accounts Department CSV)', 'INFORMAL_FINANCIAL', 980, 'MEDIUM'),
+    ('SILO-BILLING-03', 'TENANT-AAROGYA-01', 'Tally Invoicing & Billing CSV', 'INFORMAL_FINANCIAL', 980, 'MEDIUM'),
+    ('SILO-PATIENT-PORTAL', 'TENANT-AAROGYA-01', 'Primary Reception Console (Patient Intake & Portal)', 'ENTERPRISE_WEB', 650, 'HIGH'),
+    ('SILO-DIAGNOSTIC-LIMS', 'TENANT-AAROGYA-01', 'Diagnostic Laboratory Information System (LIMS)', 'ENTERPRISE_LIMS', 1200, 'CRITICAL'),
+    ('SILO-BILLING-FINANCE', 'TENANT-AAROGYA-01', 'Enterprise Billing & Commercial Finance System', 'ENTERPRISE_FINANCE', 890, 'MEDIUM');
 `;
 
 // Initialize Tables Synchronously on Module Load
@@ -721,11 +742,11 @@ db.serialize(() => {
     if (err) {
       console.error('[DATABASE] Schema initialization error:', err);
     } else {
-      console.log('[DATABASE] All 9 tables and performance indices initialized successfully.');
+      console.log('[DATABASE] All tables, baseline tenants, and performance indices initialized successfully.');
       if (process.env.VERCEL) {
-        setTimeout(async () => {
+        (async () => {
           try {
-            const row = await get('SELECT COUNT(*) as count FROM tenants');
+            const row = await get('SELECT COUNT(*) as count FROM pii_findings');
             if (!row || row.count === 0) {
               console.log('[DATABASE] Serverless cold start: running demo seeder for Aarogya Clinic...');
               const { seedDemoData } = require('./demoSeeder');
@@ -734,7 +755,7 @@ db.serialize(() => {
           } catch (e) {
             console.warn('[DATABASE] Serverless auto-seed notice:', e.message);
           }
-        }, 50);
+        })();
       }
     }
   });
