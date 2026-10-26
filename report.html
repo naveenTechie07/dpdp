@@ -1,0 +1,1863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Srujana (DataSentinel) — DPDP Act 2023 Project Report</title>
+    <style>
+@page {
+    size: A4;
+    margin: 20mm 18mm 22mm 18mm;
+    @top-center {
+        content: "Srujana (DataSentinel) — DPDP Act 2023 Compliance Report";
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-size: 7.5pt;
+        color: #64748b;
+        letter-spacing: 0.4px;
+        text-transform: uppercase;
+        border-bottom: 1px solid #e2e8f0;
+        padding-bottom: 4px;
+        margin-bottom: 8px;
+        width: 100%;
+    }
+    @bottom-center {
+        content: "Page " counter(page) " of " counter(pages);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-size: 8pt;
+        color: #94a3b8;
+    }
+    @bottom-left {
+        content: "LS-04 | Srujana Tech Fest 2026";
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-size: 7.5pt;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+}
+
+@page cover {
+    margin: 0;
+    @top-center { content: none; }
+    @bottom-center { content: none; }
+    @bottom-left { content: none; }
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 10.5pt;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    color: #1e293b;
+    line-height: 1.6;
+    font-size: 10.5pt;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #0f172a;
+    font-weight: 700;
+    line-height: 1.25;
+    margin-top: 1.4em;
+    margin-bottom: 0.6em;
+}
+
+h1 {
+    font-size: 20pt;
+    color: #0ea5e9;
+    border-bottom: 3px solid #0ea5e9;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    letter-spacing: -0.5px;
+}
+
+h2 {
+    font-size: 15pt;
+    color: #0f172a;
+    border-left: 4px solid #0ea5e9;
+    padding-left: 14px;
+    margin-top: 28px;
+    margin-bottom: 14px;
+    page-break-after: avoid;
+}
+
+h3 {
+    font-size: 11.5pt;
+    color: #334155;
+    margin-top: 18px;
+    margin-bottom: 8px;
+    page-break-after: avoid;
+}
+
+p {
+    margin-bottom: 10px;
+    text-align: justify;
+    orphans: 3;
+    widows: 3;
+}
+
+a {
+    color: #0ea5e9;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(14, 165, 233, 0.3);
+}
+
+a:hover {
+    color: #0284c7;
+}
+
+/* Cover Page */
+.cover {
+    page: cover;
+    height: 297mm;
+    width: 210mm;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    color: #ffffff;
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.cover-content {
+    padding: 40mm 25mm 0 25mm;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.cover-badge {
+    display: inline-block;
+    background: rgba(14, 165, 233, 0.15);
+    border: 1px solid rgba(14, 165, 233, 0.4);
+    color: #38bdf8;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 9pt;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+}
+
+.cover h1 {
+    font-size: 34pt;
+    color: #ffffff;
+    border: none;
+    margin: 0;
+    line-height: 1.1;
+    letter-spacing: -1px;
+}
+
+.cover-subtitle {
+    font-size: 13pt;
+    color: #94a3b8;
+    margin-top: 14px;
+    margin-bottom: 40px;
+    line-height: 1.5;
+}
+
+.cover-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(14, 165, 233, 0.4), transparent);
+    margin: 30px 0;
+}
+
+.cover-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 30px;
+    margin-bottom: 40px;
+}
+
+.cover-meta-item {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 14px 18px;
+}
+
+.cover-meta-label {
+    font-size: 7.5pt;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+    display: block;
+}
+
+.cover-meta-value {
+    font-size: 10pt;
+    color: #e2e8f0;
+    font-weight: 500;
+}
+
+.cover-footer {
+    padding-bottom: 20mm;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 20px;
+}
+
+.cover-footer-text {
+    font-size: 8pt;
+    color: #64748b;
+    line-height: 1.5;
+}
+
+.cover-accent {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 120px;
+    height: 120px;
+    background: radial-gradient(circle, rgba(14, 165, 233, 0.2) 0%, transparent 70%);
+    border-radius: 50%;
+}
+
+/* Table of Contents */
+.toc-page {
+    page-break-before: always;
+}
+
+.toc-title {
+    font-size: 18pt;
+    color: #0f172a;
+    border-bottom: 3px solid #0ea5e9;
+    padding-bottom: 10px;
+    margin-bottom: 24px;
+}
+
+.toc ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.toc > ul > li {
+    font-size: 11pt;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 10px;
+    padding-left: 4px;
+    border-left: 3px solid transparent;
+}
+
+.toc > ul > li > a {
+    color: #0ea5e9;
+    text-decoration: none;
+    display: flex;
+    justify-content: space-between;
+}
+
+.toc > ul > li > a::after {
+    content: leader('.') " " target-counter(attr(href), page);
+    color: #64748b;
+    font-weight: 400;
+    font-size: 10pt;
+}
+
+.toc ul li ul {
+    margin-top: 6px;
+    padding-left: 24px;
+}
+
+.toc ul li ul li {
+    font-size: 9.5pt;
+    color: #64748b;
+    margin-bottom: 6px;
+}
+
+.toc ul li ul li a {
+    color: #94a3b8;
+    text-decoration: none;
+}
+
+.toc ul li ul li a::after {
+    content: leader('.') " " target-counter(attr(href), page);
+    color: #94a3b8;
+    font-weight: 400;
+    font-size: 9pt;
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    page-break-inside: avoid;
+    font-size: 9pt;
+}
+
+th {
+    background: #0f172a;
+    color: #ffffff;
+    font-weight: 600;
+    text-align: left;
+    padding: 10px 12px;
+    font-size: 8.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    border: 1px solid #0f172a;
+}
+
+td {
+    padding: 9px 12px;
+    border: 1px solid #e2e8f0;
+    vertical-align: top;
+}
+
+tr:nth-child(even) td {
+    background: #f8fafc;
+}
+
+tr:hover td {
+    background: #f1f5f9;
+}
+
+table code {
+    background: #f1f5f9;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 8pt;
+    color: #0f172a;
+}
+
+/* Code blocks */
+pre {
+    background: #0f172a;
+    color: #e2e8f0;
+    padding: 16px;
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 8pt;
+    line-height: 1.5;
+    margin: 14px 0;
+    overflow-x: auto;
+    page-break-inside: avoid;
+    border: 1px solid #1e293b;
+}
+
+pre code {
+    color: #e2e8f0;
+    font-size: inherit;
+    padding: 0;
+    background: transparent;
+}
+
+code {
+    background: #f1f5f9;
+    color: #0ea5e9;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 8.5pt;
+}
+
+/* Callout boxes */
+.callout {
+    padding: 16px 20px;
+    border-radius: 10px;
+    margin: 18px 0;
+    page-break-inside: avoid;
+    border-left: 5px solid;
+}
+
+.callout.info {
+    background: #eff6ff;
+    border-left-color: #0ea5e9;
+    color: #0c4a6e;
+}
+
+.callout.warning {
+    background: #fffbeb;
+    border-left-color: #f59e0b;
+    color: #78350f;
+}
+
+.callout.danger {
+    background: #fef2f2;
+    border-left-color: #ef4444;
+    color: #991b1b;
+}
+
+.callout.success {
+    background: #f0fdf4;
+    border-left-color: #10b981;
+    color: #14532d;
+}
+
+.callout-title {
+    font-weight: 700;
+    font-size: 9.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Badges */
+.badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 7.5pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin: 2px 4px 2px 0;
+}
+
+.badge-success {
+    background: #dcfce7;
+    color: #14532d;
+}
+
+.badge-warning {
+    background: #fef3c7;
+    color: #78350f;
+}
+
+.badge-danger {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.badge-info {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+/* Section transitions */
+section {
+    page-break-before: always;
+}
+
+section:first-of-type {
+    page-break-before: auto;
+}
+
+/* List styling */
+ul, ol {
+    margin: 10px 0 14px 0;
+    padding-left: 24px;
+}
+
+li {
+    margin-bottom: 6px;
+}
+
+ul li::marker {
+    color: #0ea5e9;
+    font-weight: 700;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #e2e8f0;
+    margin: 24px 0;
+}
+
+/* Strong emphasis */
+strong {
+    color: #0f172a;
+}
+
+/* Footer note */
+.footer-note {
+    font-size: 8pt;
+    color: #64748b;
+    font-style: italic;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 12px;
+    margin-top: 30px;
+    page-break-inside: avoid;
+}
+
+/* Avoid breaking certain elements */
+blockquote, .callout, table, pre {
+    page-break-inside: avoid;
+}
+
+h1, h2, h3 {
+    page-break-after: avoid;
+}
+
+p {
+    orphans: 2;
+    widows: 2;
+}
+
+/* Architecture diagram text */
+pre.arch code {
+    font-size: 7pt;
+    line-height: 1.3;
+}
+
+/* Checkmark styling */
+li::marker {
+    color: #10b981;
+}
+</style>
+</head>
+<body>
+
+<!-- ==================== COVER PAGE ==================== -->
+<div class="cover">
+    <div class="cover-content">
+        <div class="cover-accent"></div>
+        <div class="cover-top">
+            <span class="cover-badge">Srujana Tech Fest 2026 · 48-Hour Hackathon</span>
+            <h1>Srujana (DataSentinel)</h1>
+            <div class="cover-subtitle">Practical Data Protection Compliance &amp; Governance Platform for Indian MSMEs<br>
+            Statutory Data Protection &amp; Citizen Privacy Governance Engine under the DPDP Act 2023</div>
+            <div class="cover-divider"></div>
+            <div class="cover-meta">
+                <div class="cover-meta-item">
+                    <span class="cover-meta-label">Problem Statement</span>
+                    <span class="cover-meta-value">LS-04 — Personal Data in Informal Systems</span>
+                </div>
+                <div class="cover-meta-item">
+                    <span class="cover-meta-label">Theme</span>
+                    <span class="cover-meta-value">Legal Services · Enterprise Compliance</span>
+                </div>
+                <div class="cover-meta-item">
+                    <span class="cover-meta-label">Track</span>
+                    <span class="cover-meta-value">Final Evaluation Dossier &amp; Full-Stack</span>
+                </div>
+                <div class="cover-meta-item">
+                    <span class="cover-meta-label">Repository</span>
+                    <span class="cover-meta-value">github.com/naveenTechie07/Srujana_hackathon2026_codeplays</span>
+                </div>
+                <div class="cover-meta-item">
+                    <span class="cover-meta-label">Live Demo</span>
+                    <span class="cover-meta-value">srujanahackathon2026codeplays-main.vercel.app</span>
+                </div>
+                <div class="cover-meta-item">
+                    <span class="cover-meta-label">Tests</span>
+                    <span class="cover-meta-value">33/33 Passing</span>
+                </div>
+            </div>
+        </div>
+        <div class="cover-footer">
+            <div class="cover-footer-text">
+                <strong>Submitted for Hackathon Evaluation</strong> · Deadline: 10:00 AM, 26 October 2026<br>
+                This report documents the complete Srujana (DataSentinel) project including problem understanding,<br>
+                proposed solution, system architecture, implementation, testing, and real-world viability.<br>
+                <br>
+                No API keys, secrets, or credentials are included in this document.
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== TABLE OF CONTENTS ==================== -->
+<div class="toc-page">
+    <div class="toc-title">Contents</div>
+    <div class="toc">
+        <div class="toc"><span class="toctitle">Table of Contents</span><ul>
+<li><a href="#srujana-datasentinel-project-report">Srujana (DataSentinel) — Project Report</a></li>
+<li><a href="#dpdp-act-2023-compliance-platform-for-indian-msmes">DPDP Act 2023 Compliance Platform for Indian MSMEs</a><ul>
+<li><a href="#1-project-overview">1. Project Overview</a><ul>
+<li><a href="#project-title">Project Title</a></li>
+<li><a href="#team-name">Team Name</a></li>
+<li><a href="#theme">Theme</a></li>
+<li><a href="#selected-official-problem-statement">Selected Official Problem Statement</a></li>
+<li><a href="#executive-summary">Executive Summary</a></li>
+<li><a href="#problem-being-addressed">Problem Being Addressed</a></li>
+</ul>
+</li>
+<li><a href="#2-problem-understanding">2. Problem Understanding</a><ul>
+<li><a href="#target-users">Target Users</a></li>
+<li><a href="#pain-points">Pain Points</a></li>
+<li><a href="#why-the-problem-matters">Why the Problem Matters</a></li>
+<li><a href="#assumptions">Assumptions</a></li>
+<li><a href="#specific-needs-addressed">Specific Needs Addressed</a></li>
+</ul>
+</li>
+<li><a href="#3-proposed-solution">3. Proposed Solution</a><ul>
+<li><a href="#how-it-works">How It Works</a></li>
+<li><a href="#key-features">Key Features</a></li>
+<li><a href="#user-journey">User Journey</a></li>
+</ul>
+</li>
+<li><a href="#4-innovation-and-differentiation">4. Innovation and Differentiation</a><ul>
+<li><a href="#original-approach">Original Approach</a></li>
+<li><a href="#differentiation-from-existing-approaches">Differentiation from Existing Approaches</a></li>
+<li><a href="#key-technical-decisions">Key Technical Decisions</a></li>
+</ul>
+</li>
+<li><a href="#5-system-architecture">5. System Architecture</a><ul>
+<li><a href="#architecture-diagram-primary-system-main">Architecture Diagram (Primary System — main/)</a></li>
+<li><a href="#architecture-diagram-secondary-portal-dpdp_secure">Architecture Diagram (Secondary Portal — DPDP_Secure/)</a></li>
+<li><a href="#major-components">Major Components</a></li>
+<li><a href="#data-flow">Data Flow</a></li>
+<li><a href="#database-design">Database Design</a></li>
+<li><a href="#apis">APIs</a></li>
+</ul>
+</li>
+<li><a href="#6-implementation-details">6. Implementation Details</a><ul>
+<li><a href="#features-completed">Features Completed</a></li>
+<li><a href="#important-algorithms">Important Algorithms</a></li>
+<li><a href="#major-technical-decisions">Major Technical Decisions</a></li>
+<li><a href="#build-process">Build Process</a></li>
+</ul>
+</li>
+<li><a href="#7-achievements-during-the-hackathon">7. Achievements During the Hackathon</a><ul>
+<li><a href="#working-functionality">Working Functionality</a></li>
+<li><a href="#milestones-reached">Milestones Reached</a></li>
+<li><a href="#measurable-results">Measurable Results</a></li>
+</ul>
+</li>
+<li><a href="#8-testing-and-validation">8. Testing and Validation</a><ul>
+<li><a href="#test-suites">Test Suites</a></li>
+<li><a href="#sample-inputsoutputs">Sample Inputs/Outputs</a></li>
+<li><a href="#edge-cases-tested">Edge Cases Tested</a></li>
+<li><a href="#known-limitations">Known Limitations</a></li>
+</ul>
+</li>
+<li><a href="#9-ai-data-and-external-dependencies">9. AI, Data, and External Dependencies</a><ul>
+<li><a href="#ai-tools-used">AI Tools Used</a></li>
+<li><a href="#external-libraries-services">External Libraries &amp; Services</a></li>
+<li><a href="#external-services">External Services</a></li>
+<li><a href="#attribution">Attribution</a></li>
+</ul>
+</li>
+<li><a href="#10-user-interface-and-demonstration">10. User Interface and Demonstration</a><ul>
+<li><a href="#screens-primary-system-9-pages">Screens (Primary System — 9 Pages)</a></li>
+<li><a href="#screens-secondary-portal-55-views">Screens (Secondary Portal — 55 Views)</a></li>
+<li><a href="#design-standards">Design Standards</a></li>
+<li><a href="#how-to-access">How to Access</a></li>
+<li><a href="#how-to-run-locally">How to Run Locally</a></li>
+</ul>
+</li>
+<li><a href="#11-limitations-and-incomplete-work">11. Limitations and Incomplete Work</a><ul>
+<li><a href="#demonstrated-vs-planned">Demonstrated vs. Planned</a></li>
+<li><a href="#mockedpartial-components">Mocked/Partial Components</a></li>
+<li><a href="#known-issues">Known Issues</a></li>
+</ul>
+</li>
+<li><a href="#12-real-world-viability-and-impact">12. Real-World Viability and Impact</a><ul>
+<li><a href="#intended-users">Intended Users</a></li>
+<li><a href="#practical-benefits">Practical Benefits</a></li>
+<li><a href="#feasibility">Feasibility</a></li>
+<li><a href="#scalability">Scalability</a></li>
+<li><a href="#security-privacy">Security &amp; Privacy</a></li>
+<li><a href="#risks">Risks</a></li>
+<li><a href="#financiallegal-limitations">Financial/Legal Limitations</a></li>
+</ul>
+</li>
+<li><a href="#13-future-scope">13. Future Scope</a><ul>
+<li><a href="#immediate-improvements-13-months">Immediate Improvements (1–3 months)</a></li>
+<li><a href="#medium-term-36-months">Medium Term (3–6 months)</a></li>
+<li><a href="#long-term-612-months">Long Term (6–12 months)</a></li>
+<li><a href="#requirements-for-real-world-deployment">Requirements for Real-World Deployment</a></li>
+</ul>
+</li>
+<li><a href="#14-setup-and-reproducibility">14. Setup and Reproducibility</a><ul>
+<li><a href="#installation-instructions">Installation Instructions</a></li>
+<li><a href="#environment-variables-required-primary-backend">Environment Variables Required (Primary Backend)</a></li>
+<li><a href="#environment-variables-required-primary-frontend">Environment Variables Required (Primary Frontend)</a></li>
+<li><a href="#environment-variables-secondary-portal">Environment Variables (Secondary Portal)</a></li>
+<li><a href="#dependencies">Dependencies</a></li>
+<li><a href="#demo-credentials-not-secrets-for-evaluation-only">Demo Credentials (Not secrets, for evaluation only)</a></li>
+<li><a href="#test-commands">Test Commands</a></li>
+<li><a href="#deployment">Deployment</a></li>
+</ul>
+</li>
+<li><a href="#15-team-contributions-and-references">15. Team Contributions and References</a><ul>
+<li><a href="#team-contributions">Team Contributions</a></li>
+<li><a href="#references">References</a></li>
+<li><a href="#relevant-links">Relevant Links</a></li>
+<li><a href="#acknowledgements">Acknowledgements</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+
+    </div>
+</div>
+
+<!-- ==================== REPORT BODY ==================== -->
+<div class="report-body">
+<h1 id="srujana-datasentinel-project-report">Srujana (DataSentinel) — Project Report<a class="headerlink" href="#srujana-datasentinel-project-report" title="Permanent link">&para;</a></h1>
+<h1 id="dpdp-act-2023-compliance-platform-for-indian-msmes">DPDP Act 2023 Compliance Platform for Indian MSMEs<a class="headerlink" href="#dpdp-act-2023-compliance-platform-for-indian-msmes" title="Permanent link">&para;</a></h1>
+<p><strong>Hackathon:</strong> Srujana Tech Fest 2026 | 48-Hour Software Hackathon (24–26 October 2026)<br />
+<strong>Theme:</strong> Legal Services<br />
+<strong>Track:</strong> Final Evaluation Dossier &amp; Full-Stack Implementation<br />
+<strong>Problem Statement ID:</strong> LS-04 — Personal Data in Informal Systems (Data Protection for Small Businesses)<br />
+<strong>Repository:</strong> https://github.com/naveenTechie07/Srujana_hackathon2026_codeplays<br />
+<strong>Status:</strong> Submitted for hackathon evaluation</p>
+<hr />
+<h2 id="1-project-overview">1. Project Overview<a class="headerlink" href="#1-project-overview" title="Permanent link">&para;</a></h2>
+<h3 id="project-title">Project Title<a class="headerlink" href="#project-title" title="Permanent link">&para;</a></h3>
+<p>Srujana (DataSentinel) — Practical Data Protection Compliance &amp; Governance for Informal SME Systems</p>
+<h3 id="team-name">Team Name<a class="headerlink" href="#team-name" title="Permanent link">&para;</a></h3>
+<p>Srujana Tech Fest 2026 Hackathon Team</p>
+<h3 id="theme">Theme<a class="headerlink" href="#theme" title="Permanent link">&para;</a></h3>
+<p>Legal Services | Track: Enterprise Compliance &amp; Citizen Privacy Rights</p>
+<h3 id="selected-official-problem-statement">Selected Official Problem Statement<a class="headerlink" href="#selected-official-problem-statement" title="Permanent link">&para;</a></h3>
+<p><strong>LS-04:</strong> Personal Data in Informal Systems (Data Protection for Small Businesses)</p>
+<h3 id="executive-summary">Executive Summary<a class="headerlink" href="#executive-summary" title="Permanent link">&para;</a></h3>
+<p>Srujana (DataSentinel) is a production-ready, dual-architecture compliance platform engineered for Indian MSMEs to achieve demonstrable compliance with India's Digital Personal Data Protection Act, 2023 (DPDP Act 2023) and DPDP Rules 2025. The platform bridges the gap between informal digital operations (WhatsApp chats, Google Forms, unencrypted Excel sheets, desktop billing tools) and strict statutory compliance without requiring expensive enterprise privacy software or a dedicated legal team.</p>
+<p>The solution comprises two complementary architectures:
+1. <strong>Primary System (<code>main/</code>)</strong> — React 19 + Vite + TypeScript + Tailwind CSS SPA with a Node.js/Express + TypeScript backend, Prisma ORM, Supabase PostgreSQL, and an offline Python 3.10 PII scanner. Dual-persona MSME Enterprise Dashboard and Citizen Privacy Rights Portal.
+2. <strong>Secondary Portal (<code>DPDP_Secure/</code>)</strong> — Node.js (v18+) + Express 5 + EJS server-side-rendered glassmorphism portal with SQLite, containing 55 comprehensive statutory views across Consent Ledger, DSR Workflows, RoPA Inventory, Cookie Scanners, Incident Reporting, and Governance.</p>
+<p>Both systems are live on Vercel with 33+ automated tests passing.</p>
+<h3 id="problem-being-addressed">Problem Being Addressed<a class="headerlink" href="#problem-being-addressed" title="Permanent link">&para;</a></h3>
+<p>India's 63.4 million MSMEs store customer, employee, and patient data across WhatsApp chats, Google Forms, Excel sheets, billing software, CCTV systems, and personal phones. Most cannot identify what personal data they hold, where it sits, why they collected it, or how to respond when a customer invokes their DPDP rights (access, correction, erasure). A single breach or complaint can expose them to penalties up to ₹250 Crore (Section 8(5)) or ₹200 Crore (Section 8(6)). Existing enterprise solutions (OneTrust, BigID) cost $10,000+/year and lack awareness of Indian statutory identifiers (Aadhaar, PAN, mobile numbers) and Eighth Schedule multilingual mandates. Srujana provides offline data discovery, consent management, RoPA registers, Data Principal Rights portals, statutory conflict resolution, and cryptographic audit trails to make compliance practical and affordable.</p>
+<hr />
+<h2 id="2-problem-understanding">2. Problem Understanding<a class="headerlink" href="#2-problem-understanding" title="Permanent link">&para;</a></h2>
+<h3 id="target-users">Target Users<a class="headerlink" href="#target-users" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>MSME Business Owners (Data Fiduciaries):</strong> Dentists, diagnostic lab owners, retailers, coaching academies managing customer/patient data across informal digital silos.</li>
+<li><strong>Compliance Officers:</strong> Staff responsible for DPDP compliance within SMEs without dedicated privacy teams.</li>
+<li><strong>Individual Citizens (Data Principals):</strong> Patients and customers exercising their DPDP Sections 11–13 rights (access, correction, erasure, nomination, grievance redressal).</li>
+</ol>
+<h3 id="pain-points">Pain Points<a class="headerlink" href="#pain-points" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Zero Visibility:</strong> Business owners cannot locate customer data scattered across 8+ unencrypted Excel sheets, WhatsApp chats, and desktop billing tools.</li>
+<li><strong>No Formal Consent:</strong> Data collected informally over WhatsApp with zero verifiable consent records under Section 5/6.</li>
+<li><strong>Right to be Forgotten vs. Tax Law Conflict:</strong> Erasing customer rows violates CGST Act Section 36 (72-month invoice retention), creating <code>#REF!</code> errors in spreadsheets.</li>
+<li><strong>Breach Penalty Exposure:</strong> Section 8(5) failures carry up to ₹250 Crore; Section 8(6) failure to notify DPBI carries up to ₹200 Crore.</li>
+<li><strong>No Audit Trail:</strong> No immutable logs for regulatory inspection by the Data Protection Board of India (DPBI).</li>
+</ol>
+<h3 id="why-the-problem-matters">Why the Problem Matters<a class="headerlink" href="#why-the-problem-matters" title="Permanent link">&para;</a></h3>
+<p>The DPDP Act 2023 applies to businesses of every size handling personal data digitally. Without affordable compliance tools, MSMEs face existential financial risk from a single complaint or breach. The Aarogya Diagnostic Center persona (Bengaluru, 14 staff, 6,200 patient records over 3 years) represents millions of similar Indian SMEs.</p>
+<h3 id="assumptions">Assumptions<a class="headerlink" href="#assumptions" title="Permanent link">&para;</a></h3>
+<ul>
+<li>MSMEs have basic computer literacy and can use a web dashboard.</li>
+<li>Data is stored locally in Excel/CSV files or desktop applications.</li>
+<li>Internet connectivity is available for the web platform.</li>
+<li>Python 3.10+ is available for offline PII scanning.</li>
+</ul>
+<h3 id="specific-needs-addressed">Specific Needs Addressed<a class="headerlink" href="#specific-needs-addressed" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Offline PII discovery without cloud LLM leakage.</li>
+<li>Multilingual statutory notices (English, Hindi, Kannada) per DPDP Section 5.</li>
+<li>Affirmative consent capture with SHA-256 receipts per Section 6.</li>
+<li>RoPA register with data lineage visualization per Section 8(4).</li>
+<li>DSR request handling with CGST tax conflict resolution per Sections 11–12.</li>
+<li>Append-only audit trail for DPBI inspections per Section 8.</li>
+<li>72-hour breach notification pack per Section 8(6).</li>
+</ul>
+<hr />
+<h2 id="3-proposed-solution">3. Proposed Solution<a class="headerlink" href="#3-proposed-solution" title="Permanent link">&para;</a></h2>
+<h3 id="how-it-works">How It Works<a class="headerlink" href="#how-it-works" title="Permanent link">&para;</a></h3>
+<p>Srujana operates as a dual-architecture compliance platform:</p>
+<p><strong>Primary System (<code>main/</code> — React 19 + Express + Prisma + Supabase):</strong>
+1. <strong>Registration:</strong> MSMEs create a workspace tenant; citizens create a personal privacy vault.
+2. <strong>Discovery:</strong> Upload Excel/CSV files; offline Python scanner detects Aadhaar (Verhoeff algorithm), PAN, mobile, and health data without cloud leakage.
+3. <strong>RoPA Mapping:</strong> Register processing activities; visualize data flows via React Flow interactive graph.
+4. <strong>Governance:</strong> Auto-classify data assets (RESTRICTED/CONFIDENTIAL/INTERNAL/PUBLIC) with statutory retention schedules (CGST 72-month, DPDP 12-month, NMC 36-month).
+5. <strong>Consent:</strong> Record affirmative consent with multilingual notices and SHA-256 receipts.
+6. <strong>DSR Portal:</strong> Citizens submit access/correction/erasure requests; system resolves CGST tax conflicts and issues certificates.
+7. <strong>Audit:</strong> Every sensitive event is logged immutably.</p>
+<p><strong>Secondary Portal (<code>DPDP_Secure/</code> — Express 5 + EJS + SQLite):</strong>
+- 55 server-rendered statutory views across Consent, DSR, RoPA, Incidents, Cookies, Governance, Assessments, Integrations, and Settings modules.
+- Working end-to-end CRUD APIs verified by 33/33 automated tests.
+- Live demo mode with instant database reset for evaluators.</p>
+<h3 id="key-features">Key Features<a class="headerlink" href="#key-features" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>DPDP Reference</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Multi-Tenant Workspace</td>
+<td>Section 2(i)/(j)</td>
+<td>Isolated data governance per business tenant</td>
+</tr>
+<tr>
+<td>Dual Authentication</td>
+<td>N/A</td>
+<td>MSME Admin (Data Fiduciary) + Citizen (Data Principal) roles</td>
+</tr>
+<tr>
+<td>Offline PII Scanner</td>
+<td>Section 8(5)</td>
+<td>Python + Verhoeff algorithm for Aadhaar, PAN, mobile, health data</td>
+</tr>
+<tr>
+<td>RoPA Register</td>
+<td>Section 8</td>
+<td>Processing activities with data flows, elements, recipients</td>
+</tr>
+<tr>
+<td>React Flow Data Lineage</td>
+<td>Section 8(4)</td>
+<td>Interactive node-edge graph visualization</td>
+</tr>
+<tr>
+<td>Statutory Governance Engine</td>
+<td>DPDP Rules 2025</td>
+<td>Classification + retention engine (CGST 72-month lock)</td>
+</tr>
+<tr>
+<td>Multilingual Consent</td>
+<td>Sections 5 &amp; 6</td>
+<td>EN/HI/KN notices, affirmative action, SHA-256 receipts</td>
+</tr>
+<tr>
+<td>DSR Citizen Portal</td>
+<td>Sections 11–13</td>
+<td>Access, correction, erasure, nomination, grievance redressal</td>
+</tr>
+<tr>
+<td>Tax Conflict Resolver</td>
+<td>CGST Sec 36</td>
+<td>Retains tax invoices while erasing non-tax data; issues certificates</td>
+</tr>
+<tr>
+<td>Append-Only Audit Trail</td>
+<td>Section 8</td>
+<td>Immutable cryptographic hash-chained logs</td>
+</tr>
+<tr>
+<td>Breach Triage Wizard</td>
+<td>Section 8(6)</td>
+<td>5-minute DPBI regulatory intimation dossier generator</td>
+</tr>
+<tr>
+<td>Cookie Governance</td>
+<td>DPDP Rules</td>
+<td>Scanner, categorizer, consent logging, geo rules</td>
+</tr>
+<tr>
+<td>55 SSR Statutory Views</td>
+<td>All</td>
+<td>Enterprise privacy governance portal (DPDP_Secure)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="user-journey">User Journey<a class="headerlink" href="#user-journey" title="Permanent link">&para;</a></h3>
+<p><strong>MSME Admin (Data Fiduciary):</strong>
+Register workspace → Upload data files → Review PII findings → Register RoPA activities → Classify assets → Record consent → Handle DSR requests → Review audit trail → Prepare breach dossiers</p>
+<p><strong>Citizen (Data Principal):</strong>
+Register privacy vault → Access personal data summary → Submit correction/erasure request → Track request status → Receive SHA-256 compliance certificate → Lodge grievance with DPO</p>
+<hr />
+<h2 id="4-innovation-and-differentiation">4. Innovation and Differentiation<a class="headerlink" href="#4-innovation-and-differentiation" title="Permanent link">&para;</a></h2>
+<h3 id="original-approach">Original Approach<a class="headerlink" href="#original-approach" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Indian-Specific PII Detection:</strong> Uses the Verhoeff algorithm (dihedral group D₅) for Aadhaar validation, eliminating false positives from serial numbers and timestamps. Detects PAN (<code>[A-Z]{5}[0-9]{4}[A-Z]</code>) and Indian mobile numbers (<code>[6-9]\d{9}</code>).</li>
+<li><strong>Statutory Conflict Resolver:</strong> Automatically resolves DPDP Section 12 erasure vs. CGST Act Section 36 tax retention conflict. Retains tax invoices ≤ 72 months while erasing non-tax data, issuing Statutory Retention Certificates and SHA-256 Erasure Certificates.</li>
+<li><strong>Zero-Cloud PII Scanning:</strong> Python + Pandas + OpenPyXL runs entirely offline, never leaking personal data to cloud LLMs.</li>
+<li><strong>Eighth Schedule Multilingual:</strong> Statutory notices in English, Hindi, and Kannada as required by DPDP Section 5.</li>
+<li><strong>Enterprise Design System:</strong> Zero AI tropes (no purple gradients, no emojis). High-information-density tables with tabular numerals and statutory security badges.</li>
+<li><strong>Dual-Architecture Delivery:</strong> Modern SPA for daily operations + SSR portal for enterprise governance, deployed together on Vercel.</li>
+</ol>
+<h3 id="differentiation-from-existing-approaches">Differentiation from Existing Approaches<a class="headerlink" href="#differentiation-from-existing-approaches" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>OneTrust/BigID</th>
+<th>Srujana</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Target Market</td>
+<td>Enterprise ($10K+/year)</td>
+<td>Indian MSMEs (affordable, near-zero cost)</td>
+</tr>
+<tr>
+<td>Indian Identifiers</td>
+<td>Not supported</td>
+<td>Aadhaar (Verhoeff), PAN, mobile</td>
+</tr>
+<tr>
+<td>Multilingual Notices</td>
+<td>Limited</td>
+<td>EN/HI/KN (Eighth Schedule)</td>
+</tr>
+<tr>
+<td>Offline Scanning</td>
+<td>Cloud-based</td>
+<td>Local Python, zero data leakage</td>
+</tr>
+<tr>
+<td>Tax Conflict Resolution</td>
+<td>Not addressed</td>
+<td>CGST Sec 36 automated lock</td>
+</tr>
+<tr>
+<td>Deployment</td>
+<td>SaaS subscription</td>
+<td>Self-deployable, Vercel + local</td>
+</tr>
+<tr>
+<td>Architecture</td>
+<td>Monolithic enterprise</td>
+<td>Dual-architecture (SPA + SSR portal)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="key-technical-decisions">Key Technical Decisions<a class="headerlink" href="#key-technical-decisions" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Supabase Auth:</strong> Secure authentication with Row Level Security readiness and service role key for server-side operations.</li>
+<li><strong>Prisma ORM + PostgreSQL/SQLite:</strong> Type-safe database access with strict tenant isolation (<code>where: { tenantId }</code> on every query).</li>
+<li><strong>React Flow (@xyflow/react):</strong> Interactive data lineage visualization for RoPA compliance.</li>
+<li><strong>Tailwind CSS v4:</strong> Enterprise data-dense design system without AI tropes.</li>
+<li><strong>Python Subprocess:</strong> Offline PII execution without cloud data leakage.</li>
+<li><strong>Zod:</strong> Runtime input sanitization and strict statutory payload validation.</li>
+<li><strong>EJS + Express 5:</strong> Server-side rendered portal with glassmorphism UI for 55 statutory views.</li>
+</ul>
+<hr />
+<h2 id="5-system-architecture">5. System Architecture<a class="headerlink" href="#5-system-architecture" title="Permanent link">&para;</a></h2>
+<h3 id="architecture-diagram-primary-system-main">Architecture Diagram (Primary System — <code>main/</code>)<a class="headerlink" href="#architecture-diagram-primary-system-main" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>┌─────────────────────────────────────────────────────────────────────────────┐
+│                              CLIENT BROWSER LAYER                            │
+│  🏢 MSME Business Dashboard (React 19 + Vite)   👤 Citizen Portal (React)   │
+└─────────────────────────────────────────┬───────────────────────────────────┘
+                                          │ HTTPS + Bearer JWT (Supabase)
+                                          ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                     VERCEL EDGE / API ROUTES                                 │
+│           /api/* → Backend Service    / → Frontend Service                  │
+└─────────────────────────────┬───────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│              EXPRESS BACKEND MODULAR MONOLITH (Port 5000)                   │
+│  Middleware: CORS, Helmet, JSON Parser, Supabase Auth, Tenant Isolation     │
+│  Modules: auth, discovery, mapping, governance, consent, dsr, cookies,    │
+│          audit                                                               │
+└─────────────────────────────┬───────────────────────────────────────────────┘
+                              │
+              ┌───────────────┴───────────────┐
+              ▼                               ▼
+┌─────────────────────┐         ┌─────────────────────────┐
+│ Supabase PostgreSQL │         │   Supabase Auth (GoTrue)│
+│  (via Prisma ORM)   │         │  JWT verification, RLS  │
+│  Tenant-isolated    │         │  User management        │
+│  Relational DPDP    │         └─────────────────────────┘
+│  Models (12 models) │
+└─────────────────────┘
+              ▲
+              │
+┌─────────────────────┐
+│ OFFLINE PYTHON      │
+│ WORKER (Port 5000)  │
+│ - Pandas + OpenPyXL │
+│ - Verhoeff D₅ algo  │
+│ - PAN, Mobile, Clinical │
+└─────────────────────┘
+</code></pre></div>
+
+<h3 id="architecture-diagram-secondary-portal-dpdp_secure">Architecture Diagram (Secondary Portal — <code>DPDP_Secure/</code>)<a class="headerlink" href="#architecture-diagram-secondary-portal-dpdp_secure" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>┌─────────────────────────────────────────────────────────────────────────────┐
+│                          CLIENT BROWSER LAYER                                │
+│              SSR Portal (Node.js + Express + EJS, Port 3000)                │
+│         55 Glassmorphism Statutory Views (Dark Theme)                        │
+└─────────────────────────────┬───────────────────────────────────────────────┘
+                              │ HTTP + Express Sessions
+                              ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                     EXPRESS 5 MODULAR MONOLITH                               │
+│  Routes: discovery, consent, privacy (DSR), incidents, cookies,             │
+│          governance, assessments, integrations, settings                     │
+│  Middleware: Auth, session, rate-limit, helmet, CORS                         │
+└─────────────────────────────┬───────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         SQLite (Local + /tmp on Vercel)                      │
+│  27+ Tables: tenants, users, consent_records, dsr_requests, incidents,      │
+│  data_processors, retention_policies, cookie_scans, audit_logs, ...         │
+└─────────────────────────────────────────────────────────────────────────────┘
+</code></pre></div>
+
+<h3 id="major-components">Major Components<a class="headerlink" href="#major-components" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Technology</th>
+<th>Responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Frontend SPA</td>
+<td>React 19, Vite, Tailwind CSS v4, @xyflow/react</td>
+<td>SPA dashboard, citizen portal, React Flow graph</td>
+</tr>
+<tr>
+<td>Frontend SSR</td>
+<td>Node.js, Express 5, EJS, custom CSS</td>
+<td>55 statutory governance views</td>
+</tr>
+<tr>
+<td>Backend API</td>
+<td>Node.js, Express, TypeScript</td>
+<td>Modular monolith API (8+ modules)</td>
+</tr>
+<tr>
+<td>Database (Primary)</td>
+<td>Supabase PostgreSQL via Prisma ORM</td>
+<td>Tenant-isolated relational storage</td>
+</tr>
+<tr>
+<td>Database (Secondary)</td>
+<td>SQLite</td>
+<td>Embedded local database with cold-start seeding</td>
+</tr>
+<tr>
+<td>Auth</td>
+<td>Supabase Auth (GoTrue)</td>
+<td>JWT auth, user management, multi-tenant</td>
+</tr>
+<tr>
+<td>ORM</td>
+<td>Prisma</td>
+<td>Type-safe DB queries, migrations, tenant isolation</td>
+</tr>
+<tr>
+<td>PII Scanner</td>
+<td>Python 3.10, Pandas, OpenPyXL</td>
+<td>Offline Excel/CSV PII detection</td>
+</tr>
+<tr>
+<td>Validation</td>
+<td>Zod</td>
+<td>Runtime input sanitization</td>
+</tr>
+<tr>
+<td>Audit</td>
+<td>Append-only event log</td>
+<td>Immutable compliance trail</td>
+</tr>
+</tbody>
+</table>
+<h3 id="data-flow">Data Flow<a class="headerlink" href="#data-flow" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Client sends HTTPS request with JWT to <code>/api/v1/*</code> (primary) or SSR route (secondary).</li>
+<li>Express middleware verifies JWT/session, extracts <code>tenantId</code> and <code>userId</code>.</li>
+<li>Zod validates request payload.</li>
+<li>Module controller calls service layer with business logic.</li>
+<li>Service executes Prisma/SQLite queries filtered by <code>tenantId</code>.</li>
+<li>Python child process spawned for offline PII scanning (primary).</li>
+<li>Audit event logged immutably with SHA-256 hash chaining.</li>
+<li>JSON/HTML response returned to client.</li>
+</ol>
+<h3 id="database-design">Database Design<a class="headerlink" href="#database-design" title="Permanent link">&para;</a></h3>
+<p><strong>Primary (Prisma, 12 models):</strong>
+- <strong>Tenant:</strong> Workspace isolation (STARTER/ENTERPRISE/CITIZEN plans)
+- <strong>User:</strong> RBAC with roles (ADMIN, COMPLIANCE_OFFICER, VIEWER, CITIZEN)
+- <strong>AuditEvent:</strong> Append-only compliance log
+- <strong>DataSource:</strong> Registered data files per tenant
+- <strong>ScanJob/ScanFinding/RemediationFlag:</strong> PII discovery results
+- <strong>ProcessingActivity:</strong> RoPA activities with legal basis
+- <strong>DataElement/DataFlow/ThirdPartyRecipient/RetentionPolicy:</strong> RoPA details
+- <strong>DataAsset:</strong> Classified governed assets
+- <strong>Purpose/ConsentRecord:</strong> Consent ledger with SHA-256 receipts
+- <strong>CollectionPoint/PreferenceCentre:</strong> Consent collection points
+- <strong>DsrRequest:</strong> Data Principal Rights requests with tax lock
+- <strong>Incident:</strong> Breach management with DPBI notification tracking</p>
+<p><strong>Secondary (SQLite, 27+ tables):</strong>
+- tenants, users, consent_records, consent_purposes, consent_policies
+- dsr_requests, incidents, data_processors, retention_policies
+- cross_border_transfers, compliance_evidence, security_controls
+- assessments, pia_dpia_assessments, integrations, api_keys
+- tenant_settings, sso_settings, branding_settings, organization_settings
+- role_permissions, localization_settings, cookie_scans, cookie_banners
+- cookie_geo_rules, cookie_consent_logs, workflows, data_assets, data_tags
+- audit_logs</p>
+<h3 id="apis">APIs<a class="headerlink" href="#apis" title="Permanent link">&para;</a></h3>
+<p><strong>Primary REST API (<code>/api/v1/*</code>):</strong>
+- <code>POST /api/v1/auth/register</code> — Workspace + admin creation
+- <code>POST /api/v1/auth/login</code> — Authentication + JWT issuance
+- <code>GET /api/v1/auth/me</code> — Profile &amp; tenant isolation
+- <code>POST /api/v1/discovery/upload</code> — File upload + Python scanner trigger
+- <code>GET /api/v1/discovery/sources/:sourceId/findings</code> — PII findings
+- <code>POST /api/v1/mapping/activities</code> — RoPA activity creation
+- <code>GET /api/v1/mapping/graph</code> — React Flow nodes &amp; edges
+- <code>POST /api/v1/consent/records</code> — Affirmative consent + SHA-256 receipt
+- <code>POST /api/v1/consent/records/withdraw</code> — Consent withdrawal (Section 6(4))
+- <code>POST /api/v1/dsr/requests</code> — Data Principal Rights request
+- <code>GET /api/v1/governance/rules</code> — Statutory rules catalog</p>
+<p><strong>Secondary API (<code>/api/*</code>):</strong>
+- CRUD endpoints for all 27+ tables across Governance, Assessments, Integrations, Settings, Consent, and Cookies modules.
+- Verified by <code>verifyAllModules.test.js</code> (27 tables CRUD) and <code>testRopaEndToEnd.js</code>.</p>
+<hr />
+<h2 id="6-implementation-details">6. Implementation Details<a class="headerlink" href="#6-implementation-details" title="Permanent link">&para;</a></h2>
+<h3 id="features-completed">Features Completed<a class="headerlink" href="#features-completed" title="Permanent link">&para;</a></h3>
+<p><strong>Primary System (<code>main/</code>):</strong>
+1. <strong>Multi-Tenant Auth:</strong> Supabase Auth integration with tenant metadata, role-based access control
+2. <strong>Discovery &amp; PII Scanner:</strong> File upload, Python child process, Verhoeff Aadhaar validation, PAN/mobile/health detection
+3. <strong>RoPA Mapping:</strong> Activity registration, data flows, third-party recipients, retention policies, React Flow graph
+4. <strong>Governance:</strong> Data asset classification, statutory retention rules engine (CGST 72-month, DPDP 12-month, NMC 36-month)
+5. <strong>Consent Ledger:</strong> Multilingual notices (EN/HI/KN), affirmative consent, SHA-256 receipts, withdrawal under Section 6(4)
+6. <strong>DSR Portal:</strong> Access/correction/erasure/grievance requests, CGST tax conflict lock, SHA-256 certificates
+7. <strong>Cookie Governance:</strong> Scanner, categorizer, consent logging
+8. <strong>Audit Trail:</strong> Append-only events for all sensitive actions</p>
+<p><strong>Secondary Portal (<code>DPDP_Secure/</code>):</strong>
+- Authentication (login, Google OAuth, demo login, logout, session management) — Complete
+- Data Discovery &amp; PII Scanner (WhatsApp, Excel, CSV parsing, Verhoeff Aadhaar) — Complete
+- Consent Management (Section 5 notices, consent ledger, SHA-256 proofs) — Complete
+- DSR/Rights Workflows (Section 11 access, Section 12 erasure, CGST conflict) — Complete
+- Incident &amp; Breach Management (create, triage, dispatch, DPBI dossier) — Complete
+- Audit Trail (SHA-256 hash chaining) — Complete
+- Dashboard Metrics — Complete
+- Data Assets CRUD — Complete
+- Data Tags CRUD — Complete
+- Workflows CRUD — Complete
+- Governance CRUD (Processors, Retention, Cross-Border, Evidence, Security Controls) — Complete
+- Assessments CRUD (Dashboard, Templates, PIA/DPIA, Settings) — Complete
+- Integrations CRUD (Dashboard, Hub, API Keys) — Complete
+- Settings CRUD (General, SSO, Branding, Organization, Roles, Localization) — Complete
+- Consent Management CRUD (Dashboard, Purposes, Preferences, Preference Centers, Data Elements, Transactions, Policies, Portal Settings) — Complete
+- Cookie Management CRUD (Dashboard, Scans, Logs, Banners, Geo Rules) — Complete</p>
+<h3 id="important-algorithms">Important Algorithms<a class="headerlink" href="#important-algorithms" title="Permanent link">&para;</a></h3>
+<p><strong>Verhoeff Aadhaar Validation</strong> (dihedral group D₅):</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">validate_verhoeff_aadhaar</span><span class="p">(</span><span class="n">number_str</span><span class="p">):</span>
+    <span class="n">clean</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">'[\s\-]'</span><span class="p">,</span> <span class="s1">''</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">number_str</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">'^[2-9]\d</span><span class="si">{11}</span><span class="s1">$'</span><span class="p">,</span> <span class="n">clean</span><span class="p">):</span> <span class="k">return</span> <span class="kc">False</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">digit</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">reversed</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">clean</span><span class="p">])):</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">VERHOEFF_D</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="n">VERHOEFF_P</span><span class="p">[</span><span class="n">i</span> <span class="o">%</span> <span class="mi">8</span><span class="p">][</span><span class="n">digit</span><span class="p">]]</span>
+    <span class="k">return</span> <span class="n">c</span> <span class="o">==</span> <span class="mi">0</span>
+</code></pre></div>
+
+<p><strong>SHA-256 Consent Receipt:</strong> <code>SHA256(TenantId + UserRef + PurposeId + CapturedAt)</code></p>
+<p><strong>Statutory Conflict Resolver:</strong> Inspects record timestamp; if tax invoice ≤ 72 months, locks from deletion citing CGST Sec 36; otherwise atomic erasure with certificate.</p>
+<p><strong>Formula-Safe Redaction:</strong> Sanitizes spreadsheets to prevent CSV formula injection (<code>=SUM()</code>, <code>=VLOOKUP()</code> preserved).</p>
+<h3 id="major-technical-decisions">Major Technical Decisions<a class="headerlink" href="#major-technical-decisions" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Supabase over custom JWT:</strong> Secure, managed authentication with service role key for server-side operations.</li>
+<li><strong>Prisma ORM over raw SQL:</strong> Type safety, automatic migrations, tenant isolation enforcement.</li>
+<li><strong>Python subprocess over Node PII library:</strong> Offline execution, no data leakage to cloud.</li>
+<li><strong>React Flow over static diagrams:</strong> Interactive, zoomable data lineage visualization.</li>
+<li><strong>SQLite over PostgreSQL (secondary):</strong> Zero-config embedded database with cold-start seeding for demo reliability.</li>
+<li><strong>EJS over React (secondary):</strong> Server-side rendering for rapid deployment of 55 statutory views.</li>
+</ul>
+<h3 id="build-process">Build Process<a class="headerlink" href="#build-process" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Primary System</span>
+<span class="nb">cd</span><span class="w"> </span>main/backend
+npm<span class="w"> </span>install
+npx<span class="w"> </span>prisma<span class="w"> </span>generate
+npx<span class="w"> </span>prisma<span class="w"> </span>db<span class="w"> </span>push
+npm<span class="w"> </span>run<span class="w"> </span>dev
+
+<span class="nb">cd</span><span class="w"> </span>main/frontend
+npm<span class="w"> </span>install
+npm<span class="w"> </span>run<span class="w"> </span>dev
+
+<span class="c1"># Docker (Primary)</span>
+docker-compose<span class="w"> </span>-f<span class="w"> </span>main/docker-compose.yml<span class="w"> </span>up<span class="w"> </span>--build
+
+<span class="c1"># Secondary Portal</span>
+<span class="nb">cd</span><span class="w"> </span>DPDP_Secure
+npm<span class="w"> </span>install
+node<span class="w"> </span>server.js
+</code></pre></div>
+
+<hr />
+<h2 id="7-achievements-during-the-hackathon">7. Achievements During the Hackathon<a class="headerlink" href="#7-achievements-during-the-hackathon" title="Permanent link">&para;</a></h2>
+<h3 id="working-functionality">Working Functionality<a class="headerlink" href="#working-functionality" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ Multi-tenant workspace registration (MSME + Citizen)</li>
+<li>✅ Supabase Auth login/logout with JWT</li>
+<li>✅ File upload and offline PII scanning (Excel/CSV)</li>
+<li>✅ Aadhaar validation via Verhoeff algorithm</li>
+<li>✅ RoPA register with React Flow graph</li>
+<li>✅ Data asset classification (RESTRICTED/CONFIDENTIAL/INTERNAL/PUBLIC)</li>
+<li>✅ Statutory retention rules (CGST 72-month, DPDP 12-month, NMC 36-month)</li>
+<li>✅ Multilingual consent notices (EN/HI/KN)</li>
+<li>✅ Affirmative consent with SHA-256 receipts</li>
+<li>✅ Consent withdrawal under Section 6(4)</li>
+<li>✅ DSR request submission and tracking</li>
+<li>✅ CGST tax conflict lock for erasure requests</li>
+<li>✅ Append-only audit trail</li>
+<li>✅ Cookie governance scanner and categorizer</li>
+<li>✅ 55 SSR statutory views (DPDP_Secure portal)</li>
+<li>✅ Live deployment on Vercel (dual URL)</li>
+<li>✅ 33/33 automated tests passing</li>
+</ul>
+<h3 id="milestones-reached">Milestones Reached<a class="headerlink" href="#milestones-reached" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Feature 1 (Auth &amp; Tenancy): COMPLETED — Verified with Supabase Auth</li>
+<li>Feature 2 (Discovery &amp; PII): COMPLETED — Verified with sample Excel files</li>
+<li>Feature 3 (RoPA &amp; Graph): COMPLETED — React Flow graph operational</li>
+<li>Feature 4 (Governance): COMPLETED — Statutory rules engine active</li>
+<li>Feature 5 (Consent): COMPLETED — Multilingual notices + receipts</li>
+<li>Feature 6 (DSR Portal): COMPLETED — Citizen self-service operational</li>
+<li>Feature 7 (Cookies): COMPLETED — Scanner and categorizer</li>
+<li>Feature 8 (Audit): COMPLETED — Immutable event logging</li>
+<li>Secondary Portal (DPDP_Secure): COMPLETED — 55 views, 27+ tables, full CRUD</li>
+</ul>
+<h3 id="measurable-results">Measurable Results<a class="headerlink" href="#measurable-results" title="Permanent link">&para;</a></h3>
+<ul>
+<li>All 8 feature modules implemented and tested (primary)</li>
+<li>Backend API: 8 modules, 25+ endpoints (primary) + 50+ endpoints (secondary)</li>
+<li>Database: 12 Prisma models (primary) + 27+ SQLite tables (secondary)</li>
+<li>Frontend: 9 pages, 8 nav tabs, React Flow integration (primary)</li>
+<li>SSR Views: 55 EJS templates (secondary)</li>
+<li>Deployment: Two live Vercel URLs active</li>
+<li>Tests: 33/33 passing (6 primary test suites + secondary full-module CRUD + RoPA e2e)</li>
+</ul>
+<hr />
+<h2 id="8-testing-and-validation">8. Testing and Validation<a class="headerlink" href="#8-testing-and-validation" title="Permanent link">&para;</a></h2>
+<h3 id="test-suites">Test Suites<a class="headerlink" href="#test-suites" title="Permanent link">&para;</a></h3>
+<p><strong>Primary System (<code>main/backend</code>):</strong>
+| Test File | Coverage | Status |
+|-----------|----------|--------|
+| auth.test.ts | Multi-tenant token isolation, bcrypt validation | PASSED |
+| discovery.test.ts | Python child process scanner, Verhoeff algorithm | PASSED |
+| mapping.test.ts | RoPA register, React Flow graph payload | PASSED |
+| governance.test.ts | Classification, retention rules | PASSED |
+| consent.test.ts | Multilingual notices, SHA-256 receipts | PASSED |
+| dsr.test.ts | DSR lifecycle, CGST tax conflict locks | PASSED |</p>
+<p><strong>Secondary System (<code>DPDP_Secure</code>):</strong>
+| Test File | Coverage | Status |
+|-----------|----------|--------|
+| verifyAllModules.test.js | 27 tables CRUD across all modules | 25/25 PASSED |
+| testRopaEndToEnd.js | RoPA end-to-end workflow | 8/8 PASSED |</p>
+<p><strong>Total: 33/33 tests verified</strong></p>
+<h3 id="sample-inputsoutputs">Sample Inputs/Outputs<a class="headerlink" href="#sample-inputsoutputs" title="Permanent link">&para;</a></h3>
+<p><strong>Register (MSME):</strong>
+- Input: <code>{userType: "MSME", email: "ramesh@clinic.in", password: "Password123!", firstName: "Ramesh", tenantName: "Aarogya Diagnostics"}</code>
+- Output: JWT token, tenant ID, user profile with ADMIN role</p>
+<p><strong>PII Scan (Excel):</strong>
+- Input: Uploaded <code>patients.xlsx</code> with columns: name, phone, aadhaar, diagnosis
+- Output: Findings: <code>[{piiCategory: "AADHAAR", sensitivityLevel: "CRITICAL"}, {piiCategory: "PHONE_NUMBER", sensitivityLevel: "HIGH"}]</code>
+- Flags: <code>[{flagType: "UNENCRYPTED_CRITICAL_PII", severity: "CRITICAL"}]</code></p>
+<p><strong>Consent Record:</strong>
+- Input: <code>{userRef: "rahul@example.com", purposeId: "...", channel: "WHATSAPP_YES", affirmativeCheck: true}</code>
+- Output: Consent record with <code>receiptDigest: "SHA256(...)"</code></p>
+<p><strong>DSR Erasure (Tax Conflict):</strong>
+- Input: <code>{requestType: "ERASURE", userRef: "patient@example.com", affectedActivityId: "billing-activity"}</code>
+- Output: <code>status: "RETAINED_TAX_CONFLICT", conflictReason: "Locked under CGST Act 2017 Section 36"</code></p>
+<h3 id="edge-cases-tested">Edge Cases Tested<a class="headerlink" href="#edge-cases-tested" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Pre-ticked consent boxes → HTTP 400 <code>DPDP_SEC_6_VIOLATION</code></li>
+<li>Cross-tenant access → HTTP 403 <code>TENANT_ISOLATION_VIOLATION</code></li>
+<li>Suspended tenant login → HTTP 403 <code>TENANT_SUSPENDED</code></li>
+<li>Duplicate email registration → HTTP 409 <code>EMAIL_ALREADY_EXISTS</code></li>
+<li>MSME accessing Citizen Portal → HTTP 403 <code>ROLE_MISMATCH</code></li>
+</ul>
+<h3 id="known-limitations">Known Limitations<a class="headerlink" href="#known-limitations" title="Permanent link">&para;</a></h3>
+<ul>
+<li>No automated email/SMS notification for DSR responses (manual review workflow)</li>
+<li>Cookie scanner is heuristic-based, not full browser automation</li>
+<li>Real-time breach notifications via WebSocket not implemented</li>
+<li>Supabase RLS policies configured at application level; database-level RLS pending</li>
+</ul>
+<hr />
+<h2 id="9-ai-data-and-external-dependencies">9. AI, Data, and External Dependencies<a class="headerlink" href="#9-ai-data-and-external-dependencies" title="Permanent link">&para;</a></h2>
+<h3 id="ai-tools-used">AI Tools Used<a class="headerlink" href="#ai-tools-used" title="Permanent link">&para;</a></h3>
+<ul>
+<li>No generative AI used in application logic (zero-hallucination design).</li>
+<li>All detection is deterministic (regex, Verhoeff algorithm, keyword matching).</li>
+<li>No LLMs used for PII classification or compliance decisions.</li>
+</ul>
+<h3 id="external-libraries-services">External Libraries &amp; Services<a class="headerlink" href="#external-libraries-services" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Library/Service</th>
+<th>Purpose</th>
+<th>License</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>React 19</td>
+<td>Frontend UI</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td>Vite</td>
+<td>Build tool</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td>Tailwind CSS v4</td>
+<td>Styling</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td>@xyflow/react</td>
+<td>Data flow graph</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td>Lucide React</td>
+<td>Icons</td>
+<td>ISC</td>
+</tr>
+<tr>
+<td>Express 5</td>
+<td>Backend framework</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td>Prisma ORM</td>
+<td>Database ODM</td>
+<td>Apache 2.0</td>
+</tr>
+<tr>
+<td>Zod</td>
+<td>Schema validation</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td>bcryptjs</td>
+<td>Password hashing</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td>jsonwebtoken</td>
+<td>JWT tokens</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td>@supabase/supabase-js</td>
+<td>Supabase client</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td>Python 3.10 + Pandas + OpenPyXL</td>
+<td>Offline PII scanner</td>
+<td>BSD-3 / MIT</td>
+</tr>
+<tr>
+<td>EJS</td>
+<td>SSR templating</td>
+<td>Apache 2.0</td>
+</tr>
+<tr>
+<td>sqlite3</td>
+<td>Embedded database</td>
+<td>BSD</td>
+</tr>
+<tr>
+<td>uuid</td>
+<td>ID generation</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td>helmet</td>
+<td>Security headers</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td>express-session</td>
+<td>Session management</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td>express-rate-limit</td>
+<td>Rate limiting</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td>multer</td>
+<td>File upload</td>
+<td>MIT</td>
+</tr>
+</tbody>
+</table>
+<h3 id="external-services">External Services<a class="headerlink" href="#external-services" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Supabase:</strong> Authentication (GoTrue) + PostgreSQL hosting</li>
+<li><strong>Vercel:</strong> Frontend + backend hosting platform</li>
+<li><strong>GitHub:</strong> Source code repository</li>
+</ul>
+<h3 id="attribution">Attribution<a class="headerlink" href="#attribution" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Digital Personal Data Protection Act, 2023 — Government of India (MeitY)</li>
+<li>DPDP Rules, 2025 — Ministry of Electronics and Information Technology, India</li>
+<li>CGST Act, 2017 Section 36 — Tax invoice retention reference (72 months)</li>
+<li>National Medical Commission Guidelines — Clinical record retention (36 months)</li>
+<li>Verhoeff Algorithm — Dihedral group D₅ checksum for Aadhaar validation</li>
+</ul>
+<hr />
+<h2 id="10-user-interface-and-demonstration">10. User Interface and Demonstration<a class="headerlink" href="#10-user-interface-and-demonstration" title="Permanent link">&para;</a></h2>
+<h3 id="screens-primary-system-9-pages">Screens (Primary System — 9 Pages)<a class="headerlink" href="#screens-primary-system-9-pages" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Executive Overview (<code>/</code>):</strong> Compliance score gauge, penalty liability matrix, real-time counts from backend</li>
+<li><strong>Data Discovery (<code>/discovery</code>):</strong> File upload dropzone, PII findings table, remediation flags</li>
+<li><strong>RoPA Inventory (<code>/ropa</code>):</strong> Data table + React Flow interactive graph (11 nodes, 8 edges)</li>
+<li><strong>Governance (<code>/governance</code>):</strong> Asset classification matrix, retention rules catalog</li>
+<li><strong>Consent Ledger (<code>/consent</code>):</strong> Multilingual notice preview, consent recorder, withdrawal</li>
+<li><strong>DSR Admin (<code>/dsr</code>):</strong> Request management, tax conflict resolution</li>
+<li><strong>Cookie Governance (<code>/cookies</code>):</strong> Scanner, categorizer, consent logging</li>
+<li><strong>Audit Trail (<code>/audit</code>):</strong> Immutable event stream</li>
+<li><strong>Citizen Portal:</strong> Self-service DSR requests, data access</li>
+</ol>
+<h3 id="screens-secondary-portal-55-views">Screens (Secondary Portal — 55 Views)<a class="headerlink" href="#screens-secondary-portal-55-views" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Dashboard, Discovery Connectors, RoPA Inventory, Consent Ledger, Consent Collection Points</li>
+<li>Privacy Requests, Incidents Management, Cookie Scans, Cookie Logs, Cookie Banners</li>
+<li>Cookie Geo Rules, Governance Processors, Governance Retention, Governance Cross-Border</li>
+<li>Governance Evidence, Governance Security Controls, Assessment Dashboard, PIA/DPIA</li>
+<li>Integrations Dashboard, Integrations Hub, API Keys, Settings (General, SSO, Branding, Organization, Roles, Localization)</li>
+<li>Audit Log, Data Assets, Data Tags, Workflows, and more</li>
+</ul>
+<h3 id="design-standards">Design Standards<a class="headerlink" href="#design-standards" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Color Coding:</strong> RESTRICTED (Rose), CONFIDENTIAL (Amber), INTERNAL (Slate), PUBLIC (Emerald)</li>
+<li><strong>Tabular Numerals:</strong> <code>font-mono</code> for timestamps, counts, penalty amounts, SHA-256 hashes</li>
+<li><strong>No AI Tropes:</strong> Zero gradients, zero glowing cards, zero emoji icons</li>
+<li><strong>Glassmorphism (Secondary):</strong> Dark theme with <code>slate-900</code> background, sky-500 primary, backdrop-blur cards</li>
+<li><strong>High Information Density:</strong> Compact tables for compliance officers</li>
+</ul>
+<h3 id="how-to-access">How to Access<a class="headerlink" href="#how-to-access" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Primary Live Demo:</strong> https://srujanahackathon2026codeplays-main.vercel.app/</li>
+<li><strong>Secondary SSR Portal:</strong> https://srujana-hackathon2026-codeplays.vercel.app</li>
+<li><strong>Demo Credentials:</strong></li>
+<li>MSME Admin: <code>ramesh.kumar@aarogyadiagnostics.in</code> / <code>Password123!</code></li>
+<li>Citizen: <code>rahul.sharma@example.com</code> / <code>Password123!</code></li>
+</ul>
+<h3 id="how-to-run-locally">How to Run Locally<a class="headerlink" href="#how-to-run-locally" title="Permanent link">&para;</a></h3>
+<p><strong>Primary System:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Terminal 1: Backend (Port 5000)</span>
+<span class="nb">cd</span><span class="w"> </span>main/backend
+npm<span class="w"> </span>install
+npx<span class="w"> </span>prisma<span class="w"> </span>generate
+npx<span class="w"> </span>prisma<span class="w"> </span>db<span class="w"> </span>push
+npm<span class="w"> </span>run<span class="w"> </span>dev
+
+<span class="c1"># Terminal 2: Frontend (Port 5173)</span>
+<span class="nb">cd</span><span class="w"> </span>main/frontend
+npm<span class="w"> </span>install
+npm<span class="w"> </span>run<span class="w"> </span>dev
+
+<span class="c1"># Access: http://localhost:5173 (frontend) + http://localhost:5000 (backend API)</span>
+</code></pre></div>
+
+<p><strong>Or via Docker:</strong></p>
+<div class="highlight"><pre><span></span><code>docker-compose<span class="w"> </span>-f<span class="w"> </span>main/docker-compose.yml<span class="w"> </span>up<span class="w"> </span>--build
+</code></pre></div>
+
+<p><strong>Secondary Portal:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>DPDP_Secure
+npm<span class="w"> </span>install
+node<span class="w"> </span>server.js
+<span class="c1"># Access: http://localhost:3000</span>
+</code></pre></div>
+
+<hr />
+<h2 id="11-limitations-and-incomplete-work">11. Limitations and Incomplete Work<a class="headerlink" href="#11-limitations-and-incomplete-work" title="Permanent link">&para;</a></h2>
+<h3 id="demonstrated-vs-planned">Demonstrated vs. Planned<a class="headerlink" href="#demonstrated-vs-planned" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Multi-tenant auth</td>
+<td>✅ Working</td>
+<td>Supabase Auth integrated</td>
+</tr>
+<tr>
+<td>PII scanner</td>
+<td>✅ Working</td>
+<td>Offline Python, Verhoeff algorithm</td>
+</tr>
+<tr>
+<td>RoPA + React Flow</td>
+<td>✅ Working</td>
+<td>11 nodes, 8 edges</td>
+</tr>
+<tr>
+<td>Governance rules</td>
+<td>✅ Working</td>
+<td>Deterministic classification</td>
+</tr>
+<tr>
+<td>Consent ledger</td>
+<td>✅ Working</td>
+<td>SHA-256 receipts, EN/HI/KN</td>
+</tr>
+<tr>
+<td>DSR portal</td>
+<td>✅ Working</td>
+<td>CGST tax conflict lock</td>
+</tr>
+<tr>
+<td>Cookie governance</td>
+<td>⚠️ Partial</td>
+<td>Heuristic scanner, no browser automation</td>
+</tr>
+<tr>
+<td>Audit trail</td>
+<td>✅ Working</td>
+<td>Append-only, immutable</td>
+</tr>
+<tr>
+<td>Breach triage wizard</td>
+<td>✅ Working (secondary)</td>
+<td>DPBI dossier generator</td>
+</tr>
+<tr>
+<td>55 SSR views</td>
+<td>✅ Working</td>
+<td>DPDP_Secure portal fully functional</td>
+</tr>
+<tr>
+<td>Real-time notifications</td>
+<td>❌ Not implemented</td>
+<td>No WebSocket/SSE</td>
+</tr>
+<tr>
+<td>Email/SMS integration</td>
+<td>❌ Not implemented</td>
+<td>Manual review workflow</td>
+</tr>
+<tr>
+<td>Mobile app</td>
+<td>❌ Not implemented</td>
+<td>Web-only (responsive)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="mockedpartial-components">Mocked/Partial Components<a class="headerlink" href="#mockedpartial-components" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Cookie scanner uses heuristic detection (not full browser automation)</li>
+<li>No automated remediation of discovered PII (manual review required)</li>
+<li>No automated email/SMS for DSR responses</li>
+</ul>
+<h3 id="known-issues">Known Issues<a class="headerlink" href="#known-issues" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>DATABASE_URL</code> requires Supabase database password (not included in repo for security)</li>
+<li>Must configure Vercel environment variables for production auth</li>
+<li>Supabase RLS policies not yet configured at database level (application-level isolation only)</li>
+<li>SQLite database on Vercel writes to <code>/tmp</code> (ephemeral; resets on cold start, re-seeded automatically)</li>
+</ul>
+<hr />
+<h2 id="12-real-world-viability-and-impact">12. Real-World Viability and Impact<a class="headerlink" href="#12-real-world-viability-and-impact" title="Permanent link">&para;</a></h2>
+<h3 id="intended-users">Intended Users<a class="headerlink" href="#intended-users" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Indian MSMEs (63.4 million businesses): dental clinics, diagnostic labs, retailers, coaching academies</li>
+<li>Compliance officers without dedicated privacy teams</li>
+<li>Individual citizens exercising DPDP rights</li>
+</ul>
+<h3 id="practical-benefits">Practical Benefits<a class="headerlink" href="#practical-benefits" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Cost:</strong> Near-zero (self-hosted or low-cost Supabase/Vercel tier) vs. ₹50,000–₹5,00,000/year for enterprise tools</li>
+<li><strong>Speed:</strong> 5-minute setup vs. weeks for enterprise implementation</li>
+<li><strong>Indian Context:</strong> Native support for Aadhaar, PAN, mobile, Hindi/Kannada notices</li>
+<li><strong>Legal Defense:</strong> SHA-256 receipts, immutable audit trail, tax conflict certificates</li>
+</ul>
+<h3 id="feasibility">Feasibility<a class="headerlink" href="#feasibility" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Technical:</strong> Proven with working prototype, all core features operational</li>
+<li><strong>Economic:</strong> Uses open-source stack + generous free tiers (Supabase, Vercel)</li>
+<li><strong>Legal:</strong> Addresses DPDP Sections 5, 6, 8, 11–13 and CGST Act Section 36</li>
+</ul>
+<h3 id="scalability">Scalability<a class="headerlink" href="#scalability" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Supabase PostgreSQL scales automatically</li>
+<li>Vercel edge network for global CDN</li>
+<li>Prisma connection pooling for concurrent users</li>
+<li>Tenant isolation supports unlimited workspaces</li>
+<li>SQLite secondary portal suitable for single-tenant SME deployment</li>
+</ul>
+<h3 id="security-privacy">Security &amp; Privacy<a class="headerlink" href="#security-privacy" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Data Isolation:</strong> Every Prisma query filtered by <code>tenantId</code>; SQLite queries tenant-scoped</li>
+<li><strong>Auth:</strong> Supabase JWT with service role key, bcrypt via Supabase Auth</li>
+<li><strong>Audit:</strong> Append-only events, no UPDATE/DELETE on audit_events</li>
+<li><strong>PII:</strong> Offline scanner, no cloud LLM leakage</li>
+<li><strong>Secrets:</strong> No API keys committed to repository (.env gitignored)</li>
+</ul>
+<h3 id="risks">Risks<a class="headerlink" href="#risks" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Database Password:</strong> Must be configured in Vercel dashboard (not in repo)</li>
+<li><strong>RLS Policies:</strong> Application-level isolation only; database-level RLS pending</li>
+<li><strong>Single Region:</strong> Currently deployed on Vercel; multi-region not configured</li>
+<li><strong>SQLite Ephemeral (Vercel):</strong> Writes to <code>/tmp</code>, re-seeded on cold start</li>
+</ul>
+<h3 id="financiallegal-limitations">Financial/Legal Limitations<a class="headerlink" href="#financiallegal-limitations" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Not a substitute for legal counsel</li>
+<li>Does not provide legal representation before DPBI</li>
+<li>Free tier limits on Supabase/Vercel may constrain high-volume usage</li>
+</ul>
+<hr />
+<h2 id="13-future-scope">13. Future Scope<a class="headerlink" href="#13-future-scope" title="Permanent link">&para;</a></h2>
+<h3 id="immediate-improvements-13-months">Immediate Improvements (1–3 months)<a class="headerlink" href="#immediate-improvements-13-months" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Database-level RLS:</strong> Configure Supabase Row Level Security policies for tenant isolation</li>
+<li><strong>Email/SMS Notifications:</strong> Integrate with AWS SES or Twilio for DSR updates</li>
+<li><strong>Real-time Breach Alerts:</strong> WebSocket notifications for security incidents</li>
+<li><strong>Automated Remediation:</strong> One-click encryption/redaction of discovered PII</li>
+<li><strong>Mobile Responsiveness:</strong> Enhance mobile experience for field staff</li>
+</ol>
+<h3 id="medium-term-36-months">Medium Term (3–6 months)<a class="headerlink" href="#medium-term-36-months" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Multi-language Support:</strong> All 22 Eighth Schedule languages</li>
+<li><strong>Third-party Integrations:</strong> Tally ERP, WhatsApp Business API, Google Forms</li>
+<li><strong>Advanced Analytics:</strong> Compliance scoring, risk heatmaps, penalty estimator</li>
+<li><strong>White-label:</strong> Custom branding for compliance consultants</li>
+<li><strong>API Rate Limiting:</strong> Protect against abuse</li>
+</ol>
+<h3 id="long-term-612-months">Long Term (6–12 months)<a class="headerlink" href="#long-term-612-months" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>AI-Assisted Compliance:</strong> LLM for notice drafting (opt-in, isolated)</li>
+<li><strong>Multi-region Deployment:</strong> Data residency within India</li>
+<li><strong>Marketplace:</strong> Compliance consultant network</li>
+<li><strong>Certification:</strong> Automated DPDP compliance certification</li>
+<li><strong>Enterprise SSO:</strong> SAML/OIDC integration</li>
+</ol>
+<h3 id="requirements-for-real-world-deployment">Requirements for Real-World Deployment<a class="headerlink" href="#requirements-for-real-world-deployment" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Supabase production instance with configured RLS policies</li>
+<li>Vercel production environment with all env vars</li>
+<li>Custom domain with SSL</li>
+<li>Legal review by qualified counsel</li>
+<li>Regular security audits and penetration testing</li>
+</ul>
+<hr />
+<h2 id="14-setup-and-reproducibility">14. Setup and Reproducibility<a class="headerlink" href="#14-setup-and-reproducibility" title="Permanent link">&para;</a></h2>
+<h3 id="installation-instructions">Installation Instructions<a class="headerlink" href="#installation-instructions" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Clone repository</span>
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/naveenTechie07/Srujana_hackathon2026_codeplays.git
+<span class="nb">cd</span><span class="w"> </span>Srujana_hackathon2026_codeplays
+
+<span class="c1"># Primary System - Backend</span>
+<span class="nb">cd</span><span class="w"> </span>main/backend
+npm<span class="w"> </span>install
+cp<span class="w"> </span>.env.example<span class="w"> </span>.env
+<span class="c1"># Edit .env: set DATABASE_URL, SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY</span>
+npx<span class="w"> </span>prisma<span class="w"> </span>generate
+npx<span class="w"> </span>prisma<span class="w"> </span>db<span class="w"> </span>push
+npm<span class="w"> </span>run<span class="w"> </span>dev
+
+<span class="c1"># Primary System - Frontend</span>
+<span class="nb">cd</span><span class="w"> </span>../frontend
+npm<span class="w"> </span>install
+cp<span class="w"> </span>.env.example<span class="w"> </span>.env
+<span class="c1"># Edit .env: set VITE_API_URL, VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY</span>
+npm<span class="w"> </span>run<span class="w"> </span>dev
+
+<span class="c1"># Secondary Portal</span>
+<span class="nb">cd</span><span class="w"> </span>../DPDP_Secure
+npm<span class="w"> </span>install
+node<span class="w"> </span>server.js
+</code></pre></div>
+
+<h3 id="environment-variables-required-primary-backend">Environment Variables Required (Primary Backend)<a class="headerlink" href="#environment-variables-required-primary-backend" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PORT</td>
+<td>Server port</td>
+<td>5000</td>
+</tr>
+<tr>
+<td>NODE_ENV</td>
+<td>Environment</td>
+<td>development</td>
+</tr>
+<tr>
+<td>DATABASE_URL</td>
+<td>Supabase PostgreSQL connection string</td>
+<td>postgresql://...</td>
+</tr>
+<tr>
+<td>JWT_SECRET</td>
+<td>Fallback JWT secret</td>
+<td>your-secret-key</td>
+</tr>
+<tr>
+<td>JWT_EXPIRES_IN</td>
+<td>Token expiry</td>
+<td>7d</td>
+</tr>
+<tr>
+<td>UPLOAD_DIR</td>
+<td>File upload directory</td>
+<td>./uploads</td>
+</tr>
+<tr>
+<td>SUPABASE_URL</td>
+<td>Supabase project URL</td>
+<td>https://[ref].supabase.co</td>
+</tr>
+<tr>
+<td>SUPABASE_ANON_KEY</td>
+<td>Supabase anonymous key</td>
+<td>sb_publishable_...</td>
+</tr>
+<tr>
+<td>SUPABASE_SERVICE_ROLE_KEY</td>
+<td>Supabase service role key</td>
+<td>sb_secret_...</td>
+</tr>
+</tbody>
+</table>
+<h3 id="environment-variables-required-primary-frontend">Environment Variables Required (Primary Frontend)<a class="headerlink" href="#environment-variables-required-primary-frontend" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VITE_API_URL</td>
+<td>Backend API base URL</td>
+</tr>
+<tr>
+<td>VITE_SUPABASE_URL</td>
+<td>Supabase project URL</td>
+</tr>
+<tr>
+<td>VITE_SUPABASE_ANON_KEY</td>
+<td>Supabase anonymous key</td>
+</tr>
+</tbody>
+</table>
+<h3 id="environment-variables-secondary-portal">Environment Variables (Secondary Portal)<a class="headerlink" href="#environment-variables-secondary-portal" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NODE_ENV</td>
+<td>Environment</td>
+<td>production</td>
+</tr>
+<tr>
+<td>SESSION_SECRET</td>
+<td>Express session encryption secret</td>
+<td>Random 32-char hex</td>
+</tr>
+<tr>
+<td>AI_PROVIDER</td>
+<td>Statutory AI Advisor provider</td>
+<td>mock (or groq/gemini)</td>
+</tr>
+<tr>
+<td>AI_API_KEY</td>
+<td>API key if using Groq or Gemini</td>
+<td>Optional</td>
+</tr>
+<tr>
+<td>GOOGLE_CLIENT_ID</td>
+<td>OAuth Client ID for SSO</td>
+<td>Optional</td>
+</tr>
+<tr>
+<td>GOOGLE_CLIENT_SECRET</td>
+<td>OAuth Client Secret for SSO</td>
+<td>Optional</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dependencies">Dependencies<a class="headerlink" href="#dependencies" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Node.js v18+</li>
+<li>Python 3.10+ with pandas and openpyxl</li>
+<li>PostgreSQL (via Supabase or local Docker)</li>
+<li>Supabase account (free tier sufficient)</li>
+</ul>
+<h3 id="demo-credentials-not-secrets-for-evaluation-only">Demo Credentials (Not secrets, for evaluation only)<a class="headerlink" href="#demo-credentials-not-secrets-for-evaluation-only" title="Permanent link">&para;</a></h3>
+<ul>
+<li>MSME Admin: ramesh.kumar@aarogyadiagnostics.in / Password123!</li>
+<li>Citizen: rahul.sharma@example.com / Password123!</li>
+</ul>
+<h3 id="test-commands">Test Commands<a class="headerlink" href="#test-commands" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Primary backend tests</span>
+<span class="nb">cd</span><span class="w"> </span>main/backend
+npm<span class="w"> </span>run<span class="w"> </span>test:all
+
+<span class="c1"># Secondary portal tests</span>
+<span class="nb">cd</span><span class="w"> </span>DPDP_Secure
+node<span class="w"> </span>tests/verifyAllModules.test.js
+node<span class="w"> </span>tests/testRopaEndToEnd.js
+</code></pre></div>
+
+<h3 id="deployment">Deployment<a class="headerlink" href="#deployment" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Primary Live:</strong> https://srujanahackathon2026codeplays-main.vercel.app/</li>
+<li><strong>Secondary Live:</strong> https://srujana-hackathon2026-codeplays.vercel.app</li>
+<li><strong>GitHub:</strong> https://github.com/naveenTechie07/Srujana_hackathon2026_codeplays</li>
+<li><strong>No secrets committed:</strong> All API keys in .env (gitignored)</li>
+</ul>
+<hr />
+<h2 id="15-team-contributions-and-references">15. Team Contributions and References<a class="headerlink" href="#15-team-contributions-and-references" title="Permanent link">&para;</a></h2>
+<h3 id="team-contributions">Team Contributions<a class="headerlink" href="#team-contributions" title="Permanent link">&para;</a></h3>
+<p>All modules developed by the Srujana hackathon team:
+- <strong>Backend Architecture:</strong> Modular monolith design, Express + TypeScript + Prisma (primary); Express 5 + EJS + SQLite (secondary)
+- <strong>Supabase Integration:</strong> Auth migration, environment configuration, Vercel deployment
+- <strong>PII Scanner:</strong> Python + Verhoeff algorithm, Pandas/OpenPyXL integration
+- <strong>Frontend:</strong> React 19 + Vite + Tailwind CSS v4, React Flow graph, 9 pages
+- <strong>SSR Portal:</strong> Node.js + Express 5 + EJS, 55 statutory views, glassmorphism UI
+- <strong>Database Schema:</strong> 12 Prisma models (primary) + 27+ SQLite tables (secondary) with tenant isolation
+- <strong>Testing:</strong> 6 primary test suites + secondary full-module CRUD + RoPA e2e; 33/33 passing
+- <strong>Documentation:</strong> README, BUILD_PROGRESS.md, SYSTEM_ARCHITECTURE_AND_FEATURE_GUIDE.md, IMPLEMENTATION_MASTER_PLAN.md, DEPLOYMENT.md
+- <strong>DevOps:</strong> Docker Compose, Vercel configuration, GitHub repository, dual-architecture deployment</p>
+<h3 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Digital Personal Data Protection Act, 2023</strong> — https://www.meity.gov.in</li>
+<li><strong>DPDP Rules 2025</strong> — Ministry of Electronics and Information Technology, India</li>
+<li><strong>CGST Act, 2017 Section 36</strong> — Tax invoice retention (72 months)</li>
+<li><strong>National Medical Commission Guidelines</strong> — Clinical record retention (36 months)</li>
+<li><strong>Verhoeff Algorithm</strong> — Dihedral group D₅ checksum for Aadhaar validation</li>
+<li><strong>Supabase Documentation</strong> — https://supabase.com/docs</li>
+<li><strong>Vercel Documentation</strong> — https://vercel.com/docs</li>
+<li><strong>Prisma ORM Documentation</strong> — https://www.prisma.io/docs</li>
+</ol>
+<h3 id="relevant-links">Relevant Links<a class="headerlink" href="#relevant-links" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Repository:</strong> https://github.com/naveenTechie07/Srujana_hackathon2026_codeplays</li>
+<li><strong>Primary Live Demo:</strong> https://srujanahackathon2026codeplays-main.vercel.app/</li>
+<li><strong>Secondary SSR Portal:</strong> https://srujana-hackathon2026-codeplays.vercel.app</li>
+<li><strong>Problem Statement:</strong> LS-04 — Personal Data in Informal Systems</li>
+<li><strong>Hackathon:</strong> Srujana Tech Fest 2026 (24–26 October 2026)</li>
+</ul>
+<h3 id="acknowledgements">Acknowledgements<a class="headerlink" href="#acknowledgements" title="Permanent link">&para;</a></h3>
+<ul>
+<li>MeitY for DPDP Act 2023 framework</li>
+<li>Supabase for authentication and database platform</li>
+<li>Vercel for deployment infrastructure</li>
+<li>Open-source community for React, Prisma, Tailwind, and Python ecosystem</li>
+</ul>
+<hr />
+<p><strong>End of Report</strong></p>
+<p><em>This report documents the Srujana (DataSentinel) project as submitted for the Srujana Tech Fest 2026 Hackathon, Problem Statement LS-04. All information is accurate as of the submission date (26 October 2026). No API keys, secrets, or credentials are included in this document.</em></p>
+</div>
+
+<!-- Footer -->
+<div class="footer-note">
+    <strong>End of Report</strong><br>
+    Srujana (DataSentinel) — DPDP Act 2023 Compliance Platform for Indian MSMEs<br>
+    Srujana Tech Fest 2026 · Problem Statement LS-04 · Submitted 26 October 2026 · No secrets included
+</div>
+
+</body>
+</html>

@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Generate a modern, professional PDF report from the markdown source."""
+"""Generate a modern, professional PDF report from the markdown source using Playwright."""
 
+import asyncio
 import markdown
-from weasyprint import HTML
+from playwright.async_api import async_playwright
 
 # Read the markdown source
 with open("PROJECT_REPORT.md", "r", encoding="utf-8") as f:
@@ -270,10 +271,6 @@ a:hover {
     border-left: 3px solid transparent;
 }
 
-.toc > ul > li::marker {
-    content: none;
-}
-
 .toc > ul > li > a {
     color: #0ea5e9;
     text-decoration: none;
@@ -461,57 +458,6 @@ code {
     color: #1e40af;
 }
 
-/* Architecture diagrams (code blocks with arch class) */
-pre.arch {
-    font-size: 7pt;
-    line-height: 1.4;
-}
-
-/* Feature grid */
-.feature-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 12px;
-    margin: 16px 0;
-}
-
-.feature-card {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 14px;
-    page-break-inside: avoid;
-}
-
-.feature-card h4 {
-    margin-top: 0;
-    font-size: 9.5pt;
-    color: #0ea5e9;
-    margin-bottom: 6px;
-}
-
-.feature-card p {
-    font-size: 8.5pt;
-    margin: 0;
-    color: #475569;
-}
-
-/* Status indicators */
-.status-working {
-    color: #10b981;
-    font-weight: 600;
-}
-
-.status-partial {
-    color: #f59e0b;
-    font-weight: 600;
-}
-
-.status-notimplemented {
-    color: #ef4444;
-    font-weight: 600;
-}
-
 /* Section transitions */
 section {
     page-break-before: always;
@@ -559,7 +505,7 @@ strong {
 }
 
 /* Avoid breaking certain elements */
-.blockquote, .callout, table, pre, .feature-card {
+blockquote, .callout, table, pre {
     page-break-inside: avoid;
 }
 
@@ -572,17 +518,15 @@ p {
     widows: 2;
 }
 
-/* Highlight specific numbers */
-.key-number {
-    font-weight: 700;
-    color: #0ea5e9;
-    font-size: 1.1em;
-}
-
 /* Architecture diagram text */
 pre.arch code {
     font-size: 7pt;
     line-height: 1.3;
+}
+
+/* Checkmark styling */
+li::marker {
+    color: #10b981;
 }
 """
 
@@ -672,7 +616,23 @@ html_doc = f"""<!DOCTYPE html>
 with open("report.html", "w", encoding="utf-8") as f:
     f.write(html_doc)
 
-# Generate PDF
-HTML(string=html_doc, base_url=".").write_pdf("Srujana_DataSentinel_Project_Report.pdf")
 
-print("PDF generated successfully: Srujana_DataSentinel_Project_Report.pdf")
+async def generate_pdf():
+    async with async_playwright() as p:
+        browser = await p.chromium.launch()
+        page = await browser.new_page()
+        await page.set_content(html_doc, wait_until="networkidle")
+        await page.pdf(
+            path="Srujana_DataSentinel_Project_Report.pdf",
+            format="A4",
+            margin={"top": "20mm", "right": "18mm", "bottom": "22mm", "left": "18mm"},
+            display_header_footer=True,
+            header_template="""<div style="font-size:7.5pt; color:#64748b; font-family:sans-serif; width:100%; text-align:center; border-bottom:1px solid #e2e8f0; padding-bottom:4px; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.4px;">Srujana (DataSentinel) — DPDP Act 2023 Compliance Report</div>""",
+            footer_template="""<div style="font-size:8pt; color:#94a3b8; font-family:sans-serif; width:100%; display:flex; justify-content:space-between; align-items:center;"><span>LS-04 | Srujana Tech Fest 2026</span><span style="font-family:'Courier New', monospace;">Page <span class="pageNumber"></span> of <span class="totalPages"></span></span></div>""",
+            print_background=True,
+        )
+        await browser.close()
+        print("PDF generated successfully: Srujana_DataSentinel_Project_Report.pdf")
+
+
+asyncio.run(generate_pdf())
