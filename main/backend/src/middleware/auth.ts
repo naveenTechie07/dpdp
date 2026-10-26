@@ -49,7 +49,7 @@ export async function authenticate(req: Request, res: Response, next: NextFuncti
     let effectiveUserId = supabaseUser.id;
     let effectiveTenantId = userMetadata.tenant_id || '';
 
-    // If database has a matching user by email, ensure effective IDs align
+    // Align effective IDs with database tenant
     try {
       const dbUser = await prisma.user.findFirst({
         where: {

@@ -4,7 +4,7 @@
     "backend": {
       "root": "backend",
       "framework": "express",
-      "buildCommand": "npm install && npx tsc"
+      "buildCommand": "npm run build"
     },
     "frontend": {
       "root": "frontend",
