@@ -48,6 +48,11 @@ async function syncAllToSupabase() {
       supabaseTable: 'ropa_records'
     },
     {
+      name: 'RoPA Silo Mappings (Connector Links)',
+      sqliteQuery: 'SELECT id, tenantId as tenant_id, ropaRecordId as ropa_record_id, siloId as silo_id, mappingType as mapping_type FROM ropa_silo_mapping',
+      supabaseTable: 'ropa_silo_mapping'
+    },
+    {
       name: 'Section 5 Consent Notices',
       sqliteQuery: 'SELECT id, tenantId as tenant_id, title, purposeCode as purpose_code, language, noticeText as notice_text, version, isActive as is_active FROM consent_notices',
       supabaseTable: 'consent_notices'

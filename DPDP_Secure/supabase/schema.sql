@@ -62,6 +62,20 @@ CREATE TABLE IF NOT EXISTS public.ropa_records (
 );
 CREATE INDEX IF NOT EXISTS idx_ropa_tenant ON public.ropa_records(tenant_id);
 
+-- 4B. RoPA Silo Mappings (Connector Links & Lineage Associations)
+CREATE TABLE IF NOT EXISTS public.ropa_silo_mapping (
+    id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL REFERENCES public.tenants(id) ON DELETE CASCADE,
+    ropa_record_id TEXT NOT NULL REFERENCES public.ropa_records(id) ON DELETE CASCADE,
+    silo_id TEXT NOT NULL REFERENCES public.data_silos(id) ON DELETE CASCADE,
+    mapping_type TEXT DEFAULT 'primary',
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(ropa_record_id, silo_id)
+);
+CREATE INDEX IF NOT EXISTS idx_ropa_silo_ropa ON public.ropa_silo_mapping(ropa_record_id);
+CREATE INDEX IF NOT EXISTS idx_ropa_silo_silo ON public.ropa_silo_mapping(silo_id);
+CREATE INDEX IF NOT EXISTS idx_ropa_silo_tenant ON public.ropa_silo_mapping(tenant_id);
+
 -- 5. Section 5 Multilingual Consent Notices
 CREATE TABLE IF NOT EXISTS public.consent_notices (
     id TEXT PRIMARY KEY,
@@ -221,6 +235,7 @@ ALTER TABLE public.tenants ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.data_silos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.pii_findings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.ropa_records ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.ropa_silo_mapping ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.consent_notices ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.consent_events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.privacy_requests ENABLE ROW LEVEL SECURITY;
@@ -238,6 +253,7 @@ CREATE POLICY "Service role full access on tenants" ON public.tenants FOR ALL US
 CREATE POLICY "Service role full access on data_silos" ON public.data_silos FOR ALL USING (true);
 CREATE POLICY "Service role full access on pii_findings" ON public.pii_findings FOR ALL USING (true);
 CREATE POLICY "Service role full access on ropa_records" ON public.ropa_records FOR ALL USING (true);
+CREATE POLICY "Service role full access on ropa_silo_mapping" ON public.ropa_silo_mapping FOR ALL USING (true);
 CREATE POLICY "Service role full access on consent_notices" ON public.consent_notices FOR ALL USING (true);
 CREATE POLICY "Service role full access on consent_events" ON public.consent_events FOR ALL USING (true);
 CREATE POLICY "Service role full access on privacy_requests" ON public.privacy_requests FOR ALL USING (true);

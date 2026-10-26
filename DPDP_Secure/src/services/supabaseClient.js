@@ -220,6 +220,18 @@ async function deleteRopaRecord(id, tenantId = appConfig.tenantDefaults.id) {
   }
 }
 
+// 4D. Fetch RoPA from Cloud
+async function fetchRopaFromCloud(tenantId = appConfig.tenantDefaults.id) {
+  if (!isSupabaseAvailable() || !supabaseAdmin) return { success: false, records: [] };
+  try {
+    const { data, error } = await supabaseAdmin.from('ropa_records').select('*').eq('tenant_id', tenantId);
+    if (error) return { success: false, error: error.message, records: [] };
+    return { success: true, records: data || [] };
+  } catch (err) {
+    return { success: false, error: err.message, records: [] };
+  }
+}
+
 // 5. Consent Notices
 async function syncConsentNotice(notice) {
   if (!notice) return { success: false };
@@ -374,6 +386,7 @@ module.exports = {
   syncRopaRecord,
   syncRopaSiloMapping,
   deleteRopaRecord,
+  fetchRopaFromCloud,
   syncConsentNotice,
   syncConsentEvent,
   syncPrivacyRequest,

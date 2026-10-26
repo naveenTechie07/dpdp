@@ -702,7 +702,7 @@ router.post('/api/cookies/scan', async (req, res) => {
     const maxP = parseInt(maxPages) || 50;
 
     // Simulate scanning - detect common cookies based on URL patterns
-    const detectedCookies = simulateCookieScan(targetUrl, maxP);
+    const detectedCookies = await discoveryController.simulateCookieScan(targetUrl, maxP);
 
     const scanId = `CSCAN-${uuidv4().slice(0, 8)}`;
     await run(`

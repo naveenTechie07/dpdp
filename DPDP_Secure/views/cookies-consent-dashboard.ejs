@@ -1,143 +1,209 @@
 <%- include('partials/header') %>
 <%
-  const safeConsents = (typeof consents !== 'undefined' && Array.isArray(consents)) ? consents : [];
+  const safeCookies = (typeof cookies !== 'undefined' && Array.isArray(cookies)) ? cookies : [];
+  const safeStats = (typeof stats !== 'undefined' && stats) ? stats : {};
+  const totalCookies = safeCookies.length;
+  const necessaryCount = safeCookies.filter(c => c.category === 'NECESSARY').length;
+  const nonNecessaryCount = safeCookies.filter(c => c.category !== 'NECESSARY').length;
+  const highRiskCount = inventory.filter(c => c.category === 'MARKETING' || c.category === 'TRACKING').length;
+  
+  const ratingColor = complianceRating === 'A' ? '#10b981' : complianceRating === 'B' ? '#f59e0b' : '#ef4444';
 %>
 
-<div class="dashboard-header mb-4">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-        <div>
-            <h1 class="page-title">Cookie Consent Banner Simulator</h1>
-            <p class="page-description">Interactive banner simulator. Test consent flows, category toggling, and SHA-256 receipt generation. Preview how your cookie banner will appear to visitors.</p>
-        </div>
-        <button onclick="window.location.href='/cookies/scans'" class="btn-secondary" style="padding: 8px 16px; font-size: 13px;">
-            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><path d="M15 3h4a2 2 0 0 1 2 2v4M21 15v4a2 2 0 0 1-2 2h-4M9 21H5a2 2 0 0 1-2-2v-4M3 9V5a2 2 0 0 1 2-2h4"></path><circle cx="12" cy="12" r="3"></circle></svg>
-            Back to Scanner
+<div class="dashboard-header mb-6">
+    <div class="dashboard-header-left">
+        <h1 class="page-title">Data Protection &amp; Cookie Management</h1>
+        <p class="page-description">Scan websites for cookies, manage consent, and maintain DPDP Act 2023 compliance.</p>
+    </div>
+    <div class="dashboard-header-actions">
+        <button onclick="openScannerModal()" class="btn-primary" style="padding: 10px 20px; font-size: 14px; display: flex; align-items: center; gap: 8px;">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><path d="M15 3h4a2 2 0 0 1 2 2v4M21 15v4a2 2 0 0 1-2 2h-4M9 21H5a2 2 0 0 1-2-2v-4M3 9V5a2 2 0 0 1 2-2h4"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            Scan Website
         </button>
     </div>
 </div>
 
-<!-- Banner Simulator Panel -->
-<div class="card p-0">
-    <div style="padding: 20px; border-bottom: 1px solid var(--border-color);">
-        <h3 style="font-size: 15px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">Banner Simulator</h3>
-        <p style="color: var(--text-muted); font-size: 12px; margin-bottom: 0;">Test how your cookie consent banner will appear and function on your website.</p>
-    </div>
-
-    <!-- Live Banner Preview -->
-    <div style="position: fixed; bottom: 24px; right: 24px; z-index: 9999; max-width: 380px; background: #ffffff; border: 1px solid var(--border-color); border-radius: 16px; box-shadow: 0 20px 60px -12px rgba(0, 0, 0, 0.5); animation: slideUp 0.4s ease-out;">
-        <div style="padding: 24px;">
-            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
-                <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); display: flex; align-items: center; justify-content: center;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2">
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                        <line x1="3" y1="9" x2="21" y2="9"></line>
-                        <line x1="9" y1="21" x2="9" y2="9"></line>
-                    </svg>
-                </div>
-                <div>
-                    <div style="font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 2px;">Aarogya Diagnostic Center</div>
-                    <div style="font-size: 11px; color: rgba(255,255,255,0.7);">We use cookies to improve your experience.</div>
-                </div>
-            </div>
-            <div style="font-size: 13px; color: #475569; line-height: 1.6; margin-bottom: 20px;">
-                We use cookies and similar technologies to analyze traffic, personalize content, and show personalized advertising. By continuing to use our site, you agree to our use of cookies. Learn more in our <a href="#" style="color: #3b82f6; text-decoration: underline;">Cookie Policy</a>.
-            </div>
-
-            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <input type="checkbox" id="bannerCategory-necessary" checked disabled style="width: 16px; height: 16px;">
-                    <label style="font-size: 13px; color: #334155;">Strictly Necessary Cookies</span>
-                    <span style="margin-left: auto; font-size: 11px; color: #94a3b8;">Always active</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <input type="checkbox" id="bannerCategory-analytics" style="width: 16px; height: 16px;" checked>
-                    <label style="font-size: 13px; color: #475569;">Analytics Cookies</span>
-                    <span style="margin-left: auto; font-size: 10px; color: #94a3b8;">Google Analytics</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <input type="checkbox" id="bannerCategory-marketing" style="width: 16px; height: 16px; accent-color: var(--primary-color); cursor: pointer;">
-                    <label style="font-size: 13px; color: #fff;">Marketing Cookies</span>
-                    <span style="margin-left: auto; font-size: 11px; color: rgba(255,255,255,0.7);">Personalized ads</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <input type="checkbox" id="bannerCategory-functional" style="width: 16px; height: 16px; accent-color: var(--primary-color); cursor: pointer;">
-                    <label style="font-size: 13px; color: #fff;">Functional Cookies</span>
-                    <span style="margin-left: auto; font-size: 11px; color: rgba(255,255,255,0.7);">Remember preferences</span>
-                </div>
-            </div>
-
-            <div style="display: flex; gap: 12px; margin-top: 24px;">
-                <button onclick="acceptAll()" class="btn-primary" style="padding: 10px 24px; font-size: 14px; font-weight: 600; width: 48%;">
-                    Accept All
-                </button>
-                <button onclick="acceptEssentialOnly()" class="btn-secondary" style="padding: 10px 24px; font-size: 14px; width: 48%;">
-                    Reject Non-Essential
-                </button>
-                <button onclick="closeBanner()" class="btn-secondary" style="padding: 10px 24px; font-size: 14px;">
-                    Close
-                </button>
-            </div>
-        </div>
-
-        <!-- SHA-256 Receipt Section -->
-        <div style="background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); border-radius: 12px; padding: 20px; margin-top: 24px;">
-            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
-                    <path d="M12 22s8-4 8-8V5l-8-3-8 4 8 6z"/>
-                    <path d="M12 18v4M12 2v4"></path>
+<!-- KPI Cards -->
+<div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 24px;">
+    <div class="card p-4">
+        <div class="card-header" style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+            <div style="width: 40px; height: 40px; background: rgba(59, 130, 246, 0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                <svg width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" style="color: #3b82f6;">
+                    <circle cx="12" cy="12" r="10"></circle><path d="M1 12h22"></path>
                 </svg>
-                <span style="font-size: 13px; font-weight: 600; color: #10b981;">SHA-256 Consent Receipt</span>
             </div>
-            <div style="background: rgba(0,0,0,0.15); border: 1px solid rgba(16,185,129,0.3); border-radius: 8px; padding: 14px; margin-bottom: 12px;">
-                <div style="font-family: monospace; font-size: 11px; color: #3b82f6; word-break: break-all; line-height: 1.4;" id="sha256Receipt">
-                    <span style="color: #94a3b8; font-size: 10px;">Generate consent receipt by configuring cookies above</span>
-                </div>
-            </div>
-            <div style="margin-top: 12px;">
-                <button onclick="copyReceipt()" class="btn-secondary" style="padding: 6px 12px; font-size: 11px;">Copy SHA-256</button>
+            <div>
+                <div style="font-size: 12px; font-weight: 600; color: #94a3b8; margin-bottom: 4px;">Total Cookies</div>
+                <div style="font-size: 2rem; font-weight: 700; color: var(--text-main);"><%= totalCookies %></div>
             </div>
         </div>
     </div>
-
-    <!-- Consent Log Table -->
-    <div class="card p-0">
-        <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid var(--border-color);">
-            <h3 style="font-size: 15px; font-weight: 600; color: var(--text-main); margin: 0;">Consent Log</h3>
-            <button onclick="location.reload()" class="btn-secondary" style="padding: 6px 16px; font-size: 13px;">Refresh</button>
+    <div class="card p-4">
+        <div class="card-header" style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+            <div style="width: 40px; height: 40px; background: rgba(16, 185, 129, 0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                <svg width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" style="color: #10b981;"><circle cx="12" cy="12" r="10"></circle><path d="M1 12h22"/></svg>
+            </div>
+            <div>
+                <div style="font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px;">Necessary Cookies</div>
+                <div style="font-size: 2rem; font-weight: 700; color: #10b981;"><%= necessaryCount %></div>
+            </div>
         </div>
-        <div style="overflow-x: auto;">
-            <table class="data-table" id="consentTable" style="width: 100%; border-collapse: collapse; text-align: left;">
-                <thead>
-                    <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 11px; font-weight: 700; text-transform: uppercase;">
-                        <th style="padding: 14px 20px;">Timestamp</th>
-                        <th style="padding: 14px 20px;">Session ID</th>
-                        <th style="padding: 14px 20px;">Action</th>
-                        <th style="padding: 14px 20px;">Categories</th>
-                        <th style="padding: 14px 20px; text-align: right;">SHA-256 Hash</th>
-                    </tr>
-                </thead>
-                <tbody id="consentLogBody">
-                    <!-- Consent logs will be populated here -->
-                </tbody>
-            </table>
+    </div>
+    <div class="card p-4">
+        <div class="card-header" style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+            <div style="width: 40px; height: 40px; background: rgba(249, 117, 246, 0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                <svg width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" style="color: #a855f7;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+            </div>
+            <div>
+                <div style="font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px;">Non-Necessary Cookies</div>
+                <div style="font-size: 2rem; font-weight: 700; color: #f59e0b;"><%= nonNecessaryCount %></div>
+            </div>
+        </div>
+    </div>
+    <div class="card p-4">
+        <div class="card-header" style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+            <div style="width: 40px; height: 40px; background: rgba(139, 92, 246, 0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                <svg width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" style="color: #a855f7;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+            </div>
+            <div>
+                <div style="font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px;">High Risk Trackers</div>
+                <div style="font-size: 2rem; font-weight: 700; color: #ef4444;"><%= highRiskCount %></div>
+            </div>
+        </div>
+    </div>
+    <div class="card p-4">
+        <div class="card-header" style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+            <div style="width: 40px; height: 40px; background: rgba(59, 130, 246, 0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                <svg width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" style="color: #3b82f6;"><path d="M22 12h-4l-5 9 7-7 5-6-5-4 1-1 12 12z"/></svg>
+            </div>
+            <div>
+                <div style="font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px;">Compliance Score</div>
+                <div style="font-size: 2rem; font-weight: 700; color: <%= ratingColor %>;"><%= complianceRating %></div>
+            </div>
         </div>
     </div>
 </div>
 
-<script>
-    // Current consent state
-    let currentConsent = {
-        necessary: true,
-        analytics: false,
-        marketing: false,
-        functional: false,
-        security: true
-    };
+<div class="dashboard-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+    <!-- Cookie Inventory -->
+    <div class="card p-0">
+        <div class="card-header" style="padding: 20px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h3 style="font-size: 16px; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">Cookie Inventory</h3>
+                <p style="color: var(--text-muted); font-size: 13px;">All tracked cookies across scanned websites</div>
+            </div>
+            <button onclick="openAddCookieModal()" class="btn-primary" style="padding: 8px 16px; font-size: 13px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                Add Cookie
+            </button>
+        </div>
+        <div style="overflow-x: auto;">
+            <table class="data-table" id="cookieTable" style="width: 100%; border-collapse: collapse; text-align: left;">
+                <thead>
+                    <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 11px; font-weight: 700; text-transform: uppercase;">
+                        <th style="padding: 14px 20px;">Cookie Name</th>
+                        <th style="padding: 14px 20px;">Domain</th>
+                        <th style="padding: 14px 20px;">Provider</th>
+                        <th style="padding: 14px 20px;">Category</th>
+                        <th style="padding: 14px 20px;">Legal Basis</th>
+                        <th style="padding: 14px 20px;">Retention</th>
+                        <th style="padding: 14px 20px; text-align: right;">Status</th>
+                        <th style="padding: 14px 20px; text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="cookieTableBody">
+                    <!-- Cookies loaded via JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-    function toggleCategory(category, checkbox) {
-        currentConsent[category] = checkbox.checked;
-        updateHash();
-    }
+    <!-- Notice Consent Banner Simulator -->
+    <div class="card p-0">
+        <div class="card-header" style="padding: 20px 24px; border-bottom: 1px solid var(--border-color);">
+            <h3 style="font-size: 15px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">Cookie Consent Banner Simulator</h3>
+            <p style="color: var(--text-muted); font-size: 13px;">Simulate how the consent banner will appear to visitors under DPDP Act 2023 Section 6.</p>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+            <!-- Banner Preview -->
+            <div style="background: rgba(0,0,0,0.05); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; height: 400px; display: flex; flex-direction: column; justify-content: space-between;">
+                <div style="border-radius: 8px; background: rgba(255,255,255,0.95); padding: 20px; max-width: 360px; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.3);">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                        <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2); display: flex; align-items: center; justify-content: center;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 700; color: #0f172a; font-size: 16px;">Aarogya Diagnostic Center</div>
+                            <div style="font-size: 11px; color: #64748b; margin-top: 2px;">We use cookies to enhance your experience.</div>
+                        </div>
+                    </div>
+                    <div style="font-size: 13px; color: #475569; line-height: 1.6; margin-bottom: 16px;">
+                        This website uses cookies to improve your browsing experience, analyze site traffic, and show personalized advertising. Some cookies are essential for the site to function properly. You can choose to accept or decline non-essential cookies.
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 12px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" id="simNecessary" checked disabled style="width: 14px; height: 14px;">
+                            <span style="font-size: 13px; color: #475569;">Strictly Necessary Cookies</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" id="simAnalytics" style="width: 16px; height: 16px;" checked>
+                            <span style="font-size: 13px; color: #475569;">Analytics Cookies</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <input type="checkbox" id="category-marketing" style="width: 16px; height: 16px; accent-color: var(--primary-color); cursor: pointer;">
+                            <label style="font-size: 13px; color: #fff;">Marketing Cookies</span>
+                            <span style="margin-left: auto; font-size: 11px; color: rgba(255,255,255,0.7);">Personalized ads</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox" id="category-functional" style="width: 16px; height: 16px; accent-color: var(--primary-color); cursor: pointer;">
+                            <label style="font-size: 13px; color: #fff;">Functional Cookies</span>
+                            <span style="margin-left: auto; font-size: 11px; color: rgba(255,255,255,0.7);">Remember preferences</span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 16px; padding: 12px 16px; background: rgba(0,0,0,0.05); border-radius: 6px; font-size: 11px; color: #64748b; line-height: 1.5;">
+                        By clicking "Accept", you agree to the storing of cookies on your device to enhance site navigation, analyze site usage, and assist in our marketing efforts as described in our Cookie Policy.
+                    </div>
+                    <div style="display: flex; gap: 8px; margin-top: 16px;">
+                        <button onclick="acceptAll()" class="btn-primary" style="padding: 10px 24px; font-size: 14px; font-weight: 600; width: 48%;">
+                            Accept All
+                        </button>
+                        <button onclick="acceptEssentialOnly()" class="btn-secondary" style="padding: 10px 24px; font-size: 14px; flex: 1;">
+                            Reject Non-Essential
+                        </button>
+                        <button onclick="closeBanner()" class="btn-secondary" style="padding: 10px 24px; font-size: 14px;">
+                            Customize
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- SHA-256 Receipt -->
+            <div style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); border-radius: 8px; padding: 16px; margin-top: 16px;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle><path d="M1 12h22"/></svg>
+                        <span style="font-weight: 600; color: var(--text-main); font-size: 13px;">Consent Receipt (SHA-256)</span>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.1); border-radius: 6px; padding: 12px; font-family: monospace; font-size: 11px; color: #3b82f6; word-break: break-all;" id="sha256Receipt">
+                        Click "Accept All" to generate receipt...
+                    </div>
+                    <div style="margin-top: 12px; text-align: right;">
+                        <button onclick="copyReceipt()" class="btn-secondary" style="padding: 6px 16px; font-size: 12px;">Copy Receipt</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JS for simulator logic -->
+<script>
+(function() {
+    const categoryCheckboxes = {
+        necessary: document.getElementById('category-necessary'),
+        analytics: document.getElementById('category-analytics'),
+        marketing: document.getElementById('category-marketing'),
+        functional: document.getElementById('category-functional')
+    };
 
     function updateHash() {
         const timestamp = new Date().toISOString();
@@ -146,42 +212,22 @@
             .filter(([key, val]) => val)
             .map(([key]) => key);
         
-        const hashString = `tenant-id:${visitorId}:${accepted.join(',')}:${timestamp}`;
+        // Simple SHA-256
+        const hashString = `${tenantId}:${visitorId}:${accepted.join(',')}:${timestamp}`;
         const hash = sha256(hashString);
         
         document.getElementById('sha256Receipt').textContent = hash;
         
-        // Add to consent log
+        // Add to consent log via API
         addConsentLog(visitorId, accepted.join(', '), hash);
     }
 
-    function sha256(str) {
-        // Simple SHA-256 implementation
+    async function sha256(str) {
         const encoder = new TextEncoder();
         const data = encoder.encode(str);
-        return crypto.subtle.digest('SHA-256', data).then(hash => {
-            return Array.from(new Uint8Array(hash))
-                .map(b => b.toString(16).padStart(2, '0'))
-                .join('');
-        }).catch(() => 'sha256-error');
-    }
-
-    async function computeHash() {
-        const timestamp = new Date().toISOString();
-        const visitorId = 'visitor-' + Math.floor(Math.random() * 1000000);
-        const accepted = Object.entries(currentConsent)
-            .filter(([key, val]) => val)
-            .map(([key]) => key);
-        
-        const hashString = `${tenantId}:${visitorId}:${accepted.join(',')}:${timestamp}`;
-        const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(hashString));
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
         const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        
-        document.getElementById('sha256Receipt').textContent = hash;
-        
-        // Add to consent log
-        addConsentLog(visitorId, accepted.join(', '), hash);
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
     async function acceptAll() {
@@ -230,11 +276,9 @@
             const data = await res.json();
             const tbody = document.getElementById('consentLogBody');
             tbody.innerHTML = '';
-            
             (data.consents || []).forEach(log => {
                 const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td style="padding: 14px 20px; font-size: 12px; color: var(--text-muted);">${new Date(log.timestamp).toLocaleString()}</td>
+                row.innerHTML = `<td style="padding: 14px 20px; font-size: 12px; color: var(--text-muted);">${new Date(log.timestamp).toLocaleString()}</td>
                     <td style="padding: 14px 20px; font-size: 12px; font-family: monospace; color: var(--text-muted);">${log.sessionId}</td>
                     <td style="padding: 14px 20px; color: var(--text-main);">${log.action}</td>
                     <td style="padding: 14px 20px; color: var(--text-secondary);">${log.categories}</td>
@@ -251,10 +295,66 @@
         try {
             const res = await fetch('/api/cookies/stats');
             const data = await res.json();
-            // Update stats display if needed
+            // Stats already loaded server-side
         } catch (err) {
             console.error('Failed to load stats:', err);
         }
+    }
+
+    async function loadCookies() {
+        try {
+            const res = await fetch('/api/cookies/inventory');
+            const data = await res.json();
+            renderCookies(data.data || []);
+        } catch (err) {
+            console.error('Failed to load cookies:', err);
+        }
+    }
+
+    function renderCookies(cookies) {
+        const tbody = document.getElementById('cookieTableBody');
+        tbody.innerHTML = '';
+        cookies.forEach(cookie => {
+            const row = document.createElement('tr');
+            row.className = 'border-bottom';
+            row.innerHTML = `
+                <td style="padding: 14px 20px; font-weight: 600; color: var(--text-main);">${cookie.cookieName}</td>
+                <td style="padding: 14px 20px; color: var(--text-muted); font-size: 12px; font-family: monospace;">${cookie.domain}</td>
+                <td style="padding: 14px 20px; color: var(--text-main);">${cookie.provider}</td>
+                <td style="padding: 14px 20px;">
+                    <span style="background: ${getCategoryColor(cookie.category)}20; color: ${getCategoryColor(cookie.category)}; padding: 4px 10px; border-radius: 10px; font-size: 11px; font-weight: 700;">${cookie.category}</span>
+                </td>
+                <td style="padding: 14px 20px; color: var(--text-muted); font-size: 12px;">${cookie.legalBasis}</td>
+                <td style="padding: 14px 20px; color: var(--text-main); font-weight: 600;">${cookie.expiresDays ? cookie.expiresDays + ' days' : 'Session'}</td>
+                <td style="padding: 14px 20px;">
+                    <span style="background: rgba(59,130,246,0.15); color: #3b82f6; padding: 4px 8px; border-radius: 10px; font-size: 11px; font-weight: 700;">${cookie.consentRequired ? 'Consent Required' : 'Exempt'}</span>
+                </td>
+                <td style="padding: 14px 20px; text-align: right;">
+                    <button onclick="editCookie('${escapeHtml(cookie.cookieName)}', '${escapeHtml(cookie.domain)}', '${escapeHtml(cookie.provider)}', '${escapeHtml(cookie.category)}', '${escapeHtml(cookie.legalBasis)}', '${escapeHtml(cookie.purpose)}', '${cookie.expiresDays}', '${cookie.isSecure ? 1 : 0}', '${cookie.isHttpOnly ? 1 : 0}')" class="btn-sm btn-primary" style="padding: 6px 12px; font-size: 11px;">Edit</button>
+                </td>
+            `;
+            tbody.innerHTML += row.innerHTML;
+        });
+    }
+
+    function getCategoryColor(category) {
+        const colors = {
+            'NECESSARY': '#10b981',
+            'ANALYTICS': '#3b82f6',
+            'MARKETING': '#ef4444',
+            'FUNCTIONAL': '#8b5cf6',
+            'PREFERENCES': '#a855f7',
+            'SECURITY': '#ef4444'
+        };
+        return colors[category] || '#6b7280';
+    }
+
+    function escapeHtml(text) {
+        return String(text).replace(/[&<"'>]/g, (m) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    }
+
+    function editCookie(name, domain, provider, category, legalBasis, purpose, expiresDays, isSecure, isHttpOnly) {
+        alert(`Editing cookie: ${name}\nDomain: ${domain}\nProvider: ${provider}\nCategory: ${category}\nLegal Basis: ${legalBasis}\nPurpose: ${purpose}\nExpires: ${expiresDays} days\nSecure: ${isSecure === 1 ? 'Yes' : 'No'}\nHttpOnly: ${isHttpOnly ? 1 : 'No'}`);
     }
 
     function closeCookieModal() {
@@ -298,5 +398,7 @@
         }
     });
 </script>
+
+</div>
 
 <%- include('partials/footer') %>
