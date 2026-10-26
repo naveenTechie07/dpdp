@@ -32,12 +32,15 @@ if (process.env.NODE_ENV !== 'test') {
   });
 }
 
+import { isDbConnected } from './lib/prisma';
+
 // Health Check
 app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'healthy',
     service: 'Srujana DPDP Compliance Monolith API',
     version: '1.0.0',
+    database: isDbConnected() ? 'connected' : 'disconnected',
     timestamp: new Date().toISOString(),
   });
 });

@@ -1,11 +1,21 @@
 import { Prisma } from '@prisma/client';
-import { prisma } from '../../lib/prisma';
+import { prisma, isDbConnected } from '../../lib/prisma';
 import { hashPassword } from '../../lib/password';
 import { RegisterInput, LoginInput } from './auth.schema';
 import { recordAuditEvent } from '../audit/audit.service';
 import { getSupabaseAdmin } from '../../lib/supabase';
 
+function requireDb() {
+  if (!isDbConnected()) {
+    const error: any = new Error('Database not connected. Please configure DATABASE_URL in your environment.');
+    error.status = 503;
+    error.code = 'DATABASE_NOT_CONNECTED';
+    throw error;
+  }
+}
+
 export async function register(input: RegisterInput, ipAddress?: string, userAgent?: string) {
+  requireDb();
   const existingUser = await prisma.user.findUnique({
     where: { email: input.email.toLowerCase() },
   });
@@ -168,6 +178,7 @@ export async function register(input: RegisterInput, ipAddress?: string, userAge
 }
 
 export async function login(input: LoginInput, ipAddress?: string, userAgent?: string) {
+  requireDb();
   const supabase = getSupabaseAdmin();
 
   // 1. Authenticate via Supabase Auth
@@ -262,6 +273,7 @@ export async function login(input: LoginInput, ipAddress?: string, userAgent?: s
 }
 
 export async function getCurrentUser(userId: string, tenantId: string) {
+  requireDb();
   const user = await prisma.user.findFirst({
     where: {
       id: userId,

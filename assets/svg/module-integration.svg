@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="600" viewBox="0 0 1100 600" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+      <feOffset dx="2" dy="4" result="offsetblur" />
+      <feComponentTransfer><feFuncA type="linear" slope="0.15" /></feComponentTransfer>
+      <feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge>
+    </filter>
+  </defs>
+  
+  <rect width="1100" height="600" fill="#f8fafc" />
+  
+  <text x="550" y="28" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">Module Integration Architecture</text>
+  <text x="550" y="48" text-anchor="middle" font-size="12" fill="#64748b">9 Backend Modules · Strict Tenant Isolation · Event-Driven Audit Trail</text>
+  
+  <!-- Central Event Bus / Audit -->
+  <rect x="430" y="80" width="240" height="100" rx="14" fill="#1e293b" stroke="#0f172a" stroke-width="2" filter="url(#shadow)" />
+  <text x="550" y="108" text-anchor="middle" font-size="12" font-weight="700" fill="#ffffff">AUDIT EVENT BUS</text>
+  <text x="550" y="128" text-anchor="middle" font-size="9" fill="#94a3b8">Append-Only · SHA-256 Hash Chain</text>
+  <text x="550" y="145" text-anchor="middle" font-size="8.5" fill="#cbd5e1">All mutations logged · tenantId · actorId · timestamp</text>
+  
+  <!-- Module 1: Auth -->
+  <rect x="40" y="120" width="180" height="90" rx="10" fill="#ffffff" stroke="#e2e8f0" stroke-width="2" filter="url(#shadow)" />
+  <text x="130" y="145" text-anchor="middle" font-size="10" font-weight="700" fill="#0f172a">AUTH</text>
+  <text x="130" y="162" text-anchor="middle" font-size="8" fill="#64748b">Register · Login · JWT · Me · Tenant</text>
+  
+  <!-- Module 2: Discovery -->
+  <rect x="40" y="240" width="180" height="90" rx="10" fill="#ffffff" stroke="#e2e8f0" stroke-width="2" filter="url(#shadow)" />
+  <text x="130" y="265" text-anchor="middle" font-size="10" font-weight="700" fill="#0f172a">DISCOVERY</text>
+  <text x="130" y="282" text-anchor="middle" font-size="8" fill="#64748b">Upload · Scan · Findings · Flags · Python Worker</text>
+  
+  <!-- Module 3: Mapping / RoPA -->
+  <rect x="40" y="360" width="180" height="90" rx="10" fill="#ffffff" stroke="#e2e8f0" stroke-width="2" filter="url(#shadow)" />
+  <text x="130" y="385" text-anchor="middle" font-size="10" font-weight="700" fill="#0f172a">MAPPING / ROPA</text>
+  <text x="130" y="402" text-anchor="middle" font-size="8" fill="#64748b">Activities · Flows · Recipients · Retention · Graph</text>
+  
+  <!-- Module 4: Governance -->
+  <rect x="280" y="120" width="180" height="90" rx="10" fill="#ffffff" stroke="#e2e8f0" stroke-width="2" filter="url(#shadow)" />
+  <text x="370" y="145" text-anchor="middle" font-size="10" font-weight="700" fill="#0f172a">GOVERNANCE</text>
+  <text x="370" y="162" text-anchor="middle" font-size="8" fill="#64748b">Assets · Classification · Retention Rules · CGST Lock</text>
+  
+  <!-- Module 5: Consent -->
+  <rect x="280" y="240" width="180" height="90" rx="10" fill="#ffffff" stroke="#e2e8f0" stroke-width="2" filter="url(#shadow)" />
+  <text x="370" y="265" text-anchor="middle" font-size="10" font-weight="700" fill="#0f172a">CONSENT</text>
+  <text x="370" y="282" text-anchor="middle" font-size="8" fill="#64748b">Purposes · Records · Receipts · Withdrawal · Notices EN/HI/KN</text>
+  
+  <!-- Module 6: DSR -->
+  <rect x="280" y="360" width="180" height="90" rx="10" fill="#ffffff" stroke="#e2e8f0" stroke-width="2" filter="url(#shadow)" />
+  <text x="370" y="385" text-anchor="middle" font-size="10" font-weight="700" fill="#0f172a">DSR</text>
+  <text x="370" y="402" text-anchor="middle" font-size="8" fill="#64748b">Access · Correction · Erasure · Grievance · Nomination · Tax Lock</text>
+  
+  <!-- Module 7: Cookies -->
+  <rect x="840" y="120" width="220" height="90" rx="10" fill="#ffffff" stroke="#e2e8f0" stroke-width="2" filter="url(#shadow)" />
+  <text x="950" y="145" text-anchor="middle" font-size="10" font-weight="700" fill="#0f172a">COOKIES</text>
+  <text x="950" y="162" text-anchor="middle" font-size="8" fill="#64748b">Scanner · Inventory · Categorizer · Consent Logs · Geo Rules · Banners</text>
+  
+  <!-- Module 8: Platform -->
+  <rect x="840" y="240" width="220" height="90" rx="10" fill="#ffffff" stroke="#e2e8f0" stroke-width="2" filter="url(#shadow)" />
+  <text x="950" y="265" text-anchor="middle" font-size="10" font-weight="700" fill="#0f172a">PLATFORM</text>
+  <text x="950" y="282" text-anchor="middle" font-size="8" fill="#64748b">Workspace · Tenant Mgmt · Entity Counts · Health</text>
+  
+  <!-- Module 9: Audit -->
+  <rect x="840" y="360" width="220" height="90" rx="10" fill="#ffffff" stroke="#e2e8f0" stroke-width="2" filter="url(#shadow)" />
+  <text x="950" y="385" text-anchor="middle" font-size="10" font-weight="700" fill="#0f172a">AUDIT</text>
+  <text x="950" y="402" text-anchor="middle" font-size="8" fill="#64748b">Event Log · Hash Chain · Immutable · DPBI Inspection</text>
+  
+  <!-- Bidirectional arrows to audit bus -->
+  <line x1="130" y1="165" x2="430" y2="130" stroke="#64748b" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arrowhead)" opacity="0.6" />
+  <line x1="430" y1="130" x2="130" y2="165" stroke="#64748b" stroke-width="1.5" stroke-dasharray="3,2" opacity="0.6" />
+  
+  <line x1="130" y1="285" x2="430" y2="130" stroke="#64748b" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arrowhead)" opacity="0.6" />
+  <line x1="430" y1="130" x2="130" y2="285" stroke="#64748b" stroke-width="1.5" stroke-dasharray="3,2" opacity="0.6" />
+  
+  <line x1="130" y1="405" x2="430" y2="130" stroke="#64748b" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arrowhead)" opacity="0.6" />
+  <line x1="430" y1="130" x2="130" y2="405" stroke="#64748b" stroke-width="1.5" stroke-dasharray="3,2" opacity="0.6" />
+  
+  <line x1="370" y1="165" x2="430" y2="130" stroke="#64748b" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arrowhead)" opacity="0.6" />
+  <line x1="430" y1="130" x2="370" y2="165" stroke="#64748b" stroke-width="1.5" stroke-dasharray="3,2" opacity="0.6" />
+  
+  <line x1="370" y1="285" x2="430" y2="130" stroke="#64748b" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arrowhead)" opacity="0.6" />
+  <line x1="430" y1="130" x2="370" y2="285" stroke="#64748b" stroke-width="1.5" stroke-dasharray="3,2" opacity="0.6" />
+  
+  <line x1="370" y1="405" x2="430" y2="130" stroke="#64748b" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arrowhead)" opacity="0.6" />
+  <line x1="430" y1="130" x2="370" y2="405" stroke="#64748b" stroke-width="1.5" stroke-dasharray="3,2" opacity="0.6" />
+  
+  <line x1="950" y1="165" x2="670" y2="130" stroke="#64748b" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arrowhead)" opacity="0.6" />
+  <line x1="670" y1="130" x2="950" y2="165" stroke="#64748b" stroke-width="1.5" stroke-dasharray="3,2" opacity="0.6" />
+  
+  <line x1="950" y1="285" x2="670" y2="130" stroke="#64748b" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arrowhead)" opacity="0.6" />
+  <line x1="670" y1="130" x2="950" y2="285" stroke="#64748b" stroke-width="1.5" stroke-dasharray="3,2" opacity="0.6" />
+  
+  <line x1="950" y1="405" x2="670" y2="130" stroke="#64748b" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arrowhead)" opacity="0.6" />
+  <line x1="670" y1="130" x2="950" y2="405" stroke="#64748b" stroke-width="1.5" stroke-dasharray="3,2" opacity="0.6" />
+  
+  <!-- Database layer at bottom -->
+  <rect x="40" y="490" width="1020" height="90" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="2" filter="url(#shadow)" />
+  <text x="60" y="510" font-size="11" font-weight="700" fill="#0f172a">DATA LAYER — Supabase PostgreSQL via Prisma ORM</text>
+  <text x="60" y="528" font-size="9" fill="#334155">Tenant · User · Role · Permission · UserRole · ApiKey · RefreshToken · AuditEvent</text>
+  <text x="60" y="543" font-size="9" fill="#334155">DataSource · ScanJob · ScanFinding · RemediationFlag · ProcessingActivity · DataElement · DataFlow</text>
+  <text x="60" y="558" font-size="9" fill="#334155">ThirdPartyRecipient · RetentionPolicy · DataAsset · Purpose · ConsentRecord · CollectionPoint · PreferenceCentre · DsrRequest · Incident</text>
+  
+  <!-- Security banner -->
+  <rect x="40" y="50" width="1020" height="20" rx="4" fill="#fef3c7" stroke="#fde68a" stroke-width="1" />
+  <text x="550" y="64" text-anchor="middle" font-size="8.5" fill="#78350f">▌ Strict Tenant Isolation: every Prisma query filtered by where: { tenantId } · Zero cross-tenant data leakage</text>
+</svg>

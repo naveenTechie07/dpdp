@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="600" viewBox="0 0 1100 600" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#0ea5e9" />
+    </marker>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+      <feOffset dx="2" dy="4" result="offsetblur" />
+      <feComponentTransfer><feFuncA type="linear" slope="0.15" /></feComponentTransfer>
+      <feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge>
+    </filter>
+  </defs>
+  
+  <rect width="1100" height="600" fill="#f8fafc" />
+  
+  <text x="550" y="28" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">DSR Request Workflow</text>
+  <text x="550" y="48" text-anchor="middle" font-size="12" fill="#64748b">Data Principal Rights — Sections 11–14 · CGST Sec 36 Tax Conflict Resolution · SHA-256 Certificates</text>
+  
+  <!-- Column: Citizen Portal -->
+  <rect x="40" y="80" width="260" height="100" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" filter="url(#shadow)" />
+  <text x="170" y="105" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">CITIZEN PORTAL</text>
+  <text x="170" y="122" text-anchor="middle" font-size="9.5" fill="#334155">Data Principal Self-Service</text>
+  <text x="170" y="138" text-anchor="middle" font-size="9" fill="#64748b">Access · Correction · Erasure · Grievance · Nomination</text>
+  
+  <!-- Submit Request -->
+  <rect x="40" y="200" width="260" height="70" rx="8" fill="#dbeafe" stroke="#3b82f6" stroke-width="2" />
+  <text x="170" y="222" text-anchor="middle" font-size="10" font-weight="700" fill="#1e40af">1. SUBMIT REQUEST</text>
+  <text x="170" y="238" text-anchor="middle" font-size="8.5" fill="#64748b">POST /dsr/portal/submit</text>
+  
+  <!-- Column: Backend -->
+  <rect x="340" y="80" width="260" height="100" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" filter="url(#shadow)" />
+  <text x="470" y="105" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">BACKEND SERVICE</text>
+  <text x="470" y="122" text-anchor="middle" font-size="9.5" fill="#334155">DSR Module · tenantId isolation</text>
+  
+  <!-- Resolve / Tax Conflict -->
+  <rect x="340" y="200" width="260" height="70" rx="8" fill="#fef2f2" stroke="#ef4444" stroke-width="2" />
+  <text x="470" y="222" text-anchor="middle" font-size="10" font-weight="700" fill="#991b1b">2. TAX CONFLICT CHECK</text>
+  <text x="470" y="238" text-anchor="middle" font-size="8.5" fill="#64748b">CGST Act Sec 36 — 72-month lock</text>
+  
+  <!-- Column: Database -->
+  <rect x="640" y="80" width="260" height="100" rx="10" fill="#ffffff" stroke="#1e293b" stroke-width="2" filter="url(#shadow)" />
+  <text x="770" y="105" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">DATABASE</text>
+  <text x="770" y="122" text-anchor="middle" font-size="9.5" fill="#334155">Supabase PostgreSQL (Prisma)</text>
+  
+  <!-- Erasure vs Retention -->
+  <rect x="640" y="200" width="260" height="70" rx="8" fill="#f0fdf4" stroke="#10b981" stroke-width="2" />
+  <text x="770" y="222" text-anchor="middle" font-size="10" font-weight="700" fill="#14532d">3. ERASURE EXECUTION</text>
+  <text x="770" y="238" text-anchor="middle" font-size="8.5" fill="#64748b">Non-tax data → atomic deletion</text>
+  
+  <!-- Column: Citizen -->
+  <rect x="940" y="80" width="120" height="100" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" filter="url(#shadow)" />
+  <text x="1000" y="105" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">CITIZEN</text>
+  <text x="1000" y="122" text-anchor="middle" font-size="9.5" fill="#334155">Data Principal</text>
+  
+  <!-- Certificate -->
+  <rect x="940" y="200" width="120" height="70" rx="8" fill="#f0fdf4" stroke="#10b981" stroke-width="2" />
+  <text x="1000" y="222" text-anchor="middle" font-size="10" font-weight="700" fill="#14532d">4. SHA-256 CERTIFICATE</text>
+  <text x="1000" y="238" text-anchor="middle" font-size="8.5" fill="#64748b">Erasure / Retention proof</text>
+  
+  <!-- Arrows -->
+  <line x1="170" y1="180" x2="170" y2="200" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrowhead)" />
+  <line x1="170" y1="235" x2="340" y2="235" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrowhead)" />
+  <line x1="470" y1="180" x2="470" y2="200" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrowhead)" />
+  <line x1="470" y1="270" x2="640" y2="270" stroke="#ef4444" stroke-width="2" marker-end="url(#arrowhead)" />
+  <line x1="770" y1="270" x2="1000" y2="270" stroke="#10b981" stroke-width="2" marker-end="url(#arrowhead)" />
+  
+  <!-- Decision diamond: Tax Lock? -->
+  <polygon points="470,320 530,300 590,320 530,340" fill="#fffbeb" stroke="#f59e0b" stroke-width="2" />
+  <text x="530" y="322" text-anchor="middle" font-size="8.5" font-weight="700" fill="#78350f">Tax Invoice?</text>
+  <text x="530" y="335" text-anchor="middle" font-size="8" fill="#64748b">≤ 72 months?</text>
+  
+  <!-- Yes path: Retain -->
+  <rect x="595" y="300" width="180" height="60" rx="6" fill="#fef2f2" stroke="#fca5a5" stroke-width="1" />
+  <text x="685" y="315" text-anchor="middle" font-size="9" font-weight="700" fill="#991b1b">YES — RETAIN</text>
+  <text x="685" y="330" text-anchor="middle" font-size="8" fill="#64748b">Retention Certificate issued</text>
+  
+  <!-- No path: Erase -->
+  <rect x="595" y="370" width="180" height="60" rx="6" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1" />
+  <text x="685" y="385" text-anchor="middle" font-size="9" font-weight="700" fill="#14532d">NO — ERASE</text>
+  <text x="685" y="400" text-anchor="middle" font-size="8" fill="#64748b">SHA-256 Erasure Certificate</text>
+  
+  <line x1="560" y1="340" x2="595" y2="330" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrowhead)" />
+  <line x1="560" y1="300" x2="595" y2="370" stroke="#10b981" stroke-width="2" marker-end="url(#arrowhead)" />
+  
+  <!-- Track status -->
+  <rect x="340" y="320" width="260" height="70" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" filter="url(#shadow)" />
+  <text x="470" y="345" text-anchor="middle" font-size="10" font-weight="700" fill="#0f172a">Track Request Status</text>
+  <text x="470" y="360" text-anchor="middle" font-size="8.5" fill="#64748b">GET /dsr/portal/track/:requestId</text>
+  
+  <line x1="530" y1="340" x2="470" y2="355" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="4,2" marker-end="url(#arrowhead)" />
+  
+  <!-- Status badges -->
+  <rect x="40" y="400" width="1020" height="100" rx="10" fill="#ffffff" stroke="#e2e8f0" stroke-width="1" filter="url(#shadow)" />
+  <text x="60" y="420" font-size="11" font-weight="700" fill="#0f172a">DSR Request Statuses</text>
+  
+  <g>
+    <rect x="60" y="430" width="200" height="50" rx="6" fill="#fffbeb" stroke="#fde68a" stroke-width="1" />
+    <text x="160" y="450" text-anchor="middle" font-size="9" font-weight="700" fill="#78350f">SUBMITTED</text>
+    
+    <rect x="280" y="430" width="200" height="50" rx="6" fill="#dbeafe" stroke="#bae6fd" stroke-width="1" />
+    <text x="380" y="450" text-anchor="middle" font-size="9" font-weight="700" fill="#1e40af">IN_REVIEW</text>
+    
+    <rect x="500" y="430" width="200" height="50" rx="6" fill="#fef2f2" stroke="#fca5a5" stroke-width="1" />
+    <text x="600" y="450" text-anchor="middle" font-size="9" font-weight="700" fill="#991b1b">RETAINED_TAX_CONFLICT</text>
+    
+    <rect x="720" y="430" width="200" height="50" rx="6" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1" />
+    <text x="820" y="450" text-anchor="middle" font-size="9" font-weight="700" fill="#14532d">COMPLETED</text>
+    
+    <rect x="940" y="430" width="120" height="50" rx="6" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1" />
+    <text x="1000" y="450" text-anchor="middle" font-size="9" font-weight="700" fill="#64748b">REJECTED</text>
+  </g>
+</svg>

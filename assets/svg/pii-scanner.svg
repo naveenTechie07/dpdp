@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="600" viewBox="0 0 1100 600" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#0ea5e9" />
+    </marker>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+      <feOffset dx="2" dy="4" result="offsetblur" />
+      <feComponentTransfer><feFuncA type="linear" slope="0.15" /></feComponentTransfer>
+      <feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge>
+    </filter>
+  </defs>
+  
+  <rect width="1100" height="600" fill="#f8fafc" />
+  
+  <text x="550" y="28" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">Offline PII Scanner Workflow</text>
+  <text x="550" y="48" text-anchor="middle" font-size="12" fill="#64748b">Python 3.10 + Pandas + OpenPyXL · Verhoeff D₅ Algorithm · Zero Cloud Leakage</text>
+  
+  <!-- Step 1: File Upload -->
+  <rect x="40" y="90" width="200" height="80" rx="10" fill="#ffffff" stroke="#0ea5e9" stroke-width="2" filter="url(#shadow)" />
+  <text x="140" y="115" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">1. FILE UPLOAD</text>
+  <text x="140" y="132" text-anchor="middle" font-size="9.5" fill="#334155">CSV · XLSX · XLS · TXT</text>
+  <text x="140" y="148" text-anchor="middle" font-size="9" fill="#64748b">Multer · Private tenant storage</text>
+  
+  <!-- Step 2: Register Source -->
+  <rect x="280" y="90" width="200" height="80" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" filter="url(#shadow)" />
+  <text x="380" y="115" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">2. REGISTER SOURCE</text>
+  <text x="380" y="132" text-anchor="middle" font-size="9.5" fill="#334155">DataSource record created</text>
+  <text x="380" y="148" text-anchor="middle" font-size="9" fill="#64748b">tenantId · filename · size · mimetype</text>
+  
+  <!-- Step 3: Python Worker -->
+  <rect x="520" y="90" width="200" height="80" rx="10" fill="#f1f5f9" stroke="#f59e0b" stroke-width="2" filter="url(#shadow)" />
+  <text x="620" y="115" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">3. PYTHON WORKER</text>
+  <text x="620" y="132" text-anchor="middle" font-size="9.5" fill="#334155">spawned child process</text>
+  <text x="620" y="148" text-anchor="middle" font-size="9" fill="#64748b">Pandas · OpenPyXL · 100% local</text>
+  
+  <!-- Step 4: Detection Engine -->
+  <rect x="520" y="210" width="200" height="140" rx="10" fill="#ffffff" stroke="#f59e0b" stroke-width="2" filter="url(#shadow)" />
+  <text x="620" y="235" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">4. DETECTION ENGINE</text>
+  <text x="535" y="255" text-anchor="start" font-size="9" fill="#334155">• Verhoeff D₅ — Aadhaar (12-digit)</text>
+  <text x="535" y="270" text-anchor="start" font-size="9" fill="#334155">• PAN regex — [A-Z]{5}[0-9]{4}[A-Z]</text>
+  <text x="535" y="285" text-anchor="start" font-size="9" fill="#334155">• Phone — [6-9]\d{9} Indian mobile</text>
+  <text x="535" y="300" text-anchor="start" font-size="9" fill="#334155">• Email · Full Name · Health keywords</text>
+  <text x="535" y="315" text-anchor="start" font-size="9" fill="#334155">• Child data · Section 9 safeguards</text>
+  
+  <!-- Step 5: Classification -->
+  <rect x="760" y="210" width="200" height="140" rx="10" fill="#ffffff" stroke="#0ea5e9" stroke-width="2" filter="url(#shadow)" />
+  <text x="860" y="235" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">5. CLASSIFICATION</text>
+  <text x="775" y="255" text-anchor="start" font-size="9" fill="#334155">• RESTRICTED — Aadhaar · Health</text>
+  <text x="775" y="270" text-anchor="start" font-size="9" fill="#334155">• CONFIDENTIAL — PAN · Phone · Email</text>
+  <text x="775" y="285" text-anchor="start" font-size="9" fill="#334155">• INTERNAL — Employee ID</text>
+  <text x="775" y="300" text-anchor="start" font-size="9" fill="#334155">• PUBLIC — Approved disclosures</text>
+  
+  <!-- Step 6: Findings -->
+  <rect x="760" y="90" width="200" height="80" rx="10" fill="#ffffff" stroke="#0ea5e9" stroke-width="2" filter="url(#shadow)" />
+  <text x="860" y="115" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">6. FINDINGS &amp; FLAGS</text>
+  <text x="860" y="132" text-anchor="middle" font-size="9.5" fill="#334155">ScanFinding · RemediationFlag</text>
+  <text x="860" y="148" text-anchor="middle" font-size="9" fill="#64748b">CRITICAL · HIGH · MEDIUM severity</text>
+  
+  <!-- Step 7: Remediation -->
+  <rect x="280" y="210" width="200" height="140" rx="10" fill="#ffffff" stroke="#10b981" stroke-width="2" filter="url(#shadow)" />
+  <text x="380" y="235" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">7. REMEDIATION</text>
+  <text x="295" y="255" text-anchor="start" font-size="9" fill="#334155">• UNENCRYPTED_CRITICAL_PII</text>
+  <text x="295" y="270" text-anchor="start" font-size="9" fill="#334155">• UNPROTECTED_CONTACT_ID</text>
+  <text x="295" y="285" text-anchor="start" font-size="9" fill="#334155">• SECTION_9_CHILD_DATA</text>
+  <text x="295" y="300" text-anchor="start" font-size="9" fill="#334155">• GENERAL_PII_PRESENT</text>
+  
+  <!-- Step 8: Storage -->
+  <rect x="40" y="210" width="200" height="140" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" filter="url(#shadow)" />
+  <text x="140" y="235" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">8. STORE RESULTS</text>
+  <text x="55" y="255" text-anchor="start" font-size="9" fill="#334155">• ScanJob · ScanFinding</text>
+  <text x="55" y="270" text-anchor="start" font-size="9" fill="#334155">• RemediationFlag</text>
+  <text x="55" y="285" text-anchor="start" font-size="9" fill="#334155">Tenant-isolated PostgreSQL</text>
+  <text x="55" y="300" text-anchor="start" font-size="9" fill="#334155">via Prisma ORM</text>
+  
+  <!-- Step 9: Dashboard -->
+  <rect x="40" y="390" width="200" height="80" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" filter="url(#shadow)" />
+  <text x="140" y="415" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">9. DASHBOARD DISPLAY</text>
+  <text x="140" y="432" text-anchor="middle" font-size="9.5" fill="#334155">Discovery Page (React)</text>
+  <text x="140" y="448" text-anchor="middle" font-size="9" fill="#64748b">PII findings table · Risk flags</text>
+  
+  <!-- Arrows -->
+  <line x1="240" y1="130" x2="280" y2="130" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrowhead)" />
+  <line x1="480" y1="130" x2="520" y2="130" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrowhead)" />
+  <line x1="620" y1="170" x2="620" y2="200" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrowhead)" />
+  <line x1="720" y1="280" x2="760" y2="280" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrowhead)" />
+  <line x1="960" y1="170" x2="960" y2="200" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrowhead)" />
+  <line x1="960" y1="280" x2="760" y2="280" stroke="#10b981" stroke-width="2" marker-end="url(#arrowhead)" />
+  <line x1="720" y1="280" x2="480" y2="280" stroke="#10b981" stroke-width="2" marker-end="url(#arrowhead)" />
+  <line x1="480" y1="280" x2="280" y2="280" stroke="#10b981" stroke-width="2" marker-end="url(#arrowhead)" />
+  <line x1="280" y1="280" x2="140" y2="280" stroke="#10b981" stroke-width="2" marker-end="url(#arrowhead)" />
+  <line x1="140" y1="280" x2="140" y2="380" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="4,2" marker-end="url(#arrowhead)" />
+  
+  <!-- Key algorithm highlight -->
+  <rect x="40" y="490" width="1020" height="90" rx="10" fill="#fef3c7" stroke="#fde68a" stroke-width="1" />
+  <text x="60" y="510" font-size="11" font-weight="700" fill="#78350f">Verhoeff Algorithm (Dihedral Group D₅)</text>
+  <text x="60" y="528" font-size="9" fill="#64748b">Mathematical check-digit validation eliminates false positives from serial numbers, timestamps, and invoice numbers. Only valid Aadhaar checksums pass — zero false positives, zero cloud leakage.</text>
+  <text x="60" y="546" font-size="9" fill="#64748b">c = D[c][P[i mod 8][digit]] iterated over reversed digits; result c == 0 indicates valid Aadhaar.</text>
+</svg>

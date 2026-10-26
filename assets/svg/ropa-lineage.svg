@@ -1,0 +1,151 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="700" viewBox="0 0 1100 700" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#0ea5e9" />
+    </marker>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+      <feOffset dx="2" dy="4" result="offsetblur" />
+      <feComponentTransfer><feFuncA type="linear" slope="0.15" /></feComponentTransfer>
+      <feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge>
+    </filter>
+  </defs>
+  
+  <rect width="1100" height="700" fill="#f8fafc" />
+  
+  <text x="550" y="28" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">RoPA Data Lineage Graph</text>
+  <text x="550" y="48" text-anchor="middle" font-size="12" fill="#64748b">Record of Processing Activities — DPDP Act Section 8(4) · Interactive React Flow Visualization</text>
+  
+  <!-- Legend -->
+  <rect x="50" y="70" width="1000" height="50" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1" />
+  <text x="70" y="88" font-size="10" font-weight="700" fill="#0f172a">Node Types:</text>
+  <rect x="130" y="78" width="14" height="14" fill="#3b82f6" rx="2" />
+  <text x="150" y="89" font-size="9" fill="#334155">Data Source</text>
+  <rect x="230" y="78" width="14" height="14" fill="#2563eb" rx="2" />
+  <text x="250" y="89" font-size="9" fill="#334155">Processing Activity</text>
+  <rect x="350" y="78" width="14" height="14" fill="#d97706" rx="2" />
+  <text x="370" y="89" font-size="9" fill="#334155">Data Element</text>
+  <rect x="470" y="78" width="14" height="14" fill="#059669" rx="2" />
+  <text x="490" y="89" font-size="9" fill="#334155">Storage / System</text>
+  <rect x="590" y="78" width="14" height="14" fill="#dc2626" rx="2" />
+  <text x="610" y="89" font-size="9" fill="#334155">Third-Party Recipient</text>
+  <rect x="730" y="78" width="14" height="14" fill="#7c3aed" rx="2" />
+  <text x="750" y="89" font-size="9" fill="#334155">Retention Policy</text>
+  
+  <!-- RoPA Graph Area -->
+  <rect x="50" y="140" width="1000" height="460" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="2" filter="url(#shadow)" />
+  
+  <!-- Data Source Nodes (left column) -->
+  <g>
+    <!-- WhatsApp -->
+    <rect x="80" y="180" width="150" height="70" rx="8" fill="#dbeafe" stroke="#3b82f6" stroke-width="2" />
+    <text x="155" y="205" text-anchor="middle" font-size="10" font-weight="700" fill="#1e40af">DS: WhatsApp Chat</text>
+    <text x="155" y="220" text-anchor="middle" font-size="8.5" fill="#64748b">clinic_reception_chat.txt</text>
+    <text x="155" y="234" text-anchor="middle" font-size="8" fill="#94a3b8">Informal · Patient IDs · Prescriptions</text>
+    
+    <!-- Excel Sheets -->
+    <rect x="80" y="280" width="150" height="70" rx="8" fill="#dbeafe" stroke="#3b82f6" stroke-width="2" />
+    <text x="155" y="305" text-anchor="middle" font-size="10" font-weight="700" fill="#1e40af">DS: Excel Sheets</text>
+    <text x="155" y="320" text-anchor="middle" font-size="8.5" fill="#64748b">customer_leads.csv</text>
+    <text x="155" y="334" text-anchor="middle" font-size="8" fill="#94a3b8">8 unencrypted spreadsheets</text>
+    
+    <!-- Billing -->
+    <rect x="80" y="380" width="150" height="70" rx="8" fill="#dbeafe" stroke="#3b82f6" stroke-width="2" />
+    <text x="155" y="405" text-anchor="middle" font-size="10" font-weight="700" fill="#1e40af">DS: Billing Tool</text>
+    <text x="155" y="420" text-anchor="middle" font-size="8.5" fill="#64748b">invoices_billing.csv</text>
+    <text x="155" y="434" text-anchor="middle" font-size="8" fill="#94a3b8">Desktop billing · CGST records</text>
+  </g>
+  
+  <!-- Processing Activities (middle column) -->
+  <g>
+    <rect x="340" y="160" width="170" height="70" rx="8" fill="#bfdbfe" stroke="#2563eb" stroke-width="2" />
+    <text x="425" y="185" text-anchor="middle" font-size="10" font-weight="700" fill="#1e3a8a">Activity: Patient Registration</text>
+    <text x="425" y="200" text-anchor="middle" font-size="8.5" fill="#64748b">Legal Basis: CONSENT</text>
+    <text x="425" y="214" text-anchor="middle" font-size="8" fill="#94a3b8">Section 6 — Affirmative Consent</text>
+    
+    <rect x="340" y="270" width="170" height="70" rx="8" fill="#bfdbfe" stroke="#2563eb" stroke-width="2" />
+    <text x="425" y="295" text-anchor="middle" font-size="10" font-weight="700" fill="#1e3a8a">Activity: Lab Diagnostics</text>
+    <text x="425" y="310" text-anchor="middle" font-size="8.5" fill="#64748b">Legal Basis: STATUTORY_OBLIGATION</text>
+    <text x="425" y="324" text-anchor="middle" font-size="8" fill="#94a3b8">NMC · Clinical records · 36 months</text>
+    
+    <rect x="340" y="380" width="170" height="70" rx="8" fill="#bfdbfe" stroke="#2563eb" stroke-width="2" />
+    <text x="425" y="405" text-anchor="middle" font-size="10" font-weight="700" fill="#1e3a8a">Activity: Billing &amp; Invoicing</text>
+    <text x="425" y="420" text-anchor="middle" font-size="8.5" fill="#64748b">Legal Basis: STATUTORY_OBLIGATION</text>
+    <text x="425" y="434" text-anchor="middle" font-size="8" fill="#94a3b8">CGST Sec 36 — 72-month tax lock</text>
+  </g>
+  
+  <!-- Data Elements (right of activities) -->
+  <g>
+    <rect x="560" y="150" width="130" height="50" rx="6" fill="#fdecec" stroke="#d97706" stroke-width="2" />
+    <text x="625" y="168" text-anchor="middle" font-size="9" font-weight="700" fill="#92400e">Aadhaar (CRITICAL)</text>
+    <text x="625" y="182" text-anchor="middle" font-size="7.5" fill="#94a3b8">Verhoeff D₅ validated</text>
+    
+    <rect x="560" y="220" width="130" height="50" rx="6" fill="#fdecec" stroke="#d97706" stroke-width="2" />
+    <text x="625" y="238" text-anchor="middle" font-size="9" font-weight="700" fill="#92400e">PAN (HIGH)</text>
+    <text x="625" y="252" text-anchor="middle" font-size="7.5" fill="#94a3b8">Tax identifier</text>
+    
+    <rect x="560" y="290" width="130" height="50" rx="6" fill="#fdecec" stroke="#d97706" stroke-width="2" />
+    <text x="625" y="308" text-anchor="middle" font-size="9" font-weight="700" fill="#92400e">Phone (HIGH)</text>
+    <text x="625" y="322" text-anchor="middle" font-size="7.5" fill="#94a3b8">Indian mobile +91</text>
+    
+    <rect x="560" y="360" width="130" height="50" rx="6" fill="#fdecec" stroke="#d97706" stroke-width="2" />
+    <text x="625" y="378" text-anchor="middle" font-size="9" font-weight="700" fill="#92400e">Health Data (CRITICAL)</text>
+    <text x="625" y="392" text-anchor="middle" font-size="7.5" fill="#94a3b8">Clinical keywords</text>
+  </g>
+  
+  <!-- Storage Systems (right column) -->
+  <g>
+    <rect x="740" y="140" width="150" height="60" rx="8" fill="#dcfce7" stroke="#059669" stroke-width="2" />
+    <text x="815" y="160" text-anchor="middle" font-size="9.5" font-weight="700" fill="#14532d">Storage: Local Excel</text>
+    <text x="815" y="176" text-anchor="middle" font-size="8" fill="#15803d">Unencrypted spreadsheets</text>
+    
+    <rect x="740" y="260" width="150" height="60" rx="8" fill="#dcfce7" stroke="#059669" stroke-width="2" />
+    <text x="815" y="280" text-anchor="middle" font-size="9.5" font-weight="700" fill="#14532d">Storage: Desktop Billing</text>
+    <text x="815" y="296" text-anchor="middle" font-size="8" fill="#15803d">Tally / billing tool</text>
+    
+    <rect x="740" y="380" width="150" height="60" rx="8" fill="#dcfce7" stroke="#059669" stroke-width="2" />
+    <text x="815" y="400" text-anchor="middle" font-size="9.5" font-weight="700" fill="#14532d">Storage: Mobile Phone</text>
+    <text x="815" y="416" text-anchor="middle" font-size="8" fill="#15803d">WhatsApp chat exports</text>
+  </g>
+  
+  <!-- Third Party Recipients (far right) -->
+  <g>
+    <rect x="940" y="180" width="110" height="70" rx="8" fill="#fee2e2" stroke="#dc2626" stroke-width="2" />
+    <text x="995" y="200" text-anchor="middle" font-size="9" font-weight="700" fill="#991b1b">Recipient: Lab Partners</text>
+    <text x="995" y="215" text-anchor="middle" font-size="7.5" fill="#94a3b8">Diagnostics labs</text>
+    
+    <rect x="940" y="300" width="110" height="70" rx="8" fill="#fee2e2" stroke="#dc2626" stroke-width="2" />
+    <text x="995" y="320" text-anchor="middle" font-size="9" font-weight="700" fill="#991b1b">Recipient: WhatsApp Meta</text>
+    <text x="995" y="335" text-anchor="middle" font-size="7.5" fill="#94a3b8">Messaging platform</text>
+    
+    <rect x="940" y="420" width="110" height="70" rx="8" fill="#fee2e2" stroke="#dc2626" stroke-width="2" />
+    <text x="995" y="440" text-anchor="middle" font-size="9" font-weight="700" fill="#991b1b">Recipient: GST Portal</text>
+    <text x="995" y="455" text-anchor="middle" font-size="7.5" fill="#94a3b8">Tax filing authority</text>
+  </g>
+  
+  <!-- Edges (arrows) -->
+  <line x1="230" y1="215" x2="340" y2="195" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead)" />
+  <line x1="230" y1="315" x2="340" y2="305" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead)" />
+  <line x1="230" y1="415" x2="340" y2="415" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead)" />
+  
+  <line x1="425" y1="230" x2="560" y2="175" stroke="#d97706" stroke-width="2" marker-end="url(#arrowhead)" />
+  <line x1="425" y1="300" x2="560" y2="315" stroke="#d97706" stroke-width="2" marker-end="url(#arrowhead)" />
+  <line x1="425" y1="410" x2="560" y2="385" stroke="#d97706" stroke-width="2" marker-end="url(#arrowhead)" />
+  
+  <line x1="560" y1="175" x2="740" y2="170" stroke="#059669" stroke-width="2" marker-end="url(#arrowhead)" />
+  <line x1="560" y1="315" x2="740" y2="290" stroke="#059669" stroke-width="2" marker-end="url(#arrowhead)" />
+  <line x1="560" y1="385" x2="740" y2="410" stroke="#059669" stroke-width="2" marker-end="url(#arrowhead)" />
+  
+  <line x1="740" y1="190" x2="940" y2="215" stroke="#dc2626" stroke-width="2" marker-end="url(#arrowhead)" />
+  <line x1="740" y1="310" x2="940" y2="335" stroke="#dc2626" stroke-width="2" marker-end="url(#arrowhead)" />
+  <line x1="740" y1="430" x2="940" y2="455" stroke="#dc2626" stroke-width="2" marker-end="url(#arrowhead)" />
+  
+  <!-- Retention annotations -->
+  <text x="550" y="620" text-anchor="middle" font-size="10" font-weight="700" fill="#0f172a">Statutory Retention Schedules</text>
+  <rect x="300" y="632" width="160" height="50" rx="6" fill="#fef2f2" stroke="#fca5a5" stroke-width="1" />
+  <text x="380" y="648" text-anchor="middle" font-size="8.5" fill="#991b1b">Billing: 72 months (CGST Sec 36)</text>
+  <rect x="480" y="632" width="160" height="50" rx="6" fill="#fef2f2" stroke="#fca5a5" stroke-width="1" />
+  <text x="560" y="648" text-anchor="middle" font-size="8.5" fill="#991b1b">Security Logs: 12 months (Rule 6(1)(e))</text>
+  <rect x="660" y="632" width="160" height="50" rx="6" fill="#fef2f2" stroke="#fca5a5" stroke-width="1" />
+  <text x="740" y="648" text-anchor="middle" font-size="8.5" fill="#991b1b">Clinical: 36 months (NMC)</text>
+</svg>
