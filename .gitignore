@@ -72,3 +72,4 @@ Rules.md
 # Local Analysis Only - STRICT: NEVER PUSH TO GITHUB
 privacy_related/
 pribvacy_related/
+.vercel
