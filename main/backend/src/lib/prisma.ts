@@ -18,5 +18,6 @@ export async function ensureDbConnection(): Promise<boolean> {
 }
 
 export function isDbConnected(): boolean {
-  return dbConnected;
+  return dbConnected || !!process.env.DATABASE_URL;
 }
+

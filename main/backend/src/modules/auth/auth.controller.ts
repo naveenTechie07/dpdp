@@ -5,7 +5,7 @@ import * as authService from './auth.service';
 export async function registerHandler(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const validated = registerSchema.parse(req.body);
-    const ipAddress = req.ip || req.socket.remoteAddress;
+    const ipAddress = (req.headers['x-forwarded-for'] as string) || (req.headers['x-real-ip'] as string) || req.socket?.remoteAddress || req.ip || '127.0.0.1';
     const userAgent = req.headers['user-agent'];
 
     const result = await authService.register(validated, ipAddress, userAgent);
@@ -23,7 +23,7 @@ export async function registerHandler(req: Request, res: Response, next: NextFun
 export async function loginHandler(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const validated = loginSchema.parse(req.body);
-    const ipAddress = req.ip || req.socket.remoteAddress;
+    const ipAddress = (req.headers['x-forwarded-for'] as string) || (req.headers['x-real-ip'] as string) || req.socket?.remoteAddress || req.ip || '127.0.0.1';
     const userAgent = req.headers['user-agent'];
 
     const result = await authService.login(validated, ipAddress, userAgent);

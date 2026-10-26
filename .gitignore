@@ -73,3 +73,4 @@ Rules.md
 privacy_related/
 pribvacy_related/
 .vercel
+.env*
