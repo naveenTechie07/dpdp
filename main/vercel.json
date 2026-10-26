@@ -3,11 +3,17 @@
   "services": {
     "backend": {
       "root": "backend",
-      "framework": "express"
+      "framework": "express",
+      "buildCommand": "npm install && npx prisma generate && npx tsc",
+      "devCommand": "npm run dev",
+      "startCommand": "npm start"
     },
     "frontend": {
       "root": "frontend",
-      "framework": "vite"
+      "framework": "vite",
+      "buildCommand": "npm install && npm run build",
+      "devCommand": "npm run dev",
+      "startCommand": "npm run preview"
     }
   },
   "rewrites": [
