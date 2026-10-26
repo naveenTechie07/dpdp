@@ -5,7 +5,8 @@
 **Theme:** Legal Services | **Problem Statement ID:** LS-04  
 **Track:** Final Evaluation Dossier & Full-Stack Implementation  
 
-[![Live Demo](https://img.shields.io/badge/Vercel_Live_Deployment-Active-brightgreen?style=for-the-badge&logo=vercel)](https://srujana-hackathon2026-codeplays.vercel.app)
+[![Primary Live Demo (main)](https://img.shields.io/badge/Primary_Live_Vercel-Active-brightgreen?style=for-the-badge&logo=vercel)](https://srujanahackathon2026codeplays-main.vercel.app/)
+[![SSR Portal Demo](https://img.shields.io/badge/SSR_Portal_Vercel-Active-blue?style=for-the-badge&logo=vercel)](https://srujana-hackathon2026-codeplays.vercel.app)
 [![Tests Passing](https://img.shields.io/badge/All_Tests-Passing_33%2F33-success?style=for-the-badge&logo=jest)](https://github.com/naveenTechie07/Srujana_hackathon2026_codeplays)
 [![Compliance](https://img.shields.io/badge/Statutory_Standard-DPDP_Act_2023-blue?style=for-the-badge)](https://www.meity.gov.in)
 
@@ -17,8 +18,8 @@ This repository provides a complete, dual-architecture solution for **Problem St
 
 | System | Architecture & Tech Stack | Primary Role | Status / Access |
 | :--- | :--- | :--- | :--- |
-| **Primary System (`main/`)** | **React 18 + Vite + TypeScript + Tailwind + React Flow + Node.js + Express + Prisma ORM + Python 3.10** | Modern Modular Monolith with Dual Personas (MSME Enterprise Dashboard & Citizen Privacy Rights Portal) | **Production-Ready** in [`main/`](./main/) |
-| **Live Deployed Portal (`DPDP_Secure/`)** | **Node.js (v18+) + Express + EJS Glassmorphism SSR + SQLite** | 55 comprehensive statutory views (Consent Ledger, DSR Workflows, RoPA Inventory, Cookie Scanners, Incident Reporting) | **Live on Vercel:** [srujana-hackathon2026-codeplays.vercel.app](https://srujana-hackathon2026-codeplays.vercel.app) |
+| **Primary System (`main/`)** | **React 18 + Vite + TypeScript + Tailwind + React Flow + Node.js + Express + Prisma ORM + Python 3.10** | Modern Modular Monolith with Dual Personas (MSME Enterprise Dashboard & Citizen Privacy Rights Portal) | 🚀 **Live on Vercel:** [srujanahackathon2026codeplays-main.vercel.app](https://srujanahackathon2026codeplays-main.vercel.app/) |
+| **Secondary Portal (`DPDP_Secure/`)** | **Node.js (v18+) + Express + EJS Glassmorphism SSR + SQLite** | 55 comprehensive statutory views (Consent Ledger, DSR Workflows, RoPA Inventory, Cookie Scanners, Incident Reporting) | **Live on Vercel:** [srujana-hackathon2026-codeplays.vercel.app](https://srujana-hackathon2026-codeplays.vercel.app) |
 
 ---
 

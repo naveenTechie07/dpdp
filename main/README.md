@@ -5,6 +5,16 @@
 **Theme:** Legal Services | **Problem Statement ID:** LS-04  
 **Track:** Enterprise Compliance & Citizen Privacy Rights  
 
+[![Live Demo on Vercel](https://img.shields.io/badge/Vercel_Live_Deployment-Active-brightgreen?style=for-the-badge&logo=vercel)](https://srujanahackathon2026codeplays-main.vercel.app/)
+[![TypeScript Strict](https://img.shields.io/badge/TypeScript-Strict_Mode-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![React 18](https://img.shields.io/badge/React_18-Vite_SPA-61dafb?style=for-the-badge&logo=react)](https://react.dev/)
+[![Statutory Compliance](https://img.shields.io/badge/Statutory_Standard-DPDP_Act_2023-blue?style=for-the-badge)](https://www.meity.gov.in)
+
+> 🚀 **Live Production Deployment:** [https://srujanahackathon2026codeplays-main.vercel.app/](https://srujanahackathon2026codeplays-main.vercel.app/)  
+> **Built-In Demo Credentials:**  
+> • **🏢 MSME Admin (Data Fiduciary):** `ramesh.kumar@aarogyadiagnostics.in` / `Password123!`  
+> • **👤 Individual Citizen (Data Principal):** `rahul.sharma@example.com` / `Password123!`  
+
 ---
 
 ## 📑 Table of Contents
