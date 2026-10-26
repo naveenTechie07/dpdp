@@ -1,9 +1,9 @@
 import { Prisma } from '@prisma/client';
 import { prisma } from '../../lib/prisma';
-import { hashPassword, comparePassword } from '../../lib/password';
-import { signToken } from '../../lib/jwt';
+import { hashPassword } from '../../lib/password';
 import { RegisterInput, LoginInput } from './auth.schema';
 import { recordAuditEvent } from '../audit/audit.service';
+import { getSupabaseAdmin } from '../../lib/supabase';
 
 export async function register(input: RegisterInput, ipAddress?: string, userAgent?: string) {
   const existingUser = await prisma.user.findUnique({
@@ -23,11 +23,31 @@ export async function register(input: RegisterInput, ipAddress?: string, userAge
     : `${input.firstName.trim()}'s MSME Workspace`;
   const workspaceName = input.tenantName?.trim() || defaultWorkspaceName;
 
-  const hashedPassword = await hashPassword(input.password);
+  // 1. Create user in Supabase Auth
+  const supabase = getSupabaseAdmin();
+  const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+    email: input.email.toLowerCase().trim(),
+    password: input.password,
+    email_confirm: true,
+    user_metadata: {
+      user_type: isCitizen ? 'CITIZEN' : 'MSME',
+      first_name: input.firstName.trim(),
+      last_name: input.lastName ? input.lastName.trim() : null,
+      phone: input.phone || null,
+    },
+  });
 
-  // Execute multi-entity creation in atomic transaction
+  if (authError || !authData?.user) {
+    const error: any = new Error(authError?.message || 'Failed to create account');
+    error.status = 400;
+    error.code = 'SUPABASE_AUTH_ERROR';
+    throw error;
+  }
+
+  const authUserId = authData.user.id;
+
+  // 2. Execute multi-entity creation in atomic transaction
   const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-    // 1. Create Workspace / Tenant
     const tenant = await tx.tenant.create({
       data: {
         name: workspaceName,
@@ -36,7 +56,6 @@ export async function register(input: RegisterInput, ipAddress?: string, userAge
       },
     });
 
-    // 2. Create Default Roles for this Tenant
     const roleCode = isCitizen ? 'CITIZEN' : 'ADMIN';
     const roleName = isCitizen ? 'Individual Data Principal' : 'Workspace Administrator';
 
@@ -68,19 +87,18 @@ export async function register(input: RegisterInput, ipAddress?: string, userAge
       });
     }
 
-    // 3. Create User
     const user = await tx.user.create({
       data: {
+        id: authUserId,
         tenantId: tenant.id,
         email: input.email.toLowerCase().trim(),
-        passwordHash: hashedPassword,
+        passwordHash: '', // Password managed by Supabase Auth
         firstName: input.firstName.trim(),
         lastName: input.lastName ? input.lastName.trim() : null,
         isPlatformAdmin: false,
       },
     });
 
-    // 4. Assign Primary Role
     await tx.userRole.create({
       data: {
         tenantId: tenant.id,
@@ -92,7 +110,7 @@ export async function register(input: RegisterInput, ipAddress?: string, userAge
     return { tenant, user, roleCode };
   });
 
-  // 5. Record Audit Event
+  // 3. Record Audit Event
   await recordAuditEvent({
     tenantId: result.tenant.id,
     actorId: result.user.id,
@@ -109,13 +127,25 @@ export async function register(input: RegisterInput, ipAddress?: string, userAge
     userAgent,
   });
 
-  // 6. Generate JWT
-  const token = signToken({
-    userId: result.user.id,
-    tenantId: result.tenant.id,
-    email: result.user.email,
-    isPlatformAdmin: result.user.isPlatformAdmin,
+  // 4. Generate Supabase Auth session token
+  const { data: sessionData } = await supabase.auth.admin.generateLink({
+    type: 'magiclink',
+    email: input.email.toLowerCase().trim(),
   });
+
+  // Get a fresh token by signing in via admin API
+  const { data: tokenData } = await supabase.auth.admin.generateLink({
+    type: 'invite',
+    email: input.email.toLowerCase().trim(),
+  });
+
+  // Use the Supabase user JWT by creating a session
+  const { data: authResponse } = await supabase.auth.signInWithPassword({
+    email: input.email.toLowerCase().trim(),
+    password: input.password,
+  });
+
+  const token = authResponse?.session?.access_token || '';
 
   return {
     token,
@@ -138,8 +168,27 @@ export async function register(input: RegisterInput, ipAddress?: string, userAge
 }
 
 export async function login(input: LoginInput, ipAddress?: string, userAgent?: string) {
-  let user = await prisma.user.findUnique({
-    where: { email: input.email.toLowerCase().trim() },
+  const supabase = getSupabaseAdmin();
+
+  // 1. Authenticate via Supabase Auth
+  const { data: authResponse, error: authError } = await supabase.auth.signInWithPassword({
+    email: input.email.toLowerCase().trim(),
+    password: input.password,
+  });
+
+  if (authError || !authResponse?.user || !authResponse.session) {
+    const error: any = new Error('Invalid email or password');
+    error.status = 401;
+    error.code = 'INVALID_CREDENTIALS';
+    throw error;
+  }
+
+  const authUser = authResponse.user;
+  const userMetadata = authUser.user_metadata || {};
+
+  // 2. Fetch user record from our database with tenant info
+  const user = await prisma.user.findUnique({
+    where: { id: authUser.id },
     include: {
       tenant: true,
       userRoles: true,
@@ -147,9 +196,9 @@ export async function login(input: LoginInput, ipAddress?: string, userAgent?: s
   });
 
   if (!user) {
-    const error: any = new Error('Invalid email or password');
-    error.status = 401;
-    error.code = 'INVALID_CREDENTIALS';
+    const error: any = new Error('User account not found in workspace');
+    error.status = 404;
+    error.code = 'USER_NOT_FOUND';
     throw error;
   }
 
@@ -160,32 +209,21 @@ export async function login(input: LoginInput, ipAddress?: string, userAgent?: s
     throw error;
   }
 
-  const isPasswordValid = await comparePassword(input.password, user.passwordHash);
-  if (!isPasswordValid) {
-    const error: any = new Error('Invalid email or password');
-    error.status = 401;
-    error.code = 'INVALID_CREDENTIALS';
-    throw error;
-  }
-
   const isCitizen = user.tenant.plan === 'CITIZEN' || user.userRoles.some((ur) => ur.roleCode === 'CITIZEN');
   const userType: 'MSME' | 'CITIZEN' = isCitizen ? 'CITIZEN' : 'MSME';
   const primaryRole = user.userRoles[0]?.roleCode || (isCitizen ? 'CITIZEN' : 'ADMIN');
 
-  // Strict role separation check:
-  // MSME accounts CANNOT log into the Citizen Privacy Portal.
-  // Citizen accounts CANNOT log into the MSME Business Portal.
   if (input.userType && input.userType !== userType) {
     if (input.userType === 'CITIZEN' && userType === 'MSME') {
       const error: any = new Error(
-        'Access Denied: This account is registered as an MSME Business Administrator and cannot log into the Citizen Privacy Portal. MSME accounts cannot access the user portal. Please select "MSME Company" to log in.'
+        'Access Denied: This account is registered as an MSME Business Administrator and cannot log into the Citizen Privacy Portal.',
       );
       error.status = 403;
       error.code = 'ROLE_MISMATCH';
       throw error;
     } else if (input.userType === 'MSME' && userType === 'CITIZEN') {
       const error: any = new Error(
-        'Access Denied: This account is registered as an Individual Citizen and cannot log into the MSME Business Portal. Please select "Individual User" to access the Citizen Privacy Portal.'
+        'Access Denied: This account is registered as an Individual Citizen and cannot log into the MSME Business Portal.',
       );
       error.status = 403;
       error.code = 'ROLE_MISMATCH';
@@ -193,7 +231,6 @@ export async function login(input: LoginInput, ipAddress?: string, userAgent?: s
     }
   }
 
-  // Record Audit Event
   await recordAuditEvent({
     tenantId: user.tenantId,
     actorId: user.id,
@@ -204,15 +241,8 @@ export async function login(input: LoginInput, ipAddress?: string, userAgent?: s
     userAgent,
   });
 
-  const token = signToken({
-    userId: user.id,
-    tenantId: user.tenantId,
-    email: user.email,
-    isPlatformAdmin: user.isPlatformAdmin,
-  });
-
   return {
-    token,
+    token: authResponse.session.access_token,
     user: {
       id: user.id,
       email: user.email,
@@ -235,7 +265,7 @@ export async function getCurrentUser(userId: string, tenantId: string) {
   const user = await prisma.user.findFirst({
     where: {
       id: userId,
-      tenantId: tenantId, // Strict tenant isolation check
+      tenantId: tenantId,
     },
     include: {
       tenant: true,
