@@ -5,7 +5,7 @@
 **Problem Statement ID:** LS-04 — Personal Data in Informal Systems (Data Protection for Small Businesses)  
 **Track:** Enterprise Compliance & Citizen Privacy Rights  
 **Repository:** https://github.com/naveenTechie07/Srujana_hackathon2026_codeplays  
-**Live Demo:** https://main-ivory-sigma.vercel.app  
+**Live Demo:** https://srujanahackathon2026codeplays-main.vercel.app  
 **Status:** Submitted for hackathon evaluation
 
 ---
@@ -390,7 +390,7 @@ docker-compose up --build
 - **High Information Density:** Compact tables for compliance officers
 
 ### How to Access
-- **Live Demo:** https://main-ivory-sigma.vercel.app
+- **Live Demo:** https://srujanahackathon2026codeplays-main.vercel.app
 - **Demo Credentials:**
   - MSME Admin: `ramesh.kumar@aarogyadiagnostics.in` / `Password123!`
   - Citizen: `rahul.sharma@example.com` / `Password123!`
@@ -580,7 +580,7 @@ npm run test:all
 ```
 
 ### Deployment
-- **Vercel:** https://main-ivory-sigma.vercel.app
+- **Vercel:** https://srujanahackathon2026codeplays-main.vercel.app
 - **GitHub:** https://github.com/naveenTechie07/Srujana_hackathon2026_codeplays
 - **No secrets committed:** All API keys in .env (gitignored)
 
@@ -611,7 +611,7 @@ All modules developed by the Srujana hackathon team:
 
 ### Relevant Links
 - **Repository:** https://github.com/naveenTechie07/Srujana_hackathon2026_codeplays
-- **Live Demo:** https://main-ivory-sigma.vercel.app
+- **Live Demo:** https://srujanahackathon2026codeplays-main.vercel.app
 - **Problem Statement:** LS-04 — Personal Data in Informal Systems
 - **Hackathon:** Srujana Tech Fest 2026 (24–26 October 2026)
 
